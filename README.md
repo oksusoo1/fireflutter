@@ -10,6 +10,8 @@ A free, open source, complete, rapid development package for creating Social app
 - Real time.\
   We design it to be real time when it is applied to your app. All the events like post and comment creation, voting(like, dislike), deletion would appears on all the user's phone immediately after the event.
 
+- As of Dec 18, 2021, I am busy with another project. I am gathering developers who can take a part in updating this project. Email me at thruthesky@gmail.com
+
 - Table of Contents
 
 <!-- TOC -->
