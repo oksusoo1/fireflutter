@@ -1,7 +1,31 @@
+import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
-class ChatRoomScreen extends StatelessWidget {
+class ChatRoomScreen extends StatefulWidget {
   const ChatRoomScreen({Key? key}) : super(key: key);
+
+  @override
+  State<ChatRoomScreen> createState() => _ChatRoomScreenState();
+}
+
+class _ChatRoomScreenState extends State<ChatRoomScreen> {
+  final chat = Chat(otherUid: Get.arguments['uid']);
+
+  @override
+  void initState() {
+    super.initState();
+
+    test();
+  }
+
+  test() async {
+    try {
+      await chat.send(message: 'hi there');
+    } catch (e) {
+      print(e);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -10,9 +34,6 @@ class ChatRoomScreen extends StatelessWidget {
         title: const Text('Chat room'),
       ),
 
-      /// TODO 1. check user exist. Or alert error.
-      /// TODO 2. write a message
-      /// TODO 3. create database rule
       /// TODO 4. list with `https://firebase.flutter.dev/docs/ui/database#installation`
       /// TODO 5. Display if user is online or offline.
       body: Container(),

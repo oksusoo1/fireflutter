@@ -36,9 +36,10 @@ class _HomeScreenState extends State<HomeScreen> {
                       Wrap(
                         alignment: WrapAlignment.spaceAround,
                         children: const [
-                          ChatUser(name: 'Apple', uid: '#aaa'),
-                          ChatUser(name: 'Banana', uid: '#aaa'),
-                          ChatUser(name: 'Cherry', uid: '#aaa'),
+                          ChatUser(name: 'Apple', uid: 'uA0mjrf3FzR1FxO1rcjO7eZlGkR2'),
+                          ChatUser(name: 'Banana', uid: 'o0BtHX2JMiaa0SIrDJ3qhDczXDF2'),
+                          ChatUser(name: 'Cherry', uid: 'sys2vHyPz2fUb57qEFN2PqaegGu2'),
+                          ChatUser(name: 'Dragon', uid: 'LLaX6TwVQSO2os2dzK3kJyTzSzs1'),
                         ],
                       )
                     ],

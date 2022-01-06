@@ -37,6 +37,7 @@ class MyApp extends StatelessWidget {
             ],
             providerConfigs: const [
               EmailProviderConfiguration(),
+              GoogleProviderConfiguration(clientId: 'com.withcenter.test'),
             ],
             footerBuilder: (context, _) {
               return TextButton(

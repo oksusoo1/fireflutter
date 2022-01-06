@@ -8,6 +8,8 @@ class ChatUser extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ElevatedButton(onPressed: () => Get.toNamed('/chat-room-screen'), child: Text(name));
+    return ElevatedButton(
+        onPressed: () => Get.toNamed('/chat-room-screen', arguments: {'uid': uid}),
+        child: Text(name));
   }
 }

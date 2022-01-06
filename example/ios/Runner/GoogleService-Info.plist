@@ -3,21 +3,21 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>413839895652-9thkj5qp3mk0cav71tqm6m2cvdqkk2rc.apps.googleusercontent.com</string>
+	<string>391614224917-0mujlqc3apdvs1lm8rjnlb1lfghltv8h.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.413839895652-9thkj5qp3mk0cav71tqm6m2cvdqkk2rc</string>
+	<string>com.googleusercontent.apps.391614224917-0mujlqc3apdvs1lm8rjnlb1lfghltv8h</string>
 	<key>API_KEY</key>
-	<string>AIzaSyDYN1v4RwGoRmR31IfbPDu-92YAEyysv4M</string>
+	<string>AIzaSyABMW6ugWVFUgzdC7ucsa4GTa4f5HidqrQ</string>
 	<key>GCM_SENDER_ID</key>
-	<string>413839895652</string>
+	<string>391614224917</string>
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.sonub.app</string>
+	<string>com.withcenter.test</string>
 	<key>PROJECT_ID</key>
-	<string>wonderful-korea</string>
+	<string>withcenter-test-project</string>
 	<key>STORAGE_BUCKET</key>
-	<string>wonderful-korea.appspot.com</string>
+	<string>withcenter-test-project.appspot.com</string>
 	<key>IS_ADS_ENABLED</key>
 	<false></false>
 	<key>IS_ANALYTICS_ENABLED</key>
@@ -29,8 +29,8 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:413839895652:ios:57cda425fac3e41b97c371</string>
+	<string>1:391614224917:ios:99166de384811ba82c0c1c</string>
 	<key>DATABASE_URL</key>
-	<string>https://wonderful-korea-default-rtdb.asia-southeast1.firebasedatabase.app</string>
+	<string>https://withcenter-test-project-default-rtdb.asia-southeast1.firebasedatabase.app</string>
 </dict>
 </plist>
