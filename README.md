@@ -21,6 +21,10 @@ Table of contents
 - [Fire Flutter](#fire-flutter)
 - [Features](#features)
 - [Installation](#installation)
+  - [Running the example](#running-the-example)
+  - [Creating a new project](#creating-a-new-project)
+  - [Firebase installation](#firebase-installation)
+- [Packages](#packages)
 
 # Features
 
@@ -45,5 +49,35 @@ Table of contents
 
 # Installation
 
-- Follow the instructions of [FlutterFire Overview](https://firebase.flutter.dev/docs/overview)
+
+## Running the example
+
+- Do the [Firebase installation](#firebase-installation).
+- Git fork the [fireflutter](https://github.com/thruthesky/fireflutter).
+
+
+
+## Creating a new project
+
+- Do the [Firebase installation](#firebase-installation).
+- Edit platform version to `platform :ios, '10.0'` in Podfile.
+
+
+## Firebase installation
+- Refer the instructions of [FlutterFire Overview](https://firebase.flutter.dev/docs/overview)
+
+
+- Download ios app's `GoogleService-Info.plist`. And save it under `<root>/example/ios/Runnder`, Then open Xcode and drag it under Runner.
+
+- You need enable neccessary Firebase settings to login, chat, and do more.
+
+
+
+# Packages
+
+- We use [Getx](https://pub.dev/packages/get) for route & state management.
+- We use [FlutterFire UI](https://firebase.flutter.dev/docs/ui/overview) for Firebase auth and other UI examples.
+  - You may build your own UI.
+
+
 
