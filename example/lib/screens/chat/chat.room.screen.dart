@@ -1,42 +1,78 @@
-import 'package:fireflutter/fireflutter.dart';
-import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+// import 'dart:convert';
 
-class ChatRoomScreen extends StatefulWidget {
-  const ChatRoomScreen({Key? key}) : super(key: key);
+// import 'package:example/screens/chat/widgets/chat_room.message_box.dart';
+// import 'package:fireflutter/fireflutter.dart';
+// import 'package:flutter/material.dart';
+// import 'package:get/get.dart';
+// import 'package:flutterfire_ui/database.dart';
 
-  @override
-  State<ChatRoomScreen> createState() => _ChatRoomScreenState();
-}
+// class ChatRoomScreen extends StatefulWidget {
+//   const ChatRoomScreen({Key? key}) : super(key: key);
 
-class _ChatRoomScreenState extends State<ChatRoomScreen> {
-  final chat = Chat(otherUid: Get.arguments['uid']);
+//   @override
+//   State<ChatRoomScreen> createState() => _ChatRoomScreenState();
+// }
 
-  @override
-  void initState() {
-    super.initState();
+// class _ChatRoomScreenState extends State<ChatRoomScreen> {
+//   final chat = Chat(otherUid: Get.arguments['uid']);
+//   @override
+//   void initState() {
+//     super.initState();
 
-    test();
-  }
+//     test();
+//   }
 
-  test() async {
-    try {
-      await chat.send(message: 'hi there');
-    } catch (e) {
-      print(e);
-    }
-  }
+//   test() async {
+//     // try {
+//     //   await chat.send(message: 'hi there');
+//     // } catch (e) {
+//     //   print(e);
+//     // }
+//   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Chat room'),
-      ),
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(
+//         title: const Text('Chat room'),
+//       ),
+//       bottomNavigationBar: SafeArea(
+//         child: ChatRoomMessageBox(onSend: chat.send),
+//       ),
+//       body: Padding(
+//           padding: const EdgeInsets.all(8.0),
+//           child: FirebaseDatabaseQueryBuilder(
+//             query: chat.room.orderByKey(),
+//             builder: (context, snapshot, _) {
+//               if (snapshot.isFetching) {
+//                 return const CircularProgressIndicator.adaptive();
+//               }
+//               if (snapshot.hasError) {
+//                 return Text('Something went wrong! ${snapshot.error}');
+//               }
 
-      /// TODO 4. list with `https://firebase.flutter.dev/docs/ui/database#installation`
-      /// TODO 5. Display if user is online or offline.
-      body: Container(),
-    );
-  }
-}
+//               return ListView.builder(
+//                 itemCount: snapshot.docs.length,
+//                 itemBuilder: (context, index) {
+//                   // if we reached the end of the currently obtained items, we try to
+//                   // obtain more items
+//                   if (snapshot.hasMore && index + 1 == snapshot.docs.length) {
+//                     // Tell FirebaseDatabaseQueryBuilder to try to obtain more items.
+//                     // It is safe to call this function from within the build method.
+//                     snapshot.fetchMore();
+//                   }
+
+//                   final data = MessageModel.fromJson(snapshot.docs[index].value);
+
+//                   return Container(
+//                     padding: const EdgeInsets.all(8),
+//                     color: Colors.teal[100],
+//                     child: Text("- ${data.message}"),
+//                   );
+//                 },
+//               );
+//             },
+//           )),
+//     );
+//   }
+// }

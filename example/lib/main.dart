@@ -1,19 +1,33 @@
-import 'package:example/screens/chat/chat.room.screen.dart';
+// import 'package:example/screens/chat/chat.room.screen.dart';
 import 'package:example/screens/home/home.screen.dart';
+import 'package:example/widgets/sign_in.widget.dart';
+import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:flutterfire_ui/auth.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:get/get.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
 
-  runApp(const MyApp());
+  runApp(const MainApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+class MainApp extends StatefulWidget {
+  const MainApp({Key? key}) : super(key: key);
+
+  @override
+  State<MainApp> createState() => _MainAppState();
+}
+
+class _MainAppState extends State<MainApp> {
+  @override
+  void initState() {
+    super.initState();
+
+    Presence.instance.activate();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -26,31 +40,9 @@ class MyApp extends StatelessWidget {
         GetPage(name: '/home', page: () => const HomeScreen()),
         GetPage(
           name: '/sign-in',
-          page: () => SignInScreen(
-            actions: [
-              AuthStateChangeAction<SignedIn>((context, _) {
-                Get.offAllNamed('/home');
-              }),
-              SignedOutAction((context) {
-                Get.offAllNamed('/home');
-              }),
-            ],
-            providerConfigs: const [
-              EmailProviderConfiguration(),
-              GoogleProviderConfiguration(clientId: 'com.withcenter.test'),
-            ],
-            footerBuilder: (context, _) {
-              return TextButton(
-                onPressed: () => Get.offAllNamed('/home'),
-                child: const Text(
-                  'Back to home',
-                  style: TextStyle(color: Colors.grey),
-                ),
-              );
-            },
-          ),
+          page: () => const SignInWidget(),
         ),
-        GetPage(name: '/chat-room-screen', page: () => const ChatRoomScreen())
+        // GetPage(name: '/chat-room-screen', page: () => const ChatRoomScreen())
       ],
     );
   }

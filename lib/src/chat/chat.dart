@@ -9,14 +9,15 @@ class Chat {
 
   String get myUid => FirebaseAuth.instance.currentUser!.uid;
   String get roomId => getChatRoomId(myUid, otherUid);
-  final DatabaseReference ref = FirebaseDatabase.instance.ref();
+  final FirebaseDatabase database = FirebaseDatabase.instance;
+  DatabaseReference get ref => database.ref();
   DatabaseReference get room => ref.child('/chat').child(roomId);
 
   /// Set a message on /chat/uid__uid
   ///
   /// Throws permission error on
   /// - none
-  Future send({required String message}) async {
+  Future send(String message) async {
     await room.push().set({
       'uid': myUid,
       'message': message,

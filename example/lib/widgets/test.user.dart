@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class ChatUser extends StatelessWidget {
-  const ChatUser({required this.name, required this.uid, Key? key}) : super(key: key);
+class TestUser extends StatelessWidget {
+  const TestUser({required this.name, required this.uid, Key? key}) : super(key: key);
   final String name;
   final String uid;
 
