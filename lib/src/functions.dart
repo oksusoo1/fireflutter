@@ -6,5 +6,7 @@
 ///   - If myUid = 3 and otherUid = 4, then the result is "3-4".
 ///   - If myUid = 321 and otherUid = 1234, then the result is "1234-321"
 String getChatRoomId(String myUid, String otherUid) {
-  return myUid.compareTo(otherUid) < 0 ? "${myUid}__$otherUid" : "${otherUid}__$myUid";
+  return myUid.compareTo(otherUid) < 0
+      ? "${myUid}__$otherUid"
+      : "${otherUid}__$myUid";
 }
