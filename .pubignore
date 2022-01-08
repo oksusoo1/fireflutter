@@ -8,6 +8,7 @@ example/ios
 example/test
 example/README.md
 example/analysis_options.yaml
+example/pubspec.lock
 
 
 readme
