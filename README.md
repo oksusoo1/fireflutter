@@ -1,7 +1,7 @@
 
 # Fire Flutter
 
-A free, open source, complete, rapid development package for creating Social apps, Chat apps, Community(Forum) apps, and much more based on Flutter and Firebase.
+A free, open source, rapid development package for creating Social apps, Chat apps, Community(Forum) apps, and much more based on Flutter and Firebase.
 
 I am looking for community devleopers who can join this work. Please email me at thruthesky@gmail.com
 
