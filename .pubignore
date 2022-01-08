@@ -2,6 +2,11 @@
 example/*
 !example/lib
 
+readme
+
+test
+
+
 
 
 # Miscellaneous
