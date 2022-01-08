@@ -1,5 +1,8 @@
 # Change Log
 
+## [0.2.3] - Documentation
+
+- No code changes but the document had been updated.
 ## [0.2.2] - Documentation
 
 - No code changes but the document had been updated.

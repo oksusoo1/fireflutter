@@ -1,6 +1,14 @@
 # Pub examples
-example/*
-!example/lib
+
+example/.dart_tool
+example/.idea
+example/android
+example/build
+example/ios
+example/test
+example/README.md
+example/analysis_options.yaml
+
 
 readme
 
