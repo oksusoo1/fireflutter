@@ -1,5 +1,9 @@
 # Change Log
 
+## [0.2.4] - Presence onError
+
+- `onError` handler had been addeded to `Presence.instance.ativate()` to handle any error.
+
 ## [0.2.3] - Documentation
 
 - No code changes but the document had been updated.

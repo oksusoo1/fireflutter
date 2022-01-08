@@ -1,0 +1,101 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
+import '../../defines.dart';
+
+class PhoneService {
+  static PhoneService? _instance;
+  static PhoneService get instance {
+    _instance ??= PhoneService();
+    return _instance!;
+  }
+
+  /// selected country code
+  // CountryCode? selectedCode;
+
+  ///
+  String phoneNumber = '';
+  String verificationId = '';
+  String smsCode = '';
+
+  /// Get complete phone number in standard format.
+  // String get completePhoneNumber => selectedCode!.dialCode! + phoneNumber;
+
+  /// [verified] becomes true once phone auth has been successfully verified.
+  bool verified = false;
+
+  /// This method is invoked when user submit sms code, then it will begin
+  /// verification process.
+  verifySMSCode({required VoidCallback success, required ErrorCallback error}) {
+    PhoneAuthCredential credential =
+        PhoneAuthProvider.credential(verificationId: verificationId, smsCode: smsCode);
+
+    verifyCredential(credential, success: success, error: error);
+  }
+
+  /// Verify SMS code credential
+  ///
+  /// Logic
+  ///   - User entered phone number,
+  ///   - And verifyPhonenumber() is invoked,
+  ///   - And sms has been sent to user
+  ///   - User entered sms code,
+  ///   - Then, this method is invokded.
+  verifyCredential(
+    PhoneAuthCredential credential, {
+    required VoidCallback success,
+    required ErrorCallback error,
+  }) async {
+    try {
+      /// Try to sign in with the credential that comes after sms code sent.
+      await FirebaseAuth.instance.signInWithCredential(credential);
+
+      /// If there is no error, then sms code verification had been succeed.
+      verified = true;
+
+      /// Note that, when this succeed, `FirebaseAuth.instance.authStateChanges`
+      /// will happen, and firebase_auth User data has the phone number.
+      /// If you want to get user's phone number, you get it there.
+      success();
+    } catch (e) {
+      error(e);
+    }
+  }
+
+  /// When user submit his phone number, verify the phone numbrer first before
+  /// sending sms code.
+  ///
+  /// on `codeSent`, move to sms code input screen since SMS code has been delivered to user.
+  /// on `codeAutoRetrievalTimeout`, alert user that sms code timed out. and redirect to phone number input screen.
+  /// on `error`, display error.
+  /// on `success` handler will be called on phone verification complete.
+  /// This `success` handler is only for android that may do automatica sms code resolution and verify the phone auth.
+  verifyPhoneNumber({
+    required CodeSentCallback codeSent,
+    required VoidStringCallback codeAutoRetrievalTimeout,
+    required VoidCallback success,
+    required ErrorCallback error,
+  }) async {
+    try {
+      await FirebaseAuth.instance.verifyPhoneNumber(
+          phoneNumber: phoneNumber,
+
+          /// Automatic SMS code resolution
+          ///
+          /// This code is only for Android, and this method is invoked after
+          /// automatic sms verification has succeed.
+          /// Note that, not all Android phone support automatic sms resolution.
+          verificationCompleted: (c) => verifyCredential(c, success: success, error: error),
+          verificationFailed: error,
+          codeSent: (String verificationId, i) {
+            this.verificationId = verificationId;
+            codeSent(verificationId);
+          },
+          codeAutoRetrievalTimeout: (String verificationId) {
+            if (verified) return;
+            codeAutoRetrievalTimeout(this.verificationId);
+          });
+    } catch (e) {
+      error(e);
+    }
+  }
+}

@@ -175,7 +175,7 @@ packages:
       path: ".."
       relative: true
     source: path
-    version: "0.2.3"
+    version: "0.2.4"
   flutter:
     dependency: "direct main"
     description: flutter
@@ -239,7 +239,7 @@ packages:
     source: hosted
     version: "0.3.0"
   get:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: get
       url: "https://pub.dartlang.org"

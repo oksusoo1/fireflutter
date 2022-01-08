@@ -2,9 +2,9 @@ import 'dart:async';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
+import '../defines.dart';
 
 enum PresenceStatus { online, offline, away }
-typedef ErrorCallback = void Function(dynamic e);
 
 /// See readme.md
 class Presence {

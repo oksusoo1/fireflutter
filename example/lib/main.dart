@@ -1,5 +1,7 @@
 // import 'package:fe/screens/chat/chat.room.screen.dart';
 import 'package:fe/screens/home/home.screen.dart';
+import 'package:fe/screens/phone_sign_in/phone_sign_in.screen.dart';
+import 'package:fe/screens/phone_sign_in/sms_code.screen.dart';
 import 'package:fe/widgets/sign_in.widget.dart';
 import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
@@ -48,7 +50,8 @@ class _MainAppState extends State<MainApp> {
           name: '/sign-in',
           page: () => const SignInWidget(),
         ),
-        // GetPage(name: '/chat-room-screen', page: () => const ChatRoomScreen())
+        GetPage(name: '/phone-sign-in', page: () => const PhoneSignInScreen()),
+        GetPage(name: '/sms-code', page: () => const SmsCodeScreen())
       ],
     );
   }

@@ -1,9 +1,18 @@
 
 # Fire Flutter
 
-A free, open source, rapid development package for creating Social apps, Chat apps, Community(Forum) apps, and much more based on Flutter and Firebase.
+A free, open source, complete, rapid development package for creating Social apps, Chat apps, Community(Forum) apps, Shopping mall apps, and much more based on Firebase.
 
-I am looking for community devleopers who can join this work. Please email me at thruthesky@gmail.com
+- Complete features.\
+  This package has complete features (see Features below) that most of apps require.
+
+- Simple, easy and the right way.\
+  We want it to be deadly simple yet, right way for ourselves and for the developers in the world. We know when it gets complicated, our lives would get even more complicated.
+
+- Real time.\
+  We design it to be real time. All the events like post and comment creation, voting(like, dislike), deletion would appears on all the user's phone immediately after the event.
+
+- I am looking for community devleopers who can join this work. Please email me at thruthesky@gmail.com
 
 Table of contents
 
@@ -16,9 +25,10 @@ Table of contents
   - [Firebase Realtime Database Installation](#firebase-realtime-database-installation)
 - [Packages](#packages)
 - [User](#user)
-  - [User Installation](#user-installation)
-- [User Presence](#user-presence)
-  - [User Presence Overview](#user-presence-overview)
+  - [User installation](#user-installation)
+  - [Phone number sign-in](#phone-number-sign-in)
+- [User presence](#user-presence)
+  - [User presence overview](#user-presence-overview)
   - [User Presence Installation](#user-presence-installation)
   - [User Presence Logic](#user-presence-logic)
 - [TODOs](#todos)
@@ -98,7 +108,7 @@ Table of contents
 
 # User
 
-## User Installation
+## User installation
 
 - Do [Firebase installation](#firebase-installation)
 - Enable Email/Password Sign-In method to login with email and password.
@@ -121,9 +131,20 @@ Table of contents
 <!-- End of the Google Sign-in Section -->
 ```
 
-# User Presence
+## Phone number sign-in
 
-## User Presence Overview
+- In most cases, you want to use `Firebase Flutter UI` for `Firebase Sign-In` and that's very fine.
+  But when you do `Phone Sign-In`, it's not easy to handle errors. So, fireflutter have this functionality.
+
+- To use phone sign-in, enable it and add some test phone numbers.
+
+- Fireflutter provides UI that is highly customizable.
+
+
+
+# User presence
+
+## User presence overview
 
 ![User Presence](https://raw.githubusercontent.com/thruthesky/fireflutter/main/readme/images/user-presence.jpg?raw=true)
 

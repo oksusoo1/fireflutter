@@ -27,18 +27,29 @@ class _HomeScreenState extends State<HomeScreen> {
                 if (snapshot.hasData) {
                   return Column(
                     children: [
-                      Text('You have logged in as ${snapshot.data!.email}'),
+                      Text(
+                          'You have logged in as ${snapshot.data!.email ?? snapshot.data!.phoneNumber}'),
                       ElevatedButton(
                           onPressed: () => FirebaseAuth.instance.signOut(),
                           child: const Text('Sign Out')),
                     ],
                   );
                 } else {
-                  return ElevatedButton(
-                    child: const Text('Sign-In'),
-                    onPressed: () {
-                      Get.toNamed('/sign-in');
-                    },
+                  return Wrap(
+                    children: [
+                      ElevatedButton(
+                        child: const Text('Sign-In'),
+                        onPressed: () {
+                          Get.toNamed('/sign-in');
+                        },
+                      ),
+                      ElevatedButton(
+                        child: const Text('Phone Sign-In'),
+                        onPressed: () {
+                          Get.toNamed('/phone-sign-in');
+                        },
+                      ),
+                    ],
                   );
                 }
               },
