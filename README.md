@@ -94,6 +94,8 @@ Table of contents
 
 # User Presence
 
+![User Presence]()
+(https://raw.githubusercontent.com/thruthesky/fireflutter/main/readme/images/user-presence.jpg?raw=true)
 - To begin with the presence functionality of users, call `Presence.instance.activate()`.
 - To stop(deactivate) the presence functionality, call `Presence.instance.deactivate()`.
 
