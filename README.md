@@ -3,20 +3,7 @@
 
 A free, open source, complete, rapid development package for creating Social apps, Chat apps, Community(Forum) apps, and much more based on Flutter and Firebase.
 
-- Complete features.\
-  This package has complete features (see Features below) that most of apps require.
-
-- `Simple, easy and the right way`.\
-  We want it to be deadly simple, yet right way for ourselves and for the developers in the world.
-  We know when it gets complicated, our lives would get even more complicated.
-
-- Real time.\
-  We design it to be real time. All the events like post and comment creation, voting(like, dislike), deletion would appears on all the user's phone immediately after the event.
-
-- This project, as of January 2022, is under heavy revision to match the latest version of Flutter and Firebae. To see old version, refer [v0.1 branch](https://github.com/thruthesky/fireflutter/tree/v0.1).
-
-- This project would be a good example for the first time flutter developers.
-
+I am looking for community devleopers who can join this work. Please email me at thruthesky@gmail.com
 
 Table of contents
 
@@ -40,18 +27,8 @@ Table of contents
   - User registration is done with Firebase Flutter UI.
 
 
-- Chat
-
-  - A complete chat functionality which includes
-    - Group chat
-    - Inviting users
-    - Blocking users
-    - Kickout users
-    - Changing settings of chat room
-  - Expect more to come.
-
-
-- Push notification
+- User presence
+  - To know if a user is online or offline.
 
 
 
@@ -117,11 +94,57 @@ Table of contents
 
 # User Presence
 
+- To begin with the presence functionality of users, call `Presence.instance.activate()`.
+- To stop(deactivate) the presence functionality, call `Presence.instance.deactivate()`.
+
+```dart
+class _MainAppState extends State<MainApp> {
+  @override
+  void initState() {
+    super.initState();
+    Presence.instance.activate();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    Presence.instance.deactivate();
+  }
+}
+```
+- To know if a user is online, offline or away, use `UserPresence` widget.
+
+```dart
+UserPresence(
+  uid: uid,
+  onlineBuilder: () => Row(
+    children: const [
+      Icon(Icons.circle, color: Colors.green),
+      Text('Online'),
+    ],
+  ),
+  offlineBuilder: () => Row(
+    children: const [
+      Icon(Icons.circle, color: Colors.red),
+      Text('Offline'),
+    ],
+  ),
+  awayBuilder: () => Row(
+    children: const [
+      Icon(Icons.circle, color: Colors.yellow),
+      Text('Away'),
+    ],
+  ),
+),
+```
+
 ## User Presence Logic
 
 - If user didn't login to the device, nothing will happens.
 - `/presense/$uid` document will be written only when user logs in and out.
 - When app is closed, the user will be offline.
+
+
 
 # TODOs
 

@@ -4,7 +4,6 @@ import 'package:example/widgets/sign_in.widget.dart';
 import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
 
 void main() async {
@@ -25,8 +24,13 @@ class _MainAppState extends State<MainApp> {
   @override
   void initState() {
     super.initState();
-
     Presence.instance.activate();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    Presence.instance.deactivate();
   }
 
   @override

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 
@@ -20,20 +22,23 @@ class Presence {
   /// Set offline by default
   PresenceStatus status = PresenceStatus.offline;
 
+  late final StreamSubscription connectionSubscription;
+  late final StreamSubscription presenceSubscription;
+
   DatabaseReference connected = FirebaseDatabase.instance.ref(".info/connected");
   DatabaseReference get presence => FirebaseDatabase.instance.ref("presence").child(uid!);
   activate() {
-    connected.onValue.listen((DatabaseEvent event) {
-      _setPresence(event.snapshot.value == true ? PresenceStatus.online : PresenceStatus.offline);
+    connectionSubscription = connected.onValue.listen((DatabaseEvent event) {
+      setPresence(event.snapshot.value == true ? PresenceStatus.online : PresenceStatus.offline);
     });
 
-    FirebaseAuth.instance.authStateChanges().listen((user) {
+    presenceSubscription = FirebaseAuth.instance.authStateChanges().listen((user) {
       if (user == null) {
-        _setPresence(PresenceStatus.offline);
+        setPresence(PresenceStatus.offline);
         uid = null;
       } else {
         uid = user.uid;
-        _setPresence(PresenceStatus.online);
+        setPresence(PresenceStatus.online);
 
         /// Delete the 'presence' document when the app is closed.
         presence.onDisconnect().remove();
@@ -41,7 +46,12 @@ class Presence {
     });
   }
 
-  _setPresence(PresenceStatus status) async {
+  deactivate() {
+    connectionSubscription.cancel();
+    presenceSubscription.cancel();
+  }
+
+  setPresence(PresenceStatus status) async {
     /// If uid is not set (means, no user logged into the device), then just return.
     if (uid == null) return;
 
