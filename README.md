@@ -23,6 +23,12 @@ Table of contents
   - [User Presence Logic](#user-presence-logic)
 - [TODOs](#todos)
   - [Find Friends](#find-friends)
+- [For developer](#for-developer)
+  - [Building your app](#building-your-app)
+  - [Building fireflutter](#building-fireflutter)
+  - [Updating fireflutter while building your app](#updating-fireflutter-while-building-your-app)
+- [Issues](#issues)
+  - [firebase_database/permission-denied](#firebase_databasepermission-denied)
 
 # Features
 
@@ -64,7 +70,20 @@ Table of contents
   - You may need to update the `GoogleService-Info.plist` after enabling other features of the Firebase.
 
 
+- Add the following security rules on firebase realtime database
 
+```json
+{
+  "rules": {
+    "presence": {
+      ".read": true,
+      "$uid": {
+        ".write": true
+      }
+    }
+  }
+}
+```
 
 
 
@@ -130,7 +149,9 @@ class _MainAppState extends State<MainApp> {
   @override
   void dispose() {
     super.dispose();
-    Presence.instance.deactivate();
+    Presence.instance.activate(
+      onError: (e) => print('--> Presence error: $e'),
+    );
   }
 }
 ```
@@ -175,4 +196,46 @@ UserPresence(
 - Idea: See if you are looking for a friend in a busy city. When you and your friend are connected, you can find each other by sharing geo location.
 - Implementaion: put find button and when connected, display position in map and update the geo location.
 
+
+# For developer
+
+## Building your app
+
+- Simple add it on pubspec dependency
+
+## Building fireflutter
+
+- Follow the steps
+  - fork
+  - clone
+  - create a branch
+  - update fireflutter
+  - push
+  - pull request.
+
+## Updating fireflutter while building your app
+
+
+  - If you are going to use fireflutter, then simply add it on pubspec dependency.
+  - If you want to build fireflutter while you are building your app, then
+    - fork fireflutter
+    - add it as submodule in your project
+    - add it as pubspec dependency with local path
+    - when ever you want to update fireflutter, simple run `<submodule-folder>/example/main.dart`
+    - after updating fireflutter, come back to your app and run your app.
+
+
+
+
+# Issues
+
+- These are the common issues you may encount.
+- If you have any issues, please create an git issue.
+
+
+## firebase_database/permission-denied
+
+`Unhandled Exception: [firebase_database/permission-denied] Client doesn't have permission to access the desired data.`
+
+- If you see this error, it means you didn't set the firebase database security rules properly. Refer [Firebsae Realtime Database Installation](#firebase-realtime-database-installation)
 

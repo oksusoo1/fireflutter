@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 
 enum PresenceStatus { online, offline, away }
+typedef ErrorCallback = void Function(dynamic e);
 
 /// See readme.md
 class Presence {
@@ -12,6 +13,8 @@ class Presence {
     _instance ??= Presence();
     return _instance!;
   }
+
+  late final ErrorCallback onError;
 
   /// Currently logged in user.
   User? get user => FirebaseAuth.instance.currentUser;
@@ -25,19 +28,15 @@ class Presence {
   late final StreamSubscription connectionSubscription;
   late final StreamSubscription presenceSubscription;
 
-  DatabaseReference connected =
-      FirebaseDatabase.instance.ref(".info/connected");
-  DatabaseReference get presence =>
-      FirebaseDatabase.instance.ref("presence").child(uid!);
-  activate() {
+  DatabaseReference connected = FirebaseDatabase.instance.ref(".info/connected");
+  DatabaseReference get presence => FirebaseDatabase.instance.ref("presence").child(uid!);
+  activate({required ErrorCallback onError}) {
+    this.onError = onError;
     connectionSubscription = connected.onValue.listen((DatabaseEvent event) {
-      setPresence(event.snapshot.value == true
-          ? PresenceStatus.online
-          : PresenceStatus.offline);
+      setPresence(event.snapshot.value == true ? PresenceStatus.online : PresenceStatus.offline);
     });
 
-    presenceSubscription =
-        FirebaseAuth.instance.authStateChanges().listen((user) {
+    presenceSubscription = FirebaseAuth.instance.authStateChanges().listen((user) {
       if (user == null) {
         setPresence(PresenceStatus.offline);
         uid = null;
@@ -56,6 +55,10 @@ class Presence {
     presenceSubscription.cancel();
   }
 
+  /// set presence
+  ///
+  /// It waits until the presence status is compltely written on database with
+  /// async/await
   setPresence(PresenceStatus status) async {
     /// If uid is not set (means, no user logged into the device), then just return.
     if (uid == null) return;
@@ -64,6 +67,10 @@ class Presence {
       'status': status.name,
       'timestamp': ServerValue.timestamp,
     };
-    await presence.set(data);
+    try {
+      await presence.set(data);
+    } catch (e) {
+      onError(e);
+    }
   }
 }

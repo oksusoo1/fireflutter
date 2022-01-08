@@ -24,7 +24,9 @@ class _MainAppState extends State<MainApp> {
   @override
   void initState() {
     super.initState();
-    Presence.instance.activate();
+    Presence.instance.activate(
+      onError: (e) => print('--> Presence error: $e'),
+    );
   }
 
   @override
