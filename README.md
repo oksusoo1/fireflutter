@@ -13,6 +13,7 @@ Table of contents
   - [Running the example](#running-the-example)
   - [Creating a new project](#creating-a-new-project)
   - [Firebase installation](#firebase-installation)
+    - [iOS installation](#ios-installation)
   - [Firebase Realtime Database Installation](#firebase-realtime-database-installation)
 - [Packages](#packages)
 - [User](#user)
@@ -29,6 +30,7 @@ Table of contents
   - [Updating fireflutter while building your app](#updating-fireflutter-while-building-your-app)
 - [Issues](#issues)
   - [firebase_database/permission-denied](#firebase_databasepermission-denied)
+  - [Firebase realtime database is not working](#firebase-realtime-database-is-not-working)
 
 # Features
 
@@ -60,7 +62,11 @@ Table of contents
 - Refer the instructions of [FlutterFire Overview](https://firebase.flutter.dev/docs/overview)
 
 
+### iOS installation
+
 - Download ios app's `GoogleService-Info.plist`. And save it under `<root>/example/ios/Runnder`, Then open Xcode and drag it under Runner.
+  - Remember to update other settings like `REVERSED_CLIENT_ID` into `Info.plist`.
+    - When you change the firebase project, you have to update all the related settings again.
 
 ## Firebase Realtime Database Installation
 
@@ -183,7 +189,10 @@ UserPresence(
 
 ## User Presence Logic
 
-- If user didn't login to the device, nothing will happens.
+- Run `Presence.instance.activate()` at start if you want to track the presence status of users.
+- If user didn't login to the device, the user will be offline by default.
+- If `Presence` is working, you will see the record in firebase realtime database data section in firebase console.
+  - If no documents appears in firebase realtime database data section, then see the installation and issues.
 - `/presense/$uid` document will be written only when user logs in and out.
 - When app is closed, the user will be offline.
 
@@ -238,4 +247,10 @@ UserPresence(
 `Unhandled Exception: [firebase_database/permission-denied] Client doesn't have permission to access the desired data.`
 
 - If you see this error, it means you didn't set the firebase database security rules properly. Refer [Firebsae Realtime Database Installation](#firebase-realtime-database-installation)
+
+
+
+## Firebase realtime database is not working
+
+- Open `GoogleService-Info.plist` under `ios/Runner` and see if the key `DATABASE_URL` is present. If not, enable firebase realtime database and download the `GoogleService-Info.plist` again. Remember to update related settings once you download it again.
 
