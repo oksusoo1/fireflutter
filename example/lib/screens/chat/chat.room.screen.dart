@@ -1,6 +1,6 @@
 // import 'dart:convert';
 
-// import 'package:example/screens/chat/widgets/chat_room.message_box.dart';
+// import 'package:fe/screens/chat/widgets/chat_room.message_box.dart';
 // import 'package:fireflutter/fireflutter.dart';
 // import 'package:flutter/material.dart';
 // import 'package:get/get.dart';

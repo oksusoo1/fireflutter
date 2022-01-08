@@ -1,6 +1,6 @@
-// import 'package:example/screens/chat/chat.room.screen.dart';
-import 'package:example/screens/home/home.screen.dart';
-import 'package:example/widgets/sign_in.widget.dart';
+// import 'package:fe/screens/chat/chat.room.screen.dart';
+import 'package:fe/screens/home/home.screen.dart';
+import 'package:fe/widgets/sign_in.widget.dart';
 import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
