@@ -13,10 +13,13 @@ Table of contents
   - [Running the example](#running-the-example)
   - [Creating a new project](#creating-a-new-project)
   - [Firebase installation](#firebase-installation)
+  - [Firebase Realtime Database Installation](#firebase-realtime-database-installation)
 - [Packages](#packages)
 - [User](#user)
   - [User Installation](#user-installation)
 - [User Presence](#user-presence)
+  - [User Presence Overview](#user-presence-overview)
+  - [User Presence Installation](#user-presence-installation)
   - [User Presence Logic](#user-presence-logic)
 - [TODOs](#todos)
   - [Find Friends](#find-friends)
@@ -53,8 +56,15 @@ Table of contents
 
 - Download ios app's `GoogleService-Info.plist`. And save it under `<root>/example/ios/Runnder`, Then open Xcode and drag it under Runner.
 
+## Firebase Realtime Database Installation
+
+- To install Firebase Realtime Database, enable it on Firebase console and put the security rules.
+
 - Note, if you enable `Firebase Realtime Database`, you have to re-download and update the `GoogleService-Info.plist`.
   - You may need to update the `GoogleService-Info.plist` after enabling other features of the Firebase.
+
+
+
 
 
 
@@ -94,7 +104,16 @@ Table of contents
 
 # User Presence
 
+## User Presence Overview
+
 ![User Presence](https://raw.githubusercontent.com/thruthesky/fireflutter/main/readme/images/user-presence.jpg?raw=true)
+
+
+## User Presence Installation
+
+- To make it work, install
+  - [Firebase Installation](#firebase-installation)
+  - [Firebase Realtime Database Installation](#firebase-realtime-database-installation)
 
 - To begin with the presence functionality of users, call `Presence.instance.activate()`.
 - To stop(deactivate) the presence functionality, call `Presence.instance.deactivate()`.
