@@ -108,6 +108,7 @@ Table of contents
 
 ![User Presence](https://raw.githubusercontent.com/thruthesky/fireflutter/main/readme/images/user-presence.jpg?raw=true)
 
+- More often, people want to know if their friends are online or not. Use this feature to know who is online. It has three status; 'online', 'offline', and 'away'.
 
 ## User Presence Installation
 

@@ -1,3 +1,17 @@
+# Change Log
+
+## [0.2.1] - Documentation
+
+- No code changes but the document had been updated.
+
+## [0.2.0] - Big change
+
+- The concept of the project remains, but all of the code were removed to support latest version of Dart SDK and Flutter SDK from very old version of them and to adopt the latest Firebase Flutter packages.
+
+- Add example code of sigin-in with Firebase Flutter UI.
+
+- Add `User Presence` feature.
+
 ## [0.0.48] - Document update only
 
 - Add documentation on location.
