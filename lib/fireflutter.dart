@@ -4,3 +4,5 @@ export './src/functions.dart';
 export 'src/presence/presence.dart';
 export 'src/presence/user.presence.dart';
 export 'src/auth/phone/phone.service.dart';
+export 'src/auth/phone/phone_number_input.dart';
+export 'src/auth/phone/sms_code_input.dart';

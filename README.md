@@ -140,11 +140,18 @@ Table of contents
 ## Phone number sign-in
 
 - In most cases, you want to use `Firebase Flutter UI` for `Firebase Sign-In` and that's very fine.
-  But when you do `Phone Sign-In`, it's not easy to handle errors. So, fireflutter have this functionality.
+  But when you do `Phone Sign-In`, it's not easy to handle errors. So, fireflutter provides simple service for this functionality.
 
 - To use phone sign-in, enable it and add some test phone numbers.
 
-- Fireflutter provides UI that is highly customizable.
+- `PhoneService` has the code of phone sign-in. See [example/lib/phone_sign_in](https://github.com/thruthesky/fireflutter/tree/main/example/lib/screens/phone_sign_in) folder for sample code. You can copy paste it in your projects.
+
+- Fireflutter also provides UI widgets easy to use in your app.
+  - simple add `PhoneNumberInput` widget to your screen and on code sent, move to sms code input page and add `SmsCodeInput` widget.
+
+
+
+
 
 
 

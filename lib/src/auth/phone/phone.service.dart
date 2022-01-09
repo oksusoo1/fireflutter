@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import '../../defines.dart';
+import 'package:country_code_picker/country_code_picker.dart';
 
 class PhoneService {
   static PhoneService? _instance;
@@ -9,8 +10,24 @@ class PhoneService {
     return _instance!;
   }
 
-  /// selected country code
-  // CountryCode? selectedCode;
+  /// Selected country code.
+  ///
+  /// This is used for Phone Sign In UI only.
+  CountryCode? selectedCode;
+
+  /// Phone number without country dial code. used in Phone Sign In UI only
+  String domesticPhoneNumber = '';
+
+  /// Remove the leading '0' from phone number and non-numeric characters.
+  String get completeNumber {
+    // Remove non-numeric character including white spaces, dash,
+    String str = domesticPhoneNumber.replaceAll(RegExp(r"\D"), "");
+    if (str[0] == '0') str = str.substring(1);
+
+    return selectedCode!.dialCode! + str;
+  }
+
+  bool codeSentProgress = false;
 
   ///
   String phoneNumber = '';
@@ -22,6 +39,15 @@ class PhoneService {
 
   /// [verified] becomes true once phone auth has been successfully verified.
   bool verified = false;
+
+  reset() {
+    selectedCode = null;
+    phoneNumber = '';
+    domesticPhoneNumber = '';
+    verificationId = '';
+    smsCode = '';
+    codeSentProgress = false;
+  }
 
   /// This method is invoked when user submit sms code, then it will begin
   /// verification process.
@@ -77,23 +103,24 @@ class PhoneService {
   }) async {
     try {
       await FirebaseAuth.instance.verifyPhoneNumber(
-          phoneNumber: phoneNumber,
+        phoneNumber: phoneNumber,
 
-          /// Automatic SMS code resolution
-          ///
-          /// This code is only for Android, and this method is invoked after
-          /// automatic sms verification has succeed.
-          /// Note that, not all Android phone support automatic sms resolution.
-          verificationCompleted: (c) => verifyCredential(c, success: success, error: error),
-          verificationFailed: error,
-          codeSent: (String verificationId, i) {
-            this.verificationId = verificationId;
-            codeSent(verificationId);
-          },
-          codeAutoRetrievalTimeout: (String verificationId) {
-            if (verified) return;
-            codeAutoRetrievalTimeout(this.verificationId);
-          });
+        /// Automatic SMS code resolution
+        ///
+        /// This code is only for Android, and this method is invoked after
+        /// automatic sms verification has succeed.
+        /// Note that, not all Android phone support automatic sms resolution.
+        verificationCompleted: (c) => verifyCredential(c, success: success, error: error),
+        verificationFailed: error,
+        codeSent: (String verificationId, i) {
+          this.verificationId = verificationId;
+          codeSent(verificationId);
+        },
+        codeAutoRetrievalTimeout: (String verificationId) {
+          if (verified) return;
+          codeAutoRetrievalTimeout(this.verificationId);
+        },
+      );
     } catch (e) {
       error(e);
     }

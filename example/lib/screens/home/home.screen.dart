@@ -49,6 +49,12 @@ class _HomeScreenState extends State<HomeScreen> {
                           Get.toNamed('/phone-sign-in');
                         },
                       ),
+                      ElevatedButton(
+                        child: const Text('Phone Sign-In UI'),
+                        onPressed: () {
+                          Get.toNamed('/phone-sign-in-ui');
+                        },
+                      ),
                     ],
                   );
                 }

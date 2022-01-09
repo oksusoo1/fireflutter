@@ -18,6 +18,9 @@ dependencies:
   firebase_database: ^9.0.4
 
 
+  # PhoneNumberInput widget
+  country_code_picker: ^2.0.2
+  
 
 dev_dependencies:
   flutter_test:

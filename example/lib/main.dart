@@ -2,6 +2,8 @@
 import 'package:fe/screens/home/home.screen.dart';
 import 'package:fe/screens/phone_sign_in/phone_sign_in.screen.dart';
 import 'package:fe/screens/phone_sign_in/sms_code.screen.dart';
+import 'package:fe/screens/phone_sign_in_ui/phone_sign_in_ui.screen.dart';
+import 'package:fe/screens/phone_sign_in_ui/sms_code_ui.screen.dart';
 import 'package:fe/widgets/sign_in.widget.dart';
 import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
@@ -51,7 +53,9 @@ class _MainAppState extends State<MainApp> {
           page: () => const SignInWidget(),
         ),
         GetPage(name: '/phone-sign-in', page: () => const PhoneSignInScreen()),
-        GetPage(name: '/sms-code', page: () => const SmsCodeScreen())
+        GetPage(name: '/sms-code', page: () => const SmsCodeScreen()),
+        GetPage(name: '/phone-sign-in-ui', page: () => const PhoneSignInUIScreen()),
+        GetPage(name: '/sms-code-ui', page: () => const SmsCodeUIScreen()),
       ],
     );
   }
