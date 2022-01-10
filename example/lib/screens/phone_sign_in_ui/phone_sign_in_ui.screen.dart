@@ -34,38 +34,12 @@ class _PhoneSignInUIScreenState extends State<PhoneSignInUIScreen> {
 
             /// You can also do design with UI builders.
             ///
-            /// [countryButtonBuilder] is the button design to select country dial code.
             ///
-            /// [countrySelectedBuilder] is the design to display when country dial
-            /// code is selected.
-            /// It uses [country_code_picker](https://pub.dev/packages/country_code_picker)
-            /// package to choose country dial code. And CountryCode will be
-            /// passed on selectedBuilder
-            ///
-            /// [codeSent] handler will be invoked on sms verification code had
-            /// been sent. You may redirect the user to sms code input screen.
-            ///
-            /// [success] handler will be invoked only on Android devices that
-            /// support automatic SMS code resolution.
-            ///
-            /// [codeAutoRetrievalTimeout] handler will be invoked when code
-            /// auto retreival time is over.
-            ///
-            ///
-            /// [dialCodeStyle] is the dial code text style beside the input box.
-            ///
-            /// [phoneNumberInputDecoration] is the phone number input field decoration.
-            /// [phoneNumberInputTextStyle] is the text style of phone number.
-            ///
-            /// [submitButton] is the submit button. It's not a builder function.
-            ///
-            /// [inputTitle] is the widget to be shown on the input box when input box is visible.
-            ///
-            /// [progress] is the widget to show while verification is in progress.
             PhoneNumberInput(
+              /// [countryButtonBuilder] is the button design to select country dial code.
               countryButtonBuilder: () => Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                width: double.infinity,
                 decoration: BoxDecoration(
                   color: Colors.blue,
                   borderRadius: BorderRadius.circular(5),
@@ -77,31 +51,39 @@ class _PhoneSignInUIScreenState extends State<PhoneSignInUIScreen> {
                   ),
                 ),
               ),
+
+              /// [countrySelectedBuilder] is the design to display when country dial
+              /// code is selected.
+              /// It uses [country_code_picker](https://pub.dev/packages/country_code_picker)
+              /// package to choose country dial code. And CountryCode will be
+              /// passed on selectedBuilder
+              ///
               countrySelectedBuilder: (CountryCode code) {
                 return Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                  width: double.infinity,
                   decoration: BoxDecoration(
-                    color: Colors.blue,
+                    color: Colors.blue[100],
                     borderRadius: BorderRadius.circular(5),
                   ),
-                  child: FittedBox(
-                    child: Row(
-                      children: [
-                        Text(code.dialCode.toString()),
-                        const SizedBox(width: 10),
-                        Image.asset(
-                          code.flagUri!,
-                          package: 'country_code_picker',
-                          width: 30.0,
-                        ),
-                        const SizedBox(width: 10),
-                        Text(code.name ?? ''),
-                      ],
-                    ),
+                  child: Row(
+                    children: [
+                      Text(code.dialCode.toString()),
+                      const SizedBox(width: 10),
+                      Image.asset(
+                        code.flagUri!,
+                        package: 'country_code_picker',
+                        width: 30.0,
+                      ),
+                      const SizedBox(width: 10),
+                      Text(code.name ?? ''),
+                    ],
                   ),
                 );
               },
+
+              /// [inputTitle] is the widget to be shown on the input box when input box is visible.
+              ///
               inputTitle: Column(
                 children: const [
                   SizedBox(height: 32),
@@ -109,11 +91,31 @@ class _PhoneSignInUIScreenState extends State<PhoneSignInUIScreen> {
                   SizedBox(height: 10),
                 ],
               ),
+
+              /// [phoneNumberContainerBuilder] is the wrapper for phone number
+              /// input line. User `Container` or any widget to add custom design.
+              phoneNumberContainerBuilder: (child) => Container(
+                child: child,
+                padding: const EdgeInsets.only(left: 8),
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey),
+                  borderRadius: BorderRadius.circular(5),
+                ),
+              ),
+
+              ///
+              /// [dialCodeStyle] is the dial code text style beside the input box.
+              ///
               dialCodeStyle: const TextStyle(fontSize: 32),
+
+              /// [phoneNumberInputDecoration] is the phone number input field decoration.
               phoneNumberInputDecoration: const InputDecoration(
-                border: OutlineInputBorder(),
+                border: InputBorder.none,
                 contentPadding: EdgeInsets.all(8),
               ),
+
+              /// [phoneNumberInputTextStyle] is the text style of phone number.
+              ///
               phoneNumberInputTextStyle: const TextStyle(fontSize: 32),
               submitTitle: Column(
                 children: const [
@@ -122,9 +124,12 @@ class _PhoneSignInUIScreenState extends State<PhoneSignInUIScreen> {
                   SizedBox(height: 8),
                 ],
               ),
+
+              /// [submitButton] is the submit button. It's not a builder function.
+              ///
               submitButton: Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                width: double.infinity,
                 decoration: BoxDecoration(
                   color: Colors.blue,
                   borderRadius: BorderRadius.circular(5),
@@ -134,7 +139,13 @@ class _PhoneSignInUIScreenState extends State<PhoneSignInUIScreen> {
                   style: TextStyle(color: Colors.white),
                 ),
               ),
+
+              /// [codeSent] handler will be invoked on sms verification code had
+              /// been sent. You may redirect the user to sms code input screen.
               codeSent: (id) => Get.toNamed('/sms-code-ui'),
+
+              /// [success] handler will be invoked only on Android devices that
+              /// support automatic SMS code resolution.
               success: () => Get.defaultDialog(
                 middleText: 'Phone Sign In Success',
                 textConfirm: 'Ok',
@@ -142,16 +153,23 @@ class _PhoneSignInUIScreenState extends State<PhoneSignInUIScreen> {
               ).then(
                 (value) => Get.offAllNamed('/home'),
               ),
+
+              /// error handler
               error: (e) => Get.defaultDialog(
                 middleText: e.toString(),
                 textConfirm: 'Ok',
                 onConfirm: Get.back,
               ),
+
+              /// [codeAutoRetrievalTimeout] handler will be invoked when code
+              /// auto retreival time is over.
               codeAutoRetrievalTimeout: (x) => Get.defaultDialog(
                 middleText: 'Failed on sending SMS code. Please retry.',
                 textConfirm: 'Ok',
                 onConfirm: Get.back,
               ),
+
+              /// [progress] is the widget to show while verification is in progress.
               progress: const CircularProgressIndicator.adaptive(),
             ),
           ],
