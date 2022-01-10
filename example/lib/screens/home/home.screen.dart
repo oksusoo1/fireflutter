@@ -72,7 +72,9 @@ class _HomeScreenState extends State<HomeScreen> {
               ],
             ),
             const Divider(),
-            ElevatedButton(onPressed: () => Get.toNamed('/help'), child: const Text('Help')),
+            ElevatedButton(
+                onPressed: () => Get.toNamed('/help'),
+                child: const Text('Help')),
           ],
         ),
       ),

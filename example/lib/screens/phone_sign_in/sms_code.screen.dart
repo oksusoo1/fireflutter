@@ -35,13 +35,17 @@ class _SmsCodeScreenState extends State<SmsCodeScreen> {
                   },
                   error: (e) {
                     Get.defaultDialog(
-                        middleText: e.toString(), textConfirm: 'Ok', onConfirm: () => Get.back());
+                        middleText: e.toString(),
+                        textConfirm: 'Ok',
+                        onConfirm: () => Get.back());
                   },
                 );
               },
               child: const Text('Submit'),
             ),
-            TextButton(onPressed: Get.back, child: const Text('Try again with different number'))
+            TextButton(
+                onPressed: Get.back,
+                child: const Text('Try again with different number'))
           ],
         ),
       ),

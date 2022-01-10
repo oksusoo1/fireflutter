@@ -22,6 +22,7 @@ class PhoneNumberInput extends StatefulWidget {
       'Submit',
       style: TextStyle(color: Colors.blue, fontSize: 24),
     ),
+    this.progress = const CircularProgressIndicator.adaptive(),
     Key? key,
   }) : super(key: key);
 
@@ -39,6 +40,7 @@ class PhoneNumberInput extends StatefulWidget {
   final Widget submitButton;
   final Widget inputTitle;
   final Widget submitTitle;
+  final Widget progress;
 
   @override
   _PhoneNumberInputState createState() => _PhoneNumberInputState();
@@ -92,8 +94,10 @@ class _PhoneNumberInputState extends State<PhoneNumberInput> {
                       decoration: widget.phoneNumberInputDecoration,
                       keyboardType: TextInputType.phone,
                       onChanged: (t) {
-                        PhoneService.instance.domesticPhoneNumber = t;
-                        setState(() {});
+                        setState(() {
+                          PhoneService.instance.domesticPhoneNumber = t;
+                          PhoneService.instance.codeSentProgress = false;
+                        });
                       },
                     ),
                   ),
@@ -101,41 +105,43 @@ class _PhoneNumberInputState extends State<PhoneNumberInput> {
               ),
             ],
           ),
-        if (PhoneService.instance.domesticPhoneNumber != '' &&
-            PhoneService.instance.codeSentProgress == false)
+        if (PhoneService.instance.domesticPhoneNumber != '')
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               widget.submitTitle,
-              GestureDetector(
-                behavior: HitTestBehavior.opaque,
-                onTap: () {
-                  setState(() {
-                    PhoneService.instance.codeSentProgress = true;
-                  });
-                  PhoneService.instance.phoneNumber = PhoneService.instance.completeNumber;
-                  PhoneService.instance.verifyPhoneNumber(
-                    codeSent: (verificationId) {
-                      widget.codeSent(verificationId);
-                      setState(() {
-                        PhoneService.instance.codeSentProgress = false;
-                      });
-                    },
-                    success: widget.success,
-                    error: (e) {
-                      setState(() {
-                        PhoneService.instance.codeSentProgress = false;
-                      });
-                      widget.error(e);
-                    },
-                    codeAutoRetrievalTimeout: widget.codeAutoRetrievalTimeout,
-                  );
-                },
-                child: widget.submitButton,
-              ),
+              PhoneService.instance.codeSentProgress
+                  ? widget.progress
+                  : GestureDetector(
+                      behavior: HitTestBehavior.opaque,
+                      onTap: () {
+                        setState(() {
+                          PhoneService.instance.codeSentProgress = true;
+                        });
+                        PhoneService.instance.phoneNumber =
+                            PhoneService.instance.completeNumber;
+                        PhoneService.instance.verifyPhoneNumber(
+                          codeSent: (verificationId) {
+                            widget.codeSent(verificationId);
+                            setState(() {
+                              PhoneService.instance.codeSentProgress = false;
+                            });
+                          },
+                          success: widget.success,
+                          error: (e) {
+                            setState(() {
+                              PhoneService.instance.codeSentProgress = false;
+                            });
+                            widget.error(e);
+                          },
+                          codeAutoRetrievalTimeout:
+                              widget.codeAutoRetrievalTimeout,
+                        );
+                      },
+                      child: widget.submitButton,
+                    ),
             ],
           ),
-        if (PhoneService.instance.codeSentProgress) CircularProgressIndicator.adaptive(),
       ],
     );
   }

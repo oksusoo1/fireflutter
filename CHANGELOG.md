@@ -1,5 +1,12 @@
 # Change Log
 
+## [0.2.4] - Phone sign in
+
+- Phone sign in functionality had been added.
+  - `PhoneService` class had been added to help sign in with mobile phone.
+  - There are two UI widgets that makes easy to UI work.
+
+
 ## [0.2.4] - Presence onError
 
 - `onError` handler had been addeded to `Presence.instance.ativate()` to handle any error.

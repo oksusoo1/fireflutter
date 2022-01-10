@@ -144,12 +144,12 @@ Table of contents
 
 - To use phone sign-in, enable it and add some test phone numbers.
 
-- `PhoneService` has the code of phone sign-in. See [example/lib/phone_sign_in](https://github.com/thruthesky/fireflutter/tree/main/example/lib/screens/phone_sign_in) folder for sample code. You can copy paste it in your projects.
+- `PhoneService` has the service code of phone sign-in.
+  - See [example/lib/phone_sign_in](https://github.com/thruthesky/fireflutter/tree/main/example/lib/screens/phone_sign_in) folder for sample code. You can copy paste it in your projects.
 
-- Fireflutter also provides UI widgets easy to use in your app.
-  - simple add `PhoneNumberInput` widget to your screen and on code sent, move to sms code input page and add `SmsCodeInput` widget.
-
-
+- Fireflutter also provides UI widgets to make it easy to use in your app.
+  - Simply add `PhoneNumberInput` widget to your screen and on code sent, move to sms code input page and add `SmsCodeInput` widget.
+  - See [example/lib/phone_sign_in_ui](https://github.com/thruthesky/fireflutter/tree/main/example/lib/screens/phone_sign_in_ui) foler for sample code.
 
 
 

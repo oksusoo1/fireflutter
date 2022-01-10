@@ -24,7 +24,13 @@ class _PhoneSignInUIScreenState extends State<PhoneSignInUIScreen> {
           children: [
             /// You can add your custom design here.
             ///
+            const Text(
+              'Phone Sign In',
+              style: TextStyle(color: Colors.blue, fontSize: 24),
+            ),
+            const SizedBox(height: 24),
             const Text('1. Select your country dial code'),
+            const SizedBox(height: 10),
 
             /// You can also do design with UI builders.
             ///
@@ -55,40 +61,77 @@ class _PhoneSignInUIScreenState extends State<PhoneSignInUIScreen> {
             ///
             /// [inputTitle] is the widget to be shown on the input box when input box is visible.
             ///
+            /// [progress] is the widget to show while verification is in progress.
             PhoneNumberInput(
               countryButtonBuilder: () => Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: const BoxDecoration(color: Colors.blue),
-                  child: const Text('Select Country Dial Code')),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                decoration: BoxDecoration(
+                  color: Colors.blue,
+                  borderRadius: BorderRadius.circular(5),
+                ),
+                child: const Text(
+                  'Select Country Dial Code',
+                  style: TextStyle(
+                    color: Colors.white,
+                  ),
+                ),
+              ),
               countrySelectedBuilder: (CountryCode code) {
-                return Row(
-                  children: [
-                    Text(code.dialCode.toString()),
-                    Image.asset(
-                      code.flagUri!,
-                      package: 'country_code_picker',
-                      width: 30.0,
+                return Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                  decoration: BoxDecoration(
+                    color: Colors.blue,
+                    borderRadius: BorderRadius.circular(5),
+                  ),
+                  child: FittedBox(
+                    child: Row(
+                      children: [
+                        Text(code.dialCode.toString()),
+                        const SizedBox(width: 10),
+                        Image.asset(
+                          code.flagUri!,
+                          package: 'country_code_picker',
+                          width: 30.0,
+                        ),
+                        const SizedBox(width: 10),
+                        Text(code.name ?? ''),
+                      ],
                     ),
-                    Text(code.name ?? ''),
-                  ],
+                  ),
                 );
               },
-              inputTitle: const Text('Please enter your phone number'),
+              inputTitle: Column(
+                children: const [
+                  SizedBox(height: 32),
+                  Text('2. Enter your phone number'),
+                  SizedBox(height: 10),
+                ],
+              ),
               dialCodeStyle: const TextStyle(fontSize: 32),
               phoneNumberInputDecoration: const InputDecoration(
                 border: OutlineInputBorder(),
                 contentPadding: EdgeInsets.all(8),
               ),
               phoneNumberInputTextStyle: const TextStyle(fontSize: 32),
-              submitTitle: const Text('Submit your phone number to verify'),
+              submitTitle: Column(
+                children: const [
+                  SizedBox(height: 32),
+                  Text('3. Submit to verify'),
+                  SizedBox(height: 8),
+                ],
+              ),
               submitButton: Container(
-                padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                decoration: BoxDecoration(
+                  color: Colors.blue,
+                  borderRadius: BorderRadius.circular(5),
+                ),
                 child: const Text(
                   'Verify phone number',
                   style: TextStyle(color: Colors.white),
-                ),
-                decoration: const BoxDecoration(
-                  color: Colors.blue,
                 ),
               ),
               codeSent: (id) => Get.toNamed('/sms-code-ui'),
@@ -109,6 +152,7 @@ class _PhoneSignInUIScreenState extends State<PhoneSignInUIScreen> {
                 textConfirm: 'Ok',
                 onConfirm: Get.back,
               ),
+              progress: const CircularProgressIndicator.adaptive(),
             ),
           ],
         ),

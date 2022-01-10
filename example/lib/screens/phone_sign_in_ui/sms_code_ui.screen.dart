@@ -19,9 +19,11 @@ class _SmsCodeUIScreenState extends State<SmsCodeUIScreen> {
       body: Container(
         padding: const EdgeInsets.all(16),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             /// Custom design
             Text('Phone No. ${PhoneService.instance.phoneNumber}'),
+            const SizedBox(height: 16),
             const Text('Please input SMS verification code'),
 
             /// SMS code input widget
@@ -41,6 +43,21 @@ class _SmsCodeUIScreenState extends State<SmsCodeUIScreen> {
                 onConfirm: () => Get.back(),
               ),
 
+              /// sms code input box decoration
+              smsCodeInputDecoration: const InputDecoration(
+                border: OutlineInputBorder(),
+              ),
+
+              /// sms code input text style
+              smsCodeInputTextStyle: const TextStyle(fontSize: 24),
+
+              submitTitle: Column(
+                children: const [
+                  SizedBox(height: 16),
+                  Text('Enter sms code and submit'),
+                ],
+              ),
+
               /// This is the submit button builder.
               ///
               /// The builder function has [visible] and [submit].
@@ -48,10 +65,10 @@ class _SmsCodeUIScreenState extends State<SmsCodeUIScreen> {
               /// [submit] is the callback to be called to submit.
               ///
               ///  You can customize the UI like below.
-              submitButton: (bool visible, submit) => Row(
+              submitButton: (int length, submit) => Row(
                 children: [
                   ElevatedButton(
-                    onPressed: visible ? submit : null,
+                    onPressed: length == 6 ? submit : null,
                     child: const Text('Submit'),
                   ),
                   const Spacer(),
