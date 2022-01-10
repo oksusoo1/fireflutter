@@ -70,7 +70,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 TestUser(name: 'Cherry', uid: 'sys2vHyPz2fUb57qEFN2PqaegGu2'),
                 TestUser(name: 'Dragon', uid: 'LLaX6TwVQSO2os2dzK3kJyTzSzs1'),
               ],
-            )
+            ),
+            const Divider(),
+            ElevatedButton(onPressed: () => Get.toNamed('/help'), child: const Text('Help')),
           ],
         ),
       ),

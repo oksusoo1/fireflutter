@@ -27,6 +27,8 @@ class PhoneService {
     return selectedCode!.dialCode! + str;
   }
 
+  /// This is used only for sign in ui.
+  /// Since [PhoneService.instance] is singleton, it needs to reset progress bar also.
   bool codeSentProgress = false;
 
   ///

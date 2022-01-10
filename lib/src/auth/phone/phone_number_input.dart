@@ -48,7 +48,6 @@ class _PhoneNumberInputState extends State<PhoneNumberInput> {
   @override
   void initState() {
     super.initState();
-
     PhoneService.instance.reset();
   }
 
@@ -116,9 +115,19 @@ class _PhoneNumberInputState extends State<PhoneNumberInput> {
                   });
                   PhoneService.instance.phoneNumber = PhoneService.instance.completeNumber;
                   PhoneService.instance.verifyPhoneNumber(
-                    codeSent: widget.codeSent,
+                    codeSent: (verificationId) {
+                      widget.codeSent(verificationId);
+                      setState(() {
+                        PhoneService.instance.codeSentProgress = false;
+                      });
+                    },
                     success: widget.success,
-                    error: widget.error,
+                    error: (e) {
+                      setState(() {
+                        PhoneService.instance.codeSentProgress = false;
+                      });
+                      widget.error(e);
+                    },
                     codeAutoRetrievalTimeout: widget.codeAutoRetrievalTimeout,
                   );
                 },

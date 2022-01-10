@@ -1,4 +1,7 @@
 // import 'package:fe/screens/chat/chat.room.screen.dart';
+import 'dart:async';
+
+import 'package:fe/screens/help/help.screen.dart';
 import 'package:fe/screens/home/home.screen.dart';
 import 'package:fe/screens/phone_sign_in/phone_sign_in.screen.dart';
 import 'package:fe/screens/phone_sign_in/sms_code.screen.dart';
@@ -31,6 +34,8 @@ class _MainAppState extends State<MainApp> {
     Presence.instance.activate(
       onError: (e) => print('--> Presence error: $e'),
     );
+
+    Timer(const Duration(milliseconds: 200), () => Get.toNamed('/sms-code-ui'));
   }
 
   @override
@@ -56,6 +61,7 @@ class _MainAppState extends State<MainApp> {
         GetPage(name: '/sms-code', page: () => const SmsCodeScreen()),
         GetPage(name: '/phone-sign-in-ui', page: () => const PhoneSignInUIScreen()),
         GetPage(name: '/sms-code-ui', page: () => const SmsCodeUIScreen()),
+        GetPage(name: '/help', page: () => const HelpScreen()),
       ],
     );
   }
