@@ -60,17 +60,18 @@ class _SmsCodeUIScreenState extends State<SmsCodeUIScreen> {
 
               /// This is the submit button builder.
               ///
-              /// The builder function has [visible] and [submit].
-              /// [visible] is to display the submit button or not.
-              /// [submit] is the callback to be called to submit.
+              /// The builder function has [submit] function parameter that
+              /// submits the code to verify.
               ///
               ///  You can customize the UI like below.
-              submitButton: (int length, submit) => Row(
+              submitButton: (submit) => Row(
                 children: [
-                  ElevatedButton(
-                    onPressed: length == 6 ? submit : null,
-                    child: const Text('Submit'),
-                  ),
+                  PhoneService.instance.verifySentProgress
+                      ? const CircularProgressIndicator.adaptive()
+                      : ElevatedButton(
+                          onPressed: PhoneService.instance.smsCode.length == 6 ? submit : null,
+                          child: const Text('Submit'),
+                        ),
                   const Spacer(),
                   TextButton(
                     onPressed: Get.back,

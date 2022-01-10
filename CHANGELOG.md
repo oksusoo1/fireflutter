@@ -1,6 +1,10 @@
 # Change Log
 
-## [0.2.4] - Phone sign in
+## [0.2.6] - Phone sign-in code submit progress
+
+- Display progress bar on sms code submit.
+
+## [0.2.5] - Phone sign in
 
 - Phone sign in functionality had been added.
   - `PhoneService` class had been added to help sign in with mobile phone.

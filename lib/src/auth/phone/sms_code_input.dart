@@ -15,7 +15,7 @@ class SmsCodeInput extends StatefulWidget {
   final VoidCallback success;
   final ErrorCallback error;
 
-  final Widget Function(int length, VoidNullableCallback submit) submitButton;
+  final Widget Function(VoidNullableCallback submit) submitButton;
   final Widget submitTitle;
 
   final InputDecoration smsCodeInputDecoration;
@@ -37,15 +37,21 @@ class _SmsCodeInputState extends State<SmsCodeInput> {
           decoration: widget.smsCodeInputDecoration,
         ),
         widget.submitTitle,
-        widget.submitButton(PhoneService.instance.smsCode.length, submit),
+        widget.submitButton(submit),
       ],
     );
   }
 
-  submit() {
-    PhoneService.instance.verifySMSCode(
+  submit() async {
+    setState(() {
+      PhoneService.instance.verifySentProgress = true;
+    });
+    await PhoneService.instance.verifySMSCode(
       success: widget.success,
       error: widget.error,
     );
+    setState(() {
+      if (mounted) PhoneService.instance.verifySentProgress = false;
+    });
   }
 }

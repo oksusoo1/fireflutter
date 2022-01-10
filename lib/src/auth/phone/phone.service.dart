@@ -30,6 +30,7 @@ class PhoneService {
   /// This is used only for sign in ui.
   /// Since [PhoneService.instance] is singleton, it needs to reset progress bar also.
   bool codeSentProgress = false;
+  bool verifySentProgress = false;
 
   ///
   String phoneNumber = '';
@@ -49,15 +50,16 @@ class PhoneService {
     verificationId = '';
     smsCode = '';
     codeSentProgress = false;
+    verifySentProgress = false;
   }
 
   /// This method is invoked when user submit sms code, then it will begin
   /// verification process.
-  verifySMSCode({required VoidCallback success, required ErrorCallback error}) {
-    PhoneAuthCredential credential = PhoneAuthProvider.credential(
-        verificationId: verificationId, smsCode: smsCode);
+  Future verifySMSCode({required VoidCallback success, required ErrorCallback error}) {
+    PhoneAuthCredential credential =
+        PhoneAuthProvider.credential(verificationId: verificationId, smsCode: smsCode);
 
-    verifyCredential(credential, success: success, error: error);
+    return verifyCredential(credential, success: success, error: error);
   }
 
   /// Verify SMS code credential
@@ -68,7 +70,7 @@ class PhoneService {
   ///   - And sms has been sent to user
   ///   - User entered sms code,
   ///   - Then, this method is invokded.
-  verifyCredential(
+  Future verifyCredential(
     PhoneAuthCredential credential, {
     required VoidCallback success,
     required ErrorCallback error,
@@ -112,8 +114,7 @@ class PhoneService {
         /// This code is only for Android, and this method is invoked after
         /// automatic sms verification has succeed.
         /// Note that, not all Android phone support automatic sms resolution.
-        verificationCompleted: (c) =>
-            verifyCredential(c, success: success, error: error),
+        verificationCompleted: (c) => verifyCredential(c, success: success, error: error),
         verificationFailed: error,
         codeSent: (String verificationId, i) {
           this.verificationId = verificationId;
