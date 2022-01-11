@@ -126,6 +126,7 @@ class _PhoneNumberInputState extends State<PhoneNumberInput> {
                           PhoneService.instance.codeSentProgress = true;
                         });
                         PhoneService.instance.phoneNumber = PhoneService.instance.completeNumber;
+                        print('phone number: ${PhoneService.instance.phoneNumber}');
                         PhoneService.instance.verifyPhoneNumber(
                           codeSent: (verificationId) {
                             widget.codeSent(verificationId);
