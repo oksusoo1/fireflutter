@@ -114,8 +114,13 @@ class PhoneService {
         /// This code is only for Android, and this method is invoked after
         /// automatic sms verification has succeed.
         /// Note that, not all Android phone support automatic sms resolution.
-        verificationCompleted: (c) => verifyCredential(c, success: success, error: error),
-        verificationFailed: error,
+        verificationCompleted: (PhoneAuthCredential c) {
+          verifyCredential(c, success: success, error: error);
+        },
+        verificationFailed: (FirebaseAuthException e) {
+          print(e);
+          error(e);
+        },
         codeSent: (String verificationId, i) {
           this.verificationId = verificationId;
           codeSent(verificationId);
