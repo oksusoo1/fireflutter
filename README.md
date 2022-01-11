@@ -41,6 +41,7 @@ Table of contents
 - [Issues](#issues)
   - [firebase_database/permission-denied](#firebase_databasepermission-denied)
   - [Firebase realtime database is not working](#firebase-realtime-database-is-not-working)
+  - [firebase_auth/internal-error](#firebase_authinternal-error)
 
 # Features
 
@@ -270,7 +271,7 @@ UserPresence(
 
 # Issues
 
-- These are the common issues you may encount.
+- These are the common issues you may encount working this package.
 - If you have any issues, please create an git issue.
 
 
@@ -285,4 +286,15 @@ UserPresence(
 ## Firebase realtime database is not working
 
 - Open `GoogleService-Info.plist` under `ios/Runner` and see if the key `DATABASE_URL` is present. If not, enable firebase realtime database and download the `GoogleService-Info.plist` again. Remember to update related settings once you download it again.
+
+
+
+## firebase_auth/internal-error
+
+If you see this error message while working with Firebase Auth, check the followings;
+
+- Check if REVERSE_CLIENT_ID is set on iOS.
+- Check if GCP credential is properly set iOS.
+
+
 
