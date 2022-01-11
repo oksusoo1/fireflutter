@@ -55,9 +55,10 @@ class PhoneService {
 
   /// This method is invoked when user submit sms code, then it will begin
   /// verification process.
-  Future verifySMSCode({required VoidCallback success, required ErrorCallback error}) {
-    PhoneAuthCredential credential =
-        PhoneAuthProvider.credential(verificationId: verificationId, smsCode: smsCode);
+  Future verifySMSCode(
+      {required VoidCallback success, required ErrorCallback error}) {
+    PhoneAuthCredential credential = PhoneAuthProvider.credential(
+        verificationId: verificationId, smsCode: smsCode);
 
     return verifyCredential(credential, success: success, error: error);
   }

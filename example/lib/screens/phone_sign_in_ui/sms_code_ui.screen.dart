@@ -69,7 +69,9 @@ class _SmsCodeUIScreenState extends State<SmsCodeUIScreen> {
                   PhoneService.instance.verifySentProgress
                       ? const CircularProgressIndicator.adaptive()
                       : ElevatedButton(
-                          onPressed: PhoneService.instance.smsCode.length == 6 ? submit : null,
+                          onPressed: PhoneService.instance.smsCode.length == 6
+                              ? submit
+                              : null,
                           child: const Text('Submit'),
                         ),
                   const Spacer(),
