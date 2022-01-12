@@ -16,6 +16,6 @@ class UserService {
   }
 
   Future<void> updatePhotoUrl(String url) {
-    return _myDoc.set({'url': url}, SetOptions(merge: true));
+    return _myDoc.set({'photoUrl': url}, SetOptions(merge: true));
   }
 }

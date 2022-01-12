@@ -34,6 +34,7 @@ Table of contents
   - [User Presence Installation](#user-presence-installation)
   - [User presence logic](#user-presence-logic)
 - [Other user profile](#other-user-profile)
+  - [Displaying user profile](#displaying-user-profile)
 - [TODOs](#todos)
   - [Find Friends](#find-friends)
 - [For developer](#for-developer)
@@ -244,6 +245,32 @@ UserPresence(
 
 - User name and photo are saved in `/user/<uid>` document of Firestore.
 
+## Displaying user profile
+
+- To display a user profile(name or photo), Use `UserDoc` widget with the user's uid and you can build a widget based on the user profile.
+  - The builder of `UserDoc` comes from a stream builder, which means when the user profile document changes, it will rebuild the builder widget to update realtime.
+
+```dart
+UserDoc(
+  uid: user.uid,
+  builder: (UserModel u) {
+    return Row(
+      children: [
+        Text('name: ${u.name}'),
+        Text(', profile: ${u.photoUrl}'),
+      ],
+    );
+  },
+),
+```
+
+- To display a user profile, but only one time build (not automatic rebuild), use `UserFutureDoc` widget. The builder of `UserFutureDoc` is based on future builder. So, it does not rebuild even if the user profile document changes.
+  - This widget may be used for forms. Like display user profile data in input fields.
+
+
+
+
+- Note, to display if the user is online or offline, see user presence.
 
 
 

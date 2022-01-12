@@ -6,4 +6,8 @@ class UserModel {
 
   String name;
   String photoUrl;
+
+  factory UserModel.fromJson(dynamic data) {
+    return UserModel(name: data['name'], photoUrl: data['photoUrl']);
+  }
 }

@@ -26,31 +26,54 @@ class _HomeScreenState extends State<HomeScreen> {
               stream: FirebaseAuth.instance.authStateChanges(),
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
+                  User user = snapshot.data!;
                   return Column(
                     children: [
-                      Text(
-                          'You have logged in as ${snapshot.data!.email ?? snapshot.data!.phoneNumber}'),
-                      Row(
-                        children: [
-                          const Text('Profile: '),
-                          Expanded(
-                            child: TextField(
-                              decoration: const InputDecoration(hintText: 'Name'),
-                              onChanged: (t) {
-                                UserService.instance
-                                    .updateName(t)
-                                    .catchError((e) => print('error on update name; $e'));
-                              },
-                            ),
-                          ),
-                          Expanded(
-                            child: TextField(
-                              decoration: const InputDecoration(hintText: 'Photo Url'),
-                              onChanged: (t) {},
-                            ),
-                          ),
-                        ],
+                      Text('You have logged in as ${user.email ?? user.phoneNumber}'),
+                      UserDoc(
+                        uid: user.uid,
+                        builder: (UserModel u) {
+                          return Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text('Profile name: ${u.name}'),
+                              Text(', photo: ${u.photoUrl}'),
+                            ],
+                          );
+                        },
                       ),
+                      UserFutureDoc(
+                          uid: user.uid,
+                          builder: (UserModel u) {
+                            return Row(
+                              children: [
+                                const Text('Update '),
+                                Expanded(
+                                  child: TextField(
+                                    controller: TextEditingController()..text = u.name,
+                                    decoration: const InputDecoration(
+                                        hintText: 'Name', prefix: Text('name: ')),
+                                    onChanged: (t) {
+                                      UserService.instance
+                                          .updateName(t)
+                                          .catchError((e) => print('error on update name; $e'));
+                                    },
+                                  ),
+                                ),
+                                Expanded(
+                                  child: TextField(
+                                    controller: TextEditingController()..text = u.photoUrl,
+                                    decoration: const InputDecoration(
+                                        hintText: 'Photo Url', prefix: Text('photo url: ')),
+                                    onChanged: (t) {
+                                      UserService.instance.updatePhotoUrl(t).catchError(
+                                          (e) => print('error on update photo url; $e'));
+                                    },
+                                  ),
+                                ),
+                              ],
+                            );
+                          }),
                       ElevatedButton(
                           onPressed: () => FirebaseAuth.instance.signOut(),
                           child: const Text('Sign Out')),

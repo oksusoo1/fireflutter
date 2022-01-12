@@ -9,3 +9,5 @@ export 'src/auth/phone/sms_code_input.dart';
 
 export 'src/user/user.model.dart';
 export 'src/user/user.service.dart';
+export 'src/user/user.doc.dart';
+export 'src/user/user.future.doc.dart';
