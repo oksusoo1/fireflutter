@@ -3,6 +3,7 @@
 ## [0.2.6] - Phone sign-in code submit progress
 
 - Display progress bar on sms code submit.
+- Container builder for phone sign-in ui.
 
 ## [0.2.5] - Phone sign in
 

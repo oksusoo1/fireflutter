@@ -14,8 +14,10 @@ class PhoneNumberInput extends StatefulWidget {
     required this.success,
     required this.codeAutoRetrievalTimeout,
     this.inputTitle = const SizedBox.shrink(),
+    this.phoneNumberContainerBuilder,
     this.dialCodeStyle = const TextStyle(fontSize: 24),
-    this.phoneNumberInputDecoration = const InputDecoration(),
+    this.phoneNumberInputDecoration =
+        const InputDecoration(border: InputBorder.none),
     this.phoneNumberInputTextStyle = const TextStyle(),
     this.submitTitle = const SizedBox.shrink(),
     this.submitButton = const Text(
@@ -34,6 +36,7 @@ class PhoneNumberInput extends StatefulWidget {
   final VoidCallback success;
   final ErrorCallback error;
   final void Function(String) codeAutoRetrievalTimeout;
+  final Widget Function(Widget)? phoneNumberContainerBuilder;
   final TextStyle dialCodeStyle;
   final InputDecoration phoneNumberInputDecoration;
   final TextStyle phoneNumberInputTextStyle;
@@ -55,6 +58,32 @@ class _PhoneNumberInputState extends State<PhoneNumberInput> {
 
   @override
   Widget build(BuildContext context) {
+    Widget phoneNumber = Row(
+      children: [
+        Text(
+          PhoneService.instance.selectedCode?.dialCode! ?? '',
+          style: widget.dialCodeStyle,
+        ),
+        SizedBox(width: 8),
+        Expanded(
+          child: TextField(
+            style: widget.phoneNumberInputTextStyle,
+            decoration: widget.phoneNumberInputDecoration,
+            keyboardType: TextInputType.phone,
+            onChanged: (t) {
+              setState(() {
+                PhoneService.instance.domesticPhoneNumber = t;
+                PhoneService.instance.codeSentProgress = false;
+              });
+            },
+          ),
+        ),
+      ],
+    );
+    if (widget.phoneNumberContainerBuilder != null) {
+      phoneNumber = widget.phoneNumberContainerBuilder!(phoneNumber);
+    }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -81,28 +110,7 @@ class _PhoneNumberInputState extends State<PhoneNumberInput> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               widget.inputTitle,
-              Row(
-                children: [
-                  Text(
-                    PhoneService.instance.selectedCode!.dialCode!,
-                    style: widget.dialCodeStyle,
-                  ),
-                  SizedBox(width: 8),
-                  Expanded(
-                    child: TextField(
-                      style: widget.phoneNumberInputTextStyle,
-                      decoration: widget.phoneNumberInputDecoration,
-                      keyboardType: TextInputType.phone,
-                      onChanged: (t) {
-                        setState(() {
-                          PhoneService.instance.domesticPhoneNumber = t;
-                          PhoneService.instance.codeSentProgress = false;
-                        });
-                      },
-                    ),
-                  ),
-                ],
-              ),
+              phoneNumber,
             ],
           ),
         if (PhoneService.instance.domesticPhoneNumber != '')
@@ -120,6 +128,8 @@ class _PhoneNumberInputState extends State<PhoneNumberInput> {
                         });
                         PhoneService.instance.phoneNumber =
                             PhoneService.instance.completeNumber;
+                        print(
+                            'phone number: ${PhoneService.instance.phoneNumber}');
                         PhoneService.instance.verifyPhoneNumber(
                           codeSent: (verificationId) {
                             widget.codeSent(verificationId);
