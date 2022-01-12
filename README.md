@@ -27,11 +27,13 @@ Table of contents
 - [Packages](#packages)
 - [User](#user)
   - [User installation](#user-installation)
+  - [Test users](#test-users)
   - [Phone number sign-in](#phone-number-sign-in)
 - [User presence](#user-presence)
   - [User presence overview](#user-presence-overview)
   - [User Presence Installation](#user-presence-installation)
-  - [User Presence Logic](#user-presence-logic)
+  - [User presence logic](#user-presence-logic)
+- [Other user profile](#other-user-profile)
 - [TODOs](#todos)
   - [Find Friends](#find-friends)
 - [For developer](#for-developer)
@@ -138,6 +140,11 @@ Table of contents
 <!-- End of the Google Sign-in Section -->
 ```
 
+## Test users
+
+- Create the following four test user accounts with password of `12345a`.
+  - `apple@test.com`, `banana@test.com`, `cherry@test.com`, `durian@test.com`
+
 ## Phone number sign-in
 
 
@@ -220,7 +227,7 @@ UserPresence(
 ),
 ```
 
-## User Presence Logic
+## User presence logic
 
 - Run `Presence.instance.activate()` at start if you want to track the presence status of users.
 - If user didn't login to the device, the user will be offline by default.
@@ -228,6 +235,15 @@ UserPresence(
   - If no documents appears in firebase realtime database data section, then see the installation and issues.
 - `/presense/$uid` document will be written only when user logs in and out.
 - When app is closed, the user will be offline.
+
+
+
+# Other user profile
+
+- Many apps share user name and photo. For instance, when a user chat to the other user, they shoud know each other's name and photo.
+
+- User name and photo are saved in `/user/<uid>` document of Firestore.
+
 
 
 

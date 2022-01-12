@@ -29,6 +29,20 @@ class _HomeScreenState extends State<HomeScreen> {
                     children: [
                       Text(
                           'You have logged in as ${snapshot.data!.email ?? snapshot.data!.phoneNumber}'),
+                      Row(
+                        children: [
+                          const Text('Profile: '),
+                          Expanded(
+                              child: TextField(
+                            decoration: InputDecoration(hintText: 'Name'),
+                          )),
+                          Expanded(
+                              child: TextField(
+                            decoration: InputDecoration(hintText: 'Photo Url'),
+                          )),
+                          ElevatedButton(onPressed: () {}, child: Text('Update'))
+                        ],
+                      ),
                       ElevatedButton(
                           onPressed: () => FirebaseAuth.instance.signOut(),
                           child: const Text('Sign Out')),
@@ -72,9 +86,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ],
             ),
             const Divider(),
-            ElevatedButton(
-                onPressed: () => Get.toNamed('/help'),
-                child: const Text('Help')),
+            ElevatedButton(onPressed: () => Get.toNamed('/help'), child: const Text('Help')),
           ],
         ),
       ),
