@@ -8,14 +8,14 @@ class UserService {
     return _instance!;
   }
 
-  DocumentReference get myDoc =>
+  DocumentReference get _myDoc =>
       FirebaseFirestore.instance.collection('user').doc(FirebaseAuth.instance.currentUser!.uid);
 
-  updateName(String name) {
-    return myDoc.set({'name': name}, SetOptions(merge: true));
+  Future<void> updateName(String name) {
+    return _myDoc.set({'name': name}, SetOptions(merge: true));
   }
 
-  updatePhotoUrl(String url) {
-    return myDoc.set({'url': url}, SetOptions(merge: true));
+  Future<void> updatePhotoUrl(String url) {
+    return _myDoc.set({'url': url}, SetOptions(merge: true));
   }
 }

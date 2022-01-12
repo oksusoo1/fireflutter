@@ -1,4 +1,5 @@
 import 'package:fe/widgets/test.user.dart';
+import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -33,14 +34,21 @@ class _HomeScreenState extends State<HomeScreen> {
                         children: [
                           const Text('Profile: '),
                           Expanded(
-                              child: TextField(
-                            decoration: InputDecoration(hintText: 'Name'),
-                          )),
+                            child: TextField(
+                              decoration: const InputDecoration(hintText: 'Name'),
+                              onChanged: (t) {
+                                UserService.instance
+                                    .updateName(t)
+                                    .catchError((e) => print('error on update name; $e'));
+                              },
+                            ),
+                          ),
                           Expanded(
-                              child: TextField(
-                            decoration: InputDecoration(hintText: 'Photo Url'),
-                          )),
-                          ElevatedButton(onPressed: () {}, child: Text('Update'))
+                            child: TextField(
+                              decoration: const InputDecoration(hintText: 'Photo Url'),
+                              onChanged: (t) {},
+                            ),
+                          ),
                         ],
                       ),
                       ElevatedButton(
