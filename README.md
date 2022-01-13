@@ -19,6 +19,7 @@ Table of contents
 - [Fire Flutter](#fire-flutter)
 - [Features](#features)
 - [TODOs](#todos)
+  - [Chat](#chat)
   - [Find Friends](#find-friends)
 - [Installation](#installation)
   - [Running the example](#running-the-example)
@@ -37,7 +38,7 @@ Table of contents
 - [User profile](#user-profile)
   - [Displaying user profile](#displaying-user-profile)
   - [User Auth State](#user-auth-state)
-- [Chat](#chat)
+- [Chat](#chat-1)
   - [Firestore structure](#firestore-structure)
 - [For developer](#for-developer)
   - [Building your app](#building-your-app)
@@ -67,6 +68,12 @@ Table of contents
 
 
 # TODOs
+
+## Chat
+
+- bundle many chat messages if they are written in 20 minutes.
+
+
 
 ## Find Friends
 

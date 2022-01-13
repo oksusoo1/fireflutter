@@ -31,10 +31,13 @@ class ChatService with ChatMixins {
   ///
   /// Call this method to count the number of new messages.
   ///
-  /// ! Attention, the subcriptions in this method should be a life time subscription. So, you don't have to unsubscribe it.
+  /// Note, the subcriptions should be re-subscribe when user change accounts.
+  /// Note, you may unsubscribe on your needs.
   ///
   ///
   countNewMessages() async {
+    print('countNewMessages()');
+    if (roomSubscription != null) roomSubscription!.cancel();
     roomSubscription = roomsCol
         .where('newMessages', isGreaterThan: 0)
         .snapshots()

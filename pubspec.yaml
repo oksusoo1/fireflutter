@@ -25,6 +25,10 @@ dependencies:
   # Chat room pagination
   paginate_firestore: ^1.0.3
 
+  # chat badge
+  badges: ^2.0.2
+
+
 
 dev_dependencies:
   flutter_test:
