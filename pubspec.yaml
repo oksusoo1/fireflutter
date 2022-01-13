@@ -18,7 +18,6 @@ dependencies:
 
   rxdart: any
 
-  
   # PhoneNumberInput widget
   country_code_picker: ^2.0.2
 
@@ -27,8 +26,6 @@ dependencies:
 
   # chat badge
   badges: ^2.0.2
-
-
 
 dev_dependencies:
   flutter_test:

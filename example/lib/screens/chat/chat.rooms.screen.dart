@@ -43,7 +43,8 @@ class _ChatRoomsUserState extends State<ChatRoomsUser> {
       uid: widget.room.otherUid,
       builder: (UserModel user) {
         return GestureDetector(
-          onTap: () => Get.toNamed('/chat-room-screen', arguments: {'uid': widget.room.otherUid}),
+          onTap: () => Get.toNamed('/chat-room-screen',
+              arguments: {'uid': widget.room.otherUid}),
           child: Container(
             margin: const EdgeInsets.all(xs),
             padding: const EdgeInsets.all(xs),
@@ -56,49 +57,53 @@ class _ChatRoomsUserState extends State<ChatRoomsUser> {
                 Avatar(url: user.photoUrl, size: 50),
                 spaceXsm,
                 Expanded(
-                  child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                    Row(
+                  child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Expanded(
-                          child: Text(
-                            '${user.name} ',
-                            style: const TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.w600,
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                '${user.name} ',
+                                style: const TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 1,
+                              ),
                             ),
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 1,
-                          ),
+                            if (room.hasNewMessage) ...[
+                              spaceSm,
+                              Container(
+                                padding: const EdgeInsets.all(6),
+                                decoration: BoxDecoration(
+                                  color: Colors.blue[200],
+                                  shape: BoxShape.circle,
+                                ),
+                                child: Text(
+                                  '${room.newMessages}',
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.w500),
+                                ),
+                              ),
+                            ]
+                          ],
                         ),
-                        if (room.hasNewMessage) ...[
-                          spaceSm,
-                          Container(
-                            padding: const EdgeInsets.all(6),
-                            decoration: BoxDecoration(
-                              color: Colors.blue[200],
-                              shape: BoxShape.circle,
-                            ),
-                            child: Text(
-                              '${room.newMessages}',
-                              style: const TextStyle(fontWeight: FontWeight.w500),
-                            ),
-                          ),
-                        ]
-                      ],
-                    ),
-                    spaceXxs,
-                    Text(
-                      room.text,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: bodyText4,
-                    ),
-                  ]),
+                        spaceXxs,
+                        Text(
+                          room.text,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: bodyText4,
+                        ),
+                      ]),
                 ),
                 spaceXsm,
                 IconButton(
                   onPressed: () async {
-                    final re = await confirm('Delete', 'Do you want to delete?');
+                    final re =
+                        await confirm('Delete', 'Do you want to delete?');
                     if (re == false) return;
                     room.deleteOtherUserRoom();
                   },
