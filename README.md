@@ -20,7 +20,6 @@ Table of contents
 - [Features](#features)
 - [TODOs](#todos)
   - [Chat](#chat)
-  - [Find Friends](#find-friends)
 - [Installation](#installation)
   - [Running the example](#running-the-example)
   - [Creating a new project](#creating-a-new-project)
@@ -39,7 +38,8 @@ Table of contents
   - [Displaying user profile](#displaying-user-profile)
   - [User Auth State](#user-auth-state)
 - [Chat](#chat-1)
-  - [Firestore structure](#firestore-structure)
+  - [Chat structure of Firestore](#chat-structure-of-firestore)
+- [Find Friend](#find-friend)
 - [For developer](#for-developer)
   - [Building your app](#building-your-app)
   - [Building fireflutter](#building-fireflutter)
@@ -73,12 +73,6 @@ Table of contents
 
 - bundle many chat messages if they are written in 20 minutes.
 
-
-
-## Find Friends
-
-- Idea: See if you are looking for a friend in a busy city. When you and your friend are connected, you can find each other by sharing geo location.
-- Implementaion: put find button and when connected, display position in map and update the geo location.
 
 
 
@@ -317,7 +311,7 @@ UserFutureDoc(
 
 # Chat
 
-## Firestore structure
+## Chat structure of Firestore
 
 - `/chat/messages/<uid>__<uid>` is the collection of a chat room messages. Each document in this collection is the chat message documents that are handled by the `ChatMessageModel`. This is called `message doc`.
 
@@ -327,6 +321,18 @@ UserFutureDoc(
     - `/chat/room/A/C`
     Then, the user `A` have had chat with user B and C.
     Note that, `room info doc` is also handled by the `ChatMessageModel`.
+
+# Find Friend
+
+- Idea\
+  When someone is seeking someone and both of them are stranger of the place, how would they find each other? Some country may use road name as land marks while some country has no names on roads, instead, they use building names as land marks. But both of them are foreginers and they don't know the country's language.
+
+  `Fiend Friend` feature shares both of user's geo locations and the app can display markers on the map. So, they can find each other easily.
+
+
+
+
+
 
 # For developer
 
