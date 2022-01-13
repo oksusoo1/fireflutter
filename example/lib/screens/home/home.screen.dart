@@ -18,107 +18,122 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: AppBar(
         title: const Text('Home'),
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            StreamBuilder<User?>(
-              stream: FirebaseAuth.instance.authStateChanges(),
-              builder: (context, snapshot) {
-                if (snapshot.hasData) {
-                  User user = snapshot.data!;
-                  return Column(
-                    children: [
-                      Text('You have logged in as ${user.email ?? user.phoneNumber}'),
-                      UserDoc(
-                        uid: user.uid,
-                        builder: (UserModel u) {
-                          return Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text('Profile name: ${u.name}'),
-                              Text(', photo: ${u.photoUrl}'),
-                            ],
-                          );
-                        },
-                      ),
-                      UserFutureDoc(
+      body: SingleChildScrollView(
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              StreamBuilder<User?>(
+                stream: FirebaseAuth.instance.authStateChanges(),
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    User user = snapshot.data!;
+                    return Column(
+                      children: [
+                        Text(
+                            'You have logged in as ${user.email ?? user.phoneNumber}'),
+                        UserDoc(
                           uid: user.uid,
                           builder: (UserModel u) {
                             return Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                const Text('Update '),
-                                Expanded(
-                                  child: TextField(
-                                    controller: TextEditingController()..text = u.name,
-                                    decoration: const InputDecoration(
-                                        hintText: 'Name', prefix: Text('name: ')),
-                                    onChanged: (t) {
-                                      UserService.instance
-                                          .updateName(t)
-                                          .catchError((e) => print('error on update name; $e'));
-                                    },
-                                  ),
-                                ),
-                                Expanded(
-                                  child: TextField(
-                                    controller: TextEditingController()..text = u.photoUrl,
-                                    decoration: const InputDecoration(
-                                        hintText: 'Photo Url', prefix: Text('photo url: ')),
-                                    onChanged: (t) {
-                                      UserService.instance.updatePhotoUrl(t).catchError(
-                                          (e) => print('error on update photo url; $e'));
-                                    },
-                                  ),
-                                ),
+                                Text('Profile name: ${u.name}'),
+                                Text(', photo: ${u.photoUrl}'),
                               ],
                             );
-                          }),
-                      ElevatedButton(
-                          onPressed: () => FirebaseAuth.instance.signOut(),
-                          child: const Text('Sign Out')),
-                    ],
-                  );
-                } else {
-                  return Wrap(
-                    children: [
-                      ElevatedButton(
-                        child: const Text('Sign-In'),
-                        onPressed: () {
-                          Get.toNamed('/sign-in');
-                        },
-                      ),
-                      ElevatedButton(
-                        child: const Text('Phone Sign-In'),
-                        onPressed: () {
-                          Get.toNamed('/phone-sign-in');
-                        },
-                      ),
-                      ElevatedButton(
-                        child: const Text('Phone Sign-In UI'),
-                        onPressed: () {
-                          Get.toNamed('/phone-sign-in-ui');
-                        },
-                      ),
-                    ],
-                  );
-                }
-              },
-            ),
-            const Divider(),
-            const Text('Test users;'),
-            Wrap(
-              alignment: WrapAlignment.spaceAround,
-              children: const [
-                TestUser(name: 'Apple', uid: 'uA0mjrf3FzR1FxO1rcjO7eZlGkR2'),
-                TestUser(name: 'Banana', uid: 'o0BtHX2JMiaa0SIrDJ3qhDczXDF2'),
-                TestUser(name: 'Cherry', uid: 'sys2vHyPz2fUb57qEFN2PqaegGu2'),
-                TestUser(name: 'Dragon', uid: 'LLaX6TwVQSO2os2dzK3kJyTzSzs1'),
-              ],
-            ),
-            const Divider(),
-            ElevatedButton(onPressed: () => Get.toNamed('/help'), child: const Text('Help')),
-          ],
+                          },
+                        ),
+                        UserFutureDoc(
+                            uid: user.uid,
+                            builder: (UserModel u) {
+                              return Row(
+                                children: [
+                                  const Text('Update '),
+                                  Expanded(
+                                    child: TextField(
+                                      controller: TextEditingController()
+                                        ..text = u.name,
+                                      decoration: const InputDecoration(
+                                          hintText: 'Name',
+                                          prefix: Text('name: ')),
+                                      onChanged: (t) {
+                                        UserService.instance
+                                            .updateName(t)
+                                            .catchError((e) => print(
+                                                'error on update name; $e'));
+                                      },
+                                    ),
+                                  ),
+                                  Expanded(
+                                    child: TextField(
+                                      controller: TextEditingController()
+                                        ..text = u.photoUrl,
+                                      decoration: const InputDecoration(
+                                          hintText: 'Photo Url',
+                                          prefix: Text('photo url: ')),
+                                      onChanged: (t) {
+                                        UserService.instance
+                                            .updatePhotoUrl(t)
+                                            .catchError((e) => print(
+                                                'error on update photo url; $e'));
+                                      },
+                                    ),
+                                  ),
+                                ],
+                              );
+                            }),
+                        ElevatedButton(
+                            onPressed: () => FirebaseAuth.instance.signOut(),
+                            child: const Text('Sign Out')),
+                      ],
+                    );
+                  } else {
+                    return Wrap(
+                      children: [
+                        ElevatedButton(
+                          child: const Text('Sign-In'),
+                          onPressed: () {
+                            Get.toNamed('/sign-in');
+                          },
+                        ),
+                        ElevatedButton(
+                          child: const Text('Phone Sign-In'),
+                          onPressed: () {
+                            Get.toNamed('/phone-sign-in');
+                          },
+                        ),
+                        ElevatedButton(
+                          child: const Text('Phone Sign-In UI'),
+                          onPressed: () {
+                            Get.toNamed('/phone-sign-in-ui');
+                          },
+                        ),
+                      ],
+                    );
+                  }
+                },
+              ),
+              const Divider(),
+              const Text('Test users;'),
+              Wrap(
+                alignment: WrapAlignment.spaceAround,
+                children: const [
+                  TestUser(name: 'Apple', uid: 'uA0mjrf3FzR1FxO1rcjO7eZlGkR2'),
+                  TestUser(name: 'Banana', uid: 'o0BtHX2JMiaa0SIrDJ3qhDczXDF2'),
+                  TestUser(name: 'Cherry', uid: 'sys2vHyPz2fUb57qEFN2PqaegGu2'),
+                  TestUser(name: 'Dragon', uid: 'LLaX6TwVQSO2os2dzK3kJyTzSzs1'),
+                ],
+              ),
+              const Divider(),
+              ElevatedButton(
+                  onPressed: () => Get.toNamed('/help'),
+                  child: const Text('Help')),
+              ElevatedButton(
+                  onPressed: () => Get.toNamed('/chat-rooms-screen'),
+                  child: const Text('Chat Room List')),
+            ],
+          ),
         ),
       ),
     );
