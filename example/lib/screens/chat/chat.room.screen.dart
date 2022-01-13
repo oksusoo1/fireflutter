@@ -21,7 +21,12 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(otherUid),
+        title: UserDoc(
+          uid: otherUid,
+          builder: (UserModel user) {
+            return Text(user.name);
+          },
+        ),
       ),
       body: ChatRoom(
         otherUid: otherUid,
