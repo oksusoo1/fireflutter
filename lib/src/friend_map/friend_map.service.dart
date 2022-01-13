@@ -16,12 +16,18 @@ class MapsErrors {
       'Location permissions are permanently denied, we cannot request permissions.';
 }
 
-class FindFriendService {
-  String _apiKey = '';
-
-  FindFriendService({required apiKey}) {
-    _apiKey = apiKey;
+class FriendMapService {
+  static FriendMapService? _instance;
+  static FriendMapService get instance {
+    _instance ??= FriendMapService();
+    return _instance!;
   }
+
+  init({required String googleApiKey}) {
+    _apiKey = googleApiKey;
+  }
+
+  String _apiKey = '';
 
   String _currentAddress = '';
   String get currentAddress => _currentAddress;
@@ -46,10 +52,11 @@ class FindFriendService {
   ///
   bool get canGetDirections => markers.length > 1;
 
-  /// initialize location change listener
+  /// Initialize location change listener
+  ///
   ///
   Stream<Position> initLocationListener({
-    int distanceFilter = 100,
+    int distanceFilter = 0,
     LocationAccuracy accuracy = LocationAccuracy.high,
   }) {
     return Geolocator.getPositionStream(

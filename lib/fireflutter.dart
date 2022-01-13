@@ -21,3 +21,6 @@ export 'src/chat/chat.service.dart';
 export 'src/chat/widgets/chat.room.dart';
 export 'src/chat/widgets/chat.rooms.dart';
 export 'src/chat/widgets/chat.badge.dart';
+
+export 'src/friend_map/friend_map.service.dart';
+export 'src/friend_map/friend_map.dart';

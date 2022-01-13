@@ -133,6 +133,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: const Text('Chat Room List'),
               ),
               const ChatBadge(),
+              const Divider(),
+              ElevatedButton(
+                  onPressed: () => Get.toNamed('/friend-map'), child: const Text('Friend Map'))
             ],
           ),
         ),
