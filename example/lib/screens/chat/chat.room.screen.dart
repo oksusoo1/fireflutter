@@ -1,5 +1,6 @@
 import 'package:extended/extended.dart';
 import 'package:fe/screens/chat/widgets/chat_room.message.dart';
+import 'package:fe/screens/chat/widgets/chat_room.message_box.dart';
 import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -101,7 +102,7 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
           );
         },
 
-        inputBuilder: (onSubmit) => TextField(onSubmitted: onSubmit),
+        inputBuilder: (onSubmit) => ChatRoomMessageBox(onSend: onSubmit),
         onError: error,
 
         /// Send push notification here with no of new message.

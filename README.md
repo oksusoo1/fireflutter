@@ -36,6 +36,9 @@ Table of contents
   - [User presence logic](#user-presence-logic)
 - [User profile](#user-profile)
   - [Displaying user profile](#displaying-user-profile)
+  - [User Auth State](#user-auth-state)
+- [Chat](#chat)
+  - [Firestore structure](#firestore-structure)
 - [For developer](#for-developer)
   - [Building your app](#building-your-app)
   - [Building fireflutter](#building-fireflutter)
@@ -274,13 +277,49 @@ UserDoc(
 - To display a user profile, but only one time build (not automatic rebuild), use `UserFutureDoc` widget. The builder of `UserFutureDoc` is based on future builder. So, it does not rebuild even if the user profile document changes.
   - This widget may be used for forms. Like display user profile data in input fields.
 
-
+```dart
+UserFutureDoc(
+  uid: user.uid,
+  builder: (UserModel u) {
+    return Row(
+      children: [
+        Text('name: ${u.name}'),
+        Text(', profile: ${u.photoUrl}'),
+      ],
+    );
+  },
+),
+```
 
 
 - Note, to display if the user is online or offline, see user presence.
 
 
+## User Auth State
 
+- Build and display widgets based on user's auth state changes.
+
+```dart
+ AuthState(
+   signedIn: (user) => Text('logged in'),
+   signedOut: () => Text('logged out'),
+   loader: Text('loading...'),
+ ),
+```
+
+
+# Chat
+
+## Firestore structure
+
+- `/chat/messages/<uid>__<uid>` is the collection of a chat room messages. Each document in this collection is the chat message documents that are handled by the `ChatMessageModel`. This is called `message doc`.
+
+- `/chat/rooms/<uid>` is the collection of a user's chat friends. The documents inside this collection are the users that he chatted. For instance,
+  - `/chat/rooms/<uid>/<uid>` is the document of a chat room. This document has the room information. (This is called `room info doc`.) For instance,
+    - `/chat/room/A/B`
+    - `/chat/room/A/C`
+    Then, the user `A` have had chat with user B and C.
+    Note that, `room info doc` is also handled by the `ChatMessageModel`.
 
 # For developer
 

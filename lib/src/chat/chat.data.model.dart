@@ -2,7 +2,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fireflutter/src/chat/chat.mixins.dart';
 
-/// Chat message model is used for both of chat room message and chat rooms message.
+/// Chat message model
+///
+/// It is used for both of chat room message itself and chat rooms' documents.
+/// See readme for details.
 ///
 class ChatMessageModel with ChatMixins {
   String text;

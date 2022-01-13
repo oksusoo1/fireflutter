@@ -17,7 +17,7 @@ class ChatRoomMessage extends StatelessWidget {
       children: [
         ChatBubble(
           elevation: 0,
-          backGroundColor: message.isMine ? Colors.yellow[600]!.withAlpha(234) : Colors.grey[100],
+          backGroundColor: message.isMine ? Colors.yellow[600]!.withAlpha(234) : Colors.grey[200],
           alignment: message.isMine ? Alignment.centerRight : Alignment.centerLeft,
           margin: const EdgeInsets.all(4),
           clipper: ChatBubbleClipper4(
