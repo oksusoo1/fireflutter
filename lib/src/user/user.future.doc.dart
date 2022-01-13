@@ -11,7 +11,7 @@ class UserFutureDoc extends StatelessWidget {
   Widget build(BuildContext context) {
     return FutureBuilder<DocumentSnapshot<Map<String, dynamic>>>(
       future: FirebaseFirestore.instance.collection('user').doc(uid).get(),
-      builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+      builder: (BuildContext context, snapshot) {
         if (snapshot.hasError) {
           return Text('Something went wrong');
         }
@@ -19,7 +19,7 @@ class UserFutureDoc extends StatelessWidget {
           return CircularProgressIndicator.adaptive();
         }
         if (snapshot.hasData && snapshot.data!.exists) {
-          return builder(UserModel.fromJson(snapshot.data));
+          return builder(UserModel.fromJson(snapshot.data!.data()!));
         } else {
           return builder(UserModel.none());
         }

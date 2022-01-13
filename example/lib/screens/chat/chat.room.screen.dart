@@ -15,8 +15,6 @@ class ChatRoomScreen extends StatefulWidget {
 class _ChatRoomScreenState extends State<ChatRoomScreen> {
   String otherUid = Get.arguments['uid'];
 
-  int newMessages = 0;
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -108,6 +106,8 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
 
         /// Send push notification here with no of new message.
         onUpdateOtherUserRoomInformation: (Map<String, dynamic> data) async {
+          //          int newMessages = 0;
+
           /// Send push notification to the other user.
           // QuerySnapshot querySnapshot = await ChatService.instance
           //     .otherUserRoomsCol(otherUid)

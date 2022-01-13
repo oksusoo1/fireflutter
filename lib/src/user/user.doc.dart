@@ -19,7 +19,7 @@ class UserDoc extends StatelessWidget {
           return CircularProgressIndicator.adaptive();
         }
         if (snapshot.hasData && snapshot.data!.exists) {
-          return builder(UserModel.fromJson(snapshot.data));
+          return builder(UserModel.fromJson(snapshot.data!.data()!));
         } else {
           return builder(UserModel.none());
         }

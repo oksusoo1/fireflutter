@@ -11,8 +11,11 @@ class UserModel {
   /// [none] becomes true if the document does not exists.
   bool none;
 
-  factory UserModel.fromJson(dynamic data) {
-    return UserModel(name: data['name'], photoUrl: data['photoUrl']);
+  factory UserModel.fromJson(Map<String, dynamic> data) {
+    return UserModel(
+      name: data['name'] ?? '',
+      photoUrl: data['photoUrl'] ?? '',
+    );
   }
 
   factory UserModel.none() {
