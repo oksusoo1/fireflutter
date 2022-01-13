@@ -21,6 +21,9 @@ class ChatRoom extends StatefulWidget {
   }) : super(key: key);
 
   final Function onError;
+
+  /// [onUpdateOtherUserRoomInformation] is being invoked after room information
+  /// had updated when user chat.
   final Function onUpdateOtherUserRoomInformation;
   final MessageBuilder messageBuilder;
   final InputBuilder inputBuilder;
