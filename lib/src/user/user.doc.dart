@@ -9,7 +9,7 @@ class UserDoc extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder(
+    return StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
       stream: FirebaseFirestore.instance.collection('user').doc(uid).snapshots(),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
@@ -18,7 +18,11 @@ class UserDoc extends StatelessWidget {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return CircularProgressIndicator.adaptive();
         }
-        return builder(UserModel.fromJson(snapshot.data));
+        if (snapshot.hasData && snapshot.data!.exists) {
+          return builder(UserModel.fromJson(snapshot.data));
+        } else {
+          return builder(UserModel.none());
+        }
       },
     );
   }

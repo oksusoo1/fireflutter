@@ -1,8 +1,10 @@
 # Change Log
 
 
-## [0.2.7] - Chat
 
+## [0.2.7] - User profile & chat
+
+- User profile saving and displaying.
 - 1:1 chat functionality has been added. see README.md for details.
 
 ## [0.2.6] - Phone sign-in code submit progress

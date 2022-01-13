@@ -1,6 +1,7 @@
 // import 'package:fe/screens/chat/chat.room.screen.dart';
 // import 'dart:async';
 
+import 'package:fe/screens/chat/chat.room.screen.dart';
 import 'package:fe/screens/help/help.screen.dart';
 import 'package:fe/screens/home/home.screen.dart';
 import 'package:fe/screens/phone_sign_in/phone_sign_in.screen.dart';
@@ -59,10 +60,10 @@ class _MainAppState extends State<MainApp> {
         ),
         GetPage(name: '/phone-sign-in', page: () => const PhoneSignInScreen()),
         GetPage(name: '/sms-code', page: () => const SmsCodeScreen()),
-        GetPage(
-            name: '/phone-sign-in-ui', page: () => const PhoneSignInUIScreen()),
+        GetPage(name: '/phone-sign-in-ui', page: () => const PhoneSignInUIScreen()),
         GetPage(name: '/sms-code-ui', page: () => const SmsCodeUIScreen()),
         GetPage(name: '/help', page: () => const HelpScreen()),
+        GetPage(name: '/chat-room-screen', page: () => const ChatRoomScreen()),
       ],
     );
   }

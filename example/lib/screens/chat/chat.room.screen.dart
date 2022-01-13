@@ -1,78 +1,137 @@
-// import 'dart:convert';
+import 'package:extended/extended.dart';
+import 'package:fe/screens/chat/widgets/chat_room.message.dart';
+import 'package:fireflutter/fireflutter.dart';
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:url_launcher/url_launcher.dart';
 
-// import 'package:fe/screens/chat/widgets/chat_room.message_box.dart';
-// import 'package:fireflutter/fireflutter.dart';
-// import 'package:flutter/material.dart';
-// import 'package:get/get.dart';
-// import 'package:flutterfire_ui/database.dart';
+class ChatRoomScreen extends StatefulWidget {
+  const ChatRoomScreen({Key? key}) : super(key: key);
 
-// class ChatRoomScreen extends StatefulWidget {
-//   const ChatRoomScreen({Key? key}) : super(key: key);
+  @override
+  State<ChatRoomScreen> createState() => _ChatRoomScreenState();
+}
 
-//   @override
-//   State<ChatRoomScreen> createState() => _ChatRoomScreenState();
-// }
+class _ChatRoomScreenState extends State<ChatRoomScreen> {
+  String otherUid = Get.arguments['uid'];
 
-// class _ChatRoomScreenState extends State<ChatRoomScreen> {
-//   final chat = Chat(otherUid: Get.arguments['uid']);
-//   @override
-//   void initState() {
-//     super.initState();
+  int newMessages = 0;
 
-//     test();
-//   }
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(otherUid),
+      ),
+      body: ChatRoom(
+        otherUid: otherUid,
+        messageBuilder: (ChatMessageModel message) {
+          /// If it's text, then display without popup menu for other user
+          if (message.byOther && message.isText) return ChatRoomMessage(message);
+          return PopupMenuButton<String>(
+            offset: message.isMine ? const Offset(1, 50) : const Offset(0, 50),
+            child: ChatRoomMessage(message),
+            onSelected: (String result) async {
+              if (result == 'delete') {
+                final re = await confirm('Message delete', 'Do you want to delete this message?');
+                if (re == false) return;
+                message.delete().catchError(error);
+              } else if (result == 'edit') {
+                final input = TextEditingController(text: message.text);
+                showDialog(
+                  context: context,
+                  builder: (c) => AlertDialog(
+                    title: const Text('Edit message'),
+                    content: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        TextField(
+                          controller: input,
+                          maxLines: 4,
+                        ),
+                      ],
+                    ),
+                    actions: [
+                      TextButton(
+                        onPressed: () {
+                          Get.back();
+                        },
+                        child: const Text('Close'),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          message.update(input.text).then((x) => Get.back()).catchError(error);
+                        },
+                        child: const Text('Update'),
+                      ),
+                    ],
+                  ),
+                );
+              } else if (result == 'open') {
+                /// Uploaded files or link typed by user.
+                if (await canLaunch(message.text)) {
+                  launch(message.text);
+                } else {
+                  error('Cannot launch ${message.text}');
+                }
+              }
+            },
+            itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+              if (message.isMine && message.isImage == false)
+                const PopupMenuItem<String>(
+                  value: 'edit',
+                  child: Text('Edit'),
+                ),
+              if (message.isMine)
+                const PopupMenuItem<String>(
+                  value: 'delete',
+                  child: Text('Delete'),
+                ),
 
-//   test() async {
-//     // try {
-//     //   await chat.send(message: 'hi there');
-//     // } catch (e) {
-//     //   print(e);
-//     // }
-//   }
+              /// Uploaded files or link typed by user.
+              if (message.isUrl)
+                const PopupMenuItem<String>(
+                  value: 'open',
+                  child: Text('Open'),
+                ),
+            ],
+          );
+        },
 
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: const Text('Chat room'),
-//       ),
-//       bottomNavigationBar: SafeArea(
-//         child: ChatRoomMessageBox(onSend: chat.send),
-//       ),
-//       body: Padding(
-//           padding: const EdgeInsets.all(8.0),
-//           child: FirebaseDatabaseQueryBuilder(
-//             query: chat.room.orderByKey(),
-//             builder: (context, snapshot, _) {
-//               if (snapshot.isFetching) {
-//                 return const CircularProgressIndicator.adaptive();
-//               }
-//               if (snapshot.hasError) {
-//                 return Text('Something went wrong! ${snapshot.error}');
-//               }
+        inputBuilder: (onSubmit) => TextField(onSubmitted: onSubmit),
+        onError: error,
 
-//               return ListView.builder(
-//                 itemCount: snapshot.docs.length,
-//                 itemBuilder: (context, index) {
-//                   // if we reached the end of the currently obtained items, we try to
-//                   // obtain more items
-//                   if (snapshot.hasMore && index + 1 == snapshot.docs.length) {
-//                     // Tell FirebaseDatabaseQueryBuilder to try to obtain more items.
-//                     // It is safe to call this function from within the build method.
-//                     snapshot.fetchMore();
-//                   }
+        /// Send push notification here with no of new message.
+        onUpdateOtherUserRoomInformation: (Map<String, dynamic> data) async {
+          /// Send push notification to the other user.
+          // QuerySnapshot querySnapshot = await ChatService.instance
+          //     .otherUserRoomsCol(otherUid)
+          //     .where('newMessages', isGreaterThan: 0)
+          //     .get();
 
-//                   final data = MessageModel.fromJson(snapshot.docs[index].value);
+          // newMessages = 0;
+          // querySnapshot.docs.forEach((doc) {
+          //   ChatDataModel room = ChatDataModel.fromJson(doc.data() as Map);
+          //   newMessages += room.newMessages;
+          // });
 
-//                   return Container(
-//                     padding: const EdgeInsets.all(8),
-//                     color: Colors.teal[100],
-//                     child: Text("- ${data.message}"),
-//                   );
-//                 },
-//               );
-//             },
-//           )),
-//     );
-//   }
-// }
+          // // sent message to other user.
+          // MessagingApi.instance.sendMessageToUsers(
+          //   title: UserApi.instance.currentUser.displayName + ' sent a message',
+          //   content: data['text'], // for image "Sent a photo"
+          //   ids: [other!.id],
+          //   badge: newMessages,
+          //   // chat subscription to disable chat message notification
+          //   // this doesnt subscribe to topic but check if the user has meta that is set to 'off' value
+          //   subscription: 'chatNotify' + UserApi.instance.currentUser.userLogin,
+          //   data: {
+          //     'type': 'chat',
+          //     'otherUid': UserApi.instance.currentUser.userLogin,
+          //   },
+          // );
+        },
+        emptyDisplay: Text('Chat room is empty for $otherUid'),
+      ),
+    );
+  }
+}

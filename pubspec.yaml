@@ -15,9 +15,15 @@ dependencies:
   firebase_auth: ^3.3.4
   firebase_database: ^9.0.4
   cloud_firestore: ^3.1.6
+
+  rxdart: any
+
   
   # PhoneNumberInput widget
   country_code_picker: ^2.0.2
+
+  # Chat room pagination
+  paginate_firestore: ^1.0.3
 
 
 dev_dependencies:

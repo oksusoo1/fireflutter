@@ -18,13 +18,14 @@ Table of contents
 
 - [Fire Flutter](#fire-flutter)
 - [Features](#features)
+- [TODOs](#todos)
+  - [Find Friends](#find-friends)
 - [Installation](#installation)
   - [Running the example](#running-the-example)
   - [Creating a new project](#creating-a-new-project)
   - [Firebase installation](#firebase-installation)
     - [iOS installation](#ios-installation)
   - [Firebase Realtime Database Installation](#firebase-realtime-database-installation)
-- [Packages](#packages)
 - [User](#user)
   - [User installation](#user-installation)
   - [Test users](#test-users)
@@ -33,10 +34,8 @@ Table of contents
   - [User presence overview](#user-presence-overview)
   - [User Presence Installation](#user-presence-installation)
   - [User presence logic](#user-presence-logic)
-- [Other user profile](#other-user-profile)
+- [User profile](#user-profile)
   - [Displaying user profile](#displaying-user-profile)
-- [TODOs](#todos)
-  - [Find Friends](#find-friends)
 - [For developer](#for-developer)
   - [Building your app](#building-your-app)
   - [Building fireflutter](#building-fireflutter)
@@ -54,6 +53,22 @@ Table of contents
 
 - User presence
   - To know if a user is online or offline.
+
+
+- User Profile
+  - Saving & displaying user profile.
+
+
+- Chat
+
+
+
+# TODOs
+
+## Find Friends
+
+- Idea: See if you are looking for a friend in a busy city. When you and your friend are connected, you can find each other by sharing geo location.
+- Implementaion: put find button and when connected, display position in map and update the geo location.
 
 
 
@@ -104,14 +119,6 @@ Table of contents
   }
 }
 ```
-
-
-
-# Packages
-
-- We use [Getx](https://pub.dev/packages/get) for route & state management.
-- We use [FlutterFire UI](https://firebase.flutter.dev/docs/ui/overview) for Firebase auth and other UI examples.
-  - You may build your own UI.
 
 
 
@@ -239,7 +246,7 @@ UserPresence(
 
 
 
-# Other user profile
+# User profile
 
 - Many apps share user name and photo. For instance, when a user chat to the other user, they shoud know each other's name and photo.
 
@@ -273,13 +280,6 @@ UserDoc(
 - Note, to display if the user is online or offline, see user presence.
 
 
-
-# TODOs
-
-## Find Friends
-
-- Idea: See if you are looking for a friend in a busy city. When you and your friend are connected, you can find each other by sharing geo location.
-- Implementaion: put find button and when connected, display position in map and update the geo location.
 
 
 # For developer
