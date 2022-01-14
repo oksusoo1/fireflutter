@@ -3,16 +3,14 @@ import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
 
 class UserDoc extends StatelessWidget {
-  const UserDoc({required this.uid, required this.builder, Key? key})
-      : super(key: key);
+  const UserDoc({required this.uid, required this.builder, Key? key}) : super(key: key);
   final String uid;
   final Widget Function(UserModel) builder;
 
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
-      stream:
-          FirebaseFirestore.instance.collection('user').doc(uid).snapshots(),
+      stream: FirebaseFirestore.instance.collection('user').doc(uid).snapshots(),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
           return Text('Something went wrong');
@@ -23,7 +21,7 @@ class UserDoc extends StatelessWidget {
         if (snapshot.hasData && snapshot.data!.exists) {
           return builder(UserModel.fromJson(snapshot.data!.data()!));
         } else {
-          return builder(UserModel.none());
+          return builder(UserModel.nonExist());
         }
       },
     );

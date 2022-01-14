@@ -2,14 +2,14 @@ class UserModel {
   UserModel({
     required this.name,
     required this.photoUrl,
-    this.none = false,
+    this.exists = true,
   });
 
   String name;
   String photoUrl;
 
   /// [none] becomes true if the document does not exists.
-  bool none;
+  bool exists;
 
   factory UserModel.fromJson(Map<String, dynamic> data) {
     return UserModel(
@@ -18,7 +18,7 @@ class UserModel {
     );
   }
 
-  factory UserModel.none() {
-    return UserModel(name: '', photoUrl: '', none: true);
+  factory UserModel.nonExist() {
+    return UserModel(name: '', photoUrl: '', exists: false);
   }
 }
