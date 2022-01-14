@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
@@ -23,11 +25,27 @@ class FriendMapService {
     return _instance!;
   }
 
-  init({required String googleApiKey}) {
+  init({required String googleApiKey, required String otherUid}) {
     _apiKey = googleApiKey;
+    _otherUid = otherUid;
+
+    FirebaseFirestore.instance
+        .collection('location')
+        .doc(_otherUid)
+        .snapshots()
+        .listen((DocumentSnapshot<Map<String, dynamic>> doc) {
+      if (doc.exists) {
+        // # (logic-display-marker)
+        print(doc);
+        // get lat, lon
+        // add marker
+        // move camera view.
+      }
+    });
   }
 
   String _apiKey = '';
+  String _otherUid = '';
 
   String _currentAddress = '';
   String get currentAddress => _currentAddress;
@@ -64,7 +82,17 @@ class FriendMapService {
         distanceFilter: distanceFilter,
         accuracy: accuracy,
       ),
-    );
+    ).map((Position position) {
+      // # (logic-updating-location)
+      FirebaseFirestore.instance
+          .collection('location')
+          .doc(FirebaseAuth.instance.currentUser!.uid)
+          .set({
+        'latitude': position.latitude,
+        'longitude': position.longitude,
+      }).catchError((e) => debugPrint(e));
+      return position;
+    });
   }
 
   /// Checks necessary permission for geolocator.

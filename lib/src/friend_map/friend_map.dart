@@ -3,14 +3,19 @@ import 'dart:async';
 import 'package:fireflutter/src/defines.dart';
 import 'package:fireflutter/src/friend_map/friend_map.service.dart';
 import 'package:flutter/material.dart';
-import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class FriendMap extends StatefulWidget {
-  const FriendMap({required this.googleApiKey, required this.error, Key? key}) : super(key: key);
+  const FriendMap({
+    required this.googleApiKey,
+    required this.otherUid,
+    required this.error,
+    Key? key,
+  }) : super(key: key);
 
   final String googleApiKey;
+  final String otherUid;
   final ErrorCallback error;
 
   @override
@@ -29,7 +34,7 @@ class _FriendMapState extends State<FriendMap> {
   void initState() {
     super.initState();
 
-    service.init(googleApiKey: widget.googleApiKey);
+    service.init(googleApiKey: widget.googleApiKey, otherUid: widget.otherUid);
 
     getCurrentLocation();
 
@@ -37,6 +42,7 @@ class _FriendMapState extends State<FriendMap> {
     /// TODO Do not update the same location.
     positionStream = service.initLocationListener().listen((Position position) {
       print('position changed: lat ${position.latitude} ; lng ${position.longitude}');
+
       service.updateMarkerPosition(
         MarkerIds.currentLocation,
         position.latitude,
@@ -64,27 +70,6 @@ class _FriendMapState extends State<FriendMap> {
     }
   }
 
-  /// Search for other location using address.
-  searchOtherLocation(String address) async {
-    if (address.isEmpty) return;
-    try {
-      List<Location> locations = await locationFromAddress(address);
-      service.addMarker(
-        MarkerIds.destination,
-        locations[0].latitude,
-        locations[0].longitude,
-        title: "Destination",
-        snippet: address,
-        removeMarkerWithId: MarkerIds.destination,
-      );
-      service.adjustCameraViewAndZoom();
-      if (mounted) setState(() {});
-    } catch (e) {
-      // print(e.toString());
-      widget.error('Cannot find location for the specified address');
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -99,47 +84,6 @@ class _FriendMapState extends State<FriendMap> {
           onMapCreated: (GoogleMapController controller) => service.mapController = controller,
           markers: Set<Marker>.from(service.markers),
           polylines: Set<Polyline>.of(service.polylines.values),
-        ),
-        Positioned(
-          top: 0,
-          left: 0,
-          right: 0,
-          child: Container(
-            color: Colors.white,
-            padding: EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                TextFormField(
-                  controller: searchBoxController,
-                  onFieldSubmitted: (key) => searchOtherLocation(key),
-                  decoration: InputDecoration(
-                    hintText: 'Search',
-                    contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 15),
-                    suffixIcon: Icon(Icons.search),
-                  ),
-                ),
-                if (service.canGetDirections) ...[
-                  SizedBox(height: 10),
-                  TextButton(
-                    style: TextButton.styleFrom(
-                      primary: Colors.white,
-                      backgroundColor: Colors.blueAccent,
-                    ),
-                    child: Text('Get Directions'),
-                    onPressed: () async {
-                      try {
-                        await service.addPolylines();
-                        setState(() {});
-                      } catch (e) {
-                        widget.error(e);
-                      }
-                    },
-                  ),
-                ],
-              ],
-            ),
-          ),
         ),
         Positioned(
           bottom: 0,

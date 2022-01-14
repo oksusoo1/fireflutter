@@ -14,6 +14,7 @@ class FriendMapScreen extends StatelessWidget {
       ),
       body: FriendMap(
         googleApiKey: Config.gcpApiKeyWithRestriction,
+        otherUid: 'A-uid',
         error: error,
       ),
     );

@@ -42,6 +42,7 @@ Table of contents
 - [FriendMap](#friendmap)
   - [FriendMap installation](#friendmap-installation)
   - [FriendMap logic](#friendmap-logic)
+  - [FriendMap testing](#friendmap-testing)
 - [For developer](#for-developer)
   - [Building your app](#building-your-app)
   - [Building fireflutter](#building-fireflutter)
@@ -359,11 +360,20 @@ UserFutureDoc(
   - When `B` accepts,
     - `FriendMap` screen will be automatically opened on both of `A` and `B`'s device.
 
-- When `FriendMap` is opened, the app will beging to save each user's location on `/location/<uid>`.
+- (logic-updating-location) When `FriendMap` is opened, the app will beging to save each user's location on `/location/<uid>`.
   - For instance, `A` will update his location in `/location/<A's-uid>` while `B` will update his location in `/location/<B's-uid>`.
+
+- (logic-display-marker)
   - And, on `A` device, the app simply draws the marker of `A` from his device location on the map and get `B`'s location from `/location/<B's-uid>` and display the marker on map.
   - And, on `B` device, the app simply draws the marker of `B` from his device location and get `A`'s location from `/location/<A's-uid>` and display `B`'s marker on the map.
 
+- Optionally, `FriendMap` can display the address of location of each user.
+
+
+## FriendMap testing
+
+- Simply update `/location/<A's-uid>/` and `/location/<B's-uid>` manully.
+  - To make it easy, update the location programatically.
 
 
 # For developer
