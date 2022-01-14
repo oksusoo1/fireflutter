@@ -41,6 +41,7 @@ Table of contents
   - [Chat structure of Firestore](#chat-structure-of-firestore)
 - [FriendMap](#friendmap)
   - [FriendMap installation](#friendmap-installation)
+  - [FriendMap logic](#friendmap-logic)
 - [For developer](#for-developer)
   - [Building your app](#building-your-app)
   - [Building fireflutter](#building-fireflutter)
@@ -344,6 +345,24 @@ UserFutureDoc(
 
 - Follow the installation in [geolocator](https://pub.dev/packages/geolocator) package.
 
+
+
+## FriendMap logic
+
+- There are two users who wants to meet. User `A` and `B`.
+- `A` requests 'FriendMap' to `B` by pressing the chat room list menu.
+  - App automatically sends a chat message to `B`, so even if `B` closed the app, `B` will get push notification.
+  - And when `B` is online, app will show dialog box to inform.
+
+- `B` can accept or reject the request.
+  - Once rejected, there will be more `informing dialog` when `A` requests again.
+  - When `B` accepts,
+    - `FriendMap` screen will be automatically opened on both of `A` and `B`'s device.
+
+- When `FriendMap` is opened, the app will beging to save each user's location on `/location/<uid>`.
+  - For instance, `A` will update his location in `/location/<A's-uid>` while `B` will update his location in `/location/<B's-uid>`.
+  - And, on `A` device, the app simply draws the marker of `A` from his device location on the map and get `B`'s location from `/location/<B's-uid>` and display the marker on map.
+  - And, on `B` device, the app simply draws the marker of `B` from his device location and get `A`'s location from `/location/<A's-uid>` and display `B`'s marker on the map.
 
 
 
