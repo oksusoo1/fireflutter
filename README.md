@@ -66,6 +66,8 @@ Table of contents
 
 - Chat
 
+- Friend map
+  - To find friend easily.
 
 
 # TODOs
