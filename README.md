@@ -347,7 +347,6 @@ UserFutureDoc(
 - Follow the installation in [geolocator](https://pub.dev/packages/geolocator) package.
 
 
-
 ## FriendMap logic
 
 - There are two users who wants to meet. User `A` and `B`.
