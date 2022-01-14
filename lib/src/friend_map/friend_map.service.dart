@@ -191,6 +191,11 @@ class FriendMapService {
 
   /// Adding Polylines
   ///
+  /// NOTE
+  ///  - `Directions API` mus be enabled on Google Cloud Platform.
+  ///  - `Directions Api` must also be included in the API restriction of the Api Key in used.
+  ///  - Billing must be enabled on the Google Cloud Project.
+  ///
   Future<void> addPolylines({TravelMode travelMode = TravelMode.driving}) async {
     // Initializing PolylinePoints
     PolylinePoints polylinePoints = PolylinePoints();
