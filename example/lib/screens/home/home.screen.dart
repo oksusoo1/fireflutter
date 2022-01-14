@@ -143,6 +143,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 onPressed: () => Get.toNamed('/chat-rooms-screen'),
                 child: const Text('Chat Room List'),
               ),
+              const Divider(),
               TextButton(
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -154,7 +155,11 @@ class _HomeScreenState extends State<HomeScreen> {
                 onPressed: () {
                   Get.toNamed('/chat-rooms-screen');
                 },
-              )
+              ),
+              const Divider(),
+              ElevatedButton(
+                  onPressed: () => Get.toNamed('/friend-map'),
+                  child: const Text('Friend Map'))
             ],
           ),
         ),
