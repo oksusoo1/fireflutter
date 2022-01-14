@@ -91,25 +91,42 @@ class _FriendMapState extends State<FriendMap> {
       children: [
         GoogleMap(
           mapType: MapType.normal,
+          mapToolbarEnabled: false,
           myLocationEnabled: false,
-          myLocationButtonEnabled: false,
           zoomControlsEnabled: false,
+          myLocationButtonEnabled: false,
           initialCameraPosition: currentLocation,
           onMapCreated: (GoogleMapController controller) => service.mapController = controller,
           markers: Set<Marker>.from(service.markers),
           polylines: Set<Polyline>.of(service.polylines.values),
         ),
         Positioned(
-          bottom: 0,
+          top: 0,
           left: 0,
           right: 0,
           child: Container(
             color: Colors.white,
             padding: EdgeInsets.all(16),
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                if (service.canGetDirections)
+                TextFormField(
+                  controller: searchBoxController,
+                  onFieldSubmitted: (key) => searchOtherLocation(key),
+                  decoration: InputDecoration(
+                    hintText: 'Search',
+                    contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 15),
+                    suffixIcon: Icon(Icons.search),
+                  ),
+                ),
+                if (service.canGetDirections) ...[
+                  SizedBox(height: 10),
                   TextButton(
+                    style: TextButton.styleFrom(
+                      primary: Colors.white,
+                      backgroundColor: Colors.blueAccent,
+                    ),
+                    child: Text('Get Directions'),
                     onPressed: () async {
                       try {
                         await service.addPolylines();
@@ -118,18 +135,33 @@ class _FriendMapState extends State<FriendMap> {
                         widget.error(e);
                       }
                     },
-                    child: Text('Get Directions'),
                   ),
-                Text('My location: ' + service.currentAddress),
-                TextFormField(
-                  controller: searchBoxController,
-                  onFieldSubmitted: (key) => searchOtherLocation(key),
-                  decoration: InputDecoration(hintText: 'Search'),
+                ],
+              ],
+            ),
+          ),
+        ),
+        Positioned(
+          bottom: 0,
+          left: 0,
+          right: 0,
+          child: Container(
+            color: Colors.white,
+            padding: EdgeInsets.all(16),
+            child: Row(
+              children: [
+                Icon(Icons.location_on, color: Colors.blueAccent),
+                SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    'My location: ' + service.currentAddress,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
               ],
             ),
           ),
-        )
+        ),
       ],
     );
   }
