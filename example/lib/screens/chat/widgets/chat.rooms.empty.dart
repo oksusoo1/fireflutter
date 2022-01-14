@@ -4,8 +4,7 @@ import 'package:extended/extended.dart';
 class ChatRoomsEmpty extends StatelessWidget {
   ChatRoomsEmpty({Key? key}) : super(key: key);
 
-  final textStyle = TextStyle(
-      fontSize: 16, color: Colors.grey[400], fontWeight: FontWeight.w600);
+  final textStyle = TextStyle(fontSize: 16, color: Colors.grey[400], fontWeight: FontWeight.w600);
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +20,7 @@ class ChatRoomsEmpty extends StatelessWidget {
           // ]),
           spaceSm,
           Padding(
-            padding: EdgeInsets.symmetric(horizontal: xxl, vertical: sm),
+            padding: const EdgeInsets.symmetric(horizontal: xxl, vertical: sm),
             child: Text(
               'No messages from friends, yet.\n You can send a message to friends by chat menu on forum.',
               style: textStyle,

@@ -2,10 +2,11 @@
 
 
 
-## [0.2.7] - User profile & chat
+## [0.2.7] - User profile, chat, friend map
 
 - User profile saving and displaying.
 - 1:1 chat functionality has been added. see README.md for details.
+- Friend map functionality has been added. see README.md for details.
 
 ## [0.2.6] - Phone sign-in code submit progress
 
