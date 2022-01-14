@@ -21,7 +21,7 @@ class UserFutureDoc extends StatelessWidget {
         if (snapshot.hasData && snapshot.data!.exists) {
           return builder(UserModel.fromJson(snapshot.data!.data()!));
         } else {
-          return builder(UserModel.none());
+          return builder(UserModel.nonExist());
         }
       },
     );

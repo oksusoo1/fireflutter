@@ -16,12 +16,12 @@ class UserDoc extends StatelessWidget {
           return Text('Something went wrong');
         }
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return CircularProgressIndicator.adaptive();
+          return Center(child: CircularProgressIndicator.adaptive());
         }
         if (snapshot.hasData && snapshot.data!.exists) {
           return builder(UserModel.fromJson(snapshot.data!.data()!));
         } else {
-          return builder(UserModel.none());
+          return builder(UserModel.nonExist());
         }
       },
     );
