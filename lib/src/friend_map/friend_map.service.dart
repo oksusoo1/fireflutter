@@ -165,18 +165,28 @@ class FriendMapService {
 
   /// Updates the existing marker on the map.
   ///
-  updateMarkerPosition(String id, double lat, double lng,
-      {bool adjustCameraView = false, double cameraZoom = 18}) {
+  updateMarkerPosition(
+    String id,
+    double lat,
+    double lng, {
+    bool adjustCameraView = false,
+    double cameraZoom = 18,
+  }) {
+    if (_markers.isEmpty) return;
     Marker previousMarker = _markers.firstWhere((m) => m.markerId.value == id);
-    Marker marker = Marker(
-      markerId: MarkerId(id),
-      position: LatLng(lat, lng),
-      infoWindow: previousMarker.infoWindow,
-      icon: previousMarker.icon,
-    );
-    _markers.removeWhere((m) => m.markerId.value == id);
-    _markers.add(marker);
-    if (adjustCameraView) moveCameraView(lat, lng, zoom: cameraZoom);
+    if (previousMarker.position.latitude == lat && previousMarker.position.longitude == lng) {
+      /// Do nothing, it's the same coordinates..
+    } else {
+      Marker marker = Marker(
+        markerId: MarkerId(id),
+        position: LatLng(lat, lng),
+        infoWindow: previousMarker.infoWindow,
+        icon: previousMarker.icon,
+      );
+      _markers.removeWhere((m) => m.markerId.value == id);
+      _markers.add(marker);
+      if (adjustCameraView) moveCameraView(lat, lng, zoom: cameraZoom);
+    }
   }
 
   /// Adding Polylines
