@@ -1,5 +1,6 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+// import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
@@ -29,12 +30,8 @@ class FriendMapService {
     _apiKey = googleApiKey;
     _otherUid = otherUid;
 
-    FirebaseFirestore.instance
-        .collection('location')
-        .doc(_otherUid)
-        .snapshots()
-        .listen((DocumentSnapshot<Map<String, dynamic>> doc) {
-      if (doc.exists) {
+    FirebaseDatabase.instance.ref('location').child(_otherUid).onValue.listen((DatabaseEvent doc) {
+      if (doc.snapshot.exists) {
         // # (logic-display-marker)
         print(doc);
         // get lat, lon
@@ -84,10 +81,7 @@ class FriendMapService {
       ),
     ).map((Position position) {
       // # (logic-updating-location)
-      FirebaseFirestore.instance
-          .collection('location')
-          .doc(FirebaseAuth.instance.currentUser!.uid)
-          .set({
+      FirebaseDatabase.instance.ref('location').child(FirebaseAuth.instance.currentUser!.uid).set({
         'latitude': position.latitude,
         'longitude': position.longitude,
       }).catchError((e) => debugPrint(e));
