@@ -208,6 +208,10 @@ class FriendMapService {
       travelMode: travelMode,
     );
 
+    if (result.status == 'REQUEST_DENIED') {
+      throw '${result.status} - ${result.errorMessage}';
+    }
+
     // Adding the coordinates to the list
     if (result.points.isNotEmpty) {
       result.points.forEach((PointLatLng point) {

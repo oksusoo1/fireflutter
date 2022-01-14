@@ -18,6 +18,9 @@ class ChatService with ChatMixins {
   // The other user's uid of current room.
   String otherUid = '';
 
+  CollectionReference get otherRoomCol =>
+      FirebaseFirestore.instance.collection('chat/rooms/$otherUid');
+
   /// Post [newMessages] event when there is a new message.
   ///
   /// Use this event to update the no of new chat messagges.

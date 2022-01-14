@@ -35,7 +35,7 @@ class _MainAppState extends State<MainApp> {
   void initState() {
     super.initState();
     Presence.instance.activate(
-      onError: (e) => print('--> Presence error: $e'),
+      onError: (e) => debugPrint('--> Presence error: $e'),
     );
 
     // Timer(const Duration(milliseconds: 200), () => Get.toNamed('/sms-code-ui'));
