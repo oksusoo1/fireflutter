@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fireflutter/src/chat/chat.data.model.dart';
 import 'package:fireflutter/src/chat/chat.defines.dart';
