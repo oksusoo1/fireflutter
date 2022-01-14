@@ -104,8 +104,8 @@ class FriendMapService {
 
     /// set current address.
     _currentAddress = await getAddressFromCoordinates(
-      position.longitude,
       position.latitude,
+      position.longitude,
     );
 
     /// Mark current location.
