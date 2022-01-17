@@ -42,7 +42,8 @@ class _FriendMapState extends State<FriendMap> {
       longitude: widget.longitude.toDouble(),
     );
 
-    getCurrentLocation();
+    // getCurrentLocation();
+    markUsersLocations();
 
     positionStream = service.initLocationListener().listen((Position position) {
       print('position changed: lat ${position.latitude} ; lng ${position.longitude}');
@@ -64,15 +65,17 @@ class _FriendMapState extends State<FriendMap> {
   }
 
   /// Get current position of the user.
-  getCurrentLocation() async {
+  markUsersLocations() async {
     try {
-      await service.getCurrentPosition();
+      await service.markUsersLocations();
+      // markOtherUsersLocation();
       if (mounted) setState(() {});
     } catch (e) {
-      print(e.toString());
-      widget.error('Error getting your location.');
+      // print(e.toString());
+      widget.error(e);
     }
   }
+
 
   @override
   Widget build(BuildContext context) {

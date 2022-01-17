@@ -1,5 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
@@ -36,13 +34,16 @@ class FriendMapService {
   }
 
   String _apiKey = '';
-  late final double latitude;
-  late final double longitude;
+  late double latitude;
+  late double longitude;
 
   String _currentAddress = '';
   String get currentAddress => _currentAddress;
+  String _otherUsersAddress = '';
+  String get otherUsersAddress => _otherUsersAddress;
 
-  /// Map storing polylines created by connecting two points
+  /// Map storing polylines created by connecting two points.
+  ///
   Map<PolylineId, Polyline> _polylines = {};
   get polylines => _polylines;
 
@@ -57,26 +58,17 @@ class FriendMapService {
   double get _destinationLongitude => markers.last.position.longitude;
 
   late GoogleMapController _mapController;
-  set mapController(controller) => _mapController = controller;
-
-  ///
-  bool get canGetDirections => markers.length > 1;
+  set mapController(GoogleMapController controller) => _mapController = controller;
 
   /// Initialize location change listener
-  ///
   ///
   Stream<Position> initLocationListener({
     int distanceFilter = 0,
     LocationAccuracy accuracy = LocationAccuracy.high,
   }) {
     return Geolocator.getPositionStream(
-      locationSettings: LocationSettings(
-        distanceFilter: distanceFilter,
-        accuracy: accuracy,
-      ),
-    ).map((Position position) {
-      return position;
-    });
+      locationSettings: LocationSettings(distanceFilter: distanceFilter, accuracy: accuracy),
+    );
   }
 
   /// Checks necessary permission for geolocator.
@@ -106,39 +98,53 @@ class FriendMapService {
     return true;
   }
 
-  /// Return current positoin
+  /// Return current positoin.
   ///
   Future<Position> get currentPosition async {
     await checkPermission();
     return await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
   }
 
-  /// Gets the current position of the user.
+  /// Marks locations on screen.
   ///
-  Future getCurrentPosition({
+  Future markUsersLocations({
     LocationAccuracy accuracy = LocationAccuracy.high,
   }) async {
     await checkPermission();
-    Position position = await Geolocator.getCurrentPosition(desiredAccuracy: accuracy);
+
+    Position currentUserPosition = await Geolocator.getCurrentPosition(desiredAccuracy: accuracy);
 
     /// set current address.
     _currentAddress = await getAddressFromCoordinates(
-      position.latitude,
-      position.longitude,
+      currentUserPosition.latitude,
+      currentUserPosition.longitude,
     );
 
-    /// Mark current location.
     addMarker(
       MarkerIds.currentLocation,
-      position.latitude,
-      position.longitude,
+      currentUserPosition.latitude,
+      currentUserPosition.longitude,
       title: "My Location",
       snippet: _currentAddress,
       markerType: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueYellow),
     );
 
-    /// update map view.
-    moveCameraView(position.latitude, position.longitude);
+    _otherUsersAddress = await getAddressFromCoordinates(
+      latitude,
+      longitude,
+    );
+
+    addMarker(
+      MarkerIds.destination,
+      latitude,
+      longitude,
+      title: "Destination",
+      snippet: _otherUsersAddress,
+    );
+
+    await addPolylines();
+
+    adjustCameraViewAndZoom();
   }
 
   /// Transforms a position's coordinate to an address.
@@ -182,6 +188,52 @@ class FriendMapService {
     _markers.add(marker);
   }
 
+  /// Adding Polylines
+  ///
+  /// NOTE
+  ///  - `Directions API` mus be enabled on Google Cloud Platform.
+  ///  - `Directions Api` must also be included in the API restriction of the Api Key in used.
+  ///  - Billing must be enabled on the Google Cloud Project.
+  ///
+  Future<void> addPolylines({TravelMode travelMode = TravelMode.driving}) async {
+    // Initializing PolylinePoints
+    PolylinePoints polylinePoints = PolylinePoints();
+    List<LatLng> polylineCoordinates = [];
+
+    PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
+      _apiKey,
+      PointLatLng(_startLatitude, _startLongitude),
+      PointLatLng(_destinationLatitude, _destinationLongitude),
+      travelMode: travelMode,
+    );
+
+    if (result.status == 'REQUEST_DENIED') {
+      /// throw '${result.status} - ${result.errorMessage}';
+      print('${result.status} - ${result.errorMessage}');
+    }
+
+    // Adding the coordinates to the list
+    if (result.points.isNotEmpty) {
+      result.points.forEach((PointLatLng point) {
+        polylineCoordinates.add(LatLng(point.latitude, point.longitude));
+      });
+    }
+
+    // Defining an ID
+    PolylineId id = PolylineId('poly');
+
+    // Initializing Polyline
+    Polyline polyline = Polyline(
+      polylineId: id,
+      color: Colors.red,
+      points: polylineCoordinates,
+      width: 3,
+    );
+
+    // Adding the polyline to the map
+    _polylines[id] = polyline;
+  }
+
   /// Updates the existing marker on the map.
   ///
   updateMarkerPosition(
@@ -206,51 +258,6 @@ class FriendMapService {
       _markers.add(marker);
       if (adjustCameraView) moveCameraView(lat, lng, zoom: cameraZoom);
     }
-  }
-
-  /// Adding Polylines
-  ///
-  /// NOTE
-  ///  - `Directions API` mus be enabled on Google Cloud Platform.
-  ///  - `Directions Api` must also be included in the API restriction of the Api Key in used.
-  ///  - Billing must be enabled on the Google Cloud Project.
-  ///
-  Future<void> addPolylines({TravelMode travelMode = TravelMode.driving}) async {
-    // Initializing PolylinePoints
-    PolylinePoints polylinePoints = PolylinePoints();
-    List<LatLng> polylineCoordinates = [];
-
-    PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
-      _apiKey,
-      PointLatLng(_startLatitude, _startLongitude),
-      PointLatLng(_destinationLatitude, _destinationLongitude),
-      travelMode: travelMode,
-    );
-
-    if (result.status == 'REQUEST_DENIED') {
-      throw '${result.status} - ${result.errorMessage}';
-    }
-
-    // Adding the coordinates to the list
-    if (result.points.isNotEmpty) {
-      result.points.forEach((PointLatLng point) {
-        polylineCoordinates.add(LatLng(point.latitude, point.longitude));
-      });
-    }
-
-    // Defining an ID
-    PolylineId id = PolylineId('poly');
-
-    // Initializing Polyline
-    Polyline polyline = Polyline(
-      polylineId: id,
-      color: Colors.red,
-      points: polylineCoordinates,
-      width: 3,
-    );
-
-    // Adding the polyline to the map
-    _polylines[id] = polyline;
   }
 
   /// Update camera view.
