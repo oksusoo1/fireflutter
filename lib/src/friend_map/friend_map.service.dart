@@ -170,7 +170,6 @@ class FriendMapService {
     String? title,
     String? snippet,
     BitmapDescriptor markerType = BitmapDescriptor.defaultMarker,
-    String? removeMarkerWithId,
   }) {
     Marker marker = Marker(
       markerId: MarkerId('$id'),
@@ -179,13 +178,39 @@ class FriendMapService {
       icon: markerType,
     );
 
-    if (removeMarkerWithId != null) {
-      _markers.removeWhere((m) => m.markerId.value == removeMarkerWithId);
-    }
-
+    /// resets the polylines.
     if (_polylines.length > 0) _polylines.clear();
 
+    /// prevents multiple marker to show on map.
+    _markers.removeWhere((m) => m.markerId.value == id);
+
     _markers.add(marker);
+  }
+
+  /// Updates the existing marker on the map.
+  ///
+  updateMarkerPosition(
+    String id,
+    double lat,
+    double lng, {
+    bool adjustCameraView = false,
+    double cameraZoom = 18,
+  }) {
+    if (_markers.isEmpty) return;
+    Marker previousMarker = _markers.firstWhere((m) => m.markerId.value == id);
+    if (previousMarker.position.latitude == lat && previousMarker.position.longitude == lng) {
+      /// Do nothing, it's the same coordinates..
+    } else {
+      Marker marker = Marker(
+        markerId: MarkerId(id),
+        position: LatLng(lat, lng),
+        infoWindow: previousMarker.infoWindow,
+        icon: previousMarker.icon,
+      );
+      _markers.removeWhere((m) => m.markerId.value == id);
+      _markers.add(marker);
+      if (adjustCameraView) moveCameraView(lat, lng, zoom: cameraZoom);
+    }
   }
 
   /// Adding Polylines
@@ -232,32 +257,6 @@ class FriendMapService {
 
     // Adding the polyline to the map
     _polylines[id] = polyline;
-  }
-
-  /// Updates the existing marker on the map.
-  ///
-  updateMarkerPosition(
-    String id,
-    double lat,
-    double lng, {
-    bool adjustCameraView = false,
-    double cameraZoom = 18,
-  }) {
-    if (_markers.isEmpty) return;
-    Marker previousMarker = _markers.firstWhere((m) => m.markerId.value == id);
-    if (previousMarker.position.latitude == lat && previousMarker.position.longitude == lng) {
-      /// Do nothing, it's the same coordinates..
-    } else {
-      Marker marker = Marker(
-        markerId: MarkerId(id),
-        position: LatLng(lat, lng),
-        infoWindow: previousMarker.infoWindow,
-        icon: previousMarker.icon,
-      );
-      _markers.removeWhere((m) => m.markerId.value == id);
-      _markers.add(marker);
-      if (adjustCameraView) moveCameraView(lat, lng, zoom: cameraZoom);
-    }
   }
 
   /// Update camera view.
