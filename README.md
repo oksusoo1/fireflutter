@@ -330,11 +330,8 @@ UserFutureDoc(
 # FriendMap
 
 - Idea\
-  When someone is seeking someone and both of them are stranger of the place, how would they find each other? Some country may use road name as land marks while some country has no names on roads, instead, they use building names as land marks. But both of them are foreginers and they don't know the country's language.
-  If there is a map which display two markers of each user's position, it would be a big help.
-
-  `FriendMap` feature provides a functionality to find a friend on map. It shares both of user's geo locations and the app can display markers on the map and updates the markers on every move.
-
+  When someone is seeking someone and both of them are foreginers of the place, how would they find each other? Both of them do not understand the country's language.
+  `FriendMap` feature send a user's latitude and longitude to the other user. So the other can navigate on the map.
 
 ## FriendMap installation
 
@@ -349,25 +346,12 @@ UserFutureDoc(
 
 ## FriendMap logic
 
-- There are two users who wants to meet. User `A` and `B`.
-- `A` requests 'FriendMap' to `B` by pressing the chat room list menu.
-  - App automatically sends a chat message to `B`, so even if `B` closed the app, `B` will get push notification.
-  - And when `B` is online, app will show dialog box to inform.
+- There are two users. User `A` and `B`.
+- `A` sends his latitude and longitude to `B` on chat. (So, when `B` is offline, he will get push notification by the built in chat funciton)
 
-- `B` can accept or reject the request.
-  - Once rejected, there will be more `informing dialog` when `A` requests again.
-  - When `B` accepts,
-    - `FriendMap` screen will be automatically opened on both of `A` and `B`'s device.
-
-- (logic-updating-location) When `FriendMap` is opened, the app will beging to save each user's location on `/location/<uid>`.
-  - For instance, `A` will update his location in `/location/<A's-uid>` while `B` will update his location in `/location/<B's-uid>`.
-
-- (logic-display-marker)
-  - And, on `A` device, the app simply draws the marker of `A` from his device location on the map and get `B`'s location from `/location/<B's-uid>` and display the marker on map.
-  - And, on `B` device, the app simply draws the marker of `B` from his device location and get `A`'s location from `/location/<A's-uid>` and display `B`'s marker on the map.
-
-- Optionally, `FriendMap` can display the address of location of each user.
-
+- `B` opens chat room.
+- `B` click the link of lat & lon to open `Friend Map`.
+- the app navigates.
 
 ## FriendMap testing
 
