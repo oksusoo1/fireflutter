@@ -25,23 +25,19 @@ class FriendMapService {
     return _instance!;
   }
 
-  init({required String googleApiKey, required String otherUid}) {
+  init({
+    required String googleApiKey,
+    required double latitude,
+    required double longitude,
+  }) {
     _apiKey = googleApiKey;
-    _otherUid = otherUid;
-
-    FirebaseDatabase.instance.ref('location').child(_otherUid).onValue.listen((DatabaseEvent doc) {
-      if (doc.snapshot.exists) {
-        // # (logic-display-marker)
-        print(doc);
-        // get lat, lon
-        // add marker
-        // move camera view.
-      }
-    });
+    this.latitude = latitude;
+    this.longitude = longitude;
   }
 
   String _apiKey = '';
-  String _otherUid = '';
+  late final double latitude;
+  late final double longitude;
 
   String _currentAddress = '';
   String get currentAddress => _currentAddress;
@@ -79,11 +75,6 @@ class FriendMapService {
         accuracy: accuracy,
       ),
     ).map((Position position) {
-      // # (logic-updating-location)
-      FirebaseDatabase.instance.ref('location').child(FirebaseAuth.instance.currentUser!.uid).set({
-        'latitude': position.latitude,
-        'longitude': position.longitude,
-      }).catchError((e) => debugPrint(e));
       return position;
     });
   }
@@ -113,6 +104,13 @@ class FriendMapService {
     }
 
     return true;
+  }
+
+  /// Return current positoin
+  ///
+  Future<Position> get currentPosition async {
+    await checkPermission();
+    return await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
   }
 
   /// Gets the current position of the user.

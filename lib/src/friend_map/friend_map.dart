@@ -9,13 +9,15 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 class FriendMap extends StatefulWidget {
   const FriendMap({
     required this.googleApiKey,
-    required this.otherUid,
+    required this.latitude,
+    required this.longitude,
     required this.error,
     Key? key,
   }) : super(key: key);
 
   final String googleApiKey;
-  final String otherUid;
+  final double latitude;
+  final double longitude;
   final ErrorCallback error;
 
   @override
@@ -34,12 +36,14 @@ class _FriendMapState extends State<FriendMap> {
   void initState() {
     super.initState();
 
-    service.init(googleApiKey: widget.googleApiKey, otherUid: widget.otherUid);
+    service.init(
+      googleApiKey: widget.googleApiKey,
+      latitude: widget.latitude.toDouble(),
+      longitude: widget.longitude.toDouble(),
+    );
 
     getCurrentLocation();
 
-    /// TODO save to firebase database so other user can subscribe for live location update.
-    /// TODO Do not update the same location.
     positionStream = service.initLocationListener().listen((Position position) {
       print('position changed: lat ${position.latitude} ; lng ${position.longitude}');
 

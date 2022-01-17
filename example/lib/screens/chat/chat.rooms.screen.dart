@@ -100,16 +100,18 @@ class _ChatRoomsUserState extends State<ChatRoomsUser> {
                 ),
                 spaceXsm,
                 FormSelect(
-                    options: const {'close': 'Close', 'friendMap': 'Friend Map'},
-                    onChanged: (k) {
-                      if (k == 'friendMap') {
-                        ChatService.instance.send(
-                          text: 'protocol:friendMap: 123.4,567.890',
-                          otherUid: widget.room.otherUid,
-                          clearNewMessage: false,
-                        );
-                      }
-                    }),
+                  options: const {'close': 'Close', 'friendMap': 'Friend Map'},
+                  onChanged: (k) async {
+                    if (k == 'friendMap') {
+                      final pos = await FriendMapService.instance.currentPosition;
+                      ChatService.instance.send(
+                        text: 'protocol:friendMap: ${pos.latitude},${pos.longitude}',
+                        otherUid: widget.room.otherUid,
+                        clearNewMessage: false,
+                      );
+                    }
+                  },
+                ),
                 IconButton(
                   onPressed: () async {
                     final re = await confirm('Delete', 'Do you want to delete?');
