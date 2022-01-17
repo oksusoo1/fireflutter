@@ -28,7 +28,6 @@ dependencies:
   # chat badge
   badges: ^2.0.2
 
-
   # geocoding, geolocator, google_maps_flutter, flutter_polyline_points are for `Find Friend`.
   geocoding: ^2.0.1
   geolocator: ^8.0.3

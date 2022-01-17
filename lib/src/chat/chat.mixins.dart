@@ -38,6 +38,8 @@ mixin ChatMixins {
   /// Chat room info
   ///
   /// /chat/rooms/[other-uid]/[my-uid]
-  DocumentReference otherMyRoomInfoDoc(String otherUid) =>
-      FirebaseFirestore.instance.collection('chat/rooms/$otherUid').doc(myUid);
+  DocumentReference otherMyRoomInfoDoc(String otherUid) => otherRoomsCol(otherUid).doc(myUid);
+
+  CollectionReference otherRoomsCol(String otherUid) =>
+      FirebaseFirestore.instance.collection('chat/rooms/$otherUid');
 }

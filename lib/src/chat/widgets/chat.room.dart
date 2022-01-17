@@ -43,24 +43,19 @@ class _ChatRoomState extends State<ChatRoom> {
 
   List<ChatMessageModel> messages = [];
 
-  ///
-  // late CollectionReference _myRoomCol = service.roomsCol;
-  // FirebaseFirestore.instance.collection('chat/rooms/${widget.myUid}');
-  // late CollectionReference _otherRoomCol =
-  //     FirebaseFirestore.instance.collection('chat/rooms/${widget.otherUid}');
-
-  // // /chat/rooms/[my-uid]/[other-uid]
-  // DocumentReference get _myRoomDoc => _myRoomCol.doc(widget.otherUid);
-
-  // /// /chat/rooms/[other-uid]/[my-uid]
-  // DocumentReference get _otherRoomDoc => _otherRoomCol.doc(service.myUid);
-
   int page = 0;
 
   @override
   void initState() {
     super.initState();
+    service.otherUid = widget.otherUid;
     service.clearNewMessages(widget.otherUid);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    service.otherUid = '';
   }
 
   @override

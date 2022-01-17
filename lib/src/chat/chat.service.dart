@@ -15,6 +15,11 @@ class ChatService with ChatMixins {
     return _instance!;
   }
 
+  // The other user's uid of current room.
+  // Use to Identify which room the current user at.
+  // Chat Push Notification check if otherUid is the sender then dont show the notification.
+  String otherUid = '';
+
   /// Post [newMessages] event when there is a new message.
   ///
   /// Use this event to update the no of new chat messagges.
