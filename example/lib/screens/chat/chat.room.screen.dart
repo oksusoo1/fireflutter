@@ -34,7 +34,23 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
               otherUid: otherUid,
               messageBuilder: (ChatMessageModel message) {
                 /// If it's text, then display without popup menu for other user
-                if (message.byOther && message.isText) return ChatRoomMessage(message);
+                if (message.byOther && message.isText) {
+                  return GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    onTap: () {
+                      if (message.isProtocol) {
+                        if (message.text.contains('friendMap')) {
+                          final arr = message.text.split(':').last.split(',');
+                          Get.toNamed('/friend-map', arguments: {
+                            'latitude': arr.first.trim(),
+                            'longitude': arr.last.trim(),
+                          });
+                        }
+                      }
+                    },
+                    child: ChatRoomMessage(message),
+                  );
+                }
                 return PopupMenuButton<String>(
                   offset: message.isMine ? const Offset(1, 50) : const Offset(0, 50),
                   child: ChatRoomMessage(message),

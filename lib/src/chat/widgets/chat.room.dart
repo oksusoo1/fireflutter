@@ -43,32 +43,24 @@ class _ChatRoomState extends State<ChatRoom> {
 
   List<ChatMessageModel> messages = [];
 
-  /// messages collection of chat user.
-  late CollectionReference _messagesCol =
-      FirebaseFirestore.instance.collection('chat/messages/$roomId');
-
   ///
-  late CollectionReference _myRoomCol = service.roomsCol;
+  // late CollectionReference _myRoomCol = service.roomsCol;
   // FirebaseFirestore.instance.collection('chat/rooms/${widget.myUid}');
-  late CollectionReference _otherRoomCol =
-      FirebaseFirestore.instance.collection('chat/rooms/${widget.otherUid}');
+  // late CollectionReference _otherRoomCol =
+  //     FirebaseFirestore.instance.collection('chat/rooms/${widget.otherUid}');
 
-  // /chat/rooms/[my-uid]/[other-uid]
-  DocumentReference get _myRoomDoc => _myRoomCol.doc(widget.otherUid);
+  // // /chat/rooms/[my-uid]/[other-uid]
+  // DocumentReference get _myRoomDoc => _myRoomCol.doc(widget.otherUid);
 
-  /// /chat/rooms/[other-uid]/[my-uid]
-  DocumentReference get _otherRoomDoc => _otherRoomCol.doc(service.myUid);
+  // /// /chat/rooms/[other-uid]/[my-uid]
+  // DocumentReference get _otherRoomDoc => _otherRoomCol.doc(service.myUid);
 
   int page = 0;
-
-  /// Get room id from login user and other user.
-  String get roomId => service.getRoomId(widget.otherUid);
 
   @override
   void initState() {
     super.initState();
-    service.otherUid = widget.otherUid;
-    _myRoomDoc.set({'newMessages': 0}, SetOptions(merge: true));
+    service.clearNewMessages(widget.otherUid);
   }
 
   @override
@@ -93,7 +85,7 @@ class _ChatRoomState extends State<ChatRoom> {
                 return widget.messageBuilder(message);
               },
               // orderBy is compulsory to enable pagination
-              query: _messagesCol.orderBy('timestamp', descending: true),
+              query: service.messagesCol(widget.otherUid).orderBy('timestamp', descending: true),
               //Change types accordingly
               itemBuilderType: PaginateBuilderType.listView,
               // To update db data in real time.
@@ -112,7 +104,8 @@ class _ChatRoomState extends State<ChatRoom> {
               onLoaded: (PaginationLoaded loaded) {
                 // print('page loaded; reached to end?; ${loaded.hasReachedEnd}');
                 // print('######################################');
-                _myRoomDoc.set({'newMessages': 0}, SetOptions(merge: true));
+                // _myRoomDoc.set({'newMessages': 0}, SetOptions(merge: true));
+                service.clearNewMessages(widget.otherUid);
               },
               onReachedEnd: (PaginationLoaded loaded) {
                 // This is called only one time when it reaches to the end.
@@ -134,22 +127,11 @@ class _ChatRoomState extends State<ChatRoom> {
     );
   }
 
-  void onSubmitText(String text) {
-    final data = {
-      'text': text,
-      'timestamp': FieldValue.serverTimestamp(),
-      'from': service.myUid,
-      'to': widget.otherUid,
-    };
-    _messagesCol.add(data).then((value) {});
+  void onSubmitText(String text) async {
+    final data = await service.send(text: text, otherUid: widget.otherUid);
 
-    /// When the login user send message, clear newMessage.
-    data['newMessages'] = 0;
-    _myRoomDoc.set(data);
-
-    data['newMessages'] = FieldValue.increment(1);
-    _otherRoomDoc.set(data, SetOptions(merge: true)).then((value) {
-      widget.onUpdateOtherUserRoomInformation(data);
-    });
+    /// callback after sending a message to other user and updating the no of
+    /// new messages on other user's room list.
+    widget.onUpdateOtherUserRoomInformation(data);
   }
 }

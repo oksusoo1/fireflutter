@@ -24,4 +24,20 @@ mixin ChatMixins {
   String getRoomId(String otherUid) {
     return getChatRoomDocumentId(myUid, otherUid);
   }
+
+  /// messages collection of chat user.
+  CollectionReference messagesCol(String otherUid) =>
+      FirebaseFirestore.instance.collection('chat').doc('messages').collection(getRoomId(otherUid));
+
+  /// Chat room info.
+  ///
+  ///
+  /// - `/chat/rooms/[my-uid]/[other-uid]`
+  DocumentReference myOtherRoomInfoDoc(String otherUid) => roomsCol.doc(otherUid);
+
+  /// Chat room info
+  ///
+  /// /chat/rooms/[other-uid]/[my-uid]
+  DocumentReference otherMyRoomInfoDoc(String otherUid) =>
+      FirebaseFirestore.instance.collection('chat/rooms/$otherUid').doc(myUid);
 }

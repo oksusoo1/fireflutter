@@ -122,7 +122,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   TestUser(name: 'Apple', uid: 'uA0mjrf3FzR1FxO1rcjO7eZlGkR2'),
                   TestUser(name: 'Banana', uid: 'o0BtHX2JMiaa0SIrDJ3qhDczXDF2'),
                   TestUser(name: 'Cherry', uid: 'sys2vHyPz2fUb57qEFN2PqaegGu2'),
-                  TestUser(name: 'Dragon', uid: 'LLaX6TwVQSO2os2dzK3kJyTzSzs1'),
+                  TestUser(name: 'Durian', uid: 'LLaX6TwVQSO2os2dzK3kJyTzSzs1'),
                 ],
               ),
               const Divider(),

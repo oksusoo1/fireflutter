@@ -56,6 +56,10 @@ class ChatMessageModel with ChatMixins {
     return t.startsWith('http://') || t.startsWith('https://');
   }
 
+  bool get isProtocol {
+    return text.startsWith('protocol:');
+  }
+
   /// Return true if the message is not url or or image.
   bool get isText {
     return isImage == false && isUrl == false;

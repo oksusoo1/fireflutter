@@ -9,13 +9,15 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 class FriendMap extends StatefulWidget {
   const FriendMap({
     required this.googleApiKey,
-    required this.otherUid,
+    required this.latitude,
+    required this.longitude,
     required this.error,
     Key? key,
   }) : super(key: key);
 
   final String googleApiKey;
-  final String otherUid;
+  final double latitude;
+  final double longitude;
   final ErrorCallback error;
 
   @override
@@ -28,16 +30,40 @@ class _FriendMapState extends State<FriendMap> {
 
   CameraPosition currentLocation = CameraPosition(target: LatLng(0.0, 0.0));
 
-  late StreamSubscription<Position> positionStream;
+  StreamSubscription<Position>? positionStream;
 
   @override
   void initState() {
     super.initState();
 
-    service.init(googleApiKey: widget.googleApiKey, otherUid: widget.otherUid);
+    service.init(
+      googleApiKey: widget.googleApiKey,
+      latitude: widget.latitude.toDouble(),
+      longitude: widget.longitude.toDouble(),
+    );
 
-    getCurrentLocation();
+    markUsersLocations();
+  }
 
+  @override
+  void dispose() {
+    positionStream?.cancel();
+    super.dispose();
+  }
+
+  /// Marks users locations.
+  ///
+  markUsersLocations() async {
+    try {
+      await service.markUsersLocations();
+      initPositionListener();
+      if (mounted) setState(() {});
+    } catch (e) {
+      widget.error(e);
+    }
+  }
+
+  initPositionListener() {
     positionStream = service.initLocationListener().listen((Position position) {
       print('position changed: lat ${position.latitude} ; lng ${position.longitude}');
 
@@ -49,23 +75,6 @@ class _FriendMapState extends State<FriendMap> {
       );
       if (mounted) setState(() {});
     });
-  }
-
-  @override
-  void dispose() {
-    positionStream.cancel();
-    super.dispose();
-  }
-
-  /// Get current position of the user.
-  getCurrentLocation() async {
-    try {
-      await service.getCurrentPosition();
-      if (mounted) setState(() {});
-    } catch (e) {
-      print(e.toString());
-      widget.error('Error getting your location.');
-    }
   }
 
   @override
@@ -90,18 +99,47 @@ class _FriendMapState extends State<FriendMap> {
           child: Container(
             color: Colors.white,
             padding: EdgeInsets.all(16),
-            child: Row(
-              children: [
-                Icon(Icons.location_on, color: Colors.blueAccent),
-                SizedBox(width: 10),
-                Expanded(
-                  child: Text(
-                    'My location: ' + service.currentAddress,
-                    overflow: TextOverflow.ellipsis,
+            child: service.locationServiceEnabled
+                ? Column(
+                    children: [
+                      Row(
+                        children: [
+                          Icon(Icons.location_on, color: Colors.cyanAccent),
+                          SizedBox(width: 10),
+                          Expanded(
+                            child: Text(
+                              'My location: ' + service.currentAddress,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 10),
+                      Row(
+                        children: [
+                          Icon(Icons.location_on, color: Colors.redAccent),
+                          SizedBox(width: 10),
+                          Expanded(
+                            child: Text(
+                              'Destination: ' + service.otherUsersAddress,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
+                      )
+                    ],
+                  )
+                : GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    onTap: () => Geolocator.openLocationSettings(),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text('Turn on location service to continue using map.'),
+                        Icon(Icons.settings),
+                      ],
+                    ),
                   ),
-                ),
-              ],
-            ),
           ),
         ),
       ],
