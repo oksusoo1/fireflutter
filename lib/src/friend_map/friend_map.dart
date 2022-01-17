@@ -30,7 +30,7 @@ class _FriendMapState extends State<FriendMap> {
 
   CameraPosition currentLocation = CameraPosition(target: LatLng(0.0, 0.0));
 
-  late StreamSubscription<Position> positionStream;
+  StreamSubscription<Position>? positionStream;
 
   @override
   void initState() {
@@ -43,7 +43,27 @@ class _FriendMapState extends State<FriendMap> {
     );
 
     markUsersLocations();
+  }
 
+  @override
+  void dispose() {
+    positionStream?.cancel();
+    super.dispose();
+  }
+
+  /// Marks users locations.
+  ///
+  markUsersLocations() async {
+    try {
+      await service.markUsersLocations();
+      initPositionListener();
+      if (mounted) setState(() {});
+    } catch (e) {
+      widget.error(e);
+    }
+  }
+
+  initPositionListener() {
     positionStream = service.initLocationListener().listen((Position position) {
       print('position changed: lat ${position.latitude} ; lng ${position.longitude}');
 
@@ -55,23 +75,6 @@ class _FriendMapState extends State<FriendMap> {
       );
       if (mounted) setState(() {});
     });
-  }
-
-  @override
-  void dispose() {
-    positionStream.cancel();
-    super.dispose();
-  }
-
-  /// Marks users locations.
-  ///
-  markUsersLocations() async {
-    try {
-      await service.markUsersLocations();
-      if (mounted) setState(() {});
-    } catch (e) {
-      widget.error(e);
-    }
   }
 
   @override
