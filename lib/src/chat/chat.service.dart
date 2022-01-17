@@ -15,12 +15,6 @@ class ChatService with ChatMixins {
     return _instance!;
   }
 
-  // The other user's uid of current room.
-  String otherUid = '';
-
-  CollectionReference get otherRoomCol =>
-      FirebaseFirestore.instance.collection('chat/rooms/$otherUid');
-
   /// Post [newMessages] event when there is a new message.
   ///
   /// Use this event to update the no of new chat messagges.
@@ -52,5 +46,34 @@ class ChatService with ChatMixins {
       });
       newMessages.add(_newMessages);
     });
+  }
+
+  clearNewMessages(String otherUid) {
+    myOtherRoomInfoDoc(otherUid).set({'newMessages': 0}, SetOptions(merge: true));
+  }
+
+  Future<Map<String, dynamic>> send({
+    required String text,
+    required String otherUid,
+    bool clearNewMessage: true,
+  }) async {
+    final data = {
+      'text': text,
+      'timestamp': FieldValue.serverTimestamp(),
+      'from': myUid,
+      'to': otherUid,
+    };
+
+    messagesCol(otherUid).add(data).then((value) {});
+
+    /// When the login user send message, clear newMessage.
+    if (clearNewMessage) {
+      clearNewMessages(otherUid);
+    }
+
+    /// count new messages and update it on the other user's room info.
+    data['newMessages'] = FieldValue.increment(1);
+    await otherMyRoomInfoDoc(otherUid).set(data, SetOptions(merge: true));
+    return data;
   }
 }

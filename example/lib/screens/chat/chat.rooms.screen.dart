@@ -102,7 +102,13 @@ class _ChatRoomsUserState extends State<ChatRoomsUser> {
                 FormSelect(
                     options: const {'close': 'Close', 'friendMap': 'Friend Map'},
                     onChanged: (k) {
-                      print(k);
+                      if (k == 'friendMap') {
+                        ChatService.instance.send(
+                          text: 'protocol:friendMap: 123.4,567.890',
+                          otherUid: widget.room.otherUid,
+                          clearNewMessage: false,
+                        );
+                      }
                     }),
                 IconButton(
                   onPressed: () async {
