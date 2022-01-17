@@ -1,5 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
@@ -35,14 +33,20 @@ class FriendMapService {
     this.longitude = longitude;
   }
 
+  bool _locationServiceEnabled = false;
+  bool get locationServiceEnabled => _locationServiceEnabled;
+
   String _apiKey = '';
-  late final double latitude;
-  late final double longitude;
+  late double latitude;
+  late double longitude;
 
   String _currentAddress = '';
   String get currentAddress => _currentAddress;
+  String _otherUsersAddress = '';
+  String get otherUsersAddress => _otherUsersAddress;
 
-  /// Map storing polylines created by connecting two points
+  /// Map storing polylines created by connecting two points.
+  ///
   Map<PolylineId, Polyline> _polylines = {};
   get polylines => _polylines;
 
@@ -57,26 +61,17 @@ class FriendMapService {
   double get _destinationLongitude => markers.last.position.longitude;
 
   late GoogleMapController _mapController;
-  set mapController(controller) => _mapController = controller;
-
-  ///
-  bool get canGetDirections => markers.length > 1;
+  set mapController(GoogleMapController controller) => _mapController = controller;
 
   /// Initialize location change listener
-  ///
   ///
   Stream<Position> initLocationListener({
     int distanceFilter = 0,
     LocationAccuracy accuracy = LocationAccuracy.high,
   }) {
     return Geolocator.getPositionStream(
-      locationSettings: LocationSettings(
-        distanceFilter: distanceFilter,
-        accuracy: accuracy,
-      ),
-    ).map((Position position) {
-      return position;
-    });
+      locationSettings: LocationSettings(distanceFilter: distanceFilter, accuracy: accuracy),
+    );
   }
 
   /// Checks necessary permission for geolocator.
@@ -88,6 +83,7 @@ class FriendMapService {
 
     serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
+      _locationServiceEnabled = false;
       throw MapsErrors.locationServiceDisabled;
     }
 
@@ -95,50 +91,67 @@ class FriendMapService {
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
       if (permission == LocationPermission.denied) {
+        _locationServiceEnabled = false;
         throw MapsErrors.locationPermissionDenied;
       }
     }
 
     if (permission == LocationPermission.deniedForever) {
+      _locationServiceEnabled = false;
       throw MapsErrors.locationPermissionPermanentlyDenied;
     }
 
-    return true;
+    _locationServiceEnabled = true;
+    return _locationServiceEnabled;
   }
 
-  /// Return current positoin
+  /// Return current positoin.
   ///
   Future<Position> get currentPosition async {
     await checkPermission();
     return await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
   }
 
-  /// Gets the current position of the user.
+  /// Marks locations on screen.
   ///
-  Future getCurrentPosition({
+  Future markUsersLocations({
     LocationAccuracy accuracy = LocationAccuracy.high,
   }) async {
     await checkPermission();
-    Position position = await Geolocator.getCurrentPosition(desiredAccuracy: accuracy);
+
+    Position currentUserPosition = await Geolocator.getCurrentPosition(desiredAccuracy: accuracy);
 
     /// set current address.
     _currentAddress = await getAddressFromCoordinates(
-      position.latitude,
-      position.longitude,
+      currentUserPosition.latitude,
+      currentUserPosition.longitude,
     );
 
-    /// Mark current location.
     addMarker(
       MarkerIds.currentLocation,
-      position.latitude,
-      position.longitude,
+      currentUserPosition.latitude,
+      currentUserPosition.longitude,
       title: "My Location",
       snippet: _currentAddress,
-      markerType: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueYellow),
+      markerType: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueCyan),
     );
 
-    /// update map view.
-    moveCameraView(position.latitude, position.longitude);
+    _otherUsersAddress = await getAddressFromCoordinates(
+      latitude,
+      longitude,
+    );
+
+    addMarker(
+      MarkerIds.destination,
+      latitude,
+      longitude,
+      title: "Destination",
+      snippet: _otherUsersAddress,
+    );
+
+    await addPolylines();
+
+    adjustCameraViewAndZoom();
   }
 
   /// Transforms a position's coordinate to an address.
@@ -148,7 +161,7 @@ class FriendMapService {
 
     try {
       List<Placemark> p = await placemarkFromCoordinates(lat, lng);
-      _address = "${p[0].name}, ${p[0].locality}, ${p[0].postalCode}, ${p[0].country}";
+      _address = "${p[0].name}, ${p[0].locality}, ${p[0].country}";
     } catch (e) {
       throw e;
     }
@@ -164,7 +177,6 @@ class FriendMapService {
     String? title,
     String? snippet,
     BitmapDescriptor markerType = BitmapDescriptor.defaultMarker,
-    String? removeMarkerWithId,
   }) {
     Marker marker = Marker(
       markerId: MarkerId('$id'),
@@ -173,11 +185,11 @@ class FriendMapService {
       icon: markerType,
     );
 
-    if (removeMarkerWithId != null) {
-      _markers.removeWhere((m) => m.markerId.value == removeMarkerWithId);
-    }
-
+    /// resets the polylines.
     if (_polylines.length > 0) _polylines.clear();
+
+    /// prevents multiple marker to show on map.
+    _markers.removeWhere((m) => m.markerId.value == id);
 
     _markers.add(marker);
   }
@@ -228,7 +240,8 @@ class FriendMapService {
     );
 
     if (result.status == 'REQUEST_DENIED') {
-      throw '${result.status} - ${result.errorMessage}';
+      /// throw '${result.status} - ${result.errorMessage}';
+      print('${result.status} - ${result.errorMessage}');
     }
 
     // Adding the coordinates to the list
