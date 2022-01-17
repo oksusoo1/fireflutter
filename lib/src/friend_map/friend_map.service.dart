@@ -126,7 +126,7 @@ class FriendMapService {
       currentUserPosition.longitude,
       title: "My Location",
       snippet: _currentAddress,
-      markerType: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueYellow),
+      markerType: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueCyan),
     );
 
     _otherUsersAddress = await getAddressFromCoordinates(
@@ -154,7 +154,7 @@ class FriendMapService {
 
     try {
       List<Placemark> p = await placemarkFromCoordinates(lat, lng);
-      _address = "${p[0].name}, ${p[0].locality}, ${p[0].postalCode}, ${p[0].country}";
+      _address = "${p[0].name}, ${p[0].locality}, ${p[0].country}";
     } catch (e) {
       throw e;
     }

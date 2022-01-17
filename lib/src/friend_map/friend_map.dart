@@ -63,17 +63,16 @@ class _FriendMapState extends State<FriendMap> {
     super.dispose();
   }
 
-  /// Get current position of the user.
+  /// Marks users locations.
+  ///
   markUsersLocations() async {
     try {
       await service.markUsersLocations();
       if (mounted) setState(() {});
     } catch (e) {
-      // print(e.toString());
       widget.error(e);
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -97,16 +96,33 @@ class _FriendMapState extends State<FriendMap> {
           child: Container(
             color: Colors.white,
             padding: EdgeInsets.all(16),
-            child: Row(
+            child: Column(
               children: [
-                Icon(Icons.location_on, color: Colors.blueAccent),
-                SizedBox(width: 10),
-                Expanded(
-                  child: Text(
-                    'My location: ' + service.currentAddress,
-                    overflow: TextOverflow.ellipsis,
-                  ),
+                Row(
+                  children: [
+                    Icon(Icons.location_on, color: Colors.cyanAccent),
+                    SizedBox(width: 10),
+                    Expanded(
+                      child: Text(
+                        'My location: ' + service.currentAddress,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
                 ),
+                SizedBox(height: 10),
+                Row(
+                  children: [
+                    Icon(Icons.location_on, color: Colors.redAccent),
+                    SizedBox(width: 10),
+                    Expanded(
+                      child: Text(
+                        'Destination: ' + service.otherUsersAddress,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                )
               ],
             ),
           ),
