@@ -33,6 +33,9 @@ class FriendMapService {
     this.longitude = longitude;
   }
 
+  bool _locationServiceEnabled = false;
+  bool get locationServiceEnabled => _locationServiceEnabled;
+
   String _apiKey = '';
   late double latitude;
   late double longitude;
@@ -80,6 +83,7 @@ class FriendMapService {
 
     serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
+      _locationServiceEnabled = false;
       throw MapsErrors.locationServiceDisabled;
     }
 
@@ -87,15 +91,18 @@ class FriendMapService {
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
       if (permission == LocationPermission.denied) {
+        _locationServiceEnabled = false;
         throw MapsErrors.locationPermissionDenied;
       }
     }
 
     if (permission == LocationPermission.deniedForever) {
+      _locationServiceEnabled = false;
       throw MapsErrors.locationPermissionPermanentlyDenied;
     }
 
-    return true;
+    _locationServiceEnabled = true;
+    return _locationServiceEnabled;
   }
 
   /// Return current positoin.

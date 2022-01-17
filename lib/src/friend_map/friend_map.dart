@@ -99,35 +99,47 @@ class _FriendMapState extends State<FriendMap> {
           child: Container(
             color: Colors.white,
             padding: EdgeInsets.all(16),
-            child: Column(
-              children: [
-                Row(
-                  children: [
-                    Icon(Icons.location_on, color: Colors.cyanAccent),
-                    SizedBox(width: 10),
-                    Expanded(
-                      child: Text(
-                        'My location: ' + service.currentAddress,
-                        overflow: TextOverflow.ellipsis,
+            child: service.locationServiceEnabled
+                ? Column(
+                    children: [
+                      Row(
+                        children: [
+                          Icon(Icons.location_on, color: Colors.cyanAccent),
+                          SizedBox(width: 10),
+                          Expanded(
+                            child: Text(
+                              'My location: ' + service.currentAddress,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
                       ),
+                      SizedBox(height: 10),
+                      Row(
+                        children: [
+                          Icon(Icons.location_on, color: Colors.redAccent),
+                          SizedBox(width: 10),
+                          Expanded(
+                            child: Text(
+                              'Destination: ' + service.otherUsersAddress,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
+                      )
+                    ],
+                  )
+                : GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onTap: () => Geolocator.openLocationSettings(),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text('Turn on location service to continue using map.'),
+                        Icon(Icons.settings),
+                      ],
                     ),
-                  ],
-                ),
-                SizedBox(height: 10),
-                Row(
-                  children: [
-                    Icon(Icons.location_on, color: Colors.redAccent),
-                    SizedBox(width: 10),
-                    Expanded(
-                      child: Text(
-                        'Destination: ' + service.otherUsersAddress,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ],
-                )
-              ],
-            ),
+                  ),
           ),
         ),
       ],
