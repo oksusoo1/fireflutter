@@ -38,8 +38,6 @@ class _FriendMapState extends State<FriendMap> {
 
     getCurrentLocation();
 
-    /// TODO save to firebase database so other user can subscribe for live location update.
-    /// TODO Do not update the same location.
     positionStream = service.initLocationListener().listen((Position position) {
       print('position changed: lat ${position.latitude} ; lng ${position.longitude}');
 
