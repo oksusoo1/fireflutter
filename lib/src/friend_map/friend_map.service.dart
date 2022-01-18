@@ -149,8 +149,6 @@ class FriendMapService {
       snippet: _otherUsersAddress,
     );
 
-    await addPolylines();
-
     adjustCameraViewAndZoom();
   }
 
@@ -291,7 +289,7 @@ class FriendMapService {
     _mapController.animateCamera(
       CameraUpdate.newLatLngBounds(
         LatLngBounds(northeast: LatLng(maxy, maxx), southwest: LatLng(miny, minx)),
-        100.0,
+        150.0,
       ),
     );
   }

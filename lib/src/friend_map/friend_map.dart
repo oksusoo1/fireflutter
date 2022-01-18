@@ -56,6 +56,7 @@ class _FriendMapState extends State<FriendMap> {
   markUsersLocations() async {
     try {
       await service.markUsersLocations();
+      await service.addPolylines();
       initPositionListener();
       if (mounted) setState(() {});
     } catch (e) {
