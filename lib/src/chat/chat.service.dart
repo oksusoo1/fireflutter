@@ -57,6 +57,11 @@ class ChatService with ChatMixins {
     myOtherRoomInfoDoc(otherUid).set({'newMessages': 0}, SetOptions(merge: true));
   }
 
+  /// Send a chat message to other user even if the login user is not in chat room.
+  ///
+  /// Use case;
+  ///   - send a message to B when A likes B's post.
+  ///   - send a message to B when A request friend map to B.
   Future<Map<String, dynamic>> send({
     required String text,
     required String otherUid,
