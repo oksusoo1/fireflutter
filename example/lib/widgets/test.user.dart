@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class TestUser extends StatelessWidget {
-  const TestUser({required this.name, required this.uid, Key? key}) : super(key: key);
+  const TestUser({required this.name, required this.uid, Key? key})
+      : super(key: key);
   final String name;
   final String uid;
 
@@ -13,7 +14,8 @@ class TestUser extends StatelessWidget {
       child: Column(
         children: [
           ElevatedButton(
-            onPressed: () => Get.toNamed('/chat-room-screen', arguments: {'uid': uid}),
+            onPressed: () =>
+                Get.toNamed('/chat-room-screen', arguments: {'uid': uid}),
             child: Text(name),
           ),
           UserPresence(
@@ -24,7 +26,9 @@ class TestUser extends StatelessWidget {
                   Icons.circle,
                   color: type == PresenceType.online
                       ? Colors.green
-                      : (type == PresenceType.offline ? Colors.red : Colors.yellow),
+                      : (type == PresenceType.offline
+                          ? Colors.red
+                          : Colors.yellow),
                 ),
                 Text(type.name),
               ],
