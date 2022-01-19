@@ -9,7 +9,8 @@ mixin ChatMixins {
   /// ```dart
   /// chat.roomsCol.orderBy('timestamp', descending: true);
   /// ```
-  CollectionReference get roomsCol => FirebaseFirestore.instance.collection('chat/rooms/$myUid');
+  CollectionReference get roomsCol =>
+      FirebaseFirestore.instance.collection('chat/rooms/$myUid');
 
   /// Login user's firebase uid.
   String get myUid => FirebaseAuth.instance.currentUser!.uid;
@@ -26,19 +27,23 @@ mixin ChatMixins {
   }
 
   /// messages collection of chat user.
-  CollectionReference messagesCol(String otherUid) =>
-      FirebaseFirestore.instance.collection('chat').doc('messages').collection(getRoomId(otherUid));
+  CollectionReference messagesCol(String otherUid) => FirebaseFirestore.instance
+      .collection('chat')
+      .doc('messages')
+      .collection(getRoomId(otherUid));
 
   /// Chat room info.
   ///
   ///
   /// - `/chat/rooms/[my-uid]/[other-uid]`
-  DocumentReference myOtherRoomInfoDoc(String otherUid) => roomsCol.doc(otherUid);
+  DocumentReference myOtherRoomInfoDoc(String otherUid) =>
+      roomsCol.doc(otherUid);
 
   /// Chat room info
   ///
   /// /chat/rooms/[other-uid]/[my-uid]
-  DocumentReference otherMyRoomInfoDoc(String otherUid) => otherRoomsCol(otherUid).doc(myUid);
+  DocumentReference otherMyRoomInfoDoc(String otherUid) =>
+      otherRoomsCol(otherUid).doc(myUid);
 
   CollectionReference otherRoomsCol(String otherUid) =>
       FirebaseFirestore.instance.collection('chat/rooms/$otherUid');

@@ -4,7 +4,8 @@ import 'package:extended/extended.dart';
 class ChatRoomsEmpty extends StatelessWidget {
   ChatRoomsEmpty({Key? key}) : super(key: key);
 
-  final textStyle = TextStyle(fontSize: 16, color: Colors.grey[400], fontWeight: FontWeight.w600);
+  final textStyle = TextStyle(
+      fontSize: 16, color: Colors.grey[400], fontWeight: FontWeight.w600);
 
   @override
   Widget build(BuildContext context) {

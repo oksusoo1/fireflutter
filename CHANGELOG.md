@@ -1,6 +1,9 @@
 # Change Log
 
 
+## [0.2.8] - Inform
+
+- `Inform` feature had added.
 
 ## [0.2.7] - User profile, chat, friend map
 

@@ -46,7 +46,8 @@ class ChatService with ChatMixins {
         .listen((QuerySnapshot snapshot) {
       int _newMessages = 0;
       snapshot.docs.forEach((doc) {
-        ChatMessageModel room = ChatMessageModel.fromJson(doc.data() as Map, null);
+        ChatMessageModel room =
+            ChatMessageModel.fromJson(doc.data() as Map, null);
         _newMessages += room.newMessages;
       });
       newMessages.add(_newMessages);
@@ -54,7 +55,8 @@ class ChatService with ChatMixins {
   }
 
   clearNewMessages(String otherUid) {
-    myOtherRoomInfoDoc(otherUid).set({'newMessages': 0}, SetOptions(merge: true));
+    myOtherRoomInfoDoc(otherUid)
+        .set({'newMessages': 0}, SetOptions(merge: true));
   }
 
   /// Send a chat message to other user even if the login user is not in chat room.

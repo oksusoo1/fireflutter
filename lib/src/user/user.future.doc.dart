@@ -3,7 +3,8 @@ import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
 
 class UserFutureDoc extends StatelessWidget {
-  const UserFutureDoc({required this.uid, required this.builder, Key? key}) : super(key: key);
+  const UserFutureDoc({required this.uid, required this.builder, Key? key})
+      : super(key: key);
   final String uid;
   final Widget Function(UserModel) builder;
 
