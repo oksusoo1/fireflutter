@@ -81,4 +81,20 @@ class ChatService with ChatMixins {
     await otherMyRoomInfoDoc(otherUid).set(data, SetOptions(merge: true));
     return data;
   }
+
+  /// removes a user
+  Future<void> blockUser(String otherUid) async {
+    await otherMyRoomInfoDoc(otherUid).set({
+      'text': 'ChatProtocol.block',
+      'timestamp': FieldValue.serverTimestamp(),
+      'from': myUid,
+      'to': otherUid,
+    }, SetOptions(merge: true));
+
+    /// Inform all users.
+    await send(
+      text: 'ChatProtocol.block',
+      otherUid: otherUid,
+    );
+  }
 }
