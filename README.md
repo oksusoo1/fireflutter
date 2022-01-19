@@ -45,6 +45,10 @@ Table of contents
   - [FriendMap logic](#friendmap-logic)
     - [FriendMap informing logic](#friendmap-informing-logic)
   - [FriendMap testing](#friendmap-testing)
+- [Inform](#inform)
+  - [Informing logic](#informing-logic)
+  - [Inform data](#inform-data)
+  - [Use of inform](#use-of-inform)
 - [For developer](#for-developer)
   - [Building your app](#building-your-app)
   - [Building fireflutter](#building-fireflutter)
@@ -368,16 +372,10 @@ UserFutureDoc(
 
 ### FriendMap informing logic
 
-- When User `A` request FriendMap to user `B`, it's not easy to open FriendMap by clicking the chat message. what if user `B` has lots of users and having difficulty to open the chat room `A`?.
+- Use `Inform` feature to inform friend request to the other user.
 
-- The solution would be; when `A` request FriendMap to `B`, the app on `B` side will open `FriendMap` screen automatically.
-  - When `B` is offline and got a push message of `FriendMap` request, the device of `B` will automatically run `WonderfulKorea` app and open `FriendMap` screen automatically.
-  - Later; it may be an option to open `FriendMap` automatically or not.
 
-- All user must listen to `/inform/<uid>` when app starts.
 
-- When `A` request FriendMap to `B`, save lat & long in `/inform/<uid>.FriendMap`.
-  - So, the app of `B` can open `FriendMap`.
 
 
 
@@ -387,6 +385,58 @@ UserFutureDoc(
 
 - Simply update `/location/<A's-uid>/` and `/location/<B's-uid>` manully.
   - To make it easy, update the location programatically.
+
+
+# Inform
+
+- When A likes B's post, how the app will inform B that he has a like from A?
+  - Push notification is one option. But push notification may be delayed more than 1 hour.
+  - `Inform` functionality make the communication in realtime.
+
+## Informing logic
+
+Let's say the app needs to deliver friend request from A to B.
+
+- When User `A` request FriendMap to user `B`, it's not easy to open FriendMap by clicking the chat message. what if user `B` has lots of users and having difficulty to open the chat room `A`?.
+  - The solution would be; when `A` request FriendMap to `B`, the app on `B` side will open `FriendMap` screen automatically.
+  - When `B` is offline and got a push message of `FriendMap` request, the device of `B` will automatically run `WonderfulKorea` app and open `FriendMap` screen automatically.
+  - Later; it may be an option to open `FriendMap` automatically or not.
+
+- To make it work
+  - All user must listen to `/inform/<uid>` when app starts.
+  - When `A` request FriendMap to `B`, save lat & long in `/inform/<uid>`.
+  - So, the app of `B` can open `FriendMap` with the data.
+
+- When `B` is offline, or the app is not running,
+  - `B` will open the app (by push notification or whatever),
+  - the app of `B` listens `/inform/<uid>`
+    - If there is data, then delete the doc, and open FriendMap.
+
+
+## Inform data
+
+- `type` has the data type.
+  - `FriendMap` - it's a data for FriendMap and `latitude` and `longitude` properties are found.
+  - `type` can be customizable and can have any value and addition properties.
+
+
+## Use of inform
+
+- To start listening the `inform data`, call `InformService.instance.init(callback: (data) {})`.
+```dart
+FirebaseAuth.instance.authStateChanges().listen((user) {
+  if (user != null) {
+    InformService.instance.init(callback: (data) {
+      debugPrint('inform data for ${user.uid}; $data');
+    });
+  } else {
+    InformService.instance.dispose();
+  }
+});
+```
+
+
+- When the app needs to inform to other user, call `InformService.instance.inform(<uid>, {...data....})`.
 
 
 # For developer

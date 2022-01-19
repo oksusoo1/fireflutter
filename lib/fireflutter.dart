@@ -1,7 +1,7 @@
 export './src/functions.dart';
 // export 'src/chat/chat.dart';
 // export 'src/chat/message.model.dart';
-export 'src/presence/presence.dart';
+export 'src/presence/presence.service.dart';
 export 'src/presence/user.presence.dart';
 export 'src/auth/phone/phone.service.dart';
 export 'src/auth/phone/phone_number_input.dart';
@@ -24,3 +24,4 @@ export 'src/chat/widgets/chat.badge.dart';
 
 export 'src/friend_map/friend_map.service.dart';
 export 'src/friend_map/friend_map.dart';
+export 'src/inform/inform.service.dart';

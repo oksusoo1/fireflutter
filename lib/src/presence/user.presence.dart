@@ -20,8 +20,7 @@ class UserPresence extends StatefulWidget {
   State<UserPresence> createState() => _UserPresenceState();
 }
 
-class _UserPresenceState extends State<UserPresence>
-    with WidgetsBindingObserver {
+class _UserPresenceState extends State<UserPresence> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
@@ -33,13 +32,13 @@ class _UserPresenceState extends State<UserPresence>
     super.didChangeAppLifecycleState(state);
     switch (state) {
       case AppLifecycleState.resumed:
-        Presence.instance.setPresence(PresenceStatus.online);
+        PresenceService.instance.setPresence(PresenceStatus.online);
         break;
       case AppLifecycleState.inactive:
-        Presence.instance.setPresence(PresenceStatus.away);
+        PresenceService.instance.setPresence(PresenceStatus.away);
         break;
       case AppLifecycleState.paused:
-        Presence.instance.setPresence(PresenceStatus.away);
+        PresenceService.instance.setPresence(PresenceStatus.away);
         break;
       case AppLifecycleState.detached:
         break;
@@ -55,8 +54,7 @@ class _UserPresenceState extends State<UserPresence>
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
-      stream:
-          FirebaseDatabase.instance.ref('presence').child(widget.uid).onValue,
+      stream: FirebaseDatabase.instance.ref('presence').child(widget.uid).onValue,
       builder: (context, AsyncSnapshot<DatabaseEvent> event) {
         if (event.hasData && event.data!.snapshot.exists) {
           final String status = (event.data!.snapshot.value! as Map)['status'];

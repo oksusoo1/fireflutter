@@ -109,6 +109,11 @@ class _ChatRoomsUserState extends State<ChatRoomsUser> {
                         otherUid: widget.room.otherUid,
                         clearNewMessage: false,
                       );
+                      InformService.instance.inform(widget.room.otherUid, {
+                        'type': 'FriendMap',
+                        'latitude': pos.latitude,
+                        'longitude': pos.longitude,
+                      });
                     }
                   },
                 ),

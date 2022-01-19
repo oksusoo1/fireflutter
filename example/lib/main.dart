@@ -14,6 +14,7 @@ import 'package:fe/widgets/sign_in.widget.dart';
 import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
 
 void main() async {
@@ -34,17 +35,33 @@ class _MainAppState extends State<MainApp> {
   @override
   void initState() {
     super.initState();
-    Presence.instance.activate(
+    PresenceService.instance.activate(
       onError: (e) => debugPrint('--> Presence error: $e'),
     );
 
     // Timer(const Duration(milliseconds: 200), () => Get.toNamed('/sms-code-ui'));
+
+    FirebaseAuth.instance.authStateChanges().listen((user) {
+      if (user != null) {
+        InformService.instance.init(callback: (data) {
+          debugPrint('inform data for ${user.uid}; $data');
+          if (data['type'] == 'FriendMap') {
+            Get.toNamed('/friend-map', arguments: {
+              'latitude': data['latitude'],
+              'longitude': data['longitude'],
+            });
+          }
+        });
+      } else {
+        InformService.instance.dispose();
+      }
+    });
   }
 
   @override
   void dispose() {
     super.dispose();
-    Presence.instance.deactivate();
+    PresenceService.instance.deactivate();
   }
 
   @override

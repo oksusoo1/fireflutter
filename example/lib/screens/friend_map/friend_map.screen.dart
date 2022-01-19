@@ -7,6 +7,13 @@ import 'package:get/get.dart';
 class FriendMapScreen extends StatelessWidget {
   const FriendMapScreen({Key? key}) : super(key: key);
 
+  double get latitude => Get.arguments['latitude'] is double
+      ? Get.arguments['latitude']
+      : double.tryParse(Get.arguments['latitude'])!;
+  double get longitude => Get.arguments['longitude'] is double
+      ? Get.arguments['longitude']
+      : double.tryParse(Get.arguments['longitude'])!;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -15,8 +22,8 @@ class FriendMapScreen extends StatelessWidget {
       ),
       body: FriendMap(
         googleApiKey: Config.gcpApiKeyWithRestriction,
-        latitude: double.tryParse(Get.arguments['latitude'])!,
-        longitude: double.tryParse(Get.arguments['longitude'])!,
+        latitude: latitude,
+        longitude: longitude,
         error: error,
       ),
     );
