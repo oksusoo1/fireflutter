@@ -39,9 +39,11 @@ Table of contents
   - [User Auth State](#user-auth-state)
 - [Chat](#chat-1)
   - [Chat structure of Firestore](#chat-structure-of-firestore)
+  - [Chat logic](#chat-logic)
 - [FriendMap](#friendmap)
   - [FriendMap installation](#friendmap-installation)
   - [FriendMap logic](#friendmap-logic)
+    - [FriendMap informing logic](#friendmap-informing-logic)
   - [FriendMap testing](#friendmap-testing)
 - [For developer](#for-developer)
   - [Building your app](#building-your-app)
@@ -327,6 +329,17 @@ UserFutureDoc(
     Then, the user `A` have had chat with user B and C.
     Note that, `room info doc` is also handled by the `ChatMessageModel`.
 
+
+- `/chat/rooms/<uid>/<uid>.block` will be true if the user is blocked.
+- `/chat/rooms/<uid>/<uid>.deleted` will be true if the user is deleted.
+  So, the deleted user will not be appears on list.
+
+## Chat logic
+
+- When a user is reported, the app will save the user into backend.
+
+
+
 # FriendMap
 
 - Idea\
@@ -352,6 +365,23 @@ UserFutureDoc(
 - `B` opens chat room.
 - `B` click the link of lat & lon to open `Friend Map`.
 - the app navigates.
+
+### FriendMap informing logic
+
+- When User `A` request FriendMap to user `B`, it's not easy to open FriendMap by clicking the chat message. what if user `B` has lots of users and having difficulty to open the chat room `A`?.
+
+- The solution would be; when `A` request FriendMap to `B`, the app on `B` side will open `FriendMap` screen automatically.
+  - When `B` is offline and got a push message of `FriendMap` request, the device of `B` will automatically run `WonderfulKorea` app and open `FriendMap` screen automatically.
+  - Later; it may be an option to open `FriendMap` automatically or not.
+
+- All user must listen to `/inform/<uid>` when app starts.
+
+- When `A` request FriendMap to `B`, save lat & long in `/inform/<uid>.FriendMap`.
+  - So, the app of `B` can open `FriendMap`.
+
+
+
+
 
 ## FriendMap testing
 
