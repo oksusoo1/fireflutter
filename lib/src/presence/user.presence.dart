@@ -2,26 +2,27 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
 
+enum PresenceType {
+  online,
+  offline,
+  away,
+}
+
 class UserPresence extends StatefulWidget {
-  const UserPresence(
-      {required this.uid,
-      required this.onlineBuilder,
-      required this.offlineBuilder,
-      required this.awayBuilder,
-      Key? key})
-      : super(key: key);
+  const UserPresence({
+    required this.uid,
+    required this.builder,
+    Key? key,
+  }) : super(key: key);
 
   final String uid;
-  final Widget Function() onlineBuilder;
-  final Widget Function() offlineBuilder;
-  final Widget Function() awayBuilder;
+  final Widget Function(PresenceType) builder;
 
   @override
   State<UserPresence> createState() => _UserPresenceState();
 }
 
-class _UserPresenceState extends State<UserPresence>
-    with WidgetsBindingObserver {
+class _UserPresenceState extends State<UserPresence> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
@@ -55,20 +56,20 @@ class _UserPresenceState extends State<UserPresence>
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
-      stream:
-          FirebaseDatabase.instance.ref('presence').child(widget.uid).onValue,
+      stream: FirebaseDatabase.instance.ref('presence').child(widget.uid).onValue,
       builder: (context, AsyncSnapshot<DatabaseEvent> event) {
         if (event.hasData && event.data!.snapshot.exists) {
           final String status = (event.data!.snapshot.value! as Map)['status'];
+
           if (status == PresenceStatus.online.name) {
-            return widget.onlineBuilder();
+            return widget.builder(PresenceType.online);
           } else if (status == PresenceStatus.away.name) {
-            return widget.awayBuilder();
+            return widget.builder(PresenceType.away);
           } else {
-            return widget.offlineBuilder();
+            return widget.builder(PresenceType.offline);
           }
         } else {
-          return widget.offlineBuilder();
+          return widget.builder(PresenceType.offline);
         }
       },
     );

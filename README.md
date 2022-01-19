@@ -229,22 +229,15 @@ class _MainAppState extends State<MainApp> {
 ```dart
 UserPresence(
   uid: uid,
-  onlineBuilder: () => Row(
-    children: const [
-      Icon(Icons.circle, color: Colors.green),
-      Text('Online'),
-    ],
-  ),
-  offlineBuilder: () => Row(
-    children: const [
-      Icon(Icons.circle, color: Colors.red),
-      Text('Offline'),
-    ],
-  ),
-  awayBuilder: () => Row(
-    children: const [
-      Icon(Icons.circle, color: Colors.yellow),
-      Text('Away'),
+  builder: (PresenceType type) => Row(
+    children: [
+      Icon(
+        Icons.circle,
+        color: type == PresenceType.online
+            ? Colors.green
+            : (type == PresenceType.offline ? Colors.red : Colors.yellow),
+      ),
+      Text(type.name),
     ],
   ),
 ),
