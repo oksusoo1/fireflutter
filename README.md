@@ -82,7 +82,7 @@ Table of contents
 
 ## Chat
 
-- bundle many chat messages if they are written in 20 minutes.
+- put many chat messages in one chat message box(balloon) if they are written in 20 minutes.
 
 
 
@@ -334,13 +334,16 @@ UserFutureDoc(
     Note that, `room info doc` is also handled by the `ChatMessageModel`.
 
 
-- `/chat/rooms/<uid>/<uid>.block` will be true if the user is blocked.
+- `/chat/rooms/<uid>/<uid>.blocked` will be true if the user is blocked.
 - `/chat/rooms/<uid>/<uid>.deleted` will be true if the user is deleted.
   So, the deleted user will not be appears on list.
 
 ## Chat logic
 
 - When a user is reported, the app will save the user into backend.
+
+- `/chat/room/<uid>/<uid>` must not be over-written. It must always be updated(merged) on existing document since `blocked`, `deleted` properties must remain even if other properties are changed.
+  - @todo it's best to restrict by permission rule not to overwrite.
 
 
 

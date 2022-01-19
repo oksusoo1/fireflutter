@@ -15,9 +15,7 @@ class ChatMessageModel with ChatMixins {
   String from;
 
   String get time =>
-      DateTime.fromMillisecondsSinceEpoch(timestamp.millisecondsSinceEpoch)
-          .toLocal()
-          .toString();
+      DateTime.fromMillisecondsSinceEpoch(timestamp.millisecondsSinceEpoch).toLocal().toString();
 
   /// Login user's firebase uid.
   String get myUid => FirebaseAuth.instance.currentUser!.uid;
@@ -62,6 +60,10 @@ class ChatMessageModel with ChatMixins {
     return text.startsWith('protocol:');
   }
 
+  static createProtocol(String name, [String data = '']) {
+    return "protocol:$name:$data";
+  }
+
   /// Return true if the message is not url or or image.
   bool get isText {
     return isImage == false && isUrl == false;
@@ -76,8 +78,7 @@ class ChatMessageModel with ChatMixins {
     required this.ref,
   });
 
-  factory ChatMessageModel.fromJson(Map<dynamic, dynamic> json,
-      [DocumentReference? ref]) {
+  factory ChatMessageModel.fromJson(Map<dynamic, dynamic> json, [DocumentReference? ref]) {
     return ChatMessageModel(
       to: json['to'] ?? '',
       from: json['from'] ?? '',

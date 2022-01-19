@@ -46,8 +46,7 @@ class ChatService with ChatMixins {
         .listen((QuerySnapshot snapshot) {
       int _newMessages = 0;
       snapshot.docs.forEach((doc) {
-        ChatMessageModel room =
-            ChatMessageModel.fromJson(doc.data() as Map, null);
+        ChatMessageModel room = ChatMessageModel.fromJson(doc.data() as Map, null);
         _newMessages += room.newMessages;
       });
       newMessages.add(_newMessages);
@@ -55,8 +54,7 @@ class ChatService with ChatMixins {
   }
 
   clearNewMessages(String otherUid) {
-    myOtherRoomInfoDoc(otherUid)
-        .set({'newMessages': 0}, SetOptions(merge: true));
+    myOtherRoomInfoDoc(otherUid).set({'newMessages': 0}, SetOptions(merge: true));
   }
 
   /// Send a chat message to other user even if the login user is not in chat room.
@@ -64,6 +62,10 @@ class ChatService with ChatMixins {
   /// Use case;
   ///   - send a message to B when A likes B's post.
   ///   - send a message to B when A request friend map to B.
+  ///
+  /// [cleaerNewMessage] should be true only when the login user is inside the room or entering the room.
+  ///   - if the user is not inside the room, and simply send a message to a user without entering the room,
+  ///     then this should be false, meaning, it does not reset the no of new message.
   Future<Map<String, dynamic>> send({
     required String text,
     required String otherUid,
@@ -78,10 +80,14 @@ class ChatService with ChatMixins {
 
     messagesCol(otherUid).add(data).then((value) {});
 
-    /// When the login user send message, clear newMessage.
+    /// When the login user is inside the chat room, it should clear no of new message.
     if (clearNewMessage) {
-      clearNewMessages(otherUid);
+      data['newMessages'] = 0;
     }
+
+    /// Update the room info under my chat room list,
+    /// So once A sent a message to B for the first time, `B` is under A's room list.
+    await myOtherRoomInfoDoc(otherUid).set(data, SetOptions(merge: true));
 
     /// count new messages and update it on the other user's room info.
     data['newMessages'] = FieldValue.increment(1);
@@ -89,18 +95,19 @@ class ChatService with ChatMixins {
     return data;
   }
 
-  /// removes a user
+  /// block a user
   Future<void> blockUser(String otherUid) async {
-    await otherMyRoomInfoDoc(otherUid).set({
-      'text': 'ChatProtocol.block',
+    await myOtherRoomInfoDoc(otherUid).set({
+      'text': ChatMessageModel.createProtocol('block'),
       'timestamp': FieldValue.serverTimestamp(),
       'from': myUid,
       'to': otherUid,
+      'blocked': true,
     }, SetOptions(merge: true));
 
-    /// Inform all users.
+    /// Inform the other user.
     await send(
-      text: 'ChatProtocol.block',
+      text: ChatMessageModel.createProtocol('block'),
       otherUid: otherUid,
     );
   }
