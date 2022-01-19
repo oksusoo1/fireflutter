@@ -9,6 +9,7 @@ example/test
 example/README.md
 example/analysis_options.yaml
 example/pubspec.lock
+example/lib/services/config.dart
 
 
 readme
