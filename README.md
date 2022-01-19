@@ -426,8 +426,15 @@ Let's say the app needs to deliver friend request from A to B.
 ```dart
 FirebaseAuth.instance.authStateChanges().listen((user) {
   if (user != null) {
+    /// Re-init for listening the login user (when account changed)
     InformService.instance.init(callback: (data) {
-      debugPrint('inform data for ${user.uid}; $data');
+      if (data['type'] == 'FriendMap') {
+        /// If it's a freind map request, then open friend map screen.
+        Get.toNamed('/friend-map', arguments: {
+          'latitude': data['latitude'],
+          'longitude': data['longitude'],
+        });
+      }
     });
   } else {
     InformService.instance.dispose();
@@ -438,6 +445,13 @@ FirebaseAuth.instance.authStateChanges().listen((user) {
 
 - When the app needs to inform to other user, call `InformService.instance.inform(<uid>, {...data....})`.
 
+```dart
+InformService.instance.inform(widget.room.otherUid, {
+  'type': 'FriendMap',
+  'latitude': pos.latitude,
+  'longitude': pos.longitude,
+});
+```
 
 # For developer
 

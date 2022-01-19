@@ -43,9 +43,10 @@ class _MainAppState extends State<MainApp> {
 
     FirebaseAuth.instance.authStateChanges().listen((user) {
       if (user != null) {
+        /// Re-init for listening the login user (when account changed)
         InformService.instance.init(callback: (data) {
-          debugPrint('inform data for ${user.uid}; $data');
           if (data['type'] == 'FriendMap') {
+            /// If it's a freind map request, then open friend map screen.
             Get.toNamed('/friend-map', arguments: {
               'latitude': data['latitude'],
               'longitude': data['longitude'],
