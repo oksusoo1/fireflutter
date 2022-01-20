@@ -3,6 +3,7 @@ import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
 import 'package:extended/extended.dart';
 import 'package:get/get.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class ChatRoomsScreen extends StatelessWidget {
   const ChatRoomsScreen({Key? key}) : super(key: key);
@@ -10,11 +11,22 @@ class ChatRoomsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Chat Room List')),
+      appBar: AppBar(
+          title: UserDoc(
+        uid: FirebaseAuth.instance.currentUser!.uid,
+        builder: (u) => Text(u.name),
+      )),
       body: AuthState(
-        signedIn: (u) => ChatRooms(
-          itemBuilder: (ChatMessageModel room) => ChatRoomsUser(room),
-          onEmpty: ChatRoomsEmpty(),
+        signedIn: (u) => Column(
+          children: [
+            Text(FirebaseAuth.instance.currentUser!.uid),
+            Expanded(
+              child: ChatRooms(
+                itemBuilder: (ChatMessageModel room) => ChatRoomsUser(room),
+                onEmpty: ChatRoomsEmpty(),
+              ),
+            ),
+          ],
         ),
         signedOut: () => ChatRoomsEmpty(),
       ),
@@ -43,8 +55,7 @@ class _ChatRoomsUserState extends State<ChatRoomsUser> {
       uid: widget.room.otherUid,
       builder: (UserModel user) {
         return GestureDetector(
-          onTap: () => Get.toNamed('/chat-room-screen',
-              arguments: {'uid': widget.room.otherUid}),
+          onTap: () => Get.toNamed('/chat-room-screen', arguments: {'uid': widget.room.otherUid}),
           child: Container(
             margin: const EdgeInsets.all(xs),
             padding: const EdgeInsets.all(xs),
@@ -83,8 +94,7 @@ class _ChatRoomsUserState extends State<ChatRoomsUser> {
                               ),
                               child: Text(
                                 '${room.newMessages}',
-                                style: const TextStyle(
-                                    fontWeight: FontWeight.w500),
+                                style: const TextStyle(fontWeight: FontWeight.w500),
                               ),
                             ),
                           ]
@@ -101,12 +111,30 @@ class _ChatRoomsUserState extends State<ChatRoomsUser> {
                   ),
                 ),
                 spaceXsm,
-                FormSelect(
-                  options: const {'close': 'Close', 'friendMap': 'Friend Map'},
-                  onChanged: (k) async {
-                    if (k == 'friendMap') {
-                      final pos =
-                          await FriendMapService.instance.currentPosition;
+                Popup(
+                  icon: const Icon(Icons.menu),
+                  options: {
+                    'friendMap': PopupOption(
+                      icon: const Icon(Icons.map),
+                      label: 'Friend Map',
+                    ),
+                    'block': PopupOption(
+                      icon: const Icon(Icons.block),
+                      label: 'Block',
+                    ),
+                    'delete': PopupOption(
+                      icon: const Icon(Icons.delete_forever_rounded),
+                      label: 'Delete',
+                    ),
+                    'close': PopupOption(
+                      icon: const Icon(Icons.cancel),
+                      label: 'Close',
+                    ),
+                  },
+                  initialValue: '',
+                  onSelected: (v) async {
+                    if (v == 'friendMap') {
+                      final pos = await FriendMapService.instance.currentPosition;
                       ChatService.instance.send(
                         text: ChatMessageModel.createProtocol(
                             'friendMap', '${pos.latitude},${pos.longitude}'),
@@ -118,17 +146,14 @@ class _ChatRoomsUserState extends State<ChatRoomsUser> {
                         'latitude': pos.latitude,
                         'longitude': pos.longitude,
                       });
+                    } else if (v == 'delete') {
+                      final re = await confirm('Delete', 'Do you want to delete?');
+                      if (re == false) return;
+                      room.deleteRoom();
+                    } else if (v == 'block') {
+                      ChatService.instance.blockUser(widget.room.otherUid);
                     }
                   },
-                ),
-                IconButton(
-                  onPressed: () async {
-                    final re =
-                        await confirm('Delete', 'Do you want to delete?');
-                    if (re == false) return;
-                    room.deleteOtherUserRoom();
-                  },
-                  icon: const Icon(Icons.delete, color: Colors.redAccent),
                 ),
               ],
             ),

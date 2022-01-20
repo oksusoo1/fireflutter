@@ -52,14 +52,12 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
                   );
                 }
                 return PopupMenuButton<String>(
-                  offset: message.isMine
-                      ? const Offset(1, 50)
-                      : const Offset(0, 50),
+                  offset: message.isMine ? const Offset(1, 50) : const Offset(0, 50),
                   child: ChatRoomMessage(message),
                   onSelected: (String result) async {
                     if (result == 'delete') {
-                      final re = await confirm('Message delete',
-                          'Do you want to delete this message?');
+                      final re =
+                          await confirm('Message delete', 'Do you want to delete this message?');
                       if (re == false) return;
                       message.delete().catchError(error);
                     } else if (result == 'edit') {
@@ -105,8 +103,7 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
                       }
                     }
                   },
-                  itemBuilder: (BuildContext context) =>
-                      <PopupMenuEntry<String>>[
+                  itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
                     if (message.isMine && message.isImage == false)
                       const PopupMenuItem<String>(
                         value: 'edit',
@@ -132,8 +129,7 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
               onError: error,
 
               /// Send push notification here with no of new message.
-              onUpdateOtherUserRoomInformation:
-                  (Map<String, dynamic> data) async {
+              onUpdateOtherUserRoomInformation: (Map<String, dynamic> data) async {
                 //          int newMessages = 0;
 
                 /// Send push notification to the other user.

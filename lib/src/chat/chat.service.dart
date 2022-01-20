@@ -40,26 +40,39 @@ class ChatService with ChatMixins {
   countNewMessages() async {
     print('countNewMessages()');
     if (roomSubscription != null) roomSubscription!.cancel();
-    roomSubscription = roomsCol
+    roomSubscription = myRoomsCol
         .where('newMessages', isGreaterThan: 0)
         .snapshots()
         .listen((QuerySnapshot snapshot) {
       int _newMessages = 0;
       snapshot.docs.forEach((doc) {
-        ChatMessageModel room =
-            ChatMessageModel.fromJson(doc.data() as Map, null);
+        ChatMessageModel room = ChatMessageModel.fromJson(doc.data() as Map, null);
         _newMessages += room.newMessages;
       });
       newMessages.add(_newMessages);
     });
   }
 
-  clearNewMessages(String otherUid) {
-    myOtherRoomInfoDoc(otherUid)
-        .set({'newMessages': 0}, SetOptions(merge: true));
+  /// throws error if there is not permission.
+  Future clearNewMessages(String otherUid) {
+    return myOtherRoomInfoUpdate(otherUid, {'newMessages': 0});
   }
 
-  /// Send a chat message to other user even if the login user is not in chat room.
+  /// Send a chat message
+  /// It sends the chat message even if the login user is not in chat room.
+  ///
+  /// Important note that, this method updates 3 documents.
+  ///   - /chat/rooms/<my>/<other>
+  ///   - /chat/rooms/<other>/<my>
+  ///   - /chat/messages/<uid>-<uid>
+  ///   And if you update /chat/rooms/... in other place while sending a message,
+  ///   then, document will be updated twice and listener handlers will be called twice
+  ///   then, the screen may be flickering.
+  ///   So, it has options to update myOtherData for `/chat/rooms/<my>/<other>`
+  ///     and otherMyData for `/chat/rooms/<other>/<my>`.
+  ///     with this, you can update the room info docs and you don't have to
+  ///     update `/chat/rooms/...` separately.
+  ///
   ///
   /// Use case;
   ///   - send a message to B when A likes B's post.
@@ -68,10 +81,13 @@ class ChatService with ChatMixins {
   /// [cleaerNewMessage] should be true only when the login user is inside the room or entering the room.
   ///   - if the user is not inside the room, and simply send a message to a user without entering the room,
   ///     then this should be false, meaning, it does not reset the no of new message.
+  ///   - so, this option is only for logged in user.
   Future<Map<String, dynamic>> send({
     required String text,
     required String otherUid,
     bool clearNewMessage: true,
+    Map<String, dynamic> myOtherData = const {},
+    Map<String, dynamic> otherMyData = const {},
   }) async {
     final data = {
       'text': text,
@@ -80,7 +96,8 @@ class ChatService with ChatMixins {
       'to': otherUid,
     };
 
-    messagesCol(otherUid).add(data).then((value) {});
+    /// Add a chat message under the chat room.
+    await messagesCol(otherUid).add(data);
 
     /// When the login user is inside the chat room, it should clear no of new message.
     if (clearNewMessage) {
@@ -89,28 +106,61 @@ class ChatService with ChatMixins {
 
     /// Update the room info under my chat room list,
     /// So once A sent a message to B for the first time, `B` is under A's room list.
-    await myOtherRoomInfoDoc(otherUid).set(data, SetOptions(merge: true));
+    await myOtherRoomInfoUpdate(otherUid, {...data, ...myOtherData});
 
     /// count new messages and update it on the other user's room info.
     data['newMessages'] = FieldValue.increment(1);
-    await otherMyRoomInfoDoc(otherUid).set(data, SetOptions(merge: true));
+    await otherMyRoomInfoUpdate(otherUid, {...data, ...otherMyData});
     return data;
   }
 
-  /// block a user
-  Future<void> blockUser(String otherUid) async {
-    await myOtherRoomInfoDoc(otherUid).set({
-      'text': ChatMessageModel.createProtocol('block'),
-      'timestamp': FieldValue.serverTimestamp(),
-      'from': myUid,
-      'to': otherUid,
-      'blocked': true,
-    }, SetOptions(merge: true));
+  /// Room info document must be updated. Refer readme.
+  ///
+  /// Update my friend under
+  ///   - /chat/rooms/<my-uid>/<other-uid>
+  /// To make sure, all room info doc update must use this method.
+  Future<void> myOtherRoomInfoUpdate(String otherUid, Map<String, dynamic> data) {
+    return myRoomsCol.doc(otherUid).set(data, SetOptions(merge: true));
+  }
 
+  /// Room info document must be updated. Refer readme.
+  ///
+  /// Update my info under my friend's room list
+  ///   - /chat/rooms/<other-uid>/<my-uid>
+  /// To make sure, all room info doc update must use this method.
+  Future<void> otherMyRoomInfoUpdate(String otherUid, Map<String, dynamic> data) {
+    return otherRoomsCol(otherUid).doc(myUid).set(data, SetOptions(merge: true));
+  }
+
+  /// Return a room info doc under currently logged in user's room list.
+  Future<DocumentSnapshot<Object?>> getRoomInfo(String otherUid) {
+    return myRoomsCol.doc(otherUid).get();
+  }
+
+  /// Delete /chat/room/<my-uid>/<other-uid>
+  Future<void> myOtherRoomInfoDelete(String otherUid) {
+    return myRoomsCol.doc(otherUid).delete();
+  }
+
+  /// block a user
+  Future<void> blockUser(String otherUid) {
     /// Inform the other user.
-    await send(
-      text: ChatMessageModel.createProtocol('block'),
-      otherUid: otherUid,
-    );
+    // return send(
+    //   text: ChatMessageModel.createProtocol('block'),
+    //   otherUid: otherUid,
+    //   myOtherData: {'blocked': true},
+    // );
+    final futures = [
+      myOtherRoomInfoDelete(otherUid),
+      FirebaseFirestore.instance
+          .collection('chat')
+          .doc('blocked')
+          .collection(myUid)
+          .doc(otherUid)
+          .set({
+        'timestamp': FieldValue.serverTimestamp(),
+      }),
+    ];
+    return Future.wait(futures);
   }
 }

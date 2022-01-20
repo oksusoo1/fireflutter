@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:fireflutter/src/chat/chat.mixins.dart';
+import 'package:fireflutter/fireflutter.dart';
 
 /// Chat message model
 ///
@@ -16,9 +16,7 @@ class ChatMessageModel with ChatMixins {
   bool blocked;
 
   String get time =>
-      DateTime.fromMillisecondsSinceEpoch(timestamp.millisecondsSinceEpoch)
-          .toLocal()
-          .toString();
+      DateTime.fromMillisecondsSinceEpoch(timestamp.millisecondsSinceEpoch).toLocal().toString();
 
   /// Login user's firebase uid.
   String get myUid => FirebaseAuth.instance.currentUser!.uid;
@@ -37,7 +35,7 @@ class ChatMessageModel with ChatMixins {
 
   bool get hasNewMessage => newMessages > 0;
 
-  DocumentReference get otherUserRoomInMyRoomListRef => roomsCol.doc(otherUid);
+  // DocumentReference get otherUserRoomInMyRoomListRef => myRoomsCol.doc(otherUid);
 
   /// Reference of this document (chat model data)
   DocumentReference? ref;
@@ -86,8 +84,7 @@ class ChatMessageModel with ChatMixins {
     this.blocked = false,
   });
 
-  factory ChatMessageModel.fromJson(Map<dynamic, dynamic> json,
-      [DocumentReference? ref]) {
+  factory ChatMessageModel.fromJson(Map<dynamic, dynamic> json, [DocumentReference? ref]) {
     return ChatMessageModel(
         to: json['to'] ?? '',
         from: json['from'] ?? '',
@@ -114,8 +111,9 @@ class ChatMessageModel with ChatMixins {
   }
 
   /// Deletes other user in my room list.
-  Future<void> deleteOtherUserRoom() {
-    return otherUserRoomInMyRoomListRef.delete();
+  Future<void> deleteRoom() {
+    return ChatService.instance.myOtherRoomInfoDelete(otherUid);
+    // return otherUserRoomInMyRoomListRef.delete();
   }
 
   /// Deletes current document.

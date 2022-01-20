@@ -42,6 +42,7 @@ Table of contents
 - [Chat](#chat-1)
   - [Chat structure of Firestore](#chat-structure-of-firestore)
   - [Chat logic](#chat-logic)
+    - [Chat logic - block](#chat-logic---block)
 - [FriendMap](#friendmap)
   - [FriendMap installation](#friendmap-installation)
   - [FriendMap logic](#friendmap-logic)
@@ -329,16 +330,18 @@ UserFutureDoc(
     Note that, `room info doc` is also handled by the `ChatMessageModel`.
 
 
-- `/chat/rooms/<uid>/<uid>.blocked` will be true if the user is blocked.
-- `/chat/rooms/<uid>/<uid>.deleted` will be true if the user is deleted.
-  So, the deleted user will not be appears on list.
-
 ## Chat logic
 
-- When a user is reported, the app will save the user into backend.
+### Chat logic - block
 
-- `/chat/room/<uid>/<uid>` must not be over-written. It must always be updated(merged) on existing document since `blocked`, `deleted` properties must remain even if other properties are changed.
-  - @todo it's best to restrict by permission rule not to overwrite.
+- Setting `blocked` properties in room info doc - `/chat/rooms/<uid>/<uid>.blocked: true` is not working deu to the `inequality` feature of Firestore.
+  - You can order by `timestamp` where `blocked == true`. It's against `inequality` rule.
+
+- To solve this,
+  - remove blocked user from `/chat/rooms/<my>/<other>`
+  - save user uid at `/chat/blocked/<my>/<other>.timestamp`.
+
+- TODO: add firestore secuirty rules if a user is blocked, the app cannot send message to him.
 
 
 

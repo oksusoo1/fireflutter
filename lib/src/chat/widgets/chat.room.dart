@@ -51,12 +51,12 @@ class _ChatRoomState extends State<ChatRoom> {
   void initState() {
     super.initState();
     service.otherUid = widget.otherUid;
-    service.clearNewMessages(widget.otherUid);
+    service.clearNewMessages(widget.otherUid).catchError(widget.onError);
     getRoomInfo();
   }
 
   getRoomInfo() async {
-    DocumentSnapshot res = await ChatService.instance.myOtherRoomInfoDoc(widget.otherUid).get();
+    DocumentSnapshot res = await ChatService.instance.getRoomInfo(widget.otherUid);
     print(res);
 
     roomInfo = ChatMessageModel.fromJson(res.data() as Map);
