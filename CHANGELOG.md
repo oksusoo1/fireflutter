@@ -1,6 +1,10 @@
 # Change Log
 
 
+## [0.2.9] - UserPresence
+
+- update on `UserPresence`.
+
 ## [0.2.8] - Inform
 
 - `Inform` feature had added.

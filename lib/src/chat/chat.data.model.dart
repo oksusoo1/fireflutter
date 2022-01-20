@@ -16,7 +16,9 @@ class ChatMessageModel with ChatMixins {
   bool blocked;
 
   String get time =>
-      DateTime.fromMillisecondsSinceEpoch(timestamp.millisecondsSinceEpoch).toLocal().toString();
+      DateTime.fromMillisecondsSinceEpoch(timestamp.millisecondsSinceEpoch)
+          .toLocal()
+          .toString();
 
   /// Login user's firebase uid.
   String get myUid => FirebaseAuth.instance.currentUser!.uid;
@@ -84,7 +86,8 @@ class ChatMessageModel with ChatMixins {
     this.blocked = false,
   });
 
-  factory ChatMessageModel.fromJson(Map<dynamic, dynamic> json, [DocumentReference? ref]) {
+  factory ChatMessageModel.fromJson(Map<dynamic, dynamic> json,
+      [DocumentReference? ref]) {
     return ChatMessageModel(
         to: json['to'] ?? '',
         from: json['from'] ?? '',

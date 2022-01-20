@@ -24,7 +24,7 @@ class FriendMap extends StatefulWidget {
   _FriendMapState createState() => _FriendMapState();
 }
 
-class _FriendMapState extends State<FriendMap> {
+class _FriendMapState extends State<FriendMap> with WidgetsBindingObserver {
   FriendMapService service = FriendMapService.instance;
   final searchBoxController = TextEditingController();
 
@@ -43,10 +43,12 @@ class _FriendMapState extends State<FriendMap> {
     );
 
     markUsersLocations();
+    WidgetsBinding.instance?.addObserver(this);
   }
 
   @override
   void dispose() {
+    WidgetsBinding.instance?.removeObserver(this);
     positionStream?.cancel();
     super.dispose();
   }
@@ -58,10 +60,10 @@ class _FriendMapState extends State<FriendMap> {
       await service.markUsersLocations();
       await service.addPolylines();
       initPositionListener();
-      if (mounted) setState(() {});
     } catch (e) {
       widget.error(e);
     }
+    if (mounted) setState(() {});
   }
 
   initPositionListener() {
@@ -77,6 +79,16 @@ class _FriendMapState extends State<FriendMap> {
       );
       if (mounted) setState(() {});
     });
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    print('state $state');
+
+    if (state == AppLifecycleState.resumed && !service.locationServiceEnabled) {
+      markUsersLocations();
+    }
   }
 
   @override
