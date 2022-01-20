@@ -23,8 +23,6 @@ class _ChatBadgeState extends State<ChatBadge> {
 
   @override
   Widget build(BuildContext context) {
-    /// Remember to add this line!!!
-    print('chat build count; no; $no');
     if (no == 0) return SizedBox.shrink();
     return Badge(
       toAnimate: false,
