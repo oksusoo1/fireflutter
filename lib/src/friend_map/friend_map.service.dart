@@ -295,4 +295,16 @@ class FriendMapService {
       ),
     );
   }
+
+  zoomIn() {
+    _mapController.animateCamera(
+      CameraUpdate.zoomIn(),
+    );
+  }
+
+  zoomOut() {
+    _mapController.animateCamera(
+      CameraUpdate.zoomOut(),
+    );
+  }
 }

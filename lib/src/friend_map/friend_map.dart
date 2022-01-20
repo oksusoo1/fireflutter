@@ -68,8 +68,7 @@ class _FriendMapState extends State<FriendMap> with WidgetsBindingObserver {
 
   initPositionListener() {
     positionStream = service.initLocationListener().listen((Position position) {
-      print(
-          'position changed: lat ${position.latitude} ; lng ${position.longitude}');
+      print('position changed: lat ${position.latitude} ; lng ${position.longitude}');
 
       service.updateMarkerPosition(
         MarkerIds.currentLocation,
@@ -102,10 +101,48 @@ class _FriendMapState extends State<FriendMap> with WidgetsBindingObserver {
           zoomControlsEnabled: false,
           myLocationButtonEnabled: false,
           initialCameraPosition: currentLocation,
-          onMapCreated: (GoogleMapController controller) =>
-              service.mapController = controller,
+          onMapCreated: (GoogleMapController controller) => service.mapController = controller,
           markers: Set<Marker>.from(service.markers),
           polylines: Set<Polyline>.of(service.polylines.values),
+        ),
+        SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.only(left: 10.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                ClipOval(
+                  child: Material(
+                    color: Colors.blue.shade100, // button color
+                    child: InkWell(
+                      splashColor: Colors.blue, // inkwell color
+                      child: SizedBox(
+                        width: 40,
+                        height: 40,
+                        child: Icon(Icons.add),
+                      ),
+                      onTap: () => service.zoomIn(),
+                    ),
+                  ),
+                ),
+                SizedBox(height: 20),
+                ClipOval(
+                  child: Material(
+                    color: Colors.blue.shade100, // button color
+                    child: InkWell(
+                      splashColor: Colors.blue, // inkwell color
+                      child: SizedBox(
+                        width: 40,
+                        height: 40,
+                        child: Icon(Icons.remove),
+                      ),
+                      onTap: () => service.zoomOut(),
+                    ),
+                  ),
+                )
+              ],
+            ),
+          ),
         ),
         Positioned(
           bottom: 0,
