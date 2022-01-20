@@ -38,12 +38,12 @@ class ChatService with ChatMixins {
   ///
   ///
   countNewMessages() async {
-    print('countNewMessages()');
     if (roomSubscription != null) roomSubscription!.cancel();
     roomSubscription = myRoomsCol
         .where('newMessages', isGreaterThan: 0)
         .snapshots()
         .listen((QuerySnapshot snapshot) {
+      print('countNewMessages() ... listen()');
       int _newMessages = 0;
       snapshot.docs.forEach((doc) {
         ChatMessageModel room = ChatMessageModel.fromJson(doc.data() as Map, null);

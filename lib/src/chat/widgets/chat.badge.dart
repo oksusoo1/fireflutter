@@ -11,7 +11,6 @@ class ChatBadge extends StatefulWidget {
 
 class _ChatBadgeState extends State<ChatBadge> {
   int no = 0;
-
   @override
   void initState() {
     super.initState();
@@ -24,7 +23,8 @@ class _ChatBadgeState extends State<ChatBadge> {
 
   @override
   Widget build(BuildContext context) {
-    print('chat build count;');
+    /// Remember to add this line!!!
+    print('chat build count; no; $no');
     if (no == 0) return SizedBox.shrink();
     return Badge(
       toAnimate: false,
