@@ -1,5 +1,5 @@
 
-![FireFlutter](https://raw.githubusercontent.com/thruthesky/fireflutter/main/readme/images/logo.png?raw=true)
+![FireFlutter](https://raw.githubusercontent.com/thruthesky/fireflutter/main/readme/images/logo2.png?raw=true)
 
 # Fire Flutter
 
