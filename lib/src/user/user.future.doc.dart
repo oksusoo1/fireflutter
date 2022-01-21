@@ -3,7 +3,8 @@ import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
 
 class UserFutureDoc extends StatefulWidget {
-  const UserFutureDoc({required this.uid, required this.builder, Key? key}) : super(key: key);
+  const UserFutureDoc({required this.uid, required this.builder, Key? key})
+      : super(key: key);
   final String uid;
   final Widget Function(UserModel) builder;
 
@@ -33,7 +34,8 @@ class _UserFutureDocState extends State<UserFutureDoc> {
 
   @override
   Widget build(BuildContext context) {
-    if (user == null) return Center(child: CircularProgressIndicator.adaptive());
+    if (user == null)
+      return Center(child: CircularProgressIndicator.adaptive());
     return widget.builder(user!);
   }
 }
