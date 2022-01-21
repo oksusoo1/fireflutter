@@ -33,6 +33,8 @@ Table of contents
   - [User installation](#user-installation)
   - [Test users](#test-users)
   - [Phone number sign-in](#phone-number-sign-in)
+  - [Email authentication under phone sign-in](#email-authentication-under-phone-sign-in)
+    - [Email authentication under phone sign-in logic](#email-authentication-under-phone-sign-in-logic)
 - [User presence](#user-presence)
   - [User presence overview](#user-presence-overview)
   - [User Presence Installation](#user-presence-installation)
@@ -198,7 +200,34 @@ Table of contents
 
 
 
+## Email authentication under phone sign-in
 
+- This `email authentication under phone sign-in` feature is only the case that the user logged in with `phone sign-in`. It may be used in other cases. But we consider the `email authentication` with `phone sign-in` only since we have `phone sign-in` service.
+
+
+### Email authentication under phone sign-in logic
+
+- User presses `email update` button.
+- `email update` screen or popup will be opened where user can input his email.
+- user enter (or change) his email address and update it.
+  - App updates email on google auth.
+  - if user signed in long time ago, then there will be an exception of `login again`. If this exception happens, then remember the email address, and sign-in again.
+  - Once signed in again, then update the email address again.
+    - there might be another exception like 'email is in use'. then, warn user and let him enter new email address.
+
+- once email is updated, then verify it.
+  - send email verification by `FirebaseAuth.instance.currentUser.sendEmailVerification()`.
+  - and check if email is verified on every 3 seconds.
+    - @see reference https://www.youtube.com/watch?v=rTr8BUlUftg
+```dart
+sub = Timder.periodic(Duraction(3 seconds), () {
+  FirebaseAuth.instance.relaod();
+  if ( FirebaseAuth.instance.currentUser.emailVerified == true ) {
+    sub.cancel();
+    go to home page.
+  }
+})
+```
 
 # User presence
 
