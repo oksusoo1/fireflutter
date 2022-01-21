@@ -15,9 +15,10 @@ class _ChatBadgeState extends State<ChatBadge> {
   void initState() {
     super.initState();
     ChatService.instance.newMessages.listen((value) {
-      setState(() {
-        no = value;
-      });
+      if (mounted)
+        setState(() {
+          no = value;
+        });
     });
   }
 

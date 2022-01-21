@@ -12,16 +12,18 @@ class ChatRoomsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          title: UserDoc(
-        uid: FirebaseAuth.instance.currentUser!.uid,
-        builder: (u) => Text(u.name),
-      )),
+        title: const Text('Chat Rooms'),
+      ),
       body: AuthState(
         signedIn: (u) => Column(
           children: [
             Text('my uid: ' + FirebaseAuth.instance.currentUser!.uid),
             Row(children: [
-              TextButton(onPressed: () {}, child: const Text('Block list')),
+              TextButton(
+                  onPressed: () {
+                    Get.toNamed('/chat-rooms-blocked-screen');
+                  },
+                  child: const Text('Block list')),
             ]),
             Expanded(
               child: ChatRooms(
@@ -58,7 +60,8 @@ class _ChatRoomsUserState extends State<ChatRoomsUser> {
       uid: widget.room.otherUid,
       builder: (UserModel user) {
         return GestureDetector(
-          onTap: () => Get.toNamed('/chat-room-screen', arguments: {'uid': widget.room.otherUid}),
+          onTap: () => Get.toNamed('/chat-room-screen',
+              arguments: {'uid': widget.room.otherUid}),
           child: Container(
             margin: const EdgeInsets.all(xs),
             padding: const EdgeInsets.all(xs),
@@ -97,7 +100,8 @@ class _ChatRoomsUserState extends State<ChatRoomsUser> {
                               ),
                               child: Text(
                                 '${room.newMessages}',
-                                style: const TextStyle(fontWeight: FontWeight.w500),
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.w500),
                               ),
                             ),
                           ]
@@ -137,7 +141,8 @@ class _ChatRoomsUserState extends State<ChatRoomsUser> {
                   initialValue: '',
                   onSelected: (v) async {
                     if (v == 'friendMap') {
-                      final pos = await FriendMapService.instance.currentPosition;
+                      final pos =
+                          await FriendMapService.instance.currentPosition;
                       ChatService.instance.send(
                         text: ChatMessageModel.createProtocol(
                             'friendMap', '${pos.latitude},${pos.longitude}'),
@@ -150,7 +155,8 @@ class _ChatRoomsUserState extends State<ChatRoomsUser> {
                         'longitude': pos.longitude,
                       });
                     } else if (v == 'delete') {
-                      final re = await confirm('Delete', 'Do you want to delete?');
+                      final re =
+                          await confirm('Delete', 'Do you want to delete?');
                       if (re == false) return;
                       room.deleteRoom();
                     } else if (v == 'block') {

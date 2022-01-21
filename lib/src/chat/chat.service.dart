@@ -45,7 +45,8 @@ class ChatService with ChatMixins {
       // print('countNewMessages() ... listen()');
       int _newMessages = 0;
       snapshot.docs.forEach((doc) {
-        ChatMessageModel room = ChatMessageModel.fromJson(doc.data() as Map, null);
+        ChatMessageModel room =
+            ChatMessageModel.fromJson(doc.data() as Map, null);
         _newMessages += room.newMessages;
       });
       newMessages.add(_newMessages);
@@ -122,7 +123,8 @@ class ChatService with ChatMixins {
   /// Update my friend under
   ///   - /chat/rooms/<my-uid>/<other-uid>
   /// To make sure, all room info doc update must use this method.
-  Future<void> myOtherRoomInfoUpdate(String otherUid, Map<String, dynamic> data) {
+  Future<void> myOtherRoomInfoUpdate(
+      String otherUid, Map<String, dynamic> data) {
     return myRoomsCol.doc(otherUid).set(data, SetOptions(merge: true));
   }
 
@@ -131,8 +133,11 @@ class ChatService with ChatMixins {
   /// Update my info under my friend's room list
   ///   - /chat/rooms/<other-uid>/<my-uid>
   /// To make sure, all room info doc update must use this method.
-  Future<void> otherMyRoomInfoUpdate(String otherUid, Map<String, dynamic> data) {
-    return otherRoomsCol(otherUid).doc(myUid).set(data, SetOptions(merge: true));
+  Future<void> otherMyRoomInfoUpdate(
+      String otherUid, Map<String, dynamic> data) {
+    return otherRoomsCol(otherUid)
+        .doc(myUid)
+        .set(data, SetOptions(merge: true));
   }
 
   /// Return a room info doc under currently logged in user's room list.
@@ -157,6 +162,21 @@ class ChatService with ChatMixins {
           .set({
         'timestamp': FieldValue.serverTimestamp(),
       }),
+    ];
+    return Future.wait(futures);
+  }
+
+  /// unblock a user
+  Future<void> unblockUser(String otherUid) {
+    print('unblock user');
+    final futures = [
+      // myOtherRoomInfoDelete(otherUid),
+      FirebaseFirestore.instance
+          .collection('chat')
+          .doc('blocks')
+          .collection(myUid)
+          .doc(otherUid)
+          .delete(),
     ];
     return Future.wait(futures);
   }
