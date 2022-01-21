@@ -18,15 +18,16 @@ class _UserDocState extends State<UserDoc> {
     super.initState();
 
     FirebaseFirestore.instance
-        .collection('user')
+        .collection('users')
         .doc(widget.uid)
         .snapshots()
         .listen((DocumentSnapshot<Map<String, dynamic>> snapshot) {
       if (snapshot.exists) {
-        setState(() {
-          user = UserModel.fromJson(snapshot.data()!);
-        });
+        user = UserModel.fromJson(snapshot.data()!);
+      } else {
+        user = UserModel.nonExist();
       }
+      setState(() {});
     });
   }
 

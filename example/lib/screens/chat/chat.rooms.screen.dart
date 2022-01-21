@@ -19,7 +19,10 @@ class ChatRoomsScreen extends StatelessWidget {
       body: AuthState(
         signedIn: (u) => Column(
           children: [
-            Text(FirebaseAuth.instance.currentUser!.uid),
+            Text('my uid: ' + FirebaseAuth.instance.currentUser!.uid),
+            Row(children: [
+              TextButton(onPressed: () {}, child: const Text('Block list')),
+            ]),
             Expanded(
               child: ChatRooms(
                 itemBuilder: (ChatMessageModel room) => ChatRoomsUser(room),

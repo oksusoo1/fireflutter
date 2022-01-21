@@ -40,6 +40,7 @@ Table of contents
   - [Displaying user profile](#displaying-user-profile)
   - [User Auth State](#user-auth-state)
 - [Chat](#chat-1)
+  - [Chat todo;](#chat-todo)
   - [Chat structure of Firestore](#chat-structure-of-firestore)
   - [Chat logic](#chat-logic)
     - [Chat logic - block](#chat-logic---block)
@@ -318,6 +319,12 @@ UserFutureDoc(
 
 # Chat
 
+
+## Chat todo;
+
+- when A enters a room with B, check if they are blocked. If yes, dispaly a warning.
+- when sending message fails, check if they are block and warn properly.
+  - for instance, A request FriendMap to B, and A cannot send message to B since they are blocked. Then, display proper warning like "failed due to blocked" instead of meaning less message like "failed or permission denied."
 
 ## Chat structure of Firestore
 

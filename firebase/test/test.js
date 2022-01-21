@@ -143,7 +143,6 @@ describe('Firestore security test', () => {
         const blockedAC = db(authA).collection("chat").doc("messages").collection(A + '-' + C).doc("doc-id-ac");
         await firebase.assertSucceeds(blockedAC.set({ from: A, to: C, text: 'yo' }))
 
-
         /// success, not blocked between B & C
         const blockedBC = db(authB).collection("chat").doc("messages").collection(C + '-' + B).doc("doc-id-bc");
         await firebase.assertSucceeds(blockedBC.set({ from: B, to: C, text: 'yo' }))

@@ -8,9 +8,8 @@ class UserService {
     return _instance!;
   }
 
-  DocumentReference get _myDoc => FirebaseFirestore.instance
-      .collection('user')
-      .doc(FirebaseAuth.instance.currentUser!.uid);
+  DocumentReference get _myDoc =>
+      FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser!.uid);
 
   /// Update user name of currently login user.
   Future<void> updateName(String name) {

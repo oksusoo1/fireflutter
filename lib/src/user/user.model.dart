@@ -19,6 +19,6 @@ class UserModel {
   }
 
   factory UserModel.nonExist() {
-    return UserModel(name: '', photoUrl: '', exists: false);
+    return UserModel(name: 'Not exists', photoUrl: '', exists: false);
   }
 }

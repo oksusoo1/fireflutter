@@ -13,7 +13,6 @@ class ChatMessageModel with ChatMixins {
   int newMessages;
   String to;
   String from;
-  bool blocked;
 
   String get time =>
       DateTime.fromMillisecondsSinceEpoch(timestamp.millisecondsSinceEpoch).toLocal().toString();
@@ -61,10 +60,6 @@ class ChatMessageModel with ChatMixins {
     return text.startsWith('protocol:');
   }
 
-  bool get isBlocked {
-    return blocked;
-  }
-
   static createProtocol(String name, [String data = '']) {
     return "protocol:$name:$data";
   }
@@ -81,18 +76,17 @@ class ChatMessageModel with ChatMixins {
     required this.timestamp,
     required this.newMessages,
     required this.ref,
-    this.blocked = false,
   });
 
   factory ChatMessageModel.fromJson(Map<dynamic, dynamic> json, [DocumentReference? ref]) {
     return ChatMessageModel(
-        to: json['to'] ?? '',
-        from: json['from'] ?? '',
-        text: json['text'] ?? '',
-        timestamp: json['timestamp'] ?? Timestamp.now(), // handling exception
-        newMessages: json['newMessages'] ?? 0,
-        ref: ref,
-        blocked: json['blocked'] ?? false);
+      to: json['to'] ?? '',
+      from: json['from'] ?? '',
+      text: json['text'] ?? '',
+      timestamp: json['timestamp'] ?? Timestamp.now(), // handling exception
+      newMessages: json['newMessages'] ?? 0,
+      ref: ref,
+    );
   }
 
   toJson() {

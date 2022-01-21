@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:fireflutter/src/chat/chat.data.model.dart';
-import 'package:fireflutter/src/chat/chat.mixins.dart';
+import 'package:fireflutter/fireflutter.dart';
 import 'package:rxdart/rxdart.dart';
 
 class ChatService with ChatMixins {
@@ -43,7 +42,7 @@ class ChatService with ChatMixins {
         .where('newMessages', isGreaterThan: 0)
         .snapshots()
         .listen((QuerySnapshot snapshot) {
-      print('countNewMessages() ... listen()');
+      // print('countNewMessages() ... listen()');
       int _newMessages = 0;
       snapshot.docs.forEach((doc) {
         ChatMessageModel room = ChatMessageModel.fromJson(doc.data() as Map, null);
@@ -97,7 +96,11 @@ class ChatService with ChatMixins {
     };
 
     /// Add a chat message under the chat room.
-    await messagesCol(otherUid).add(data);
+    try {
+      await messagesCol(otherUid).add(data);
+    } catch (e) {
+      throw ERROR_CHAT_MESSAGE_ADD;
+    }
 
     /// When the login user is inside the chat room, it should clear no of new message.
     if (clearNewMessage) {
@@ -144,17 +147,11 @@ class ChatService with ChatMixins {
 
   /// block a user
   Future<void> blockUser(String otherUid) {
-    /// Inform the other user.
-    // return send(
-    //   text: ChatMessageModel.createProtocol('block'),
-    //   otherUid: otherUid,
-    //   myOtherData: {'blocked': true},
-    // );
     final futures = [
       myOtherRoomInfoDelete(otherUid),
       FirebaseFirestore.instance
           .collection('chat')
-          .doc('blocked')
+          .doc('blocks')
           .collection(myUid)
           .doc(otherUid)
           .set({

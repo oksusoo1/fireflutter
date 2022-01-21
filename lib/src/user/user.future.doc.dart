@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
@@ -20,15 +18,16 @@ class _UserFutureDocState extends State<UserFutureDoc> {
     super.initState();
 
     FirebaseFirestore.instance
-        .collection('user')
+        .collection('users')
         .doc(widget.uid)
         .get()
         .then((DocumentSnapshot<Map<String, dynamic>> snapshot) {
       if (snapshot.exists) {
-        setState(() {
-          user = UserModel.fromJson(snapshot.data()!);
-        });
+        user = UserModel.fromJson(snapshot.data()!);
+      } else {
+        user = UserModel.nonExist();
       }
+      setState(() {});
     });
   }
 

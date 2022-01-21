@@ -18,7 +18,7 @@ class _HomeScreenState extends State<HomeScreen> {
     FirebaseAuth.instance.authStateChanges().listen((user) {
       if (user != null) ChatService.instance.countNewMessages();
     });
-    ChatService.instance.newMessages.listen((value) => debugPrint('new messages: $value'));
+    // ChatService.instance.newMessages.listen((value) => debugPrint('new messages: $value'));
   }
 
   @override
