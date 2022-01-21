@@ -12,16 +12,18 @@ class ChatRoomsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          title: UserDoc(
-        uid: FirebaseAuth.instance.currentUser!.uid,
-        builder: (u) => Text(u.name),
-      )),
+        title: const Text('Chat Rooms'),
+      ),
       body: AuthState(
         signedIn: (u) => Column(
           children: [
             Text('my uid: ' + FirebaseAuth.instance.currentUser!.uid),
             Row(children: [
-              TextButton(onPressed: () {}, child: const Text('Block list')),
+              TextButton(
+                  onPressed: () {
+                    Get.toNamed('/chat-rooms-blocked-screen');
+                  },
+                  child: const Text('Block list')),
             ]),
             Expanded(
               child: ChatRooms(

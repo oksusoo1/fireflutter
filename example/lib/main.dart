@@ -2,6 +2,7 @@
 // import 'dart:async';
 
 import 'package:fe/screens/chat/chat.room.screen.dart';
+import 'package:fe/screens/chat/chat.rooms.blocked.screen.dart';
 import 'package:fe/screens/chat/chat.rooms.screen.dart';
 import 'package:fe/screens/friend_map/friend_map.screen.dart';
 import 'package:fe/screens/help/help.screen.dart';
@@ -88,6 +89,10 @@ class _MainAppState extends State<MainApp> {
         GetPage(
           name: '/chat-rooms-screen',
           page: () => const ChatRoomsScreen(),
+        ),
+        GetPage(
+          name: '/chat-rooms-blocked-screen',
+          page: () => const ChatRoomsBlockedScreen(),
         ),
         GetPage(name: '/friend-map', page: () => const FriendMapScreen())
       ],

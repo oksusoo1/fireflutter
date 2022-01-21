@@ -165,4 +165,19 @@ class ChatService with ChatMixins {
     ];
     return Future.wait(futures);
   }
+
+  /// unblock a user
+  Future<void> unblockUser(String otherUid) {
+    print('unblock user');
+    final futures = [
+      // myOtherRoomInfoDelete(otherUid),
+      FirebaseFirestore.instance
+          .collection('chat')
+          .doc('blocks')
+          .collection(myUid)
+          .doc(otherUid)
+          .delete(),
+    ];
+    return Future.wait(futures);
+  }
 }

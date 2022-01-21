@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 typedef FunctionEnter = void Function(String roomId);
 typedef FunctionRoomsItemBuilder = Widget Function(ChatMessageModel);
+typedef FunctionRoomsBlockedItemBuilder = Widget Function(String);
 typedef MessageBuilder = Widget Function(ChatMessageModel);
 typedef InputBuilder = Widget Function(void Function(String));
 

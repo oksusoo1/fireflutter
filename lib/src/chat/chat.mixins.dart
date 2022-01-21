@@ -12,6 +12,9 @@ mixin ChatMixins {
   CollectionReference get myRoomsCol =>
       FirebaseFirestore.instance.collection('chat/rooms/$myUid');
 
+  CollectionReference get myRoomsBlockedCol =>
+      FirebaseFirestore.instance.collection('chat/blocks/$myUid');
+
   /// Login user's firebase uid.
   String get myUid => FirebaseAuth.instance.currentUser!.uid;
 
