@@ -60,34 +60,31 @@ describe('Firestore security test', () => {
 
         /// expect fail, no auth
         const _noAuth = db().collection("chat").doc("messages").collection(`${A}-${B}`).doc('message-doc-id');
-        await firebase.assertFails(_noAuth.set({ foo: 'bar' }));
+        await firebase.assertFails(_noAuth.set({ to: B, from: A, text: 'yo', timestamp: 1 }));
 
 
         /// expect fail, wrong auth
         const _wrongAuth = db(authC).collection("chat").doc("messages").collection(`${A}-${B}`).doc('message-doc-id');
-        await firebase.assertFails(_wrongAuth.set({ foo: 'bar' }));
+        await firebase.assertFails(_wrongAuth.set({ to: B, from: A, text: 'yo', timestamp: 1 }));
 
     });
 
     it("Chat - message - write - failure - 'to' and 'from'", async () => {
         /// expect fails, due to wrong 'to', 'from'
-        const _missing = db(authA).collection("chat").doc("messages").collection(`${A}-${B}`).doc('message-doc-id-a');
-        await firebase.assertFails(_missing.set({ foo: 'bar' }));
+        const _missing = db(authC).collection("chat").doc("messages").collection(`${A}-${B}`).doc('message-doc-id-a');
+        await firebase.assertFails(_missing.set({ to: B, from: A, text: 'yo', timestamp: 1 }));
 
         const _wrong = db(authA).collection("chat").doc("messages").collection(`${A}-${B}`).doc('message-doc-id-a');
-        await firebase.assertFails(_wrong.set({ to: 'foo', from: 'bar' }));
+        await firebase.assertFails(_wrong.set({ to: B, from: C, text: 'yo', timestamp: 1 }));
 
-        const _missingB = db(authA).collection("chat").doc("messages").collection(`${A}-${B}`).doc('message-doc-id-a');
-        await firebase.assertFails(_missingB.set({ to: A, from: 'bar' }));
-
+        const _missingB = db(authB).collection("chat").doc("messages").collection(`${A}-${B}`).doc('message-doc-id-a');
+        await firebase.assertFails(_missingB.set({ to: A, from: C, text: 'yo', timestamp: 1 }));
     })
-
 
     it("Chat - message - write - success", async () => {
         const right = db(authA).collection("chat").doc("messages").collection(`${A}-${B}`).doc('right');
-        await firebase.assertSucceeds(right.set({ to: A, from: B }));
+        await firebase.assertSucceeds(right.set({ to: B, from: A, text: 'yo', timestamp: 1 }));
     });
-
 
     it("Chat - block - read", async () => {
 
@@ -127,29 +124,27 @@ describe('Firestore security test', () => {
 
     })
 
-    it("Chat - block - block user and test", async () => {
+    it("Chat - message - block user and test", async () => {
         await admin().collection("chat").doc("blocks").collection(A).doc(B).set({ timestamp: 1 });
 
         /// failure, blocked between A & B
         const blockedA = db(authA).collection("chat").doc("messages").collection(A + '-' + B).doc("any-id");
-        await firebase.assertFails(blockedA.set({ from: A, to: B, text: 'yo' }))
+        await firebase.assertFails(blockedA.set({ from: A, to: B, text: 'yo', timestamp: 1 }))
         const blockedB = db(authA).collection("chat").doc("messages").collection(A + '-' + B).doc("any-id");
-        await firebase.assertFails(blockedB.set({ from: B, to: A, text: 'yo' }))
+        await firebase.assertFails(blockedB.set({ from: B, to: A, text: 'yo', timestamp: 1 }))
 
         const blockedBA = db(authA).collection("chat").doc("messages").collection(B + '-' + A).doc("any-id");
-        await firebase.assertFails(blockedBA.set({ from: B, to: A, text: 'yo' }))
+        await firebase.assertFails(blockedBA.set({ from: B, to: A, text: 'yo', timestamp: 1 }))
 
         /// success, not blocked between A & C
         const blockedAC = db(authA).collection("chat").doc("messages").collection(A + '-' + C).doc("doc-id-ac");
-        await firebase.assertSucceeds(blockedAC.set({ from: A, to: C, text: 'yo' }))
+        await firebase.assertSucceeds(blockedAC.set({ from: A, to: C, text: 'yo', timestamp: 1 }))
 
         /// success, not blocked between B & C
         const blockedBC = db(authB).collection("chat").doc("messages").collection(C + '-' + B).doc("doc-id-bc");
-        await firebase.assertSucceeds(blockedBC.set({ from: B, to: C, text: 'yo' }))
+        await firebase.assertSucceeds(blockedBC.set({ from: B, to: C, text: 'yo', timestamp: 1 }))
 
 
     });
-
-
 
 });

@@ -1,5 +1,8 @@
 # Change Log
 
+## [0.2.10] - Adding firestore security rules
+
+- Add firestore security rules for chat.
 
 ## [0.2.9] - UserPresence
 

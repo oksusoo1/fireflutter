@@ -145,7 +145,7 @@ Table of contents
 ## Firestore installation
 
 - Enable firestore.
-- Update the securiy rules.
+- Copy the [fireflutter firestore securiy rules](https://raw.githubusercontent.com/thruthesky/fireflutter/main/firebase/firestore.rules) and update it on your project.
 
 
 # User

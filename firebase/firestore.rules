@@ -1,7 +1,4 @@
 rules_version = '2';
-function isMyRoom(roomId) {
-  return request.auth.uid in roomId.split('-');
-}
 service cloud.firestore {
   match /databases/{database}/documents {
     match /{document=**} {
@@ -13,14 +10,11 @@ service cloud.firestore {
         allow write: if my == request.auth.uid || other == request.auth.uid;
       }
       match /messages/{roomId}/{messageId} {
-    	  allow read: if isMyRoom(roomId);
-        allow write: if isMyRoom(roomId) &&
-          ( request.resource.data.to in roomId.split('-') && request.resource.data.from in roomId.split('-') ) &&
-          ( 
-            exists(/databases/$(database)/documents/chat/blocks/$(request.resource.data.to)/$(request.resource.data.from)) == false
-            &&
-            exists(/databases/$(database)/documents/chat/blocks/$(request.resource.data.from)/$(request.resource.data.to)) == false
-          );
+    	  allow read: if myChatRoom(roomId);
+        allow write: if myChatRoom(roomId) &&
+          messageParticipants(roomId) &&
+          (isBlocked() == false) &&
+          messageFields();
       }
       match /blocks/{myId}/{otherId} {
         allow read: if ( request.auth.uid == myId || request.auth.uid == otherId);
@@ -31,5 +25,30 @@ service cloud.firestore {
       allow read: if true;
       allow write: if (request.auth.uid == uid);
     }
+    // check if 'A' & 'B' are blocked. 
+    function isBlocked() {
+      return
+        exists(/databases/$(database)/documents/chat/blocks/$(request.resource.data.to)/$(request.resource.data.from)) ||
+        exists(/databases/$(database)/documents/chat/blocks/$(request.resource.data.from)/$(request.resource.data.to));
+    }
+
+    // check if 'to', 'from' fiends are part of room id.
+    function messageParticipants(roomId) {
+      return request.resource.data.to in roomId.split('-') && request.resource.data.from in roomId.split('-');
+    }
   }
+}
+function myChatRoom(roomId) {
+  return request.auth.uid in roomId.split('-');
+}
+function messageFields() {
+  let required = ["to", "from", "timestamp", "text"];
+  let optional = ["protocol"];
+  return fieldCheck(required, optional);
+}
+
+function fieldCheck(required, optional) {
+  let all = required.concat( optional );
+  let unused = debug("** fieldCheck request.resource.data.keys() **");
+  return debug(request.resource.data.keys()).hasAll( required ) && request.resource.data.keys().hasOnly(all);
 }
