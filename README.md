@@ -318,22 +318,7 @@ UserFutureDoc(
 
 # Chat
 
-- It supports multi user chat.
-- `/chat/rooms/global/<roomId>` is the room info document.
-  - properties;
-    - title - of the room
-    - users array of participants uid.
-    - block array of users who are blocked.
-    - message - last message.
-    - timestamp - of last message.
-- `/chat/rooms/user/<roomId>` is user's room info document.
-  - This is for private properties like `newMessages`.
-  - This must not have global room properties.
-- `/chat/messages/<roomId>/<messageDoc>` is the chat message document.
 
-
-~~~
-Old logic
 ## Chat structure of Firestore
 
 - `/chat/messages/<uid>__<uid>` is the collection of a chat room messages. Each document in this collection is the chat message documents that are handled by the `ChatMessageModel`. This is called `message doc`.
@@ -348,18 +333,26 @@ Old logic
 
 ## Chat logic
 
+- If it needs a speed to work, then just rely on the security rules without check permission before action.
+  - For instance, when A sends a message to B, it needs a speed. So, don't check if A is allowed to send message to B before it fails.
+    - Once it fails to send the message, then check what causes the problem.
+
+- If it does not need speed, then the app may check permission first.
+  - For instance, blocking a user does not need a speed. so, the app can check if the user can be blocked before it fails by security rules.
+
 ### Chat logic - block
 
 - Setting `blocked` properties in room info doc - `/chat/rooms/<uid>/<uid>.blocked: true` is not working deu to the `inequality` feature of Firestore.
   - You can order by `timestamp` where `blocked == true`. It's against `inequality` rule.
 
 - To solve this,
-  - remove blocked user from `/chat/rooms/<my>/<other>`
+  - remove blocked user's room info from `/chat/rooms/<my>/<other>`
   - save user uid at `/chat/blocked/<my>/<other>.timestamp`.
 
-- TODO: add firestore secuirty rules if a user is blocked, the app cannot send message to him.
+- When A blocked to B, both cannot send message to each other.
 
-~~~
+
+
 
 # FriendMap
 

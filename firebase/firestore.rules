@@ -1,16 +1,35 @@
 rules_version = '2';
+function isMyRoom(roomId) {
+  return request.auth.uid in roomId.split('-');
+}
 service cloud.firestore {
   match /databases/{database}/documents {
     match /{document=**} {
       allow read, write: if false;
     }
-    match /users/{userId} {
-      allow read: if true;
-      allow write: if (request.auth.uid == userId);
+    match /chat {
+      match /rooms/{my}/{other} {
+        allow read: if true;
+        allow write: if my == request.auth.uid || other == request.auth.uid;
+      }
+      match /messages/{roomId}/{messageId} {
+    	  allow read: if isMyRoom(roomId);
+        allow write: if isMyRoom(roomId) &&
+          ( request.resource.data.to in roomId.split('-') && request.resource.data.from in roomId.split('-') ) &&
+          ( 
+            exists(/databases/$(database)/documents/chat/blocks/$(request.resource.data.to)/$(request.resource.data.from)) == false
+            &&
+            exists(/databases/$(database)/documents/chat/blocks/$(request.resource.data.from)/$(request.resource.data.to)) == false
+          );
+      }
+      match /blocks/{myId}/{otherId} {
+        allow read: if ( request.auth.uid == myId || request.auth.uid == otherId);
+        allow write: if ( request.auth.uid == myId );
+      }
     }
-    match /posts/{postId} {
-      allow read: if (resource.data.visibility == "public") ||
-        (resource.data.authorId == request.auth.uid);
+    match /users/{uid} {
+      allow read: if true;
+      allow write: if (request.auth.uid == uid);
     }
   }
 }

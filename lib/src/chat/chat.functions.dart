@@ -7,6 +7,6 @@
 ///   - If myLoginId = 321 and otherUserLoginId = 1234, then the result is "1234-321"
 String getChatRoomDocumentId(String myLoginId, String otherUserLoginId) {
   return myLoginId.compareTo(otherUserLoginId) < 0
-      ? "${myLoginId}__$otherUserLoginId"
-      : "${otherUserLoginId}__$myLoginId";
+      ? "$myLoginId-$otherUserLoginId"
+      : "$otherUserLoginId-$myLoginId";
 }
