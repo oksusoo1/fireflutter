@@ -61,7 +61,8 @@ class FriendMapService {
   double get _destinationLongitude => markers.last.position.longitude;
 
   late GoogleMapController _mapController;
-  set mapController(GoogleMapController controller) => _mapController = controller;
+  set mapController(GoogleMapController controller) =>
+      _mapController = controller;
 
   /// Initialize location change listener
   ///
@@ -70,7 +71,8 @@ class FriendMapService {
     LocationAccuracy accuracy = LocationAccuracy.high,
   }) {
     return Geolocator.getPositionStream(
-      locationSettings: LocationSettings(distanceFilter: distanceFilter, accuracy: accuracy),
+      locationSettings:
+          LocationSettings(distanceFilter: distanceFilter, accuracy: accuracy),
     );
   }
 
@@ -109,7 +111,8 @@ class FriendMapService {
   ///
   Future<Position> get currentPosition async {
     await checkPermission();
-    return await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+    return await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high);
   }
 
   /// Marks locations on screen.
@@ -119,7 +122,8 @@ class FriendMapService {
   }) async {
     await checkPermission();
 
-    Position currentUserPosition = await Geolocator.getCurrentPosition(desiredAccuracy: accuracy);
+    Position currentUserPosition =
+        await Geolocator.getCurrentPosition(desiredAccuracy: accuracy);
 
     /// set current address.
     _currentAddress = await getAddressFromCoordinates(
@@ -133,7 +137,8 @@ class FriendMapService {
       currentUserPosition.longitude,
       title: "My Location",
       snippet: _currentAddress,
-      markerType: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueCyan),
+      markerType:
+          BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueCyan),
     );
 
     _otherUsersAddress = await getAddressFromCoordinates(
@@ -203,7 +208,8 @@ class FriendMapService {
   }) {
     if (_markers.isEmpty) return;
     Marker previousMarker = _markers.firstWhere((m) => m.markerId.value == id);
-    if (previousMarker.position.latitude == lat && previousMarker.position.longitude == lng) {
+    if (previousMarker.position.latitude == lat &&
+        previousMarker.position.longitude == lng) {
       /// Do nothing, it's the same coordinates..
     } else {
       Marker marker = Marker(
@@ -272,7 +278,8 @@ class FriendMapService {
   ///
   void moveCameraView(double lat, double lng, {double zoom = 18}) {
     _mapController.animateCamera(
-      CameraUpdate.newCameraPosition(CameraPosition(target: LatLng(lat, lng), zoom: zoom)),
+      CameraUpdate.newCameraPosition(
+          CameraPosition(target: LatLng(lat, lng), zoom: zoom)),
     );
   }
 
@@ -281,16 +288,23 @@ class FriendMapService {
   /// does not need to call "setState()" after calling this function.
   ///
   void adjustCameraViewAndZoom() {
-    double miny = (_startLatitude <= _destinationLatitude) ? _startLatitude : _destinationLatitude;
-    double minx =
-        (_startLongitude <= _destinationLongitude) ? _startLongitude : _destinationLongitude;
-    double maxy = (_startLatitude <= _destinationLatitude) ? _destinationLatitude : _startLatitude;
-    double maxx =
-        (_startLongitude <= _destinationLongitude) ? _destinationLongitude : _startLongitude;
+    double miny = (_startLatitude <= _destinationLatitude)
+        ? _startLatitude
+        : _destinationLatitude;
+    double minx = (_startLongitude <= _destinationLongitude)
+        ? _startLongitude
+        : _destinationLongitude;
+    double maxy = (_startLatitude <= _destinationLatitude)
+        ? _destinationLatitude
+        : _startLatitude;
+    double maxx = (_startLongitude <= _destinationLongitude)
+        ? _destinationLongitude
+        : _startLongitude;
 
     _mapController.animateCamera(
       CameraUpdate.newLatLngBounds(
-        LatLngBounds(northeast: LatLng(maxy, maxx), southwest: LatLng(miny, minx)),
+        LatLngBounds(
+            northeast: LatLng(maxy, maxx), southwest: LatLng(miny, minx)),
         150.0,
       ),
     );

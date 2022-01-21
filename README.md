@@ -28,6 +28,7 @@ Table of contents
   - [Firebase installation](#firebase-installation)
     - [iOS installation](#ios-installation)
   - [Firebase Realtime Database Installation](#firebase-realtime-database-installation)
+  - [Firestore installation](#firestore-installation)
 - [User](#user)
   - [User installation](#user-installation)
   - [Test users](#test-users)
@@ -57,6 +58,7 @@ Table of contents
   - [Building your app](#building-your-app)
   - [Building fireflutter](#building-fireflutter)
   - [Updating fireflutter while building your app](#updating-fireflutter-while-building-your-app)
+- [Security Rules on Firestore](#security-rules-on-firestore)
 - [Issues](#issues)
   - [firebase_database/permission-denied](#firebase_databasepermission-denied)
   - [Firebase realtime database is not working](#firebase-realtime-database-is-not-working)
@@ -140,6 +142,10 @@ Table of contents
 ```
 
 
+## Firestore installation
+
+- Enable firestore.
+- Copy the [fireflutter firestore securiy rules](https://raw.githubusercontent.com/thruthesky/fireflutter/main/firebase/firestore.rules) and update it on your project.
 
 
 # User
@@ -496,6 +502,20 @@ InformService.instance.inform(widget.room.otherUid, {
     - add it as pubspec dependency with local path
     - when ever you want to update fireflutter, simple run `<submodule-folder>/example/main.dart`
     - after updating fireflutter, come back to your app and run your app.
+
+
+# Security Rules on Firestore
+
+- We have local unit test for firestore security rules at `<root>/firebase/test` folder.
+- To run the test,
+  - open `<root>/firebase/test/test.js` and update `TEST_PROJECT_ID` to your firebase project id.
+  - run `$ firebase emulators:start` under `<root>/firebase` folder.
+  - run `$ npm test` under `<root>/firebase/test` folder.
+
+- To deploy,
+  - open `<root>/firebase/.firebaserc` and update `projects.default` to your firebase project id.
+  - run `$ firebase deploy --only firestore`
+
 
 
 
