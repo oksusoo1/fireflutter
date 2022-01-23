@@ -573,9 +573,8 @@ InformService.instance.inform(widget.room.otherUid, {
 
 ## Setting admin on firestore security rules
 
-- If a user's UID is set to true in `/settings/admin`, then he is treated as amin.
+- To set a user admin, Add the user's UID as field name(key) with the value of `true` in `/settings/admin`.
   - For instance, `{ "UID_AAA": true, "UID_BBB": true }`, then users whose uid is UID_AAA and UID_BBB are the admins.
-
 
 ![Security Rules Admin](https://raw.githubusercontent.com/thruthesky/fireflutter/main/readme/images/security-rules-admin.jpg?raw=true)
 
