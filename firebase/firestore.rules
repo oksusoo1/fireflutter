@@ -63,8 +63,8 @@ function messageFields() {
   return fieldCheck(required, optional);
 }
 
+// example: fieldCheck(['required', 'fields'], ['optional', 'fields'])
 function fieldCheck(required, optional) {
   let all = required.concat( optional );
-  let unused = debug("** fieldCheck request.resource.data.keys() **");
-  return debug(request.resource.data.keys()).hasAll( required ) && request.resource.data.keys().hasOnly(all);
+  return request.resource.data.keys().hasAll( required ) && request.resource.data.keys().hasOnly(all);
 }

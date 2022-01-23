@@ -149,11 +149,13 @@ describe('Firestore security test', () => {
 
     it("Admin - reminder write test", async () => {
         await admin().collection("settings").doc("admins").set({
+            [B]: true,
             [C]: true
         });
 
+
         await firebase.assertFails(db(authA).collection("settings").doc("reminder").set({ title: "hi" }))
-        await firebase.assertFails(db(authB).collection("settings").doc("reminder").set({ title: "hi" }))
+        await firebase.assertSucceeds(db(authB).collection("settings").doc("reminder").set({ title: "hi" }))
         await firebase.assertSucceeds(db(authC).collection("settings").doc("reminder").set({ title: "hi" }))
     })
 

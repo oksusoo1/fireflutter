@@ -62,6 +62,7 @@ Table of contents
   - [Building fireflutter](#building-fireflutter)
   - [Updating fireflutter while building your app](#updating-fireflutter-while-building-your-app)
 - [Security Rules on Firestore](#security-rules-on-firestore)
+  - [Setting admin on firestore security rules](#setting-admin-on-firestore-security-rules)
 - [Issues](#issues)
   - [firebase_database/permission-denied](#firebase_databasepermission-denied)
   - [Firebase realtime database is not working](#firebase-realtime-database-is-not-working)
@@ -570,6 +571,10 @@ InformService.instance.inform(widget.room.otherUid, {
 
 
 
+## Setting admin on firestore security rules
+
+- If a user's UID is set to true in `/settings/admin`, then he is treated as amin.
+  - For instance, `{ "UID_AAA": true, "UID_BBB": true }`, then users whose uid is UID_AAA and UID_BBB are the admins.
 
 
 # Issues
