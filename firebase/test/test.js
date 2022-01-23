@@ -144,7 +144,17 @@ describe('Firestore security test', () => {
         const blockedBC = db(authB).collection("chat").doc("messages").collection(C + '-' + B).doc("doc-id-bc");
         await firebase.assertSucceeds(blockedBC.set({ from: B, to: C, text: 'yo', timestamp: 1 }))
 
-
     });
+
+
+    it("Admin - reminder write test", async () => {
+        await admin().collection("settings").doc("admins").set({
+            [C]: true
+        });
+
+        await firebase.assertFails(db(authA).collection("settings").doc("reminder").set({ title: "hi" }))
+        await firebase.assertFails(db(authB).collection("settings").doc("reminder").set({ title: "hi" }))
+        await firebase.assertSucceeds(db(authC).collection("settings").doc("reminder").set({ title: "hi" }))
+    })
 
 });

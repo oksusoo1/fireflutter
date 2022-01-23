@@ -47,6 +47,7 @@ Table of contents
   - [Chat structure of Firestore](#chat-structure-of-firestore)
   - [Chat logic](#chat-logic)
     - [Chat logic - block](#chat-logic---block)
+- [Reminder](#reminder)
 - [FriendMap](#friendmap)
   - [FriendMap installation](#friendmap-installation)
   - [FriendMap logic](#friendmap-logic)
@@ -392,6 +393,28 @@ UserFutureDoc(
   - save user uid at `/chat/blocked/<my>/<other>.timestamp`.
 
 - When A blocked to B, both cannot send message to each other.
+
+
+
+
+
+# Reminder
+
+
+- `Reminder` service is to remind some to users with custom design.
+
+- When you have some to remind users, what do you do?
+  - Push notification may be one option.
+    - But push notification does not deliver reminders to user who register after sending notification.
+    - And it does not have an option like 'remind me later`.
+    `Reminder` service can do this.
+
+
+
+
+
+
+
 
 
 

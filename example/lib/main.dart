@@ -11,6 +11,7 @@ import 'package:fe/screens/phone_sign_in/phone_sign_in.screen.dart';
 import 'package:fe/screens/phone_sign_in/sms_code.screen.dart';
 import 'package:fe/screens/phone_sign_in_ui/phone_sign_in_ui.screen.dart';
 import 'package:fe/screens/phone_sign_in_ui/sms_code_ui.screen.dart';
+import 'package:fe/screens/reminder/reminder.edit.screen.dart';
 import 'package:fe/widgets/sign_in.widget.dart';
 import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
@@ -81,8 +82,7 @@ class _MainAppState extends State<MainApp> {
         ),
         GetPage(name: '/phone-sign-in', page: () => const PhoneSignInScreen()),
         GetPage(name: '/sms-code', page: () => const SmsCodeScreen()),
-        GetPage(
-            name: '/phone-sign-in-ui', page: () => const PhoneSignInUIScreen()),
+        GetPage(name: '/phone-sign-in-ui', page: () => const PhoneSignInUIScreen()),
         GetPage(name: '/sms-code-ui', page: () => const SmsCodeUIScreen()),
         GetPage(name: '/help', page: () => const HelpScreen()),
         GetPage(name: '/chat-room-screen', page: () => const ChatRoomScreen()),
@@ -94,7 +94,8 @@ class _MainAppState extends State<MainApp> {
           name: '/chat-rooms-blocked-screen',
           page: () => const ChatRoomsBlockedScreen(),
         ),
-        GetPage(name: '/friend-map', page: () => const FriendMapScreen())
+        GetPage(name: '/friend-map', page: () => const FriendMapScreen()),
+        GetPage(name: '/reminder-edit', page: () => const ReminderEditScreen())
       ],
     );
   }

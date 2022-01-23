@@ -26,3 +26,5 @@ export 'src/chat/widgets/chat.rooms.blocked.dart';
 export 'src/friend_map/friend_map.service.dart';
 export 'src/friend_map/friend_map.dart';
 export 'src/inform/inform.service.dart';
+
+export 'src/reminder/reminder.service.dart';

@@ -25,6 +25,18 @@ service cloud.firestore {
       allow read: if true;
       allow write: if (request.auth.uid == uid);
     }
+
+    match /settings {
+      match /admins {
+        allow read: if true;
+        allow write: if isAdmin();
+      }
+      match /reminder {
+        allow read: if true;
+        allow write: if isAdmin();
+      }
+    }
+
     // check if 'A' & 'B' are blocked. 
     function isBlocked() {
       return
@@ -35,6 +47,10 @@ service cloud.firestore {
     // check if 'to', 'from' fiends are part of room id.
     function messageParticipants(roomId) {
       return request.resource.data.to in roomId.split('-') && request.resource.data.from in roomId.split('-');
+    }
+
+    function isAdmin() {
+      return get(/databases/$(database)/documents/settings/admins).data[request.auth.uid] == true;
     }
   }
 }
