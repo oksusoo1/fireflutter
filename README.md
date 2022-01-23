@@ -577,7 +577,7 @@ InformService.instance.inform(widget.room.otherUid, {
   - For instance, `{ "UID_AAA": true, "UID_BBB": true }`, then users whose uid is UID_AAA and UID_BBB are the admins.
 
 
-![Security Rules Admin](https://raw.githubusercontent.com/thruthesky/fireflutter/main/readme/security-rules-admin.jpg?raw=true)
+![Security Rules Admin](https://raw.githubusercontent.com/thruthesky/fireflutter/main/readme/images/security-rules-admin.jpg?raw=true)
 
 
 
