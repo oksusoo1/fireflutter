@@ -48,6 +48,7 @@ Table of contents
   - [Chat logic](#chat-logic)
     - [Chat logic - block](#chat-logic---block)
 - [Reminder](#reminder)
+  - [Reminder code sample](#reminder-code-sample)
   - [Reminder logic](#reminder-logic)
 - [FriendMap](#friendmap)
   - [FriendMap installation](#friendmap-installation)
@@ -411,6 +412,48 @@ UserFutureDoc(
 - `ReminderEdit` widget is a sample code for updating the document. you can customize by copy & paste.
   
 - And `ReminderService.instance.display()` is the default UI to display reminder on app screen. You can also customize the UI by copy & paste.
+
+## Reminder code sample
+
+- To display reminder dialog when there is a reminder, use the code below.
+
+```dart
+/// Define global key somewhere.
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey();
+
+
+/// Apply it to MaterialApp.
+class _MainAppState extends State<MainApp> {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+            navigatorKey: navigatorKey,
+          );
+  }
+}
+
+/// Listen to reminder
+///
+/// Delay 3 seconds. This is just to display the reminder dialog 3 seconds
+/// after the app boots. No big deal here.
+Timer(const Duration(seconds: 3), () {
+  /// Listen to the reminder update event.
+  ReminderService.instance.listen((reminder) {
+    /// Display the reminder using default dialog UI. You may copy the code
+    /// and customize by yourself.
+    ReminderService.instance.display(
+      /// Use the global NavigatorState to display dialog.
+      context: navigatorKey.currentContext!,
+      data: reminder,
+      onLinkPressed: (page, arguments) {
+        Get.toNamed(page, arguments: arguments);
+      },
+    );
+  });
+});
+```
+
+- For updating, reminder, see the sample come of [ReminderEditScreen](https://github.com/thruthesky/fireflutter/blob/main/example/lib/screens/reminder/reminder.edit.screen.dart).
 
 ## Reminder logic
 

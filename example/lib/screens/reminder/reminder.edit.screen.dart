@@ -15,8 +15,16 @@ class ReminderEditScreen extends StatelessWidget {
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: ReminderEdit(
-          onLinkPressed: (String page, dynamic arguments) =>
-              Get.toNamed(page, arguments: arguments),
+          onPreview: (data) async {
+            bool? re = await ReminderService.instance.display(
+              context: context,
+              onLinkPressed: (String page, dynamic arguments) =>
+                  Get.toNamed(page, arguments: arguments),
+              data: data,
+            );
+
+            debugPrint('re; $re');
+          },
           onError: (e) {
             debugPrint(e.toString());
             error(e);

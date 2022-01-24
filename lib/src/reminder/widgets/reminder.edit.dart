@@ -4,11 +4,11 @@ import 'package:flutter/material.dart';
 class ReminderEdit extends StatefulWidget {
   const ReminderEdit({
     Key? key,
-    required this.onLinkPressed,
+    required this.onPreview,
     required this.onError,
   }) : super(key: key);
   final Function onError;
-  final OnPressedCallback onLinkPressed;
+  final void Function(ReminderModel) onPreview;
 
   @override
   _ReminderEditState createState() => _ReminderEditState();
@@ -77,20 +77,14 @@ class _ReminderEditState extends State<ReminderEdit> {
             ),
             const SizedBox(width: 8),
             ElevatedButton(
-              onPressed: () async {
-                bool? re = await ReminderService.instance.display(
-                  context: context,
-                  onLinkPressed: widget.onLinkPressed,
-                  data: ReminderModel(
-                    title: title.text,
-                    content: content.text,
-                    imageUrl: imageUrl.text,
-                    link: link.text,
-                  ),
-                );
-
-                print('re; $re');
-              },
+              onPressed: () => widget.onPreview(
+                ReminderModel(
+                  title: title.text,
+                  content: content.text,
+                  imageUrl: imageUrl.text,
+                  link: link.text,
+                ),
+              ),
               child: const Text('Preview'),
             ),
             const Spacer(),

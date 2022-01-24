@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:fireflutter/src/reminder/reminder.model.dart';
+import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -121,7 +121,6 @@ class ReminderService {
               ),
             if (reminder.content != '')
               Container(
-                // color: Colors.grey.shade50,
                 width: double.infinity,
                 padding: const EdgeInsets.all(16),
                 margin: const EdgeInsets.only(top: 16),
@@ -154,7 +153,7 @@ class ReminderService {
                 onTap: () {
                   saveLink(reminder.link);
                   Navigator.pop(context, true);
-                  onLinkPressed(reminder.link, {});
+                  onLinkPressed(reminder.link, splitQueryString(reminder.link));
                 },
               ),
             Row(
