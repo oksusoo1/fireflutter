@@ -26,12 +26,8 @@ class _ChatRoomsBlockedState extends State<ChatRoomsBlocked> {
   @override
   Widget build(BuildContext context) {
     return PaginateFirestore(
-      // Use SliverAppBar in header to make it sticky
-      // header: const SliverToBoxAdapter(child: Text('HEADER')),
       footer: const SliverToBoxAdapter(child: SizedBox(height: 16)),
-
       itemsPerPage: 20,
-
       reverse: false,
       //item builder type is compulsory.
       itemBuilder: (context, documentSnapshots, index) {
@@ -41,8 +37,7 @@ class _ChatRoomsBlockedState extends State<ChatRoomsBlocked> {
         );
       },
       // orderBy is compulsory to enable pagination
-      query: ChatService.instance.myRoomsBlockedCol
-          .orderBy('timestamp', descending: true),
+      query: ChatService.instance.myRoomsBlockedCol.orderBy('timestamp', descending: true),
       //Change types accordingly
       itemBuilderType: PaginateBuilderType.listView,
       // To update db data in real time.
@@ -71,7 +66,7 @@ class _ChatRoomsBlockedState extends State<ChatRoomsBlocked> {
       },
       onEmpty: widget.onEmpty ??
           const Center(
-            child: Text('No blocked, yet.'),
+            child: Text('No blocked chat, yet.'),
           ),
       // separator: Divider(color: Colors.blue),
     );

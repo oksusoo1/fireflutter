@@ -26,8 +26,6 @@ class _ChatRoomsState extends State<ChatRooms> {
   @override
   Widget build(BuildContext context) {
     return PaginateFirestore(
-      // Use SliverAppBar in header to make it sticky
-      // header: const SliverToBoxAdapter(child: Text('HEADER')),
       footer: const SliverToBoxAdapter(child: SizedBox(height: 16)),
 
       itemsPerPage: 20,
@@ -36,16 +34,14 @@ class _ChatRoomsState extends State<ChatRooms> {
       //item builder type is compulsory.
       itemBuilder: (context, documentSnapshots, index) {
         final data = documentSnapshots[index].data() as Map?;
-        final room = ChatMessageModel.fromJson(
-            data!, documentSnapshots[index].reference);
+        final room = ChatMessageModel.fromJson(data!, documentSnapshots[index].reference);
         return Container(
           key: ValueKey(room.otherUid),
           child: widget.itemBuilder(room),
         );
       },
       // orderBy is compulsory to enable pagination
-      query: ChatService.instance.myRoomsCol
-          .orderBy('timestamp', descending: true),
+      query: ChatService.instance.myRoomsCol.orderBy('timestamp', descending: true),
       //Change types accordingly
       itemBuilderType: PaginateBuilderType.listView,
       // To update db data in real time.
@@ -74,8 +70,7 @@ class _ChatRoomsState extends State<ChatRooms> {
       },
       onEmpty: widget.onEmpty ??
           const Center(
-            child:
-                Text('No friends, yet. Please send a message to some friends.'),
+            child: Text('No friends, yet. Please send a message to some friends.'),
           ),
       // separator: Divider(color: Colors.blue),
     );
