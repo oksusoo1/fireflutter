@@ -1,3 +1,5 @@
+import 'package:fireflutter/fireflutter.dart';
+
 /// splitQueryString of Uri class
 ///
 /// The difference of [Uri.splitQueryString] is that if the string have '?',
@@ -25,4 +27,15 @@ Map<String, String> splitQueryString(String query) {
     }
     return map;
   });
+}
+
+/// Produce links for firestore indexes generation.
+///
+/// Once indexes are set, it will not produce the links any more.
+/// Wait for 30 minutes after clicnk the links for the completion.
+getFirestoreIndexLinks() {
+  ReminderService.instance.settingsCol
+      .where('type', isEqualTo: 'reminder')
+      .where('link', isNotEqualTo: 'abc')
+      .get();
 }
