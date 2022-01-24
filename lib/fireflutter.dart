@@ -28,3 +28,5 @@ export 'src/friend_map/friend_map.dart';
 export 'src/inform/inform.service.dart';
 
 export 'src/reminder/reminder.service.dart';
+export 'src/reminder/reminder.model.dart';
+export 'src/reminder/widgets/reminder.edit.dart';

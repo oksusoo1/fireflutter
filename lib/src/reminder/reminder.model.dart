@@ -1,17 +1,21 @@
-// import 'package:cloud_firestore/cloud_firestore.dart';
-
 class ReminderModel {
-  String id;
+  String link;
   String title;
+  String content;
+  String imageUrl;
   ReminderModel({
-    required this.id,
+    required this.link,
     required this.title,
+    required this.content,
+    required this.imageUrl,
   });
 
   factory ReminderModel.fromJson(Map<String, dynamic> data) {
     return ReminderModel(
-      id: data['id'],
+      link: data['link'] ?? '',
       title: data['title'] ?? '',
+      content: data['content'] ?? '',
+      imageUrl: data['imageUrl'] ?? '',
     );
   }
 }

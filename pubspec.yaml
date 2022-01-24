@@ -1,6 +1,6 @@
 name: fireflutter
 description: A free, open source, complete, rapid development package for creating Social apps, Chat apps, Community(Forum) apps, Shopping mall apps, and much more based on Firebase.
-version: 0.2.10
+version: 0.2.11
 homepage: https://github.com/thruthesky/fireflutter
 
 environment:
@@ -33,6 +33,9 @@ dependencies:
   geolocator: ^8.0.3
   google_maps_flutter: ^2.1.1
   flutter_polyline_points: ^1.0.0
+
+  # reminder service,
+  shared_preferences: ^2.0.12
 
 
 

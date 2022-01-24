@@ -1,5 +1,9 @@
 # Change Log
 
+## [0.2.11] - Reminder
+
+- Reminder functionality had been added.
+
 ## [0.2.10] - Adding firestore security rules
 
 - Add firestore security rules for chat.

@@ -17,6 +17,10 @@ class _HelpScreenState extends State<HelpScreen> {
       ),
       body: Column(
         children: [
+          Text('when; ' + (Get.arguments?['when'] ?? 'no when')),
+          Text('where; ' + (Get.arguments?['where'] ?? 'no where')),
+          Text('who; ' + (Get.arguments?['who'] ?? 'no who')),
+          Text('what; ' + (Get.arguments?['what'] ?? 'no what')),
           ElevatedButton(
             onPressed: () => Get.toNamed('/phone-sign-in'),
             child: const Text('Phone Sign-In'),

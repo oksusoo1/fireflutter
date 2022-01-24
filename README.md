@@ -19,7 +19,6 @@ A free, open source, complete, rapid development package for creating Social app
 Table of contents
 
 - [Fire Flutter](#fire-flutter)
-- [Features](#features)
 - [TODOs](#todos)
   - [Chat](#chat)
 - [Installation](#installation)
@@ -29,6 +28,7 @@ Table of contents
     - [iOS installation](#ios-installation)
   - [Firebase Realtime Database Installation](#firebase-realtime-database-installation)
   - [Firestore installation](#firestore-installation)
+    - [Setting admin on firestore security rules](#setting-admin-on-firestore-security-rules)
 - [User](#user)
   - [User installation](#user-installation)
   - [Test users](#test-users)
@@ -48,6 +48,8 @@ Table of contents
   - [Chat logic](#chat-logic)
     - [Chat logic - block](#chat-logic---block)
 - [Reminder](#reminder)
+  - [Reminder code sample](#reminder-code-sample)
+  - [Reminder logic](#reminder-logic)
 - [FriendMap](#friendmap)
   - [FriendMap installation](#friendmap-installation)
   - [FriendMap logic](#friendmap-logic)
@@ -61,32 +63,12 @@ Table of contents
   - [Building your app](#building-your-app)
   - [Building fireflutter](#building-fireflutter)
   - [Updating fireflutter while building your app](#updating-fireflutter-while-building-your-app)
-- [Security Rules on Firestore](#security-rules-on-firestore)
-  - [Setting admin on firestore security rules](#setting-admin-on-firestore-security-rules)
+- [Test](#test)
+  - [Local test on firestore security rules](#local-test-on-firestore-security-rules)
 - [Issues](#issues)
   - [firebase_database/permission-denied](#firebase_databasepermission-denied)
   - [Firebase realtime database is not working](#firebase-realtime-database-is-not-working)
   - [firebase_auth/internal-error](#firebase_authinternal-error)
-
-# Features
-
-- User
-  - User registration is done with Firebase Flutter UI.
-
-
-- User presence
-  - To know if a user is online or offline.
-
-
-- User Profile
-  - Saving & displaying user profile.
-
-
-- Chat
-
-- Friend map
-  - To find friend easily.
-
 
 # TODOs
 
@@ -149,7 +131,17 @@ Table of contents
 ## Firestore installation
 
 - Enable firestore.
-- Copy the [fireflutter firestore securiy rules](https://raw.githubusercontent.com/thruthesky/fireflutter/main/firebase/firestore.rules) and update it on your project.
+- Copy the [firestore securiy rules](https://raw.githubusercontent.com/thruthesky/fireflutter/main/firebase/firestore.rules) and update it on your firebase project.
+- Copy the [firestore indexes](https://raw.githubusercontent.com/thruthesky/fireflutter/main/firebase/firestore.indexes.json) and update it on your firebase project.
+
+
+### Setting admin on firestore security rules
+
+- To set a user admin, Add the user's UID as field name(key) with the value of `true` in `/settings/admin`.
+  - For instance, `{ "UID_AAA": true, "UID_BBB": true }`, then users whose uid is UID_AAA and UID_BBB are the admins.
+
+![Security Rules Admin](https://raw.githubusercontent.com/thruthesky/fireflutter/main/readme/images/security-rules-admin.jpg?raw=true)
+
 
 
 # User
@@ -402,18 +394,107 @@ UserFutureDoc(
 # Reminder
 
 
-- `Reminder` service is to remind some to users with custom design.
 
-- When you have some to remind users, what do you do?
-  - Push notification may be one option.
-    - But push notification does not deliver reminders to user who register after sending notification.
-    - And it does not have an option like 'remind me later`.
-    `Reminder` service can do this.
+![Reminder](https://raw.githubusercontent.com/thruthesky/fireflutter/main/readme/images/reminder.jpg?raw=true)
 
 
 
+- `ReminderService` is to remind some to users with custom UI.
+  - When the app has some to remind its users, push notification may be one option.
+      - But push notification does not deliver reminders to the users who registered after sending notifications.
+      - And it does not have an option like 'remind me later`.
+  - `ReminderService` can do this.
 
 
+- It uses `/settings/reminder` document.
+  - It is not recommended to edit the docuement directly insdie firebase console.
+  
+- `ReminderEdit` widget is a sample code for updating the document. you can customize by copy & paste.
+  
+- And `ReminderService.instance.display()` is the default UI to display reminder on app screen. You can also customize the UI by copy & paste.
+
+## Reminder code sample
+
+- To display reminder dialog when there is a reminder, use the code below.
+
+```dart
+/// Define global key somewhere.
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey();
+
+
+/// Apply it to MaterialApp.
+class _MainAppState extends State<MainApp> {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+            navigatorKey: navigatorKey,
+          );
+  }
+}
+
+/// Listen to reminder
+///
+/// Delay 3 seconds. This is just to display the reminder dialog 3 seconds
+/// after the app boots. No big deal here.
+Timer(const Duration(seconds: 3), () {
+  /// Listen to the reminder update event.
+  ReminderService.instance.listen((reminder) {
+    /// Display the reminder using default dialog UI. You may copy the code
+    /// and customize by yourself.
+    ReminderService.instance.display(
+      /// Use the global NavigatorState to display dialog.
+      context: navigatorKey.currentContext!,
+      data: reminder,
+      onLinkPressed: (page, arguments) {
+        Get.toNamed(page, arguments: arguments);
+      },
+    );
+  });
+});
+```
+
+- For updating, reminder, see the sample come of [ReminderEditScreen](https://github.com/thruthesky/fireflutter/blob/main/example/lib/screens/reminder/reminder.edit.screen.dart).
+
+## Reminder logic
+
+- There are `title, content, imageUrl, link` fields on the form.
+- One of `title, content, imageUrl` must have value or dialog will not appear.
+- `link` has the information to which screen the app should move once user pressed on `more info` button. It must not be an empty string.
+  - When `more info` button is pressed, `ReminderService` saves the link on local storage and calls the callback, then app can move the screen.
+    - And when the app start again, it will not get the reminder document again from firestore since the link has already opened.
+  - When user pressed on `don't show again` button, the link will be saved on local storage and when the app starts again, it will not get the reminder document again from firestore.
+  - When `remind me later` button clicked,  the app simply closes the dialog and when the app starts again, the app will fetch the reminder doc from firestore and display the reminder dialog again on screen.
+  - When backdrop had touched, the app works the same as `remind me later` button pressed.
+  - `link` can have in URL format. For instance, `/post-view?postId=123&option=a`. And when callback is being called `/post-view` parts goes to first parameter, and `{'postId': 123, 'option': a}` goes to next parameter.
+    - If `link` changes, the `ReminderService` considers as a new link had been activated.
+    - So, if you want to display a reminder dialog again with same url, then you may simply change the parameter a little like `/post-view?postId=123&option=b`.
+  - Once `link` is saved on local storage, `ReminderService` does not get the same document of `link` again from firestore.
+
+
+- The default dialog UI has three buttons.
+  - `more info`, `don't show again`, and `remind me later`.
+  - User can press on backdrop and it work just as `reminde me later` button.
+
+- There are three buttons on `ReminderEdit` widget. You can update the `/settings/reminder` document with it.
+  - When you press `preview` button, you can see the look of the default dialog UI with the reminder data.
+    - When you press `don't show again` button on `preview` UI dialog, it saves the link on local storage.
+    - When you press `more info` button button on `preview` UI dialog, it saves the link on local storage and calls the callback where the app can move to the intended screen.
+    - Since the link saved, when the app restarts the reminder dialog would not appear.
+    - One fitfall is that, when app starts, `ReminderService` will listen to the `/settings/reminder` with the link saved previously. and  `don't show again` or `more info` button is pressed on `preview mode`. Then, new link had been saved on local storage. the but new link is not the same link that app is listening to.
+    So, when `save` button pressed, the reminder dialog would popup.
+
+  - When you edit and preview, you may add a version (test) value to see the changes.
+    - For instance, `/post-view?postId=123&version=456`.
+  - When you press on `preview`, it does not save the form data into reminder doc in firestore. So, you have to press `save` button to update the reminder doc. And then the updated reminder doc will be downloaded to users' app and reminder UI appears on all the online users' devices.
+  - You may have an image upload button and update `imageUrl` with the uploaded image.
+    But for now, you can input the imageUrl on the `imageUrl` field.
+
+- Only admin whose UID is set in `/settings/admin` can edit the reminder documents.
+
+
+- There is no fixed size of the image of `imageUrl`. The recommended size would be maximum of 512px width and the ratio of the width 3 and height 2.
+
+- If admin updates the reminder with changes of `link` very quickly like 2 times in a minute, then two popup may appear on user's screen. This won't be happening in production mode and won't be a big trouble.
 
 
 
@@ -533,7 +614,7 @@ InformService.instance.inform(widget.room.otherUid, {
 
 ## Building your app
 
-- Simple add it on pubspec dependency
+- To build your app with firelutter, simply add it on pubspec dependency.
 
 ## Building fireflutter
 
@@ -557,7 +638,10 @@ InformService.instance.inform(widget.room.otherUid, {
     - after updating fireflutter, come back to your app and run your app.
 
 
-# Security Rules on Firestore
+# Test
+
+
+## Local test on firestore security rules
 
 - We have local unit test for firestore security rules at `<root>/firebase/test` folder.
 - To run the test,
@@ -568,15 +652,6 @@ InformService.instance.inform(widget.room.otherUid, {
 - To deploy,
   - open `<root>/firebase/.firebaserc` and update `projects.default` to your firebase project id.
   - run `$ firebase deploy --only firestore`
-
-
-
-## Setting admin on firestore security rules
-
-- To set a user admin, Add the user's UID as field name(key) with the value of `true` in `/settings/admin`.
-  - For instance, `{ "UID_AAA": true, "UID_BBB": true }`, then users whose uid is UID_AAA and UID_BBB are the admins.
-
-![Security Rules Admin](https://raw.githubusercontent.com/thruthesky/fireflutter/main/readme/images/security-rules-admin.jpg?raw=true)
 
 
 

@@ -26,15 +26,9 @@ service cloud.firestore {
       allow write: if (request.auth.uid == uid);
     }
 
-    match /settings {
-      match /admins {
-        allow read: if true;
-        allow write: if isAdmin();
-      }
-      match /reminder {
-        allow read: if true;
-        allow write: if isAdmin();
-      }
+    match /settings/{docId} {
+      allow read: if true;
+      allow write: if isAdmin();
     }
 
     // check if 'A' & 'B' are blocked. 
