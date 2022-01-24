@@ -70,18 +70,6 @@ class ReminderService {
     });
   }
 
-  // Future<bool?> preview({
-  //   required BuildContext context,
-  //   required OnPressedCallback onLinkPressed,
-  //   required ReminderModel reminder,
-  // }) async {
-  //   return display(
-  //     context: context,
-  //     onLinkPressed: onLinkPressed,
-  //     data: reminder,
-  //   );
-  // }
-
   /// Returns
   /// - true if "more link" button or "don't show again" button is clicked.
   /// - false if "remind me later" is clicked
@@ -124,20 +112,31 @@ class ReminderService {
             if (reminder.title != '')
               Padding(
                 padding: const EdgeInsets.only(top: 16.0),
-                child: Text(reminder.title),
+                child: Text(
+                  reminder.title,
+                  style: TextStyle(
+                    fontSize: 18,
+                  ),
+                ),
               ),
             if (reminder.content != '')
               Container(
-                color: Colors.grey.shade100,
+                // color: Colors.grey.shade50,
                 width: double.infinity,
                 padding: const EdgeInsets.all(16),
                 margin: const EdgeInsets.only(top: 16),
-                child: Text(reminder.content),
+                child: Text(
+                  reminder.content,
+                  style: TextStyle(
+                    fontSize: 14.0,
+                    color: Colors.grey.shade700,
+                  ),
+                ),
               ),
             if (reminder.link != '')
               GestureDetector(
                 child: Container(
-                  margin: EdgeInsets.symmetric(vertical: 16.0),
+                  margin: EdgeInsets.only(top: 8.0, bottom: 24),
                   padding: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
                   decoration: BoxDecoration(
                     color: Colors.red,

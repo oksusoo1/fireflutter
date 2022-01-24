@@ -19,7 +19,6 @@ A free, open source, complete, rapid development package for creating Social app
 Table of contents
 
 - [Fire Flutter](#fire-flutter)
-- [Features](#features)
 - [TODOs](#todos)
   - [Chat](#chat)
 - [Installation](#installation)
@@ -69,26 +68,6 @@ Table of contents
   - [firebase_database/permission-denied](#firebase_databasepermission-denied)
   - [Firebase realtime database is not working](#firebase-realtime-database-is-not-working)
   - [firebase_auth/internal-error](#firebase_authinternal-error)
-
-# Features
-
-- User
-  - User registration is done with Firebase Flutter UI.
-
-
-- User presence
-  - To know if a user is online or offline.
-
-
-- User Profile
-  - Saving & displaying user profile.
-
-
-- Chat
-
-- Friend map
-  - To find friend easily.
-
 
 # TODOs
 
@@ -467,7 +446,7 @@ UserFutureDoc(
 
 - There is no fixed size of the image of `imageUrl`. The recommended size would be maximum of 512px width and the ratio of the width 3 and height 2.
 
-
+- If admin updates the reminder with changes of `link` very quickly like 2 times in a minute, then two popup may appear on user's screen. This won't be happening in production mode and won't be a big trouble.
 
 
 
@@ -587,7 +566,7 @@ InformService.instance.inform(widget.room.otherUid, {
 
 ## Building your app
 
-- Simple add it on pubspec dependency
+- To build your app with firelutter, simply add it on pubspec dependency.
 
 ## Building fireflutter
 
