@@ -170,7 +170,18 @@ class ChatService with ChatMixins {
   Future<void> unblockUser(String otherUid) {
     print('unblock user');
     final futures = [
-      // myOtherRoomInfoDelete(otherUid),
+      FirebaseFirestore.instance
+          .collection('chat')
+          .doc('rooms')
+          .collection(myUid)
+          .doc(otherUid)
+          .set({
+        'from': myUid,
+        'to': otherUid,
+        'newMessage': 0,
+        'text': '',
+        'timestamp': FieldValue.serverTimestamp(),
+      }),
       FirebaseFirestore.instance
           .collection('chat')
           .doc('blocks')
