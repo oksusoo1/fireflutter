@@ -393,6 +393,11 @@ UserFutureDoc(
 # Reminder
 
 
+
+![Reminder](https://raw.githubusercontent.com/thruthesky/fireflutter/main/readme/images/reminder.jpg?raw=true)
+
+
+
 - `ReminderService` is to remind some to users with custom UI.
   - When the app has some to remind its users, push notification may be one option.
       - But push notification does not deliver reminders to the users who registered after sending notifications.
