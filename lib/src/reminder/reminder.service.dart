@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 
 typedef ReminderCallback = void Function(ReminderModel);
 
+typedef OnPressedCallback = void Function(String, Map<String, dynamic>);
+
 class ReminderService {
   static ReminderService? _instance;
   static ReminderService get instance {
@@ -23,14 +25,18 @@ class ReminderService {
   }
 
   Future<ReminderModel?> get() async {
-    final DocumentSnapshot<Map<String, dynamic>> snapshot = await _reminderDoc.get();
+    // final DocumentSnapshot<Map<String, dynamic>> snapshot = await _reminderDoc.get();
 
-    _settings.where('type', isEqualTo: 'reminder').get();
+    final QuerySnapshot snapshot = await _settings.where('type', isEqualTo: 'reminder').get();
 
-    if (snapshot.exists)
-      return ReminderModel.fromJson(snapshot.data() as Map<String, dynamic>);
-    else
-      return null;
+    if (snapshot.size == 0) return null;
+
+    return ReminderModel.fromJson(snapshot.docs.first.data() as Map<String, dynamic>);
+
+    // if (snapshot.exists)
+    //   return ReminderModel.fromJson(snapshot.data() as Map<String, dynamic>);
+    // else
+    //   return null;
   }
 
   Future<void> save({
@@ -40,6 +46,7 @@ class ReminderService {
     required String link,
   }) {
     return _reminderDoc.set({
+      'type': 'reminder',
       'title': title,
       'content': content,
       'imageUrl': imageUrl,
@@ -47,21 +54,42 @@ class ReminderService {
     });
   }
 
-  Future<bool?> preview(BuildContext context) async {
-    return display(context, await get());
+  Future<bool?> preview({
+    required BuildContext context,
+    required OnPressedCallback onLinkPressed,
+  }) async {
+    return display(
+      context: context,
+      onLinkPressed: onLinkPressed,
+      data: await get(),
+    );
   }
 
-  Future<bool?> display(BuildContext context, ReminderModel? data) {
+  /// Returns
+  /// - true if "more link" button or "don't show again" button is clicked.
+  /// - false if "remind me later" is clicked
+  /// - null if backdrop is clicked.
+  Future<bool?> display({
+    required BuildContext context,
+    required OnPressedCallback onLinkPressed,
+    ReminderModel? data,
+  }) {
     if (data == null) {
       return showDialog(
-          context: context,
-          builder: (_) => AlertDialog(
-                content: Text('No reminder\nSave some reminder and preview again'),
-              ));
+        context: context,
+        builder: (_) => AlertDialog(
+          content: Text('No reminder\nSave some reminder and preview again'),
+        ),
+      );
     }
 
-    if (data.title == '' || data.content == '' || data.imageUrl == '') {
-      return Future.value(null);
+    if (data.title == '' && data.content == '' && data.imageUrl == '') {
+      return showDialog(
+        context: context,
+        builder: (_) => AlertDialog(
+          content: Text('Input one of title, content, or image Url'),
+        ),
+      );
     }
 
     ReminderModel reminder = data;
@@ -106,7 +134,10 @@ class ReminderService {
                   ),
                 ),
                 behavior: HitTestBehavior.opaque,
-                onTap: () => Navigator.pushNamed(context, reminder.link),
+                onTap: () {
+                  Navigator.pop(context, true);
+                  onLinkPressed(reminder.link, {});
+                },
               ),
             Row(
               children: [

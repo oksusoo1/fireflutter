@@ -2,8 +2,13 @@ import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
 
 class ReminderEdit extends StatefulWidget {
-  const ReminderEdit({Key? key, required this.onError}) : super(key: key);
+  const ReminderEdit({
+    Key? key,
+    required this.onLinkPressed,
+    required this.onError,
+  }) : super(key: key);
   final Function onError;
+  final OnPressedCallback onLinkPressed;
 
   @override
   _ReminderEditState createState() => _ReminderEditState();
@@ -80,7 +85,10 @@ class _ReminderEditState extends State<ReminderEdit> {
                       link: link.text,
                     )
                     .catchError(widget.onError);
-                bool? re = await ReminderService.instance.preview(context);
+                bool? re = await ReminderService.instance.preview(
+                  context: context,
+                  onLinkPressed: widget.onLinkPressed,
+                );
                 print('re; $re');
               },
               child: const Text('Preview'),
