@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fireflutter/src/reminder/reminder.model.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 typedef ReminderCallback = void Function(ReminderModel);
 
@@ -24,19 +25,30 @@ class ReminderService {
     });
   }
 
+  /// Get a reminder that is not
+  /// - being pressed on "don't show again",
+  /// - being pressed on "more info".
   Future<ReminderModel?> get() async {
-    // final DocumentSnapshot<Map<String, dynamic>> snapshot = await _reminderDoc.get();
+    Query q = _settings.where('type', isEqualTo: 'reminder');
 
-    final QuerySnapshot snapshot = await _settings.where('type', isEqualTo: 'reminder').get();
-
+    String? link = await getLink();
+    print('link; $link');
+    if (link != null) {
+      q = q.where('link', isNotEqualTo: link);
+    }
+    final QuerySnapshot snapshot = await q.get();
     if (snapshot.size == 0) return null;
-
     return ReminderModel.fromJson(snapshot.docs.first.data() as Map<String, dynamic>);
+  }
 
-    // if (snapshot.exists)
-    //   return ReminderModel.fromJson(snapshot.data() as Map<String, dynamic>);
-    // else
-    //   return null;
+  Future<bool> saveLink(String link) async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.setString('reminder.link', link);
+  }
+
+  Future<String?> getLink() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('reminder.link');
   }
 
   Future<void> save({
@@ -135,6 +147,7 @@ class ReminderService {
                 ),
                 behavior: HitTestBehavior.opaque,
                 onTap: () {
+                  saveLink(reminder.link);
                   Navigator.pop(context, true);
                   onLinkPressed(reminder.link, {});
                 },
@@ -157,6 +170,7 @@ class ReminderService {
                     ),
                     behavior: HitTestBehavior.opaque,
                     onTap: () {
+                      saveLink(reminder.link);
                       Navigator.pop(context, true);
                     },
                   ),

@@ -17,7 +17,10 @@ class ReminderEditScreen extends StatelessWidget {
         child: ReminderEdit(
           onLinkPressed: (String page, dynamic arguments) =>
               Get.toNamed(page, arguments: arguments),
-          onError: error,
+          onError: (e) {
+            print(e);
+            error(e);
+          },
         ),
       ),
     );

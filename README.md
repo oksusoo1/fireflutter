@@ -29,6 +29,7 @@ Table of contents
     - [iOS installation](#ios-installation)
   - [Firebase Realtime Database Installation](#firebase-realtime-database-installation)
   - [Firestore installation](#firestore-installation)
+    - [Setting admin on firestore security rules](#setting-admin-on-firestore-security-rules)
 - [User](#user)
   - [User installation](#user-installation)
   - [Test users](#test-users)
@@ -61,8 +62,8 @@ Table of contents
   - [Building your app](#building-your-app)
   - [Building fireflutter](#building-fireflutter)
   - [Updating fireflutter while building your app](#updating-fireflutter-while-building-your-app)
-- [Security Rules on Firestore](#security-rules-on-firestore)
-  - [Setting admin on firestore security rules](#setting-admin-on-firestore-security-rules)
+- [Test](#test)
+  - [Local test on firestore security rules](#local-test-on-firestore-security-rules)
 - [Issues](#issues)
   - [firebase_database/permission-denied](#firebase_databasepermission-denied)
   - [Firebase realtime database is not working](#firebase-realtime-database-is-not-working)
@@ -150,6 +151,17 @@ Table of contents
 
 - Enable firestore.
 - Copy the [fireflutter firestore securiy rules](https://raw.githubusercontent.com/thruthesky/fireflutter/main/firebase/firestore.rules) and update it on your project.
+
+
+
+
+### Setting admin on firestore security rules
+
+- To set a user admin, Add the user's UID as field name(key) with the value of `true` in `/settings/admin`.
+  - For instance, `{ "UID_AAA": true, "UID_BBB": true }`, then users whose uid is UID_AAA and UID_BBB are the admins.
+
+![Security Rules Admin](https://raw.githubusercontent.com/thruthesky/fireflutter/main/readme/images/security-rules-admin.jpg?raw=true)
+
 
 
 # User
@@ -557,7 +569,10 @@ InformService.instance.inform(widget.room.otherUid, {
     - after updating fireflutter, come back to your app and run your app.
 
 
-# Security Rules on Firestore
+# Test
+
+
+## Local test on firestore security rules
 
 - We have local unit test for firestore security rules at `<root>/firebase/test` folder.
 - To run the test,
@@ -568,15 +583,6 @@ InformService.instance.inform(widget.room.otherUid, {
 - To deploy,
   - open `<root>/firebase/.firebaserc` and update `projects.default` to your firebase project id.
   - run `$ firebase deploy --only firestore`
-
-
-
-## Setting admin on firestore security rules
-
-- To set a user admin, Add the user's UID as field name(key) with the value of `true` in `/settings/admin`.
-  - For instance, `{ "UID_AAA": true, "UID_BBB": true }`, then users whose uid is UID_AAA and UID_BBB are the admins.
-
-![Security Rules Admin](https://raw.githubusercontent.com/thruthesky/fireflutter/main/readme/images/security-rules-admin.jpg?raw=true)
 
 
 
