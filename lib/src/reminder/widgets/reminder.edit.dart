@@ -75,35 +75,27 @@ class _ReminderEditState extends State<ReminderEdit> {
               },
               child: const Text('Save'),
             ),
+            const SizedBox(width: 8),
             ElevatedButton(
               onPressed: () async {
-                await ReminderService.instance
-                    .save(
-                      title: title.text,
-                      content: content.text,
-                      imageUrl: imageUrl.text,
-                      link: link.text,
-                    )
-                    .catchError(widget.onError);
-                bool? re = await ReminderService.instance.preview(
+                bool? re = await ReminderService.instance.display(
                   context: context,
                   onLinkPressed: widget.onLinkPressed,
+                  data: ReminderModel(
+                    title: title.text,
+                    content: content.text,
+                    imageUrl: imageUrl.text,
+                    link: link.text,
+                  ),
                 );
+
                 print('re; $re');
               },
               child: const Text('Preview'),
             ),
             const Spacer(),
             ElevatedButton(
-              onPressed: () {},
-              child: const Text('Start'),
-            ),
-            ElevatedButton(
-              onPressed: () {},
-              child: const Text('Stop'),
-            ),
-            ElevatedButton(
-              onPressed: () {},
+              onPressed: ReminderService.instance.delete,
               child: const Text('Delete'),
             ),
           ],

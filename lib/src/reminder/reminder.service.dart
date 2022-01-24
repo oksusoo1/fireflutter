@@ -17,25 +17,29 @@ class ReminderService {
   final _settings = FirebaseFirestore.instance.collection('settings');
   DocumentReference<Map<String, dynamic>> get _reminderDoc => _settings.doc('reminder');
 
-  listen(ReminderCallback callback) {
-    _reminderDoc.snapshots().listen((DocumentSnapshot<Map<String, dynamic>> snapshot) {
-      if (snapshot.exists) {
-        callback(ReminderModel.fromJson(snapshot.data() as Map<String, dynamic>));
+  ///
+  listen(ReminderCallback callback) async {
+    Query q = _settings.where('type', isEqualTo: 'reminder');
+
+    /// If there is no link saved, then just get the data.
+    String? link = await getLink();
+    if (link != null) {
+      q = q.where('link', isNotEqualTo: link);
+    }
+
+    q.snapshots().listen((QuerySnapshot<Object?> snapshot) {
+      if (snapshot.size > 0) {
+        callback(ReminderModel.fromJson(snapshot.docs.first.data() as Map<String, dynamic>));
       }
     });
   }
 
-  /// Get a reminder that is not
-  /// - being pressed on "don't show again",
-  /// - being pressed on "more info".
+  /// Get the reminder document
+  ///
+  ///
   Future<ReminderModel?> get() async {
     Query q = _settings.where('type', isEqualTo: 'reminder');
 
-    String? link = await getLink();
-    print('link; $link');
-    if (link != null) {
-      q = q.where('link', isNotEqualTo: link);
-    }
     final QuerySnapshot snapshot = await q.get();
     if (snapshot.size == 0) return null;
     return ReminderModel.fromJson(snapshot.docs.first.data() as Map<String, dynamic>);
@@ -66,16 +70,17 @@ class ReminderService {
     });
   }
 
-  Future<bool?> preview({
-    required BuildContext context,
-    required OnPressedCallback onLinkPressed,
-  }) async {
-    return display(
-      context: context,
-      onLinkPressed: onLinkPressed,
-      data: await get(),
-    );
-  }
+  // Future<bool?> preview({
+  //   required BuildContext context,
+  //   required OnPressedCallback onLinkPressed,
+  //   required ReminderModel reminder,
+  // }) async {
+  //   return display(
+  //     context: context,
+  //     onLinkPressed: onLinkPressed,
+  //     data: reminder,
+  //   );
+  // }
 
   /// Returns
   /// - true if "more link" button or "don't show again" button is clicked.
@@ -90,7 +95,8 @@ class ReminderService {
       return showDialog(
         context: context,
         builder: (_) => AlertDialog(
-          content: Text('No reminder\nSave some reminder and preview again'),
+          content: Text(
+              'No reminder!\n\n-You have already pressed buttons on preview mode. Change the link and test again if you did.\n\n- Or, save some reminder and preview again'),
         ),
       );
     }
@@ -201,5 +207,9 @@ class ReminderService {
         ),
       ),
     );
+  }
+
+  delete() {
+    _reminderDoc.delete();
   }
 }

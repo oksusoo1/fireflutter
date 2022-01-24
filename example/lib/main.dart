@@ -1,6 +1,8 @@
 // import 'package:fe/screens/chat/chat.room.screen.dart';
 // import 'dart:async';
 
+import 'dart:async';
+
 import 'package:fe/screens/chat/chat.room.screen.dart';
 import 'package:fe/screens/chat/chat.rooms.blocked.screen.dart';
 import 'package:fe/screens/chat/chat.rooms.screen.dart';
@@ -45,6 +47,7 @@ class _MainAppState extends State<MainApp> {
 
     // Timer(const Duration(milliseconds: 200), () => Get.toNamed('/sms-code-ui'));
 
+    /// Listen to FriendMap
     FirebaseAuth.instance.authStateChanges().listen((user) {
       if (user != null) {
         /// Re-init for listening the login user (when account changed)
@@ -60,6 +63,25 @@ class _MainAppState extends State<MainApp> {
       } else {
         InformService.instance.dispose();
       }
+    });
+
+    /// Listen to reminder
+    ///
+    /// Delay 3 seconds. This is just to display the reminder dialog 3 seconds
+    /// after the app boots. No big deal here.
+    Timer(const Duration(seconds: 3), () {
+      /// Listen to the reminder update event.
+      ReminderService.instance.listen((reminder) {
+        /// Display the reminder using default dialog UI. You may copy the code
+        /// and customize by yourself.
+        ReminderService.instance.display(
+          context: navigatorKey.currentContext!,
+          data: reminder,
+          onLinkPressed: (page, arguments) {
+            Get.toNamed(page, arguments: arguments);
+          },
+        );
+      });
     });
   }
 

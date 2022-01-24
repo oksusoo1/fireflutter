@@ -49,6 +49,7 @@ Table of contents
   - [Chat logic](#chat-logic)
     - [Chat logic - block](#chat-logic---block)
 - [Reminder](#reminder)
+  - [Reminder logic](#reminder-logic)
 - [FriendMap](#friendmap)
   - [FriendMap installation](#friendmap-installation)
   - [FriendMap logic](#friendmap-logic)
@@ -150,9 +151,8 @@ Table of contents
 ## Firestore installation
 
 - Enable firestore.
-- Copy the [fireflutter firestore securiy rules](https://raw.githubusercontent.com/thruthesky/fireflutter/main/firebase/firestore.rules) and update it on your project.
-
-
+- Copy the [firestore securiy rules](https://raw.githubusercontent.com/thruthesky/fireflutter/main/firebase/firestore.rules) and update it on your firebase project.
+- Copy the [firestore indexes](https://raw.githubusercontent.com/thruthesky/fireflutter/main/firebase/firestore.indexes.json) and update it on your firebase project.
 
 
 ### Setting admin on firestore security rules
@@ -414,16 +414,58 @@ UserFutureDoc(
 # Reminder
 
 
-- `Reminder` service is to remind some to users with custom design.
-
-- When you have some to remind users, what do you do?
-  - Push notification may be one option.
-    - But push notification does not deliver reminders to user who register after sending notification.
-    - And it does not have an option like 'remind me later`.
-    `Reminder` service can do this.
+- `ReminderService` is to remind some to users with custom UI.
+  - When the app has some to remind its users, push notification may be one option.
+      - But push notification does not deliver reminders to the users who registered after sending notifications.
+      - And it does not have an option like 'remind me later`.
+  - `ReminderService` can do this.
 
 
+- It uses `/settings/reminder` document.
+  - It is not recommended to edit the docuement directly insdie firebase console.
+  
+- `ReminderEdit` widget is a sample code for updating the document. you can customize by copy & paste.
+  
+- And `ReminderService.instance.display()` is the default UI to display reminder on app screen. You can also customize the UI by copy & paste.
 
+## Reminder logic
+
+- There are `title, content, imageUrl, link` fields on the form.
+- One of `title, content, imageUrl` must have value or dialog will not appear.
+- `link` has the information to which screen the app should move once user pressed on `more info` button. It must not be an empty string.
+  - When `more info` button is pressed, `ReminderService` saves the link on local storage and calls the callback, then app can move the screen.
+    - And when the app start again, it will not get the reminder document again from firestore since the link has already opened.
+  - When user pressed on `don't show again` button, the link will be saved on local storage and when the app starts again, it will not get the reminder document again from firestore.
+  - When `remind me later` button clicked,  the app simply closes the dialog and when the app starts again, the app will fetch the reminder doc from firestore and display the reminder dialog again on screen.
+  - When backdrop had touched, the app works the same as `remind me later` button pressed.
+  - `link` can have in URL format. For instance, `/post-view?postId=123&option=a`. And when callback is being called `/post-view` parts goes to first parameter, and `{'postId': 123, 'option': a}` goes to next parameter.
+    - If `link` changes, the `ReminderService` considers as a new link had been activated.
+    - So, if you want to display a reminder dialog again with same url, then you may simply change the parameter a little like `/post-view?postId=123&option=b`.
+  - Once `link` is saved on local storage, `ReminderService` does not get the same document of `link` again from firestore.
+
+
+- The default dialog UI has three buttons.
+  - `more info`, `don't show again`, and `remind me later`.
+  - User can press on backdrop and it work just as `reminde me later` button.
+
+- There are three buttons on `ReminderEdit` widget. You can update the `/settings/reminder` document with it.
+  - When you press `preview` button, you can see the look of the default dialog UI with the reminder data.
+    - When you press `don't show again` button on `preview` UI dialog, it saves the link on local storage.
+    - When you press `more info` button button on `preview` UI dialog, it saves the link on local storage and calls the callback where the app can move to the intended screen.
+    - Since the link saved, when the app restarts the reminder dialog would not appear.
+    - One fitfall is that, when app starts, `ReminderService` will listen to the `/settings/reminder` with the link saved previously. and  `don't show again` or `more info` button is pressed on `preview mode`. Then, new link had been saved on local storage. the but new link is not the same link that app is listening to.
+    So, when `save` button pressed, the reminder dialog would popup.
+
+  - When you edit and preview, you may add a version (test) value to see the changes.
+    - For instance, `/post-view?postId=123&version=456`.
+  - When you press on `preview`, it does not save the form data into reminder doc in firestore. So, you have to press `save` button to update the reminder doc. And then the updated reminder doc will be downloaded to users' app and reminder UI appears on all the online users' devices.
+  - You may have an image upload button and update `imageUrl` with the uploaded image.
+    But for now, you can input the imageUrl on the `imageUrl` field.
+
+- Only admin whose UID is set in `/settings/admin` can edit the reminder documents.
+
+
+- There is no fixed size of the image of `imageUrl`. The recommended size would be maximum of 512px width and the ratio of the width 3 and height 2.
 
 
 
