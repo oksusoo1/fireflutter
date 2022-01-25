@@ -14,12 +14,12 @@ class ReminderService {
     return _instance!;
   }
 
-  final _settings = FirebaseFirestore.instance.collection('settings');
-  DocumentReference<Map<String, dynamic>> get _reminderDoc => _settings.doc('reminder');
+  final settingsCol = FirebaseFirestore.instance.collection('settings');
+  DocumentReference<Map<String, dynamic>> get _reminderDoc => settingsCol.doc('reminder');
 
   ///
   listen(ReminderCallback callback) async {
-    Query q = _settings.where('type', isEqualTo: 'reminder');
+    Query q = settingsCol.where('type', isEqualTo: 'reminder');
 
     /// If there is no link saved, then just get the data.
     String? link = await getLink();
@@ -38,7 +38,7 @@ class ReminderService {
   ///
   ///
   Future<ReminderModel?> get() async {
-    Query q = _settings.where('type', isEqualTo: 'reminder');
+    Query q = settingsCol.where('type', isEqualTo: 'reminder');
 
     final QuerySnapshot snapshot = await q.get();
     if (snapshot.size == 0) return null;
