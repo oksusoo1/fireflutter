@@ -134,6 +134,7 @@ Table of contents
 - Copy the [firestore securiy rules](https://raw.githubusercontent.com/thruthesky/fireflutter/main/firebase/firestore.rules) and update it on your firebase project.
 - To install the firestore indexes, it is recommended to run the query and click the link of it to generate the indexes.
   - To do this, just call `getFirestoreIndexLinks` method and it will print the link on debug console. You just need to click the links.
+    - See example of `getFirestoreIndexLinks` in the [example home screen](https://github.com/thruthesky/fireflutter/blob/main/example/lib/screens/home/home.screen.dart).
   - See the [firestore indexes](https://raw.githubusercontent.com/thruthesky/fireflutter/main/firebase/firestore.indexes.json) and if you want to update it manually on your firebase project.
 
 
