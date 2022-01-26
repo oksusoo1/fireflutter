@@ -1,17 +1,28 @@
 import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
 
+class ReminderEditController {
+  _ReminderEditState? state;
+}
+
 class ReminderEdit extends StatefulWidget {
-  const ReminderEdit({
+  final _ReminderEditState _state = _ReminderEditState();
+  final ReminderEditController? controller;
+  ReminderEdit({
     Key? key,
     required this.onPreview,
     required this.onError,
-  }) : super(key: key);
+    this.controller,
+  }) : super(key: key) {
+    if (this.controller != null) {
+      this.controller!.state = _state;
+    }
+  }
   final Function onError;
   final void Function(ReminderModel) onPreview;
 
   @override
-  _ReminderEditState createState() => _ReminderEditState();
+  _ReminderEditState createState() => _state;
 }
 
 class _ReminderEditState extends State<ReminderEdit> {
