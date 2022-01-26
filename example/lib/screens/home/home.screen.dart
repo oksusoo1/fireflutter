@@ -40,7 +40,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     return Column(
                       children: [
                         Text(
-                            'You have logged in as ${user.email ?? user.phoneNumber}'),
+                          'You have logged in as ${user.email ?? user.phoneNumber}',
+                        ),
+                        Text('User Email: ${user.email}'),
                         UserDoc(
                           uid: user.uid,
                           builder: (UserModel u) {
@@ -61,31 +63,23 @@ class _HomeScreenState extends State<HomeScreen> {
                                   const Text('Update '),
                                   Expanded(
                                     child: TextField(
-                                      controller: TextEditingController()
-                                        ..text = u.name,
+                                      controller: TextEditingController()..text = u.name,
                                       decoration: const InputDecoration(
-                                          hintText: 'Name',
-                                          prefix: Text('name: ')),
+                                          hintText: 'Name', prefix: Text('name: ')),
                                       onChanged: (t) {
-                                        UserService.instance
-                                            .updateName(t)
-                                            .catchError((e) => debugPrint(
-                                                'error on update name; $e'));
+                                        UserService.instance.updateName(t).catchError(
+                                            (e) => debugPrint('error on update name; $e'));
                                       },
                                     ),
                                   ),
                                   Expanded(
                                     child: TextField(
-                                      controller: TextEditingController()
-                                        ..text = u.photoUrl,
+                                      controller: TextEditingController()..text = u.photoUrl,
                                       decoration: const InputDecoration(
-                                          hintText: 'Photo Url',
-                                          prefix: Text('photo url: ')),
+                                          hintText: 'Photo Url', prefix: Text('photo url: ')),
                                       onChanged: (t) {
-                                        UserService.instance
-                                            .updatePhotoUrl(t)
-                                            .catchError((e) => debugPrint(
-                                                'error on update photo url; $e'));
+                                        UserService.instance.updatePhotoUrl(t).catchError(
+                                            (e) => debugPrint('error on update photo url; $e'));
                                       },
                                     ),
                                   ),
@@ -93,8 +87,16 @@ class _HomeScreenState extends State<HomeScreen> {
                               );
                             }),
                         ElevatedButton(
-                            onPressed: () => FirebaseAuth.instance.signOut(),
-                            child: const Text('Sign Out')),
+                          onPressed: () => FirebaseAuth.instance.signOut(),
+                          child: const Text('Sign Out'),
+                        ),
+                        if (!FirebaseAuth.instance.currentUser!.emailVerified)
+                          ElevatedButton(
+                            onPressed: () => Get.toNamed('/email-verify'),
+                            child: Text(
+                              '${FirebaseAuth.instance.currentUser!.emailVerified ? 'Change' : 'Verify'} Email',
+                            ),
+                          ),
                       ],
                     );
                   } else {
@@ -135,9 +137,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ],
               ),
               const Divider(),
-              ElevatedButton(
-                  onPressed: () => Get.toNamed('/help'),
-                  child: const Text('Help')),
+              ElevatedButton(onPressed: () => Get.toNamed('/help'), child: const Text('Help')),
               ElevatedButton(
                 onPressed: () => Get.toNamed('/chat-rooms-screen'),
                 child: const Text('Chat Room List'),

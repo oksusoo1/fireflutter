@@ -217,7 +217,7 @@ Table of contents
   - and check if email is verified on every 3 seconds.
     - @see reference https://www.youtube.com/watch?v=rTr8BUlUftg
 ```dart
-sub = Timder.periodic(Duraction(3 seconds), () {
+sub = Timer.periodic(Duraction(3 seconds), () {
   FirebaseAuth.instance.relaod();
   if ( FirebaseAuth.instance.currentUser.emailVerified == true ) {
     sub.cancel();

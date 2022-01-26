@@ -6,6 +6,7 @@ import 'dart:async';
 import 'package:fe/screens/chat/chat.room.screen.dart';
 import 'package:fe/screens/chat/chat.rooms.blocked.screen.dart';
 import 'package:fe/screens/chat/chat.rooms.screen.dart';
+import 'package:fe/screens/email_verify/email_verify.screen.dart';
 import 'package:fe/screens/friend_map/friend_map.screen.dart';
 import 'package:fe/screens/help/help.screen.dart';
 import 'package:fe/screens/home/home.screen.dart';
@@ -120,7 +121,8 @@ class _MainAppState extends State<MainApp> {
           page: () => const ChatRoomsBlockedScreen(),
         ),
         GetPage(name: '/friend-map', page: () => const FriendMapScreen()),
-        GetPage(name: '/reminder-edit', page: () => ReminderEditScreen())
+        GetPage(name: '/reminder-edit', page: () => ReminderEditScreen()),
+        GetPage(name: '/email-verify', page: () => const EmailVerifyScreen())
       ],
     );
   }
