@@ -107,8 +107,7 @@ class _MainAppState extends State<MainApp> {
         ),
         GetPage(name: '/phone-sign-in', page: () => const PhoneSignInScreen()),
         GetPage(name: '/sms-code', page: () => const SmsCodeScreen()),
-        GetPage(
-            name: '/phone-sign-in-ui', page: () => const PhoneSignInUIScreen()),
+        GetPage(name: '/phone-sign-in-ui', page: () => const PhoneSignInUIScreen()),
         GetPage(name: '/sms-code-ui', page: () => const SmsCodeUIScreen()),
         GetPage(name: '/help', page: () => const HelpScreen()),
         GetPage(name: '/chat-room-screen', page: () => const ChatRoomScreen()),
@@ -121,7 +120,7 @@ class _MainAppState extends State<MainApp> {
           page: () => const ChatRoomsBlockedScreen(),
         ),
         GetPage(name: '/friend-map', page: () => const FriendMapScreen()),
-        GetPage(name: '/reminder-edit', page: () => const ReminderEditScreen())
+        GetPage(name: '/reminder-edit', page: () => ReminderEditScreen())
       ],
     );
   }

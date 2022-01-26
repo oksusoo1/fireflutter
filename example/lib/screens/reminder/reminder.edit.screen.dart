@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class ReminderEditScreen extends StatelessWidget {
-  const ReminderEditScreen({Key? key}) : super(key: key);
+  ReminderEditScreen({Key? key}) : super(key: key);
+
+  final controller = ReminderEditController();
 
   @override
   Widget build(BuildContext context) {
@@ -15,6 +17,7 @@ class ReminderEditScreen extends StatelessWidget {
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: ReminderEdit(
+          controller: controller,
           onPreview: (data) async {
             bool? re = await ReminderService.instance.display(
               context: context,
