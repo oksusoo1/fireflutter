@@ -1,5 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:fireflutter/src/defines.dart';
+import '../defines.dart';
 import 'package:flutter/material.dart';
 
 /// Firebase Auth State Widget

@@ -1,4 +1,4 @@
-import 'package:fireflutter/fireflutter.dart';
+import '../fireflutter.dart';
 
 /// splitQueryString of Uri class
 ///

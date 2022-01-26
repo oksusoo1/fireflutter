@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:fireflutter/fireflutter.dart';
+import '../../fireflutter.dart';
 
 /// Chat message model
 ///
@@ -15,9 +15,7 @@ class ChatMessageModel with ChatMixins {
   String from;
 
   String get time =>
-      DateTime.fromMillisecondsSinceEpoch(timestamp.millisecondsSinceEpoch)
-          .toLocal()
-          .toString();
+      DateTime.fromMillisecondsSinceEpoch(timestamp.millisecondsSinceEpoch).toLocal().toString();
 
   /// Login user's firebase uid.
   String get myUid => FirebaseAuth.instance.currentUser!.uid;
@@ -80,8 +78,7 @@ class ChatMessageModel with ChatMixins {
     required this.ref,
   });
 
-  factory ChatMessageModel.fromJson(Map<dynamic, dynamic> json,
-      [DocumentReference? ref]) {
+  factory ChatMessageModel.fromJson(Map<dynamic, dynamic> json, [DocumentReference? ref]) {
     return ChatMessageModel(
       to: json['to'] ?? '',
       from: json['from'] ?? '',
