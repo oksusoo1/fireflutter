@@ -16,22 +16,33 @@ class ReminderEditScreen extends StatelessWidget {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: ReminderEdit(
-          controller: controller,
-          onPreview: (data) async {
-            bool? re = await ReminderService.instance.display(
-              context: context,
-              onLinkPressed: (String page, dynamic arguments) =>
-                  Get.toNamed(page, arguments: arguments),
-              data: data,
-            );
+        child: Column(
+          children: [
+            ReminderEdit(
+              controller: controller,
+              onPreview: (data) async {
+                bool? re = await ReminderService.instance.display(
+                  context: context,
+                  onLinkPressed: (String page, dynamic arguments) =>
+                      Get.toNamed(page, arguments: arguments),
+                  data: data,
+                );
 
-            debugPrint('re; $re');
-          },
-          onError: (e) {
-            debugPrint(e.toString());
-            error(e);
-          },
+                debugPrint('re; $re');
+              },
+              onError: (e) {
+                debugPrint(e.toString());
+                error(e);
+              },
+            ),
+            const Divider(),
+            ElevatedButton(
+              onPressed: () {
+                controller.updateImageUrl('abc');
+              },
+              child: const Text('Update imageUrl'),
+            ),
+          ],
         ),
       ),
     );

@@ -15,8 +15,7 @@ class ReminderService {
   }
 
   final settingsCol = FirebaseFirestore.instance.collection('settings');
-  DocumentReference<Map<String, dynamic>> get _reminderDoc =>
-      settingsCol.doc('reminder');
+  DocumentReference<Map<String, dynamic>> get _reminderDoc => settingsCol.doc('reminder');
 
   ///
   listen(ReminderCallback callback) async {
@@ -30,8 +29,7 @@ class ReminderService {
 
     q.snapshots().listen((QuerySnapshot<Object?> snapshot) {
       if (snapshot.size > 0) {
-        callback(ReminderModel.fromJson(
-            snapshot.docs.first.data() as Map<String, dynamic>));
+        callback(ReminderModel.fromJson(snapshot.docs.first.data() as Map<String, dynamic>));
       }
     });
   }
@@ -44,8 +42,7 @@ class ReminderService {
 
     final QuerySnapshot snapshot = await q.get();
     if (snapshot.size == 0) return null;
-    return ReminderModel.fromJson(
-        snapshot.docs.first.data() as Map<String, dynamic>);
+    return ReminderModel.fromJson(snapshot.docs.first.data() as Map<String, dynamic>);
   }
 
   Future<bool> saveLink(String link) async {
@@ -71,6 +68,10 @@ class ReminderService {
       'imageUrl': imageUrl,
       'link': link,
     });
+  }
+
+  Future<void> setImageUrl(String url) {
+    return _reminderDoc.set({'imageUrl': url}, SetOptions(merge: true));
   }
 
   /// Returns

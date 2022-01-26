@@ -458,6 +458,21 @@ Timer(const Duration(seconds: 3), () {
 
 - For updating, reminder, see the sample come of [ReminderEditScreen](https://github.com/thruthesky/fireflutter/blob/main/example/lib/screens/reminder/reminder.edit.screen.dart).
 
+
+- To update `imageUrl` outside of `ReminderEdit` widget, use the controller.
+
+```dart
+final controller = ReminderEditController();
+ReminderEdit(
+  controller: controller,
+  // ...
+);
+
+// ...
+controller.updateImageUrl('http://new-image-url.jpg');
+```
+
+
 ## Reminder logic
 
 - There are `title, content, imageUrl, link` fields on the form.

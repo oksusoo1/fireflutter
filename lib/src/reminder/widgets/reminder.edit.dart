@@ -3,6 +3,10 @@ import 'package:flutter/material.dart';
 
 class ReminderEditController {
   _ReminderEditState? state;
+  updateImageUrl(String url) async {
+    await ReminderService.instance.setImageUrl(url);
+    state!.load();
+  }
 }
 
 class ReminderEdit extends StatefulWidget {
@@ -34,6 +38,10 @@ class _ReminderEditState extends State<ReminderEdit> {
   @override
   void initState() {
     super.initState();
+    load();
+  }
+
+  load() {
     ReminderService.instance.get().then((ReminderModel? reminder) {
       if (reminder != null) {
         setState(() {
