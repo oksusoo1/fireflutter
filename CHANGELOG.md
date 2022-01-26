@@ -1,5 +1,9 @@
 # Change Log
 
+## [0.2.12] - ReminderEdit widget controller
+
+- Controller had added to `ReminderEdit` widget.
+
 ## [0.2.11] - Reminder
 
 - Reminder functionality had been added.
