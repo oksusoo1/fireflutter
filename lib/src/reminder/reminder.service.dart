@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_database/ui/utils/stream_subscriber_mixin.dart';
 import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -14,11 +17,28 @@ class ReminderService {
     return _instance!;
   }
 
+  late ReminderCallback onReminder;
+  StreamSubscription? subscription;
+
   final settingsCol = FirebaseFirestore.instance.collection('settings');
   DocumentReference<Map<String, dynamic>> get _reminderDoc => settingsCol.doc('reminder');
 
+  init({
+    required ReminderCallback onReminder,
+  }) {
+    this.onReminder = onReminder;
+    _listen();
+  }
+
+  /// Listen to the change of Reminder document.
   ///
-  listen(ReminderCallback callback) async {
+  /// App needs to listen again after pressing 'remind me later' or 'more info',
+  /// since the `link` has changed.
+  ///
+  /// If you don't listen again, the reminder dialog of same link will appear
+  /// again when ever title, content, image url changes even if `link` does not
+  /// changes.
+  _listen() async {
     Query q = settingsCol.where('type', isEqualTo: 'reminder');
 
     /// If there is no link saved, then just get the data.
@@ -27,9 +47,14 @@ class ReminderService {
       q = q.where('link', isNotEqualTo: link);
     }
 
-    q.snapshots().listen((QuerySnapshot<Object?> snapshot) {
+    if (subscription != null) {
+      subscription!.cancel();
+      subscription = null;
+    }
+
+    subscription = q.snapshots().listen((QuerySnapshot<Object?> snapshot) {
       if (snapshot.size > 0) {
-        callback(ReminderModel.fromJson(snapshot.docs.first.data() as Map<String, dynamic>));
+        onReminder(ReminderModel.fromJson(snapshot.docs.first.data() as Map<String, dynamic>));
       }
     });
   }
@@ -47,7 +72,11 @@ class ReminderService {
 
   Future<bool> saveLink(String link) async {
     final prefs = await SharedPreferences.getInstance();
-    return prefs.setString('reminder.link', link);
+    final _return = prefs.setString('reminder.link', link);
+
+    _listen();
+
+    return _return;
   }
 
   Future<String?> getLink() async {

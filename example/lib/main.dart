@@ -71,7 +71,7 @@ class _MainAppState extends State<MainApp> {
     /// after the app boots. No big deal here.
     Timer(const Duration(seconds: 3), () {
       /// Listen to the reminder update event.
-      ReminderService.instance.listen((reminder) {
+      ReminderService.instance.init(onReminder: (reminder) {
         /// Display the reminder using default dialog UI. You may copy the code
         /// and customize by yourself.
         ReminderService.instance.display(
