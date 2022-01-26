@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
-import '../defines.dart';
+import '../../fireflutter.dart';
 
 /// To inform message between users.
 ///

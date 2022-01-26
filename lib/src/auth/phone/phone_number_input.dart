@@ -1,5 +1,4 @@
 import '../../../fireflutter.dart';
-import '../../../src/defines.dart';
 import 'package:flutter/material.dart';
 import 'package:country_code_picker/country_code_picker.dart';
 

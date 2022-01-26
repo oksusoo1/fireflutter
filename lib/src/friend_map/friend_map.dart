@@ -1,7 +1,6 @@
 import 'dart:async';
 
-import '../../src/defines.dart';
-import '../../src/friend_map/friend_map.service.dart';
+import '../../fireflutter.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';

@@ -1,11 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import '../chat.data.model.dart';
-import '../chat.defines.dart';
-import '../chat.service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:paginate_firestore/bloc/pagination_cubit.dart';
 import 'package:paginate_firestore/paginate_firestore.dart';
+import '../../../fireflutter.dart';
 
 class ChatRoom extends StatefulWidget {
   ChatRoom({

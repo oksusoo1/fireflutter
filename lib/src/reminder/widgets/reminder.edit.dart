@@ -1,4 +1,4 @@
-import 'package:fireflutter/fireflutter.dart';
+import '../../../fireflutter.dart';
 import 'package:flutter/material.dart';
 
 class ReminderEditController {
@@ -72,7 +72,7 @@ class _ReminderEditState extends State<ReminderEdit> {
           controller: content,
         ),
         const SizedBox(height: 16),
-        const Text('Image url'),
+        const Text('Image Url'),
         TextField(
           controller: imageUrl,
         ),

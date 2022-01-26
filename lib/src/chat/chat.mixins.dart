@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:fireflutter/src/chat/chat.functions.dart';
+import './chat.functions.dart';
 
 mixin ChatMixins {
   /// My room list collection. There are all chat user list in the collection.
@@ -9,8 +9,7 @@ mixin ChatMixins {
   /// ```dart
   /// chat.roomsCol.orderBy('timestamp', descending: true);
   /// ```
-  CollectionReference get myRoomsCol =>
-      FirebaseFirestore.instance.collection('chat/rooms/$myUid');
+  CollectionReference get myRoomsCol => FirebaseFirestore.instance.collection('chat/rooms/$myUid');
 
   CollectionReference get myRoomsBlockedCol =>
       FirebaseFirestore.instance.collection('chat/blocks/$myUid');
@@ -30,10 +29,8 @@ mixin ChatMixins {
   }
 
   /// messages collection of chat user.
-  CollectionReference messagesCol(String otherUid) => FirebaseFirestore.instance
-      .collection('chat')
-      .doc('messages')
-      .collection(getRoomId(otherUid));
+  CollectionReference messagesCol(String otherUid) =>
+      FirebaseFirestore.instance.collection('chat').doc('messages').collection(getRoomId(otherUid));
 
   /// Chat room info.
   ///
