@@ -2,31 +2,29 @@ import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
 
 class ReminderEditController {
-  _ReminderEditState? state;
+  late final _ReminderEditState state;
+
+  /// 주의, 이미지를 document 에 저장하므로, listen 하는 모든 사용자의 앱에서 새로운 공지를 표시한다.
+  ///
   updateImageUrl(String url) async {
     await ReminderService.instance.setImageUrl(url);
-    state!.load();
+    state.load();
   }
 }
 
 class ReminderEdit extends StatefulWidget {
-  final _ReminderEditState _state = _ReminderEditState();
   final ReminderEditController? controller;
   ReminderEdit({
     Key? key,
     required this.onPreview,
     required this.onError,
     this.controller,
-  }) : super(key: key) {
-    if (this.controller != null) {
-      this.controller!.state = _state;
-    }
-  }
+  }) : super(key: key);
   final Function onError;
   final void Function(ReminderModel) onPreview;
 
   @override
-  _ReminderEditState createState() => _state;
+  _ReminderEditState createState() => _ReminderEditState();
 }
 
 class _ReminderEditState extends State<ReminderEdit> {
@@ -38,20 +36,25 @@ class _ReminderEditState extends State<ReminderEdit> {
   @override
   void initState() {
     super.initState();
+
+    if (widget.controller != null) {
+      widget.controller!.state = this;
+    }
     load();
   }
 
   load() {
     ReminderService.instance.get().then((ReminderModel? reminder) {
       if (reminder != null) {
-        setState(() {
-          title.text = reminder.title;
-          content.text = reminder.content;
-          imageUrl.text = reminder.imageUrl;
-          link.text = reminder.link;
-        });
+        if (mounted)
+          setState(() {
+            title.text = reminder.title;
+            content.text = reminder.content;
+            imageUrl.text = reminder.imageUrl;
+            link.text = reminder.link;
+          });
       }
-    }).catchError(widget.onError);
+    }).catchError((e) => widget.onError(e));
   }
 
   @override

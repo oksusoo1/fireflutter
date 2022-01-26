@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_database/ui/utils/stream_subscriber_mixin.dart';
 import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -18,6 +17,7 @@ class ReminderService {
   }
 
   late ReminderCallback onReminder;
+  // ignore: cancel_subscriptions
   StreamSubscription? subscription;
 
   final settingsCol = FirebaseFirestore.instance.collection('settings');

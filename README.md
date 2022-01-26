@@ -441,7 +441,7 @@ class _MainAppState extends State<MainApp> {
 /// after the app boots. No big deal here.
 Timer(const Duration(seconds: 3), () {
   /// Listen to the reminder update event.
-  ReminderService.instance.listen((reminder) {
+  ReminderService.instance.init(onReminder: (reminder) {
     /// Display the reminder using default dialog UI. You may copy the code
     /// and customize by yourself.
     ReminderService.instance.display(
@@ -459,7 +459,7 @@ Timer(const Duration(seconds: 3), () {
 - For updating, reminder, see the sample come of [ReminderEditScreen](https://github.com/thruthesky/fireflutter/blob/main/example/lib/screens/reminder/reminder.edit.screen.dart).
 
 
-- To update `imageUrl` outside of `ReminderEdit` widget, use the controller.
+- You may use `controller` to update `imageUrl` outside of `ReminderEdit` widget.
 
 ```dart
 final controller = ReminderEditController();
@@ -469,7 +469,8 @@ ReminderEdit(
 );
 
 // ...
-controller.updateImageUrl('http://new-image-url.jpg');
+controller.state.imageUrl.text = file.url;
+controller.state.setState(() {});
 ```
 
 
