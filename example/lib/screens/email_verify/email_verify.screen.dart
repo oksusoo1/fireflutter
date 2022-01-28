@@ -1,21 +1,10 @@
+import 'package:fireflutter/fireflutter.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-// import 'package:get/get.dart';
+import 'package:get/get.dart';
 
-class EmailVerifyScreen extends StatefulWidget {
+class EmailVerifyScreen extends StatelessWidget {
   const EmailVerifyScreen({Key? key}) : super(key: key);
-
-  @override
-  State<EmailVerifyScreen> createState() => _EmailVerifyScreenState();
-}
-
-class _EmailVerifyScreenState extends State<EmailVerifyScreen> {
-
-  TextEditingController emailInputController = TextEditingController();
-
-  @override
-  void initState() {
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -23,15 +12,35 @@ class _EmailVerifyScreenState extends State<EmailVerifyScreen> {
       appBar: AppBar(
         title: const Text('Email Verify'),
       ),
-      body: Container(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            TextFormField(
-              controller: emailInputController,
-            ),
-          ],
-        ),
+      body: EmailVerify(
+        onVerified: () => Get.back(),
+        onError: print,
+        onCancel: () => Get.back(),
+        onRelogin: (String email) {
+          PhoneService.instance.phoneNumber = FirebaseAuth.instance.currentUser!.phoneNumber!;
+          PhoneService.instance.verifyPhoneNumber(
+            codeSent: (verificationId) => Get.toNamed('/sms-code'),
+            success: () {
+              Get.defaultDialog(
+                middleText: 'Phone sign-in success',
+                textConfirm: 'Ok',
+              ).then((value) => Get.back());
+            },
+            error: (e) {
+              Get.defaultDialog(
+                title: 'Phone sign-in error',
+                middleText: e.toString(),
+                textConfirm: 'Ok',
+              );
+            },
+            codeAutoRetrievalTimeout: (String verificationId) {
+              Get.defaultDialog(
+                middleText: 'SMS code timeouted. Please send it again',
+                textConfirm: 'Ok',
+              );
+            },
+          );
+        },
       ),
     );
   }

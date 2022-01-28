@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:firebase_auth/firebase_auth.dart';
 
 class EmailVerifyService {
@@ -7,16 +9,40 @@ class EmailVerifyService {
     return _instance!;
   }
 
-  bool get isVerified {
-    if (FirebaseAuth.instance.currentUser == null) {
-      return false;
-    } else {
-      return FirebaseAuth.instance.currentUser!.emailVerified;
-    }
+  Timer? _timer;
+
+  FirebaseAuth get firebaseAuth => FirebaseAuth.instance;
+
+  bool get userEmailVerifield => FirebaseAuth.instance.currentUser!.emailVerified;
+
+  bool get userHasEmail {
+    if (FirebaseAuth.instance.currentUser!.email == null) return false;
+    return FirebaseAuth.instance.currentUser!.email!.isNotEmpty;
+  }
+
+  String get userEmail => FirebaseAuth.instance.currentUser!.email ?? '';
+
+  Future updateUserEmail(String email) async {
+    await firebaseAuth.currentUser!.updateEmail(email);
   }
 
   Future sendEmailVerification() async {
-    final user = FirebaseAuth.instance.currentUser!;
-    await user.sendEmailVerification();
+    await firebaseAuth.currentUser!.sendEmailVerification();
+    _startVerificationChecker();
+  }
+
+  Future<bool> checkEmailVerified() async {
+    await FirebaseAuth.instance.currentUser!.reload();
+
+    if (userEmailVerifield) {
+      _timer?.cancel();
+      return true;
+    }
+    return false;
+  }
+
+  _startVerificationChecker() {
+    if (_timer != null) return;
+    _timer = Timer.periodic(Duration(seconds: 3), (timer) => checkEmailVerified());
   }
 }

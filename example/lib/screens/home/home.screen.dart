@@ -76,7 +76,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                     child: TextField(
                                       controller: TextEditingController()..text = u.photoUrl,
                                       decoration: const InputDecoration(
-                                          hintText: 'Photo Url', prefix: Text('photo url: ')),
+                                        hintText: 'Photo Url',
+                                        prefix: Text('photo url: '),
+                                      ),
                                       onChanged: (t) {
                                         UserService.instance.updatePhotoUrl(t).catchError(
                                             (e) => debugPrint('error on update photo url; $e'));
