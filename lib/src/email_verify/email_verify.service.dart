@@ -7,15 +7,13 @@ class EmailVerifyService {
     return _instance!;
   }
 
-  FirebaseAuth get firebaseAuth => FirebaseAuth.instance;
-
   bool get userHasEmail {
-    if (FirebaseAuth.instance.currentUser!.email == null) return false;
-    return FirebaseAuth.instance.currentUser!.email!.isNotEmpty;
+    return email != '';
   }
 
-  String get userEmail => FirebaseAuth.instance.currentUser!.email ?? '';
+  String get email => FirebaseAuth.instance.currentUser?.email ?? '';
 
+////
   checkEmailVerified({
     required Function onVerified,
   }) async {
@@ -23,21 +21,6 @@ class EmailVerifyService {
 
     if (FirebaseAuth.instance.currentUser!.emailVerified) {
       onVerified();
-    }
-  }
-
-  Future<void> updateUserEmail({
-    required String email,
-    required Function(Function) onReAuthenticate,
-  }) async {
-    try {
-      await FirebaseAuth.instance.currentUser!.updateEmail(email);
-    } catch (e) {
-      if (e.toString().contains('requires-recent-login')) {
-        onReAuthenticate(updateUserEmail);
-      } else {
-        throw e;
-      }
     }
   }
 }
