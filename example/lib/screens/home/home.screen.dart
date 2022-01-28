@@ -92,12 +92,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           onPressed: () => FirebaseAuth.instance.signOut(),
                           child: const Text('Sign Out'),
                         ),
-                        ElevatedButton(
-                          onPressed: () => Get.toNamed('/email-verify'),
-                          child: Text(
-                            '${FirebaseAuth.instance.currentUser!.emailVerified ? 'Change' : 'Verify'} Email',
-                          ),
-                        ),
+                        const EmailButton(),
                       ],
                     );
                   } else {
@@ -181,6 +176,41 @@ class _HomeScreenState extends State<HomeScreen> {
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+class EmailButton extends StatefulWidget {
+  const EmailButton({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  State<EmailButton> createState() => _EmailButtonState();
+}
+
+class _EmailButtonState extends State<EmailButton> {
+  bool verified = false;
+
+  @override
+  void initState() {
+    super.initState();
+
+    /// reload and check if verified
+    FirebaseAuth.instance.currentUser!.reload().then((value) {
+      setState(() {
+        verified = FirebaseAuth.instance.currentUser!.emailVerified;
+      });
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ElevatedButton(
+      onPressed: () => Get.toNamed('/email-verify'),
+      child: Text(
+        '${verified ? 'Update' : 'Verify'} Email',
       ),
     );
   }

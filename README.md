@@ -35,6 +35,7 @@ Table of contents
   - [Phone number sign-in](#phone-number-sign-in)
   - [Email authentication under phone sign-in](#email-authentication-under-phone-sign-in)
     - [Email authentication under phone sign-in logic](#email-authentication-under-phone-sign-in-logic)
+      - [When user has an email already](#when-user-has-an-email-already)
 - [User presence](#user-presence)
   - [User presence overview](#user-presence-overview)
   - [User Presence Installation](#user-presence-installation)
@@ -204,27 +205,36 @@ Table of contents
 
 ### Email authentication under phone sign-in logic
 
-- User presses `email update` button.
-- `email update` screen or popup will be opened where user can input his email.
-- user enter (or change) his email address and update it.
-  - App updates email on google auth.
-  - if user signed in long time ago, then there will be an exception of `login again`. If this exception happens, then remember the email address, and sign-in again.
-  - Once signed in again, then update the email address again.
-    - there might be another exception like 'email is in use'. then, warn user and let him enter new email address.
+#### When user has an email already
 
-- once email is updated, then verify it.
-  - send email verification by `FirebaseAuth.instance.currentUser.sendEmailVerification()`.
-  - and check if email is verified on every 3 seconds.
-    - @see reference https://www.youtube.com/watch?v=rTr8BUlUftg
-```dart
-sub = Timer.periodic(Duraction(3 seconds), () {
-  FirebaseAuth.instance.relaod();
-  if ( FirebaseAuth.instance.currentUser.emailVerified == true ) {
-    sub.cancel();
-    go to home page.
-  }
-})
-```
+- User can update email or verify without updating email.
+
+- Before email verification screen,
+  - Show `verify email` button when user has email but not verified.
+  - Show `update email` button when user has
+    - no email or 
+    - has verified email.
+
+- When button is pressed, move to email verification screen
+  - Show `verify email` button if the user has email but not verified.
+  - Show `disabled update email` button if email is not changed, yet or has verified email.
+    - Enable `update email` if email changes.
+      - Note, when new email address is updated to Firebase auth, then, the status of `FirebaseAuth.instance.currentUser!.emailVerified` becomes automatically `false`.
+        - And even if the user changed the email back to the original email address, still, email verification status will be set to `false`.
+    - When `update email` button pressed,
+      - Save email,
+        - If `requires-recent-login` exception happens,
+          - Send mobile number verification code
+          - And display sms input code.
+      - And, send verification email
+      - Then, listen if email is verified.
+      - If verified, alert and go home.
+
+- TODO: When user click on the link, return to the app
+  - Refer https://fantashit.com/firebase-auth-sendemailverification-missing-actioncodesettings-parameter/
+  - Or try sign in with email address to return to the app after clicking the link. Refer https://stackoverflow.com/questions/63553161/flutter-firebase-how-to-send-email-verification
+
+
 
 # User presence
 
