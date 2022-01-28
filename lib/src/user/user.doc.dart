@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../fireflutter.dart';
 import 'package:flutter/material.dart';
@@ -13,22 +15,30 @@ class UserDoc extends StatefulWidget {
 
 class _UserDocState extends State<UserDoc> {
   UserModel? user;
+
+  late StreamSubscription userDocSubscription;
   @override
   void initState() {
     super.initState();
 
-    FirebaseFirestore.instance
-        .collection('users')
-        .doc(widget.uid)
-        .snapshots()
-        .listen((DocumentSnapshot<Map<String, dynamic>> snapshot) {
-      if (snapshot.exists) {
-        user = UserModel.fromJson(snapshot.data()!);
-      } else {
-        user = UserModel.nonExist();
-      }
-      setState(() {});
-    });
+    userDocSubscription =
+        FirebaseFirestore.instance.collection('users').doc(widget.uid).snapshots().listen(
+      (DocumentSnapshot<Map<String, dynamic>> snapshot) {
+        setState(() {
+          if (snapshot.exists) {
+            user = UserModel.fromJson(snapshot.data()!);
+          } else {
+            user = UserModel.nonExist();
+          }
+        });
+      },
+    );
+  }
+
+  @override
+  void dispose() {
+    userDocSubscription.cancel();
+    super.dispose();
   }
 
   @override
