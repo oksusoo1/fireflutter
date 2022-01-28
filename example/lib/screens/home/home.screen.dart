@@ -92,13 +92,12 @@ class _HomeScreenState extends State<HomeScreen> {
                           onPressed: () => FirebaseAuth.instance.signOut(),
                           child: const Text('Sign Out'),
                         ),
-                        if (!FirebaseAuth.instance.currentUser!.emailVerified)
-                          ElevatedButton(
-                            onPressed: () => Get.toNamed('/email-verify'),
-                            child: Text(
-                              '${FirebaseAuth.instance.currentUser!.emailVerified ? 'Change' : 'Verify'} Email',
-                            ),
+                        ElevatedButton(
+                          onPressed: () => Get.toNamed('/email-verify'),
+                          child: Text(
+                            '${FirebaseAuth.instance.currentUser!.emailVerified ? 'Change' : 'Verify'} Email',
                           ),
+                        ),
                       ],
                     );
                   } else {
