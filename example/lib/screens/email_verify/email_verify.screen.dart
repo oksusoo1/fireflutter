@@ -1,3 +1,4 @@
+import 'package:extended/extended.dart';
 import 'package:fe/screens/email_verify/email_verify.input_email.dart';
 import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
@@ -18,14 +19,14 @@ class _EmailVerifyScreenState extends State<EmailVerifyScreen> {
     ).then((value) => Get.offAllNamed('/home'));
   }
 
-  onError(String title, dynamic error) {
-    Get.defaultDialog(
-      title: title,
-      middleText: error.toString(),
-      textConfirm: 'Ok',
-      onConfirm: () => Get.back(),
-    );
-  }
+  // onError(String title, dynamic error) {
+  //   Get.defaultDialog(
+  //     title: title,
+  //     middleText: error.toString(),
+  //     textConfirm: 'Ok',
+  //     onConfirm: () => Get.back(),
+  //   );
+  // }
 
   onVerificationEmailSent() {
     if (mounted) setState(() {});
@@ -40,7 +41,7 @@ class _EmailVerifyScreenState extends State<EmailVerifyScreen> {
       body: EmailVerifyService.instance.userHasEmail
           ? EmailVerify(
               onVerified: () => onEmailVerified(),
-              onError: (e) => onError('Email verification error', e),
+              onError: error,
               cancelButtonBuilder: () => TextButton(
                 child: const Text('Cancel'),
                 onPressed: () => Get.back(),
@@ -52,7 +53,7 @@ class _EmailVerifyScreenState extends State<EmailVerifyScreen> {
             )
           : EmailVerifyInputEmail(
               onVerificationEmailSent: onVerificationEmailSent,
-              onError: (e) => onError('Email update error.', e),
+              onError: error,
             ),
     );
   }

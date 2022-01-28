@@ -21,8 +21,10 @@ class EmailVerifyInputEmail extends StatelessWidget {
   Future updateUserEmail() async {
     try {
       /// Update user email.
-      await EmailVerifyService.instance
-          .updateUserEmail(email: emailInputController.text, onReAuthenticate: (callback) {});
+      await EmailVerifyService.instance.updateUserEmail(
+        email: emailInputController.text,
+        onReAuthenticate: (callback) {},
+      );
 
       /// Once email update is successful, send an email verification.
       await FirebaseAuth.instance.currentUser!.sendEmailVerification();
