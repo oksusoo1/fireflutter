@@ -1,4 +1,3 @@
-
 import 'package:firebase_auth/firebase_auth.dart';
 
 class EmailVerifyService {
@@ -24,6 +23,21 @@ class EmailVerifyService {
 
     if (FirebaseAuth.instance.currentUser!.emailVerified) {
       onVerified();
+    }
+  }
+
+  Future<void> updateUserEmail({
+    required String email,
+    required Function(Function) onReAuthenticate,
+  }) async {
+    try {
+      await FirebaseAuth.instance.currentUser!.updateEmail(email);
+    } catch (e) {
+      if (e.toString().contains('requires-recent-login')) {
+        onReAuthenticate(updateUserEmail);
+      } else {
+        throw e;
+      }
     }
   }
 }

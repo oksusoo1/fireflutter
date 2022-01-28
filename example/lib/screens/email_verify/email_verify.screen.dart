@@ -1,5 +1,5 @@
+import 'package:fe/screens/email_verify/email_verify.input_email.dart';
 import 'package:fireflutter/fireflutter.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -41,46 +41,18 @@ class _EmailVerifyScreenState extends State<EmailVerifyScreen> {
           ? EmailVerify(
               onVerified: () => onEmailVerified(),
               onError: (e) => onError('Email verification error', e),
-              onCancel: () => Get.back(),
+              cancelButtonBuilder: () => TextButton(
+                child: const Text('Cancel'),
+                onPressed: () => Get.back(),
+              ),
+              resendButtonBuilder: (callback) => TextButton(
+                child: const Text('Resend'),
+                onPressed: () => callback(),
+              ),
             )
           : EmailVerifyInputEmail(
               onVerificationEmailSent: onVerificationEmailSent,
               onError: (e) => onError('Email update error.', e),
-              onCancel: () => Get.back(),
-
-              /// Once re-authentication is required, verify the user again with their phone number.
-              /// Call on `reloginCallback` to run the email update proccess again.
-              onRelogin: (reloginCallback) {
-                PhoneService.instance.phoneNumber = FirebaseAuth.instance.currentUser!.phoneNumber!;
-                PhoneService.instance.verifyPhoneNumber(
-                  /// Once verification code is send via SMS, show a dialog input for the code.
-                  codeSent: (verificationId) => Get.defaultDialog(
-                    title: 'Enter SMS Code to verify it\'s you.',
-                    content: SmsCodeInput(
-                      success: () {
-                        /// Remove dialog.
-                        Get.back();
-
-                        /// Begin email update process again.
-                        reloginCallback();
-                      },
-                      error: (e) => onError('Phone sign-in error', e),
-                      submitButton: (callback) => TextButton(
-                        child: const Text('Submit'),
-                        onPressed: callback,
-                      ),
-                    ),
-                  ),
-                  success: () => Get.back(),
-                  error: (e) => onError('Phone sign-in error', e),
-                  codeAutoRetrievalTimeout: (String verificationId) {
-                    Get.defaultDialog(
-                      middleText: 'SMS code timeouted. Please send it again',
-                      textConfirm: 'Ok',
-                    );
-                  },
-                );
-              },
             ),
     );
   }

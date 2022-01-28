@@ -7,6 +7,7 @@ typedef VoidStringCallback = void Function(String);
 typedef VoidNullableCallback = void Function()?;
 typedef BuilderWidgetFunction = Widget Function();
 typedef WidgetFunction = Widget Function();
+typedef WidgetFunctionCallback = Widget Function(Function);
 typedef BuilderWidgetUserFunction = Widget Function(User);
 // typedef MapCallback = Map<String, dynamic> Function();
 typedef VoidMapCallback = void Function(Map<String, dynamic>);

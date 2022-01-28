@@ -8,13 +8,15 @@ class EmailVerify extends StatefulWidget {
   const EmailVerify({
     required this.onVerified,
     required this.onError,
-    required this.onCancel,
+    required this.resendButtonBuilder,
+    required this.cancelButtonBuilder,
     Key? key,
   }) : super(key: key);
 
   final Function onVerified;
-  final Function onCancel;
   final Function(dynamic) onError;
+  final WidgetFunctionCallback resendButtonBuilder;
+  final WidgetFunction cancelButtonBuilder;
 
   @override
   _EmailVerifyState createState() => _EmailVerifyState();
@@ -23,6 +25,8 @@ class EmailVerify extends StatefulWidget {
 class _EmailVerifyState extends State<EmailVerify> {
   Timer? timer;
   EmailVerifyService emailVerifyService = EmailVerifyService.instance;
+
+  bool canResendVerification = false;
 
   @override
   void initState() {
@@ -48,6 +52,10 @@ class _EmailVerifyState extends State<EmailVerify> {
   Future resendVerificationEmail() async {
     try {
       await FirebaseAuth.instance.currentUser!.sendEmailVerification();
+
+      if (mounted) setState(() => canResendVerification = false);
+      await Future.delayed(Duration(seconds: 5));
+      if (mounted) setState(() => canResendVerification = true);
     } catch (e) {
       widget.onError(e);
     }
@@ -66,20 +74,14 @@ class _EmailVerifyState extends State<EmailVerify> {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        children: [
-          Text('Verification is sent to your email.'),
-          TextButton(
-            child: Text('Resend'),
-            onPressed: () => resendVerificationEmail(),
-          ),
-          TextButton(
-            child: Text('Cancel'),
-            onPressed: () => widget.onCancel(),
-          ),
-        ],
-      ),
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text('Verification is sent to your email.'),
+        
+        widget.resendButtonBuilder(resendVerificationEmail),
+        widget.cancelButtonBuilder(),
+      ],
     );
   }
 }
