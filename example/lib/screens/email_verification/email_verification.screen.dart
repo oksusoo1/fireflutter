@@ -12,58 +12,42 @@ class EmailVerificationScreen extends StatefulWidget {
 }
 
 class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
-  bool emailVerificationCodeSent = false;
-  bool emailChanged = false;
-  final email = TextEditingController(text: FirebaseAuth.instance.currentUser!.email);
-  final String? orgEmail = FirebaseAuth.instance.currentUser?.email;
-  bool get emailVerified => FirebaseAuth.instance.currentUser!.emailVerified;
-
-  bool loading = false;
-
-  final _emailService = EmailVerificationService.instance;
-
   @override
   void initState() {
     super.initState();
 
-    _emailService.init(
-      onVerified: () async {
-        await alert(
-          'Success',
-          orgEmail == email.text ? 'Email verfied.' : 'Email had been updated and verified.',
-        );
-        Get.toNamed('/home');
-      },
-      onError: error,
-      onVerificationEmailSent: () {
-        setState(() {
-          emailVerificationCodeSent = true;
-        });
-        alert(
-          'Email verification',
-          'Please open your email box and click the verification link.',
-        );
-      },
+    // _emailService.init(
+    //   onVerified: () async {
+    //     await alert(
+    //       'Success',
+    //       orgEmail == email.text ? 'Email verfied.' : 'Email had been updated and verified.',
+    //     );
+    //     Get.toNamed('/home');
+    //   },
+    //   onError: error,
+    //   onVerificationEmailSent: () {
+    //     setState(() {
+    //       emailVerificationCodeSent = true;
+    //     });
+    //     alert(
+    //       'Email verification',
+    //       'Please open your email box and click the verification link.',
+    //     );
+    //   },
 
-      /// All error(exception) goes to [onError] except, too many requests.
-      onTooManyRequests: () => alert(
-        'Error',
-        'Oops, you have requested too many email verification. Please do a while later.',
-      ),
-    );
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    _emailService.dispose();
+    //   /// All error(exception) goes to [onError] except, too many requests.
+    //   onTooManyRequests: () => alert(
+    //     'Error',
+    //     'Oops, you have requested too many email verification. Please do a while later.',
+    //   ),
+    // );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Email Verification')),
-      body: _emailService.userHasPhoneNumber == false
+      body: EmailVerificationService.instance.userHasPhoneNumber == false
           ? const Text(
               'You have no phone number. Login with phone number first.',
               style: TextStyle(
@@ -74,68 +58,36 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
           : Column(
               children: [
                 const UserInfo(),
-                TextField(
-                  controller: email,
-                  onChanged: (v) => setState(() {
-                    emailChanged = true;
-                    emailVerificationCodeSent = false;
-                  }),
+                EmailVerification(
+                  onVerified: (re) async {
+                    await alert(
+                      'Success',
+                      re ? 'Email verfied.' : 'Email had been updated and verified.',
+                    );
+                    Get.toNamed('/home');
+                  },
+                  onError: error,
+                  onVerificationEmailSent: () => alert(
+                    'Email verification',
+                    'Please open your email box and click the verification link.',
+                  ),
+                  onTooManyRequests: () => alert(
+                    'Error',
+                    'Oops, you have requested too many email verification. Please do a while later.',
+                  ),
+                  onUpdateEmail: updateEmail,
                 ),
-                loading
-                    ? const Spinner()
-                    : emailVerificationCodeSent
-                        ? ElevatedButton(
-                            onPressed: () async {
-                              try {
-                                setState(() => loading = true);
-                                await _emailService.sendVerificationEmail();
-                              } catch (e) {
-                                error(e);
-                              } finally {
-                                setState(() => loading = false);
-                              }
-                            },
-                            child: const Text('Re-send'),
-                          )
-                        : ElevatedButton(
-                            onPressed: (emailChanged || !emailVerified) ? verifyEmail : null,
-                            child: Text(
-                              (emailChanged || emailVerified) ? 'Update email' : 'Verify email',
-                            ),
-                          ),
               ],
             ),
     );
   }
 
-  /// verify email or update mail had been pressed.
-  verifyEmail() async {
-    if (emailChanged) {
-      if (emailChanged) {
-        updateEmail(() async {
-          sendVerificationLink();
-        });
-      }
-    } else {
-      sendVerificationLink();
-    }
-  }
-
-  /// Send verification link to email box.
-  sendVerificationLink() async {
+  Future<void> updateEmail(
+    String email,
+    Function callback,
+  ) async {
     try {
-      setState(() => loading = true);
-      await _emailService.sendVerificationEmail();
-    } catch (e) {
-      error(e);
-    } finally {
-      setState(() => loading = false);
-    }
-  }
-
-  Future<void> updateEmail(Function callback) async {
-    try {
-      await FirebaseAuth.instance.currentUser!.updateEmail(email.text);
+      await FirebaseAuth.instance.currentUser!.updateEmail(email);
       callback();
     } on FirebaseAuthException catch (e) {
       if (e.code == 'requires-recent-login') {
@@ -147,7 +99,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
             title: 'Enter SMS Code to verify it\'s you.',
             content: SmsCodeInput(
               success: () async {
-                await onReAuthenticationSuccess();
+                await onReAuthenticationSuccess(email);
                 callback();
               },
               error: error,
@@ -158,7 +110,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
             ),
           ),
           androidAutomaticVerificationSuccess: () async {
-            await onReAuthenticationSuccess();
+            await onReAuthenticationSuccess(email);
             callback();
           },
           error: error,
@@ -178,13 +130,12 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
   }
 
   ///
-  Future<void> onReAuthenticationSuccess() async {
+  Future<void> onReAuthenticationSuccess(String email) async {
     /// User re-logged in.
     try {
       /// Email updated after re-login.
-      await FirebaseAuth.instance.currentUser!.updateEmail(email.text);
+      await FirebaseAuth.instance.currentUser!.updateEmail(email);
       Get.back();
-      setState(() => loading = false);
     } catch (e) {
       error(e);
     }
