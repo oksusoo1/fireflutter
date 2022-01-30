@@ -196,7 +196,37 @@ Table of contents
   - Simply add `PhoneNumberInput` widget to your screen and on code sent, move to sms code input page and add `SmsCodeInput` widget.
   - See [example/lib/phone_sign_in_ui](https://github.com/thruthesky/fireflutter/tree/main/example/lib/screens/phone_sign_in_ui) foler for sample code.
 
+Example of verifying phone number. Note this example is only for short sample codes.
 
+```dart
+PhoneService.instance.phoneNumber = FirebaseAuth.instance.currentUser!.phoneNumber!;
+PhoneService.instance.verifyPhoneNumber(
+  /// Once verification code is send via SMS, show a dialog input for the code.
+  codeSent: (verificationId) => Get.defaultDialog(
+    title: 'Enter SMS Code to verify it\'s you.',
+    content: SmsCodeInput(
+      success: () async {
+        /// User logged in.
+        Get.back();
+      },
+      error: error,
+      submitButton: (callback) => TextButton(
+        child: const Text('Submit'),
+        onPressed: callback,
+      ),
+    ),
+  ),
+  success: () => Get.back(),
+  error: error,
+  codeAutoRetrievalTimeout: (String verificationId) {
+    Get.defaultDialog(
+      middleText:
+          'SMS code timeouted. Please send it again',
+      textConfirm: 'Ok',
+    );
+  },
+);
+```
 
 ## Email authentication under phone sign-in
 

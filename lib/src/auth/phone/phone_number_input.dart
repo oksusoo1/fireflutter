@@ -133,7 +133,7 @@ class _PhoneNumberInputState extends State<PhoneNumberInput> {
                               PhoneService.instance.codeSentProgress = false;
                             });
                           },
-                          success: widget.success,
+                          androidAutomaticVerificationSuccess: widget.success,
                           error: (e) {
                             setState(() {
                               PhoneService.instance.codeSentProgress = false;

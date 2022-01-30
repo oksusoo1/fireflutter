@@ -6,7 +6,7 @@ import 'dart:async';
 import 'package:fe/screens/chat/chat.room.screen.dart';
 import 'package:fe/screens/chat/chat.rooms.blocked.screen.dart';
 import 'package:fe/screens/chat/chat.rooms.screen.dart';
-import 'package:fe/screens/email_verify/email_verify.screen.dart';
+import 'package:fe/screens/email_verification/email_verification.screen.dart';
 import 'package:fe/screens/friend_map/friend_map.screen.dart';
 import 'package:fe/screens/help/help.screen.dart';
 import 'package:fe/screens/home/home.screen.dart';
@@ -46,7 +46,7 @@ class _MainAppState extends State<MainApp> {
       onError: (e) => debugPrint('--> Presence error: $e'),
     );
 
-    // Timer(const Duration(milliseconds: 200), () => Get.toNamed('/sms-code-ui'));
+    Timer(const Duration(milliseconds: 200), () => Get.toNamed('/email-verify'));
 
     /// Listen to FriendMap
     FirebaseAuth.instance.authStateChanges().listen((user) {
@@ -122,7 +122,7 @@ class _MainAppState extends State<MainApp> {
         ),
         GetPage(name: '/friend-map', page: () => const FriendMapScreen()),
         GetPage(name: '/reminder-edit', page: () => ReminderEditScreen()),
-        GetPage(name: '/email-verify', page: () => const EmailVerifyScreen())
+        GetPage(name: '/email-verify', page: () => const EmailVerificationScreen())
       ],
     );
   }
