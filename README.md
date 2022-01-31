@@ -70,6 +70,14 @@ Table of contents
   - [firebase_database/permission-denied](#firebase_databasepermission-denied)
   - [Firebase realtime database is not working](#firebase-realtime-database-is-not-working)
   - [firebase_auth/internal-error](#firebase_authinternal-error)
+- [Dyanmic Links Service](#dyanmic-links-service)
+  - [Installation](#installation-1)
+    - [Installation on Anroid](#installation-on-anroid)
+    - [Installation on iOS](#installation-on-ios)
+  - [Dynamic Links - Coding guide lines](#dynamic-links---coding-guide-lines)
+    - [Terminated app](#terminated-app)
+    - [For background(or foreground) apps](#for-backgroundor-foreground-apps)
+  - [Test Dynamic Links](#test-dynamic-links)
 
 # TODOs
 
@@ -740,6 +748,96 @@ If you see this error message while working with Firebase Auth, check the follow
 
 - Check if REVERSE_CLIENT_ID is set on iOS.
 - Check if GCP credential is properly set iOS.
+
+
+
+# Dyanmic Links Service
+
+- The implementaion of `Dynamic Links` are based on https://firebase.flutter.dev/docs/dynamic-links/overview
+
+
+## Installation
+
+### Installation on Anroid
+
+- Refer https://firebase.flutter.dev/docs/dynamic-links/android-integration
+
+### Installation on iOS
+
+- https://firebase.flutter.dev/docs/dynamic-links/apple-integration
+
+
+## Dynamic Links - Coding guide lines
+
+- There are two senarios to handle incoming dynamic link events.
+
+
+
+### Terminated app
+
+- First, initialize firebase app,
+- Then, Pass `await DynamicLinksService.instance.initialLink` to main app.
+
+```dart
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+
+  runApp(MainApp(
+    initialLink: await DynamicLinksService.instance.initialLink,
+  ));
+}
+```
+
+- Then, on MainApp, handle the dynamic links if it has any.
+
+```dart
+class MainApp extends StatefulWidget {
+  const MainApp({required this.initialLink, Key? key}) : super(key: key);
+  final PendingDynamicLinkData? initialLink;
+  @override
+  State<MainApp> createState() => _MainAppState();
+}
+
+class _MainAppState extends State<MainApp> {
+  @override
+  void initState() {
+    if (widget.initialLink != null) {
+      final Uri deepLink = widget.initialLink!.link;
+      /// If you do alert too early, it may not appear on screen.
+      WidgetsBinding.instance?.addPostFrameCallback((dr) {
+        alert('Terminated app',
+            'Got dynamic link event. deepLink.path; ${deepLink.path},  ${deepLink.queryParametersAll}');
+      });
+    }
+    // ...
+```
+
+- One thing to note on the code above is that, If you do things like (alert, or navigation) too early before the app is rendered, the action may work strange (by racing). So, it would be better to take action after the app is rendered. You may use `Timer` instead of `WidgetsBinding.instance.addPostFrameCallback()`.
+
+
+### For background(or foreground) apps
+
+- Simply listen to the link event.
+
+```dart
+DynamicLinksService.instance.listen((Uri? deepLink) {
+  alert('Background 2',
+      'Dyanmic Link Event on background(or foreground). deepLink.path; ${deepLink?.path}, ${deepLink?.queryParametersAll}');
+});
+```
+
+
+
+
+
+
+
+## Test Dynamic Links
+
+- To test your dynamic link on iOS, you will need to use a real device as it will not work on a simulator. You will also have to run the app in release mode (i.e. flutter run --release) as iOS will block you from opening the app in debug mode from a dynamic link.
+- On Android, you may test with emulator.
+
 
 
 

@@ -3,6 +3,7 @@
 
 import 'dart:async';
 
+import 'package:extended/extended.dart';
 import 'package:fe/screens/chat/chat.room.screen.dart';
 import 'package:fe/screens/chat/chat.rooms.blocked.screen.dart';
 import 'package:fe/screens/chat/chat.rooms.screen.dart';
@@ -17,10 +18,12 @@ import 'package:fe/screens/phone_sign_in_ui/sms_code_ui.screen.dart';
 import 'package:fe/screens/reminder/reminder.edit.screen.dart';
 import 'package:fe/widgets/sign_in.widget.dart';
 import 'package:fireflutter/fireflutter.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
+import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey();
 
@@ -28,12 +31,14 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
 
-  runApp(const MainApp());
+  runApp(MainApp(
+    initialLink: await DynamicLinksService.instance.initialLink,
+  ));
 }
 
 class MainApp extends StatefulWidget {
-  const MainApp({Key? key}) : super(key: key);
-
+  const MainApp({required this.initialLink, Key? key}) : super(key: key);
+  final PendingDynamicLinkData? initialLink;
   @override
   State<MainApp> createState() => _MainAppState();
 }
@@ -46,7 +51,25 @@ class _MainAppState extends State<MainApp> {
       onError: (e) => debugPrint('--> Presence error: $e'),
     );
 
-    Timer(const Duration(milliseconds: 200), () => Get.toNamed('/email-verify'));
+    // Timer(const Duration(milliseconds: 200), () => Get.toNamed('/email-verify'));
+
+    /// Dynamic links for terminated app.
+    if (widget.initialLink != null) {
+      final Uri deepLink = widget.initialLink!.link;
+      // Example of using the dynamic link to push the user to a different screen
+
+      /// If you do alert too early, it may not appear on screen.
+      WidgetsBinding.instance?.addPostFrameCallback((dr) {
+        alert('Terminated app',
+            'Got dynamic link event. deepLink.path; ${deepLink.path},  ${deepLink.queryParametersAll}');
+      });
+    }
+
+    ///
+    DynamicLinksService.instance.listen((Uri? deepLink) {
+      alert('Background 2',
+          'Dyanmic Link Event on background(or foreground). deepLink.path; ${deepLink?.path}, ${deepLink?.queryParametersAll}');
+    });
 
     /// Listen to FriendMap
     FirebaseAuth.instance.authStateChanges().listen((user) {
