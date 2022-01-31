@@ -1,8 +1,9 @@
 import 'dart:async';
 
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:fireflutter/fireflutter.dart';
+// import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
+import './email_verification.service.dart';
 
 class EmailVerification extends StatefulWidget {
   EmailVerification({
@@ -77,7 +78,7 @@ class _EmailVerificationState extends State<EmailVerification> {
         TextField(
           controller: email,
           onChanged: (v) => setState(() {
-            emailChanged = true;
+            emailChanged = orgEmail != v;
             emailVerificationCodeSent = false;
           }),
         ),
