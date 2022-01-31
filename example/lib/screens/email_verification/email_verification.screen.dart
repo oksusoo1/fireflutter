@@ -36,7 +36,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                     Get.toNamed('/home');
                   },
                   onError: error,
-                  onVerificationEmailSent: () => alert(
+                  onVerificationEmailSent: (email) => alert(
                     'Email verification',
                     'Please open your email box and click the verification link.',
                   ),

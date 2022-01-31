@@ -115,8 +115,8 @@ class EmailVerificationService {
     /// Once email update is successful, send an email verification.
     try {
       await FirebaseAuth.instance.currentUser!.sendEmailVerification();
-      _onVerificationEmailSent();
       _emailVerificationChecker();
+      _onVerificationEmailSent();
     } on FirebaseAuthException catch (e) {
       if (e.code == 'too-many-requests') {
         _onTooManyRequests();
