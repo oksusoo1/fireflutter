@@ -808,6 +808,7 @@ class _MainAppState extends State<MainApp> {
       WidgetsBinding.instance?.addPostFrameCallback((dr) {
         alert('Terminated app',
             'Got dynamic link event. deepLink.path; ${deepLink.path},  ${deepLink.queryParametersAll}');
+        // Get.toNamed(deepLink.path, arguments: deepLink.queryParameters);
       });
     }
     // ...
