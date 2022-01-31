@@ -28,6 +28,7 @@ class EmailVerificationService {
   late Function _onVerified;
   late Function _onVerificationEmailSent;
   late Function _onTooManyRequests;
+  late Function _onUserTokenExpired;
 
   /// Initialize the service and run email verification checker.
   ///
@@ -53,11 +54,13 @@ class EmailVerificationService {
     required Function(dynamic) onError,
     required Function onVerificationEmailSent,
     required Function onTooManyRequests,
+    required Function onUserTokenExpired,
   }) {
     _verificationIntervalSeconds = verificationIntervalSeconds;
     _onVerified = onVerified;
     _onVerificationEmailSent = onVerificationEmailSent;
     _onTooManyRequests = onTooManyRequests;
+    _onUserTokenExpired = onUserTokenExpired;
 
     /// Run email verification checker
     _emailVerificationChecker();
@@ -70,8 +73,22 @@ class EmailVerificationService {
       (_t) async {
         print('check verification result');
 
+        if (FirebaseAuth.instance.currentUser == null) throw 'User has not signed in.';
+
         /// Note, if there is no internet, 'firebase_auth/network-request-failed' error will be happened.
-        await FirebaseAuth.instance.currentUser!.reload();
+        try {
+          await FirebaseAuth.instance.currentUser!.reload();
+        } on FirebaseAuthException catch (e) {
+          if (e.code == 'user-token-expired') {
+            /// The user's credential is no longer valid. The user must sign in again.
+            _t.cancel();
+            _onUserTokenExpired();
+          } else {
+            rethrow;
+          }
+        } catch (e) {
+          rethrow;
+        }
         if (FirebaseAuth.instance.currentUser!.emailVerified) {
           _t.cancel();
           timer = null;

@@ -13,37 +13,6 @@ class EmailVerificationScreen extends StatefulWidget {
 
 class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
   @override
-  void initState() {
-    super.initState();
-
-    // _emailService.init(
-    //   onVerified: () async {
-    //     await alert(
-    //       'Success',
-    //       orgEmail == email.text ? 'Email verfied.' : 'Email had been updated and verified.',
-    //     );
-    //     Get.toNamed('/home');
-    //   },
-    //   onError: error,
-    //   onVerificationEmailSent: () {
-    //     setState(() {
-    //       emailVerificationCodeSent = true;
-    //     });
-    //     alert(
-    //       'Email verification',
-    //       'Please open your email box and click the verification link.',
-    //     );
-    //   },
-
-    //   /// All error(exception) goes to [onError] except, too many requests.
-    //   onTooManyRequests: () => alert(
-    //     'Error',
-    //     'Oops, you have requested too many email verification. Please do a while later.',
-    //   ),
-    // );
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Email Verification')),
@@ -75,6 +44,17 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                     'Error',
                     'Oops, you have requested too many email verification. Please do a while later.',
                   ),
+
+                  /// User sign-in credential is no longer valid. User must sign-in again.
+                  ///
+                  /// This error happens sometimes. go to login page and let user login again and come back.
+                  onUserTokenExpired: () async {
+                    await alert(
+                      'Login again',
+                      'Your login is no longer valid. You must sign-in again.',
+                    );
+                    Get.toNamed('/home');
+                  },
                   onUpdateEmail: updateEmail,
                 ),
               ],

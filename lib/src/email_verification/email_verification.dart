@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
@@ -10,12 +12,15 @@ class EmailVerification extends StatefulWidget {
     required this.onVerificationEmailSent,
     required this.onTooManyRequests,
     required this.onUpdateEmail,
+    required this.onUserTokenExpired,
   }) : super(key: key);
 
   final Function(bool updated) onVerified;
   final Function(dynamic) onError;
   final Function onVerificationEmailSent;
   final Function onTooManyRequests;
+
+  final Function onUserTokenExpired;
 
   /// To update email, it may need to open dialog (or another screen) to
   ///   re-authenticate the login if the user logged in long time ago.
@@ -42,7 +47,7 @@ class _EmailVerificationState extends State<EmailVerification> {
     super.initState();
 
     _emailService.init(
-      onVerified: widget.onVerified,
+      onVerified: () => widget.onVerified((orgEmail == email.text)),
       onError: widget.onError,
       onVerificationEmailSent: () {
         setState(() {
@@ -50,11 +55,12 @@ class _EmailVerificationState extends State<EmailVerification> {
         });
 
         /// if email has changed, then it returns true.
-        widget.onVerificationEmailSent(orgEmail == email.text);
+        widget.onVerificationEmailSent();
       },
 
       /// All error(exception) goes to [onError] except, too many requests.
       onTooManyRequests: widget.onTooManyRequests,
+      onUserTokenExpired: widget.onUserTokenExpired,
     );
   }
 
@@ -105,6 +111,12 @@ class _EmailVerificationState extends State<EmailVerification> {
   verifyEmail() async {
     if (emailChanged) {
       if (emailChanged) {
+        /// onUpdateEmail() is not async/await. So, we do not know when it will
+        /// be finished.
+        /// So, just put 10 seconds of loader. the loader will be disappear 10
+        /// seconds later or when the verification email had sent.
+        setState(() => loading = true);
+        Timer(Duration(seconds: 10), () => setState(() => loading = false));
         widget.onUpdateEmail(email.text, () async {
           sendVerificationLink();
         });
