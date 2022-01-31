@@ -32,3 +32,5 @@ export 'src/reminder/widgets/reminder.edit.dart';
 
 export 'src/email_verification/email_verification.dart';
 export 'src/email_verification/email_verification.service.dart';
+
+export 'src/dynamic_links/dynamic_links.service.dart';
