@@ -62,8 +62,12 @@ class EmailVerificationService {
     _onTooManyRequests = onTooManyRequests;
     _onUserTokenExpired = onUserTokenExpired;
 
+    /// Whether the user is verifying or not, don't run verification checker on init.
+    /// Once email verification checker runs, it will automatically invoke the callback function `onVerified` if the user's email is verified.
+    /// `onVerified` will run even if the user is just changing their email.
+    /// 
     /// Run email verification checker
-    _emailVerificationChecker();
+    // _emailVerificationChecker();
   }
 
   _emailVerificationChecker() {
@@ -112,6 +116,7 @@ class EmailVerificationService {
     try {
       await FirebaseAuth.instance.currentUser!.sendEmailVerification();
       _onVerificationEmailSent();
+      _emailVerificationChecker();
     } on FirebaseAuthException catch (e) {
       if (e.code == 'too-many-requests') {
         _onTooManyRequests();

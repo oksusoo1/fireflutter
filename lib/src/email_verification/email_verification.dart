@@ -78,7 +78,7 @@ class _EmailVerificationState extends State<EmailVerification> {
         TextField(
           controller: email,
           onChanged: (v) => setState(() {
-            emailChanged = true;
+            emailChanged = orgEmail != v;
             emailVerificationCodeSent = false;
           }),
         ),
