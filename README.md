@@ -78,6 +78,11 @@ Table of contents
     - [Terminated app](#terminated-app)
     - [For background(or foreground) apps](#for-backgroundor-foreground-apps)
   - [Test Dynamic Links](#test-dynamic-links)
+- [Reports](#reports)
+  - [Reports listing](#reports-listing)
+  - [Reports data](#reports-data)
+  - [reporting logic](#reporting-logic)
+  - [Admin listing](#admin-listing)
 
 # TODOs
 
@@ -841,4 +846,86 @@ DynamicLinksService.instance.listen((Uri? deepLink) {
 
 
 
+
+# Reports
+
+- `target` is the data that is reported. It can be `post`, `comment`, `user`, `image` or any thing else.
+
+- `targetId` is the key(or document id) of the `target`.
+- `timestamp` is the timestamp of server.
+
+
+## Reports listing
+
+- Many user can report the same post. And when admin lists the reports, the reports of same post should be grouped. Or the listing may go dirty. To implement this, it needs a collection for target & targetId.
+
+- `/reports-listing` is the collection. and the data would be
+
+```json
+{
+	target: "post, comment, user, file"
+	targetId: ".... the key (or document id ) of the target"
+	timestamp: " server time stamp "
+  status: "deleted|passed"
+}
+```
+
+## Reports data
+
+- `/reports` is the collection. and the data would be
+
+```json
+{
+	reporterUid: "...uid of reporter ..."
+  reporterDisplayName: "...display name..."
+  reporteeUid: "...uid of target data author..."
+  reporteeDisplayName: " ... display name of the reportee"
+	target: "post, comment, user, file"
+	targetId: ".... the key (or document id ) of the target"
+	timestamp:  " server time stamp "
+	reason: "reason of why reporter is reporting"
+}
+```
+
+
+- A user cannot report same target & targetId.
+- To implement this,
+	- App must not read to see if the user has already reported.
+	- It must be done by security rule.
+	- Once it fails, it can read the report if the user had already reported and display message to user.
+
+
+
+
+## reporting logic
+
+When user A reports post 5000,
+
+target = post
+targetId = 5000,
+reporterUid = uid_aaa
+reason = I don't like this post.
+
+
+will be recorded.
+
+And then, user B reports post 5001.
+And then, user C reports post 5000 with reason, "I hate this post."
+
+- a user cannot report same target & target_ID twice.
+
+## Admin listing
+
+When admin list, reports
+
+Do not list same target & target_ID twice. which means, post 5000 had reported twice, and there will only one record in the list. the two records must be merged.
+
+
+- Example of listing
+
+target Id|reporters|reasons
+---------|---------|-------
+5000|A|I don't like this post
+____|B|I hate this post,
+5001|C|...
 

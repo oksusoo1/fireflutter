@@ -173,6 +173,14 @@ class _HomeScreenState extends State<HomeScreen> {
                 onPressed: () => Get.toNamed('/reminder-edit'),
                 child: const Text('Reminder Management Screen'),
               ),
+              Wrap(
+                children: [
+                  ElevatedButton(
+                    onPressed: ReportService.instance.test,
+                    child: const Text('Test on report'),
+                  ),
+                ],
+              )
             ],
           ),
         ),

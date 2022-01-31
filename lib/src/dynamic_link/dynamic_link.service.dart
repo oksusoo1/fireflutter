@@ -1,10 +1,10 @@
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 
 /// See readme.md
-class DynamicLinksService {
-  static DynamicLinksService? _instance;
-  static DynamicLinksService get instance {
-    _instance ??= DynamicLinksService();
+class DynamicLinkService {
+  static DynamicLinkService? _instance;
+  static DynamicLinkService get instance {
+    _instance ??= DynamicLinkService();
     return _instance!;
   }
 
