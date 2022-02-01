@@ -1,8 +1,10 @@
+import 'package:extended/extended.dart';
 import 'package:fe/widgets/test.user.dart';
 import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:get/get_rx/src/rx_workers/utils/debouncer.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -20,6 +22,8 @@ class _HomeScreenState extends State<HomeScreen> {
     });
     // ChatService.instance.newMessages.listen((value) => debugPrint('new messages: $value'));
   }
+
+  final nickname = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +53,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             return Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Text('Profile name: ${u.name}'),
+                                Text('Profile name: ${u.nickname}'),
                                 Text(', photo: ${u.photoUrl}'),
                               ],
                             );
@@ -58,17 +62,19 @@ class _HomeScreenState extends State<HomeScreen> {
                         UserFutureDoc(
                             uid: user.uid,
                             builder: (UserModel u) {
+                              nickname.text = u.nickname;
                               return Row(
                                 children: [
                                   const Text('Update '),
                                   Expanded(
                                     child: TextField(
-                                      controller: TextEditingController()..text = u.name,
+                                      controller: nickname,
                                       decoration: const InputDecoration(
                                           hintText: 'Name', prefix: Text('name: ')),
                                       onChanged: (t) {
-                                        UserService.instance.updateName(t).catchError(
-                                            (e) => debugPrint('error on update name; $e'));
+                                        bouncer('nickname', 500, (x) {
+                                          UserService.instance.updateNickname(t).catchError(error);
+                                        });
                                       },
                                     ),
                                   ),
@@ -126,58 +132,73 @@ class _HomeScreenState extends State<HomeScreen> {
               Wrap(
                 alignment: WrapAlignment.spaceAround,
                 children: const [
-                  TestUser(name: 'Apple', uid: 'uA0mjrf3FzR1FxO1rcjO7eZlGkR2'),
-                  TestUser(name: 'Banana', uid: 'o0BtHX2JMiaa0SIrDJ3qhDczXDF2'),
-                  TestUser(name: 'Cherry', uid: 'sys2vHyPz2fUb57qEFN2PqaegGu2'),
-                  TestUser(name: 'Durian', uid: 'LLaX6TwVQSO2os2dzK3kJyTzSzs1'),
+                  TestUser(
+                      email: 'apple@test.com', name: 'Apple', uid: 'uA0mjrf3FzR1FxO1rcjO7eZlGkR2'),
+                  TestUser(
+                      email: 'banana@test.com',
+                      name: 'Banana',
+                      uid: 'o0BtHX2JMiaa0SIrDJ3qhDczXDF2'),
+                  TestUser(
+                      email: 'cherry@test.com',
+                      name: 'Cherry',
+                      uid: 'sys2vHyPz2fUb57qEFN2PqaegGu2'),
+                  TestUser(
+                      email: 'durian@test.com',
+                      name: 'Durian',
+                      uid: 'LLaX6TwVQSO2os2dzK3kJyTzSzs1'),
                 ],
               ),
-              const Divider(),
-              ElevatedButton(onPressed: () => Get.toNamed('/help'), child: const Text('Help')),
-              ElevatedButton(
-                onPressed: () => Get.toNamed('/chat-rooms-screen'),
-                child: const Text('Chat Room List'),
-              ),
-              const Divider(),
-              TextButton(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: const [
-                    Text('Chat'),
-                    ChatBadge(),
-                  ],
-                ),
-                onPressed: () {
-                  Get.toNamed('/chat-rooms-screen');
-                },
-              ),
-              TextButton(
-                  onPressed: () async {
-                    for (int i = 0; i < 10; i++) {
-                      setState(() {});
-                      await Future.delayed(const Duration(milliseconds: 500));
-                    }
-                  },
-                  child: const Text('setState() 10 times')),
-              const Divider(),
-              const ElevatedButton(
-                onPressed: getFirestoreIndexLinks,
-                child: Text('Get firestore index links'),
-              ),
-              const Divider(),
-              ElevatedButton(
-                onPressed: () => Get.toNamed('/friend-map'),
-                child: const Text('Friend Map'),
-              ),
-              ElevatedButton(
-                onPressed: () => Get.toNamed('/reminder-edit'),
-                child: const Text('Reminder Management Screen'),
+              Wrap(
+                children: [
+                  ElevatedButton(onPressed: () => Get.toNamed('/help'), child: const Text('Help')),
+                  ElevatedButton(
+                    onPressed: () => Get.toNamed('/chat-rooms-screen'),
+                    child: const Text('Chat Room List'),
+                  ),
+                  TextButton(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.min,
+                      children: const [
+                        Text('Chat'),
+                        ChatBadge(),
+                      ],
+                    ),
+                    onPressed: () {
+                      Get.toNamed('/chat-rooms-screen');
+                    },
+                  ),
+                  TextButton(
+                      onPressed: () async {
+                        for (int i = 0; i < 10; i++) {
+                          setState(() {});
+                          await Future.delayed(const Duration(milliseconds: 500));
+                        }
+                      },
+                      child: const Text('setState() 10 times')),
+                  const ElevatedButton(
+                    onPressed: getFirestoreIndexLinks,
+                    child: Text('Get firestore index links'),
+                  ),
+                  ElevatedButton(
+                    onPressed: () => Get.toNamed('/friend-map'),
+                    child: const Text('Friend Map'),
+                  ),
+                  ElevatedButton(
+                    onPressed: () => Get.toNamed('/reminder-edit'),
+                    child: const Text('Reminder Management Screen'),
+                  ),
+                ],
               ),
               Wrap(
                 children: [
                   ElevatedButton(
-                    onPressed: ReportService.instance.test,
+                    onPressed: testOnReport,
                     child: const Text('Test on report'),
+                  ),
+                  ElevatedButton(
+                    onPressed: testOnForum,
+                    child: const Text('Test on forum'),
                   ),
                 ],
               )
@@ -187,6 +208,32 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
+
+  testOnReport() async {
+    final ts = TestService.instance;
+    final rs = ReportService.instance;
+
+    ts.reset();
+    await ts.expectSuccess(rs.report(
+      target: 'post',
+      targetId: '111',
+      reporterUid: 'aaa',
+      reporterDisplayName: 'User A',
+      reporteeUid: 'bbb',
+      reporteeDisplayName: 'User B',
+    ));
+
+    // await ts.expectFailure(rs.report(
+    //   target: 'post',
+    //   targetId: '111',
+    //   reporterUid: 'aaa',
+    //   reporterDisplayName: 'User A',
+    //   reporteeUid: 'bbb',
+    //   reporteeDisplayName: 'User B',
+    // ));
+  }
+
+  testOnForum() async {}
 }
 
 class EmailButton extends StatefulWidget {

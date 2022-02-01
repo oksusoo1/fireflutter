@@ -1,10 +1,13 @@
+import 'package:extended/extended.dart';
 import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class TestUser extends StatelessWidget {
-  const TestUser({required this.name, required this.uid, Key? key})
+  const TestUser({required this.email, required this.name, required this.uid, Key? key})
       : super(key: key);
+  final String email;
   final String name;
   final String uid;
 
@@ -14,8 +17,7 @@ class TestUser extends StatelessWidget {
       child: Column(
         children: [
           ElevatedButton(
-            onPressed: () =>
-                Get.toNamed('/chat-room-screen', arguments: {'uid': uid}),
+            onPressed: () => Get.toNamed('/chat-room-screen', arguments: {'uid': uid}),
             child: Text(name),
           ),
           UserPresence(
@@ -26,14 +28,23 @@ class TestUser extends StatelessWidget {
                   Icons.circle,
                   color: type == PresenceType.online
                       ? Colors.green
-                      : (type == PresenceType.offline
-                          ? Colors.red
-                          : Colors.yellow),
+                      : (type == PresenceType.offline ? Colors.red : Colors.yellow),
                 ),
                 Text(type.name),
               ],
             ),
           ),
+          TextButton(
+              onPressed: () {
+                FirebaseAuth.instance.signOut();
+                FirebaseAuth.instance
+                    .signInWithEmailAndPassword(
+                      email: email,
+                      password: '12345a',
+                    )
+                    .catchError(error);
+              },
+              child: const Text('Login')),
         ],
       ),
     );

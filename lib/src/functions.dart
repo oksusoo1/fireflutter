@@ -1,5 +1,7 @@
 import '../fireflutter.dart';
 
+import 'dart:async';
+
 /// splitQueryString of Uri class
 ///
 /// The difference of [Uri.splitQueryString] is that if the string have '?',
@@ -39,3 +41,32 @@ getFirestoreIndexLinks() {
       .where('link', isNotEqualTo: 'abc')
       .get();
 }
+
+/// Bouncer
+///
+/// It's very similary to 'debounce' functionality, and it's more handy to use.
+/// ```dart
+/// TextField(onChanged: () {
+///   bouncer('nickname', 500, (x) {
+///     debugPrint('debounce: $x');
+///   }, seed: 'nickname update');
+///   bouncer('3 seconds', 3000, (x) {
+///     debugPrint('debounce: $x');
+///   }, seed: '3 seconds delay');
+/// })
+/// ```
+final Map<String, Timer> debounceTimers = {};
+bouncer(
+  String debounceId,
+  int milliseconds,
+  Function action, {
+  dynamic seed,
+}) {
+  debounceTimers[debounceId]?.cancel();
+  debounceTimers[debounceId] = Timer(Duration(milliseconds: milliseconds), () {
+    action(seed);
+    debounceTimers.remove(debounceId);
+  });
+}
+
+/// EO of bouncer

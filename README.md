@@ -20,6 +20,7 @@ Table of contents
 
 - [Fire Flutter](#fire-flutter)
 - [TODOs](#todos)
+  - [Admin](#admin)
   - [Chat](#chat)
 - [Installation](#installation)
   - [Running the example](#running-the-example)
@@ -29,8 +30,10 @@ Table of contents
   - [Firebase Realtime Database Installation](#firebase-realtime-database-installation)
   - [Firestore installation](#firestore-installation)
     - [Setting admin on firestore security rules](#setting-admin-on-firestore-security-rules)
+- [Coding Guideline](#coding-guideline)
 - [User](#user)
   - [User installation](#user-installation)
+  - [User data](#user-data)
   - [Test users](#test-users)
   - [Phone number sign-in](#phone-number-sign-in)
   - [Email authentication under phone sign-in](#email-authentication-under-phone-sign-in)
@@ -65,6 +68,7 @@ Table of contents
   - [Building fireflutter](#building-fireflutter)
   - [Updating fireflutter while building your app](#updating-fireflutter-while-building-your-app)
 - [Test](#test)
+  - [Test method](#test-method)
   - [Local test on firestore security rules](#local-test-on-firestore-security-rules)
 - [Issues](#issues)
   - [firebase_database/permission-denied](#firebase_databasepermission-denied)
@@ -85,6 +89,10 @@ Table of contents
   - [Admin listing](#admin-listing)
 
 # TODOs
+
+## Admin
+
+- Since email & phone no are saved in firebase auth service, admin needs a special function to know what is the email and phone no of users.
 
 ## Chat
 
@@ -161,6 +169,12 @@ Table of contents
 
 
 
+# Coding Guideline
+
+- The file name of all model end with `xxxx.model.dart`
+- All model have `.data` property (getter) to export its model data to a map which then can be saved into firestore.
+
+
 # User
 
 ## User installation
@@ -185,6 +199,13 @@ Table of contents
 </array>
 <!-- End of the Google Sign-in Section -->
 ```
+
+## User data
+
+- Part of the user data are saved in `/users` collection in firestore.
+- Since user's email address and phone number are saved in Firebase Auth service. Email & phone number are not saved in `/users` collection.
+
+
 
 ## Test users
 
@@ -272,10 +293,6 @@ PhoneService.instance.verifyPhoneNumber(
       - And, send verification email
       - Then, listen if email is verified.
       - If verified, alert and go home.
-
-- TODO: When user click on the link, return to the app
-  - Refer https://fantashit.com/firebase-auth-sendemailverification-missing-actioncodesettings-parameter/
-  - Or try sign in with email address to return to the app after clicking the link. Refer https://stackoverflow.com/questions/63553161/flutter-firebase-how-to-send-email-verification
 
 
 
@@ -712,6 +729,14 @@ InformService.instance.inform(widget.room.otherUid, {
 
 # Test
 
+## Test method
+
+- Since the Firebase libraries need to run on an actual device or emulator, we developped our own unit test & UI test.
+
+- We use `Getx` for our development and we do test with it.
+  - There are `AppController` which holds memory data.
+  - When test runs, the test drives screen changes and check if the data of the screen is set properly.
+
 
 ## Local test on firestore security rules
 
@@ -724,6 +749,7 @@ InformService.instance.inform(widget.room.otherUid, {
 - To deploy,
   - open `<root>/firebase/.firebaserc` and update `projects.default` to your firebase project id.
   - run `$ firebase deploy --only firestore`
+
 
 
 
@@ -928,4 +954,7 @@ target Id|reporters|reasons
 5000|A|I don't like this post
 ____|B|I hate this post,
 5001|C|...
+
+
+
 
