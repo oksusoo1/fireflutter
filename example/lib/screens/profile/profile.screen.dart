@@ -1,5 +1,4 @@
 import 'package:extended/extended.dart';
-import 'package:fe/service/app.controller.dart';
 import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
 
@@ -14,8 +13,8 @@ class ProfileScreenState extends State<ProfileScreen> {
   bool nicknameLoader = false;
   bool photoUrlLoader = false;
 
-  final nickname = TextEditingController(text: AppController.of.user.nickname);
-  final photoUrl = TextEditingController(text: AppController.of.user.photoUrl);
+  final nickname = TextEditingController(text: UserService.instance.user.nickname);
+  final photoUrl = TextEditingController(text: UserService.instance.user.photoUrl);
 
   @override
   Widget build(BuildContext context) {
@@ -63,7 +62,7 @@ class ProfileScreenState extends State<ProfileScreen> {
   updateNickname(t) {
     setState(() => nicknameLoader = true);
     bounce('nickname', 500, (s) async {
-      await AppController.of.user.updateNickname(t).catchError(error);
+      await UserService.instance.user.updateNickname(t).catchError(error);
       setState(() => nicknameLoader = false);
     });
   }
@@ -71,7 +70,7 @@ class ProfileScreenState extends State<ProfileScreen> {
   updatePhotoUrl(t) {
     setState(() => photoUrlLoader = true);
     bounce('photo url', 500, (s) async {
-      await AppController.of.user.updatePhotoUrl(t).catchError(error);
+      await UserService.instance.user.updatePhotoUrl(t).catchError(error);
       setState(() => photoUrlLoader = false);
     });
   }

@@ -211,7 +211,7 @@ class _HomeScreenState extends State<HomeScreen> {
     await FirebaseAuth.instance.signOut();
 
     // openProfile() throws an error if user is not signed in.
-    await waitUntil(() => AppController.of.user.signedOut);
+    await waitUntil(() => UserService.instance.user.signedOut);
     await ts.expectFailure(AppController.of.openProfile(), "sign in before open profile screen.");
 
     /// user signed in
@@ -219,7 +219,7 @@ class _HomeScreenState extends State<HomeScreen> {
         email: Config.testUsers['apple']!['email']!, password: '12345a');
 
     /// waitl until user sign-in completes
-    await waitUntil(() => AppController.of.user.signedIn);
+    await waitUntil(() => UserService.instance.user.signedIn);
 
     /// Open profile screen
     AppController.of.openProfile();
@@ -237,7 +237,7 @@ class _HomeScreenState extends State<HomeScreen> {
     profileScreenKey.currentState?.updateNickname(nickname);
 
     /// wait until nickname changes
-    await waitUntil(() => AppController.of.user.nickname == nickname);
+    await waitUntil(() => UserService.instance.user.nickname == nickname);
 
     ///
     profileScreenKey.currentState?.setState(() {});
@@ -248,7 +248,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final photoUrl = 'photo url: $nickname';
     profileScreenKey.currentState?.photoUrl.text = photoUrl;
     profileScreenKey.currentState?.updatePhotoUrl(photoUrl);
-    await waitUntil(() => AppController.of.user.photoUrl == photoUrl);
+    await waitUntil(() => UserService.instance.user.photoUrl == photoUrl);
     profileScreenKey.currentState?.setState(() {});
     ts.testSuccess('Test success on updating photoUrl');
 
@@ -284,7 +284,9 @@ class _HomeScreenState extends State<HomeScreen> {
     // ));
   }
 
-  testOnForum() async {}
+  testOnForum() async {
+    final ts = TestService.instance;
+  }
 }
 
 class EmailButton extends StatefulWidget {

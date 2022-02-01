@@ -12,9 +12,10 @@ class UserModel {
   String photoUrl;
   String birthday;
 
-  /// This is the user's document id.
+  /// This is the user's document id which is the uid.
   /// If it is empty, then it means that, the user does not exist.
   String id;
+  String get uid => id;
 
   bool get signedIn => id != '';
   bool get signedOut => id == '';

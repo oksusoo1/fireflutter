@@ -5,6 +5,7 @@ import 'dart:async';
 
 import 'package:extended/extended.dart';
 import 'package:fe/screens/forum/forum.list.screen.dart';
+import 'package:fe/screens/forum/post.create.screen.dart';
 import 'package:fe/service/app.controller.dart';
 import 'package:fe/service/global.keys.dart';
 import 'package:fe/service/route.names.dart';
@@ -149,7 +150,8 @@ class _MainAppState extends State<MainApp> {
             key: profileScreenKey,
           ),
         ),
-        GetPage(name: RouteNames.postList, page: () => ForumListScreen()),
+        GetPage(name: RouteNames.forumList, page: () => ForumListScreen()),
+        GetPage(name: RouteNames.postCreate, page: () => PostCreateScreen()),
         GetPage(name: '/chat-room-screen', page: () => const ChatRoomScreen()),
         GetPage(
           name: '/chat-rooms-screen',

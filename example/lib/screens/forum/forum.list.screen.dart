@@ -1,5 +1,5 @@
 import 'package:fe/service/app.controller.dart';
-import 'package:fe/service/forum.model.dart';
+import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -11,6 +11,7 @@ class ForumListScreen extends StatefulWidget {
 }
 
 class _ForumListScreenState extends State<ForumListScreen> {
+  final app = AppController.of;
   final ForumModel forum = AppController.of.forum;
   @override
   void initState() {
@@ -23,6 +24,14 @@ class _ForumListScreenState extends State<ForumListScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(forum.title),
+        actions: [
+          IconButton(
+            onPressed: app.openPostCreate,
+            icon: Icon(
+              Icons.create_rounded,
+            ),
+          ),
+        ],
       ),
       body: Container(),
     );

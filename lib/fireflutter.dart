@@ -38,3 +38,6 @@ export 'src/dynamic_link/dynamic_link.service.dart';
 export 'src/report/report.service.dart';
 
 export 'src/test/test.service.dart';
+export 'src/forum/forum.model.dart';
+export 'src/forum/post.model.dart';
+export 'src/forum/post.service.dart';
