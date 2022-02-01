@@ -31,6 +31,14 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
+    match /posts/{postId} {
+      allow read: if true;
+      allow write: if fieldCheck(['category', 'authorUid', 'timestamp'], ['title', 'content']) &&
+        categoryExists() &&
+        debug( request.resource.data.authorUid == request.auth.uid )
+      ;
+    }
+
     // check if 'A' & 'B' are blocked. 
     function isBlocked() {
       return
@@ -46,6 +54,12 @@ service cloud.firestore {
     function isAdmin() {
       return get(/databases/$(database)/documents/settings/admins).data[request.auth.uid] == true;
     }
+    
+
+    function categoryExists() {
+      let d = debug('***** category Exists ****');
+      return debug(exists(/databases/$(database)/documents/categories/$(request.resource.data.category)));
+    }
   }
 }
 function myChatRoom(roomId) {
@@ -60,5 +74,6 @@ function messageFields() {
 // example: fieldCheck(['required', 'fields'], ['optional', 'fields'])
 function fieldCheck(required, optional) {
   let all = required.concat( optional );
-  return request.resource.data.keys().hasAll( required ) && request.resource.data.keys().hasOnly(all);
+  let fC = debug('****** fieldCheck *****');
+  return debug(request.resource.data.keys().hasAll( required ) && request.resource.data.keys().hasOnly(all));
 }
