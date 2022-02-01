@@ -286,6 +286,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   testOnForum() async {
     final ts = TestService.instance;
+    final tag = DateTime.now().toString().split('.').last;
+    PostService.instance.create(title: 'title-$tag', content: 'content-$tag');
   }
 }
 
