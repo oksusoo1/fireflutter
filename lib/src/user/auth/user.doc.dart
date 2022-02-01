@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import '../../fireflutter.dart';
+import '../../../fireflutter.dart';
 import 'package:flutter/material.dart';
 
 class UserDoc extends StatefulWidget {
@@ -28,7 +28,7 @@ class _UserDocState extends State<UserDoc> {
           if (snapshot.exists) {
             user = UserModel.fromJson(snapshot.data()!);
           } else {
-            user = UserModel.nonExist();
+            user = UserModel();
           }
         });
       },

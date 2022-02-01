@@ -47,16 +47,16 @@ getFirestoreIndexLinks() {
 /// It's very similary to 'debounce' functionality, and it's more handy to use.
 /// ```dart
 /// TextField(onChanged: () {
-///   bouncer('nickname', 500, (x) {
-///     debugPrint('debounce: $x');
+///   bounce('nickname', 500, (s) {
+///     debugPrint('debounce: $s');
 ///   }, seed: 'nickname update');
-///   bouncer('3 seconds', 3000, (x) {
-///     debugPrint('debounce: $x');
+///   bounce('3 seconds', 3000, (s) {
+///     debugPrint('debounce: $s');
 ///   }, seed: '3 seconds delay');
 /// })
 /// ```
 final Map<String, Timer> debounceTimers = {};
-bouncer(
+bounce(
   String debounceId,
   int milliseconds,
   Function action, {
@@ -70,3 +70,20 @@ bouncer(
 }
 
 /// EO of bouncer
+
+/// Wait until
+Future<int> waitUntil(bool test(),
+    {final int maxIterations: 100, final Duration step: const Duration(milliseconds: 50)}) async {
+  int iterations = 0;
+  for (; iterations < maxIterations; iterations++) {
+    await Future.delayed(step);
+    if (test()) {
+      break;
+    }
+  }
+  if (iterations >= maxIterations) {
+    throw TimeoutException("Condition not reached within ${iterations * step.inMilliseconds}ms");
+  }
+  return iterations;
+}
+/// EO wait until

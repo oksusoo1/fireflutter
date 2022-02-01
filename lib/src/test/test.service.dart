@@ -11,37 +11,39 @@ class TestService {
   /// Report test
   ///
   int _countError = 0;
+  int _countSuccess = 0;
 
   reset() {
     _countError = 0;
   }
 
-  _testError(dynamic e, String message) {
+  testError(dynamic e, String message) {
     _countError++;
     debugPrint('🛑 ---------> ERROR[$_countError] $e - $message');
   }
 
-  _testSuccess(String message) {
-    debugPrint('---------> SUCCESS; $message');
+  testSuccess(String message) {
+    _countSuccess++;
+    debugPrint('👍 ---------> SUCCESS[$_countSuccess]; $message');
   }
 
   ///
   expectSuccess(Future future, [String message = '']) async {
     try {
       await future;
-      _testSuccess(message);
+      testSuccess(message);
     } catch (e) {
-      _testError(e, message);
+      testError(e, message);
     }
   }
 
   ///
-  expectFailure(dynamic func, [String message = '']) async {
+  expectFailure(Future future, [String message = '']) async {
     try {
-      await func();
-      _testError('Error expected', message);
+      await future;
+      testError('Error expected', message);
     } catch (e) {
-      _testSuccess(message);
+      testSuccess(message);
     }
   }
 }

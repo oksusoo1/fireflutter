@@ -35,16 +35,18 @@ class TestUser extends StatelessWidget {
             ),
           ),
           TextButton(
-              onPressed: () {
-                FirebaseAuth.instance.signOut();
+            onPressed: () {
+              FirebaseAuth.instance.signOut().then((x) {
                 FirebaseAuth.instance
                     .signInWithEmailAndPassword(
                       email: email,
                       password: '12345a',
                     )
                     .catchError(error);
-              },
-              child: const Text('Login')),
+              });
+            },
+            child: const Text('Login'),
+          ),
         ],
       ),
     );

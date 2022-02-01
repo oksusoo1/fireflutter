@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:fireflutter/fireflutter.dart';
 
 class UserService {
   static UserService? _instance;
@@ -19,5 +20,12 @@ class UserService {
   /// Update photoUrl of currently login user.
   Future<void> updatePhotoUrl(String url) {
     return _myDoc.set({'photoUrl': url}, SetOptions(merge: true));
+  }
+
+  Future<UserModel> get() async {
+    final doc = await _myDoc.get();
+    final user = UserModel.fromJson(doc.data() as Map<String, dynamic>);
+    user.id = doc.id;
+    return user;
   }
 }

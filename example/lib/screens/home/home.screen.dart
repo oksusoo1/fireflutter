@@ -1,10 +1,13 @@
-import 'package:extended/extended.dart';
+import 'dart:async';
+
+import 'package:fe/service/app.controller.dart';
+import 'package:fe/service/config.dart';
+import 'package:fe/service/global.keys.dart';
 import 'package:fe/widgets/test.user.dart';
 import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:get/get_rx/src/rx_workers/utils/debouncer.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -59,46 +62,18 @@ class _HomeScreenState extends State<HomeScreen> {
                             );
                           },
                         ),
-                        UserFutureDoc(
-                            uid: user.uid,
-                            builder: (UserModel u) {
-                              nickname.text = u.nickname;
-                              return Row(
-                                children: [
-                                  const Text('Update '),
-                                  Expanded(
-                                    child: TextField(
-                                      controller: nickname,
-                                      decoration: const InputDecoration(
-                                          hintText: 'Name', prefix: Text('name: ')),
-                                      onChanged: (t) {
-                                        bouncer('nickname', 500, (x) {
-                                          UserService.instance.updateNickname(t).catchError(error);
-                                        });
-                                      },
-                                    ),
-                                  ),
-                                  Expanded(
-                                    child: TextField(
-                                      controller: TextEditingController()..text = u.photoUrl,
-                                      decoration: const InputDecoration(
-                                        hintText: 'Photo Url',
-                                        prefix: Text('photo url: '),
-                                      ),
-                                      onChanged: (t) {
-                                        UserService.instance.updatePhotoUrl(t).catchError(
-                                            (e) => debugPrint('error on update photo url; $e'));
-                                      },
-                                    ),
-                                  ),
-                                ],
-                              );
-                            }),
-                        ElevatedButton(
-                          onPressed: () => FirebaseAuth.instance.signOut(),
-                          child: const Text('Sign Out'),
-                        ),
-                        const EmailButton(),
+                        Wrap(
+                          children: [
+                            const EmailButton(),
+                            ElevatedButton(
+                                onPressed: AppController.of.openProfile,
+                                child: const Text('Profile')),
+                            ElevatedButton(
+                              onPressed: () => FirebaseAuth.instance.signOut(),
+                              child: const Text('Sign Out'),
+                            ),
+                          ],
+                        )
                       ],
                     );
                   } else {
@@ -131,22 +106,15 @@ class _HomeScreenState extends State<HomeScreen> {
               const Text('Test users;'),
               Wrap(
                 alignment: WrapAlignment.spaceAround,
-                children: const [
-                  TestUser(
-                      email: 'apple@test.com', name: 'Apple', uid: 'uA0mjrf3FzR1FxO1rcjO7eZlGkR2'),
-                  TestUser(
-                      email: 'banana@test.com',
-                      name: 'Banana',
-                      uid: 'o0BtHX2JMiaa0SIrDJ3qhDczXDF2'),
-                  TestUser(
-                      email: 'cherry@test.com',
-                      name: 'Cherry',
-                      uid: 'sys2vHyPz2fUb57qEFN2PqaegGu2'),
-                  TestUser(
-                      email: 'durian@test.com',
-                      name: 'Durian',
-                      uid: 'LLaX6TwVQSO2os2dzK3kJyTzSzs1'),
-                ],
+                children: Config.testUsers.values
+                    .map(
+                      (v) => TestUser(
+                        email: v['email']!,
+                        name: v['name']!,
+                        uid: v['uid']!,
+                      ),
+                    )
+                    .toList(),
               ),
               Wrap(
                 children: [
@@ -193,6 +161,26 @@ class _HomeScreenState extends State<HomeScreen> {
               Wrap(
                 children: [
                   ElevatedButton(
+                    onPressed: () => AppController.of.openForumList(category: 'qna'),
+                    child: const Text('QnA'),
+                  ),
+                  ElevatedButton(
+                    onPressed: () => AppController.of.openForumList(category: 'discussion'),
+                    child: const Text('Discussion'),
+                  ),
+                  ElevatedButton(
+                    onPressed: () => AppController.of.openForumList(category: 'buyandsell'),
+                    child: const Text('Buy & Sell'),
+                  ),
+                ],
+              ),
+              Wrap(
+                children: [
+                  ElevatedButton(
+                    onPressed: testOnUser,
+                    child: const Text('User Test'),
+                  ),
+                  ElevatedButton(
                     onPressed: testOnReport,
                     child: const Text('Test on report'),
                   ),
@@ -207,6 +195,69 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
     );
+  }
+
+  /// Test user profile page
+  ///
+  /// To use the screen state.
+  /// - Add GlobalKey on the profile screen widget.
+  ///   The state must be public and declared in global.keys.dart
+  ///   And pass it to route declaration in main.dart
+  testOnUser() async {
+    // Get test service instance
+    final ts = TestService.instance;
+
+    // Sign out to test error
+    await FirebaseAuth.instance.signOut();
+
+    // openProfile() throws an error if user is not signed in.
+    await waitUntil(() => AppController.of.user.signedOut);
+    await ts.expectFailure(AppController.of.openProfile(), "sign in before open profile screen.");
+
+    /// user signed in
+    await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: Config.testUsers['apple']!['email']!, password: '12345a');
+
+    /// waitl until user sign-in completes
+    await waitUntil(() => AppController.of.user.signedIn);
+
+    /// Open profile screen
+    AppController.of.openProfile();
+
+    /// wait
+    await Future.delayed(Duration(milliseconds: 200));
+
+    /// Update nickname using the profile screen state
+    final nickname = DateTime.now().toString().split('.').last;
+
+    /// Update nickname on screen immediately.
+    profileScreenKey.currentState?.nickname.text = nickname;
+
+    /// Update nickname on firestore
+    profileScreenKey.currentState?.updateNickname(nickname);
+
+    /// wait until nickname changes
+    await waitUntil(() => AppController.of.user.nickname == nickname);
+
+    ///
+    profileScreenKey.currentState?.setState(() {});
+    ts.testSuccess('Test success on updating nickname');
+
+    /// Update photoUrl using the profile screen state
+    await Future.delayed(Duration(milliseconds: 200));
+    final photoUrl = 'photo url: $nickname';
+    profileScreenKey.currentState?.photoUrl.text = photoUrl;
+    profileScreenKey.currentState?.updatePhotoUrl(photoUrl);
+    await waitUntil(() => AppController.of.user.photoUrl == photoUrl);
+    profileScreenKey.currentState?.setState(() {});
+    ts.testSuccess('Test success on updating photoUrl');
+
+    await Future.delayed(Duration(milliseconds: 300));
+
+    /// To go back to home, it must call `Get.back()`.
+    /// If it calls `AppController.of.openHome();`,
+    /// then `Duplicate GlobalKey detected in widget tree` error will happen
+    Get.back();
   }
 
   testOnReport() async {

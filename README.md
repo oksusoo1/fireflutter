@@ -173,6 +173,8 @@ Table of contents
 
 - The file name of all model end with `xxxx.model.dart`
 - All model have `.data` property (getter) to export its model data to a map which then can be saved into firestore.
+  - Note, that `.data` must contain only the data to be saved in firestore.
+- All model should have `.map` property(getter) to export its model data to a map. while `.data` only contains for saving firestore, `.map` may contain other values.
 
 
 # User
@@ -199,6 +201,7 @@ Table of contents
 </array>
 <!-- End of the Google Sign-in Section -->
 ```
+
 
 ## User data
 
@@ -733,8 +736,8 @@ InformService.instance.inform(widget.room.otherUid, {
 
 - Since the Firebase libraries need to run on an actual device or emulator, we developped our own unit test & UI test.
 
-- We use `Getx` for our development and we do test with it.
-  - There are `AppController` which holds memory data.
+- We use `Getx` for the example app development and we use it to the test.
+  - There are `example/lib/app.controller.dart` which holds memory data of example app.
   - When test runs, the test drives screen changes and check if the data of the screen is set properly.
 
 
@@ -753,10 +756,13 @@ InformService.instance.inform(widget.room.otherUid, {
 
 
 
+
+
 # Issues
 
 - These are the common issues you may encount working this package.
 - If you have any issues, please create an git issue.
+
 
 
 ## firebase_database/permission-denied
