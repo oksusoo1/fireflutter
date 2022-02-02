@@ -5,33 +5,38 @@ import 'package:fireflutter/fireflutter.dart';
 ///
 class UserModel {
   UserModel({
+    this.id = '',
     this.nickname = '',
     this.photoUrl = '',
     this.birthday = '',
-    this.id = '',
+    this.isAdmin = false,
   });
-
-  String nickname;
-  String photoUrl;
-  String birthday;
 
   /// This is the user's document id which is the uid.
   /// If it is empty, then it means that, the user does not exist.
   String id;
   String get uid => id;
 
+  bool isAdmin;
+
+  String nickname;
+  String photoUrl;
+  String birthday;
+
   bool get signedIn => id != '';
   bool get signedOut => id == '';
 
   factory UserModel.fromJson(Map<String, dynamic> data) {
     return UserModel(
+      id: data['id'] ?? '',
+      isAdmin: data['isAdmin'] ?? false,
       nickname: data['nickname'] ?? '',
       photoUrl: data['photoUrl'] ?? '',
       birthday: data['birthday'] ?? '',
-      id: data['id'] ?? '',
     );
   }
 
+  /// Data for updating firestore user document
   Map<String, dynamic> get data {
     return {
       'nickname': nickname,
@@ -40,9 +45,11 @@ class UserModel {
     };
   }
 
+  /// Data of all user model
   Map<String, dynamic> get map {
     final re = data;
     re['id'] = id;
+    re['isAdmin'] = isAdmin;
     return re;
   }
 
