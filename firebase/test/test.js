@@ -162,27 +162,25 @@ describe('Firestore security test', () => {
 
 
 
-    it("Category - failure - not admin", async () => {
-        await firebase.assertFails(db(authA).collection('categories').add({ category: 'qna' }))
+    it("Category - failure - Not admin", async () => {
+        await firebase.assertFails(db(authA).collection('categories').doc('qna').set({ title: 'qna' }))
     });
 
     it("Category - success - admin", async () => {
         await admin().collection("settings").doc("admins").set({
             [A]: true,
         });
-        await firebase.assertFails(db(authB).collection('categories').add({ category: 'qna' }))
-        await firebase.assertSucceeds(db(authA).collection('categories').add({ category: 'qna' }))
+        await firebase.assertFails(db(authB).collection('categories').doc('qna').set({ title: 'qna' }))
+        await firebase.assertSucceeds(db(authA).collection('categories').doc('qna').set({ title: 'qna' }))
     });
 
-    it("Category - input test", async () => {
+
+    it("Category - success", async () => {
         await admin().collection("settings").doc("admins").set({
             [A]: true,
         });
-        await firebase.assertFails(db(authA).collection('categories').add({ noCategory: 'qna' }));
-        await firebase.assertFails(db(authA).collection('categories').add({ category: 'qna', nonAllowed: true }));
-        await firebase.assertSucceeds(db(authA).collection('categories').add({ category: 'qna', title: 'title', description: 'description' }));
+        await firebase.assertSucceeds(db(authA).collection('categories').doc('qna').set({ anyField: 'any data' }));
     });
-
 
 
     it("Post create failure without category", async () => {
@@ -293,6 +291,52 @@ describe('Firestore security test', () => {
 
         // Delete post by admin
         await firebase.assertSucceeds(db(authA).collection('posts').doc('admin-test').delete());
+
+    });
+
+    it('Reports', async () => {
+        // missing input data
+        await firebase.assertFails(db(authB).collection('reports').doc('a').set({
+            'timestamp': '123',
+        }));
+
+        // success
+        await firebase.assertSucceeds(db(authA).collection('reports').doc('post-aaa-A').set({
+            'target': 'post',
+            'targetId': 'aaa',
+            'reporterUid': A,
+            'reporteeUid': B,
+            'timestamp': '123',
+        }));
+
+
+        // fails - wrong uid
+        await firebase.assertFails(db(authA).collection('reports').doc('post-aaa-wrong-uid').set({
+            'target': 'post',
+            'targetId': 'post-aaa',
+            'reporterUid': B,
+            'reporteeUid': C,
+            'timestamp': '123',
+        }));
+
+
+        // fails - same target & targetId
+        await firebase.assertFails(db(authA).collection('reports').doc('post-aaa-A').set({
+            'target': 'post',
+            'targetId': 'post-aaa',
+            'reporterUid': A,
+            'reporteeUid': B,
+            'timestamp': '123',
+        }));
+
+        // fails on updating. update is not allowed.
+        await firebase.assertFails(db(authA).collection('reports').doc('post-aaa-A').update({
+            'target': '...',
+        }));
+
+        // fails on deletion. deletion is not allowed.
+        await firebase.assertFails(db(authA).collection('reports').doc('post-aaa-A').delete());
+
 
     });
 });

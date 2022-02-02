@@ -62,6 +62,20 @@ class _HomeScreenState extends State<HomeScreen> {
                             );
                           },
                         ),
+                        Text('UID: ${FirebaseAuth.instance.currentUser?.uid}'),
+                        UserDoc(
+                            uid: FirebaseAuth.instance.currentUser?.uid ?? '',
+                            builder: (_user) {
+                              if (_user.isAdmin)
+                                return const Text(
+                                  'You are an admin',
+                                  style: TextStyle(
+                                    color: Colors.red,
+                                  ),
+                                );
+                              else
+                                return SizedBox();
+                            }),
                         Wrap(
                           children: [
                             const EmailButton(),
@@ -287,8 +301,8 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   testOnForum() async {
-    final tag = DateTime.now().toString().split('.').last;
-    PostService.instance.create(title: 'title-$tag', content: 'content-$tag');
+    // final tag = DateTime.now().toString().split('.').last;
+    // PostService.instance.create(title: 'title-$tag', content: 'content-$tag');
   }
 }
 
