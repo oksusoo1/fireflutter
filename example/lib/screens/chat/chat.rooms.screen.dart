@@ -21,7 +21,7 @@ class ChatRoomsScreen extends StatelessWidget {
             Row(children: [
               TextButton(
                   onPressed: () {
-                    Get.toNamed('/chat-rooms-blocked-screen');
+                    Get.toNamed('/chatRoomBlocked');
                   },
                   child: const Text('Block list')),
             ]),
