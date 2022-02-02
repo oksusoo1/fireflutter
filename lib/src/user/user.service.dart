@@ -79,9 +79,13 @@ class UserService with FirestoreRules {
 
   Future<UserModel> get() async {
     final doc = await _myDoc.get();
-    final user = UserModel.fromJson(doc.data() as Map<String, dynamic>);
-    user.id = doc.id;
-    return user;
+    if (doc.exists) {
+      final user = UserModel.fromJson(doc.data() as Map<String, dynamic>);
+      user.id = doc.id;
+      return user;
+    } else {
+      return UserModel(id: currentUser?.uid ?? '');
+    }
   }
 
   /// Update wether if the user is an admin or not.

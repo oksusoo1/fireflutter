@@ -38,10 +38,19 @@ service cloud.firestore {
 
     match /posts/{postId} {
       allow read: if true;
-      allow write: if fieldCheck(['category', 'authorUid', 'timestamp'], ['title', 'content']) &&
+      allow create: if required(['category', 'authorUid', 'timestamp']) &&
         categoryExists() &&
-        debug( request.resource.data.authorUid == request.auth.uid )
+        willBeMyPost()
       ;
+      allow update:
+        if
+          // Update my document
+          isMyPost() &&
+          // Don't change authorUid
+          willBeMyPost() &&
+          required(['timestamp'])
+        ;
+      allow delete: if isAdmin() || isMyPost();
     }
 
     // check if 'A' & 'B' are blocked. 
@@ -82,5 +91,19 @@ function messageFields() {
 function fieldCheck(required, optional) {
   let all = required.concat( optional );
   // let fC = debug('****** fieldCheck *****');
-  return debug(request.resource.data.keys().hasAll( required ) && request.resource.data.keys().hasOnly(all));
+  return request.resource.data.keys().hasAll( required ) && request.resource.data.keys().hasOnly(all);
+}
+function required(fields) {
+  return request.resource.data.keys().hasAll( fields );
+}
+
+// Check if login user is the one who created the post
+function isMyPost() {
+  return resource.data.authorUid == request.auth.uid;
+}
+
+// Check if the post belongs to the user (after create or update).
+// Use this to validate that the author does not change after updating.
+function willBeMyPost() {
+  return request.resource.data.authorUid == request.auth.uid;
 }
