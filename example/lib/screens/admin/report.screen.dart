@@ -9,7 +9,7 @@ class ReportScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Category Management'),
+        title: const Text('Report Management'),
       ),
       body: ReportManagement(
         onError: error,

@@ -6,6 +6,7 @@ import 'dart:async';
 import 'package:extended/extended.dart';
 import 'package:fe/screens/admin/admin.screen.dart';
 import 'package:fe/screens/admin/category.screen.dart';
+import 'package:fe/screens/admin/report.screen.dart';
 import 'package:fe/screens/forum/forum.list.screen.dart';
 import 'package:fe/screens/forum/post.create.screen.dart';
 import 'package:fe/service/app.controller.dart';
@@ -68,7 +69,8 @@ class _MainAppState extends State<MainApp> {
 
     // Timer(const Duration(milliseconds: 200), () => Get.toNamed('/email-verify'));
     // Timer(const Duration(milliseconds: 200), AppController.of.openCategory);
-    Timer(const Duration(milliseconds: 200), () => AppController.of.openForumList(category: 'qna'));
+    // Timer(const Duration(milliseconds: 200),
+    //     () => AppController.of.openForumList(category: 'qna'));
 
     /// Dynamic links for terminated app.
     if (widget.initialLink != null) {
@@ -174,6 +176,7 @@ class _MainAppState extends State<MainApp> {
         ),
         GetPage(name: '/friend-map', page: () => const FriendMapScreen()),
         GetPage(name: '/reminder-edit', page: () => ReminderEditScreen()),
+        GetPage(name: RouteNames.report, page: () => ReportScreen()),
         GetPage(
             name: '/email-verify', page: () => const EmailVerificationScreen())
       ],
