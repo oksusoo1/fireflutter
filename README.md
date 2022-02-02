@@ -19,8 +19,8 @@ A free, open source, complete, rapid development package for creating Social app
 Table of contents
 
 - [Fire Flutter](#fire-flutter)
-- [Features](#features)
 - [TODOs](#todos)
+  - [Admin](#admin)
   - [Chat](#chat)
 - [Installation](#installation)
   - [Running the example](#running-the-example)
@@ -29,12 +29,18 @@ Table of contents
     - [iOS installation](#ios-installation)
   - [Firebase Realtime Database Installation](#firebase-realtime-database-installation)
   - [Firestore installation](#firestore-installation)
+    - [Setting admin on firestore security rules](#setting-admin-on-firestore-security-rules)
+- [Coding Guideline](#coding-guideline)
 - [User](#user)
   - [User installation](#user-installation)
+  - [User data](#user-data)
   - [Test users](#test-users)
   - [Phone number sign-in](#phone-number-sign-in)
   - [Email authentication under phone sign-in](#email-authentication-under-phone-sign-in)
     - [Email authentication under phone sign-in logic](#email-authentication-under-phone-sign-in-logic)
+      - [When user has an email already](#when-user-has-an-email-already)
+- [Admin](#admin-1)
+  - [Admin status check & update](#admin-status-check--update)
 - [User presence](#user-presence)
   - [User presence overview](#user-presence-overview)
   - [User Presence Installation](#user-presence-installation)
@@ -48,6 +54,8 @@ Table of contents
   - [Chat logic](#chat-logic)
     - [Chat logic - block](#chat-logic---block)
 - [Reminder](#reminder)
+  - [Reminder code sample](#reminder-code-sample)
+  - [Reminder logic](#reminder-logic)
 - [FriendMap](#friendmap)
   - [FriendMap installation](#friendmap-installation)
   - [FriendMap logic](#friendmap-logic)
@@ -61,34 +69,32 @@ Table of contents
   - [Building your app](#building-your-app)
   - [Building fireflutter](#building-fireflutter)
   - [Updating fireflutter while building your app](#updating-fireflutter-while-building-your-app)
-- [Security Rules on Firestore](#security-rules-on-firestore)
-  - [Setting admin on firestore security rules](#setting-admin-on-firestore-security-rules)
+- [Test](#test)
+  - [Test method](#test-method)
+  - [Local test on firestore security rules](#local-test-on-firestore-security-rules)
 - [Issues](#issues)
   - [firebase_database/permission-denied](#firebase_databasepermission-denied)
   - [Firebase realtime database is not working](#firebase-realtime-database-is-not-working)
   - [firebase_auth/internal-error](#firebase_authinternal-error)
-
-# Features
-
-- User
-  - User registration is done with Firebase Flutter UI.
-
-
-- User presence
-  - To know if a user is online or offline.
-
-
-- User Profile
-  - Saving & displaying user profile.
-
-
-- Chat
-
-- Friend map
-  - To find friend easily.
-
+- [Dyanmic Links Service](#dyanmic-links-service)
+  - [Installation](#installation-1)
+    - [Installation on Anroid](#installation-on-anroid)
+    - [Installation on iOS](#installation-on-ios)
+  - [Dynamic Links - Coding guide lines](#dynamic-links---coding-guide-lines)
+    - [Terminated app](#terminated-app)
+    - [For background(or foreground) apps](#for-backgroundor-foreground-apps)
+  - [Test Dynamic Links](#test-dynamic-links)
+- [Reports](#reports)
+  - [Reports listing](#reports-listing)
+  - [Reports data](#reports-data)
+  - [reporting logic](#reporting-logic)
+  - [Admin listing](#admin-listing)
 
 # TODOs
+
+## Admin
+
+- Since email & phone no are saved in firebase auth service, admin needs a special function to know what is the email and phone no of users.
 
 ## Chat
 
@@ -149,7 +155,28 @@ Table of contents
 ## Firestore installation
 
 - Enable firestore.
-- Copy the [fireflutter firestore securiy rules](https://raw.githubusercontent.com/thruthesky/fireflutter/main/firebase/firestore.rules) and update it on your project.
+- Copy the [firestore securiy rules](https://raw.githubusercontent.com/thruthesky/fireflutter/main/firebase/firestore.rules) and update it on your firebase project.
+- To install the firestore indexes, it is recommended to run the query and click the link of it to generate the indexes.
+  - To do this, just call `getFirestoreIndexLinks` method and it will print the link on debug console. You just need to click the links.
+    - See example of `getFirestoreIndexLinks` in the [example home screen](https://github.com/thruthesky/fireflutter/blob/main/example/lib/screens/home/home.screen.dart).
+  - See the [firestore indexes](https://raw.githubusercontent.com/thruthesky/fireflutter/main/firebase/firestore.indexes.json) and if you want to update it manually on your firebase project.
+
+
+### Setting admin on firestore security rules
+
+- To set a user admin, Add the user's UID as field name(key) with the value of `true` in `/settings/admin`.
+  - For instance, `{ "UID_AAA": true, "UID_BBB": true }`, then users whose uid is UID_AAA and UID_BBB are the admins.
+
+![Security Rules Admin](https://raw.githubusercontent.com/thruthesky/fireflutter/main/readme/images/security-rules-admin.jpg?raw=true)
+
+
+
+# Coding Guideline
+
+- The file name of all model end with `xxxx.model.dart`
+- All model have `.data` property (getter) to export its model data to a map which then can be saved into firestore.
+  - Note, that `.data` must contain only the data to be saved in firestore.
+- All model should have `.map` property(getter) to export its model data to a map. while `.data` only contains for saving firestore, `.map` may contain other values.
 
 
 # User
@@ -177,11 +204,21 @@ Table of contents
 <!-- End of the Google Sign-in Section -->
 ```
 
+
+## User data
+
+- Part of the user data are saved in `/users` collection in firestore.
+- Since user's email address and phone number are saved in Firebase Auth service. Email & phone number are not saved in `/users` collection.
+
+
+
 ## Test users
 
-- Create the following four test user accounts with password of `12345a`.
+- Create the following four test user accounts with password of `12345a` using email & password sign-in.
   - `apple@test.com`, `banana@test.com`, `cherry@test.com`, `durian@test.com`
 
+- Create an admin with `admin@test.com` as its email and `12345a` as its password.
+  - And set the uid as admin. Read [Setting admin on firestore security rules](#setting-admin-on-firestore-security-rules) to know how to set admin.
 ## Phone number sign-in
 
 
@@ -200,7 +237,37 @@ Table of contents
   - Simply add `PhoneNumberInput` widget to your screen and on code sent, move to sms code input page and add `SmsCodeInput` widget.
   - See [example/lib/phone_sign_in_ui](https://github.com/thruthesky/fireflutter/tree/main/example/lib/screens/phone_sign_in_ui) foler for sample code.
 
+Example of verifying phone number. Note this example is only for short sample codes.
 
+```dart
+PhoneService.instance.phoneNumber = FirebaseAuth.instance.currentUser!.phoneNumber!;
+PhoneService.instance.verifyPhoneNumber(
+  /// Once verification code is send via SMS, show a dialog input for the code.
+  codeSent: (verificationId) => Get.defaultDialog(
+    title: 'Enter SMS Code to verify it\'s you.',
+    content: SmsCodeInput(
+      success: () async {
+        /// User logged in.
+        Get.back();
+      },
+      error: error,
+      submitButton: (callback) => TextButton(
+        child: const Text('Submit'),
+        onPressed: callback,
+      ),
+    ),
+  ),
+  success: () => Get.back(),
+  error: error,
+  codeAutoRetrievalTimeout: (String verificationId) {
+    Get.defaultDialog(
+      middleText:
+          'SMS code timeouted. Please send it again',
+      textConfirm: 'Ok',
+    );
+  },
+);
+```
 
 ## Email authentication under phone sign-in
 
@@ -209,27 +276,43 @@ Table of contents
 
 ### Email authentication under phone sign-in logic
 
-- User presses `email update` button.
-- `email update` screen or popup will be opened where user can input his email.
-- user enter (or change) his email address and update it.
-  - App updates email on google auth.
-  - if user signed in long time ago, then there will be an exception of `login again`. If this exception happens, then remember the email address, and sign-in again.
-  - Once signed in again, then update the email address again.
-    - there might be another exception like 'email is in use'. then, warn user and let him enter new email address.
+#### When user has an email already
 
-- once email is updated, then verify it.
-  - send email verification by `FirebaseAuth.instance.currentUser.sendEmailVerification()`.
-  - and check if email is verified on every 3 seconds.
-    - @see reference https://www.youtube.com/watch?v=rTr8BUlUftg
-```dart
-sub = Timder.periodic(Duraction(3 seconds), () {
-  FirebaseAuth.instance.relaod();
-  if ( FirebaseAuth.instance.currentUser.emailVerified == true ) {
-    sub.cancel();
-    go to home page.
-  }
-})
-```
+- User can update email or verify without updating email.
+
+- Before email verification screen,
+  - Show `verify email` button when user has email but not verified.
+  - Show `update email` button when user has
+    - no email or 
+    - has verified email.
+
+- When button is pressed, move to email verification screen
+  - Show `verify email` button if the user has email but not verified.
+  - Show `disabled update email` button if email is not changed, yet or has verified email.
+    - Enable `update email` if email changes.
+      - Note, when new email address is updated to Firebase auth, then, the status of `FirebaseAuth.instance.currentUser!.emailVerified` becomes automatically `false`.
+        - And even if the user changed the email back to the original email address, still, email verification status will be set to `false`.
+    - When `update email` button pressed,
+      - Save email,
+        - If `requires-recent-login` exception happens,
+          - Send mobile number verification code
+          - And display sms input code.
+      - And, send verification email
+      - Then, listen if email is verified.
+      - If verified, alert and go home.
+
+
+# Admin
+
+## Admin status check & update
+
+`UserService.instance.updateAdminStatus()` updates wether the user is an admin or not.
+- Why; when user logs in, to know if the user is admin or not, the app must do an extra read on firestore document. And it costs money.
+- How; this method will update `isAdmin` to true if he is admin or false if not.
+- ide effect; there may be cases that `isAdmin` is set to true when the user is no longer an admin. In that case, UI may show admin buttons but the actions will fail based on the security rules.
+- Usage; call this method when user enters admin page or on any demand.
+- Recommendation; Put a secret(fake) widget like 'app version' that displays app version. And when user do 3 taps and long press, redirect the user to admin screen and call `updateAdminStatus()` on entering admin screen.
+- after calling `updateAdminStatus()`, the user's document will have `isAdmin: true` if the user is admin. 
 
 # User presence
 
@@ -402,18 +485,123 @@ UserFutureDoc(
 # Reminder
 
 
-- `Reminder` service is to remind some to users with custom design.
 
-- When you have some to remind users, what do you do?
-  - Push notification may be one option.
-    - But push notification does not deliver reminders to user who register after sending notification.
-    - And it does not have an option like 'remind me later`.
-    `Reminder` service can do this.
+![Reminder](https://raw.githubusercontent.com/thruthesky/fireflutter/main/readme/images/reminder.jpg?raw=true)
 
 
 
+- `ReminderService` is to remind some to users with custom UI.
+  - When the app has some to remind its users, push notification may be one option.
+      - But push notification does not deliver reminders to the users who registered after sending notifications.
+      - And it does not have an option like 'remind me later`.
+  - `ReminderService` can do this.
 
 
+- It uses `/settings/reminder` document.
+  - It is not recommended to edit the docuement directly insdie firebase console.
+  
+- `ReminderEdit` widget is a sample code for updating the document. you can customize by copy & paste.
+  
+- And `ReminderService.instance.display()` is the default UI to display reminder on app screen. You can also customize the UI by copy & paste.
+
+## Reminder code sample
+
+- To display reminder dialog when there is a reminder, use the code below.
+
+```dart
+/// Define global key somewhere.
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey();
+
+
+/// Apply it to MaterialApp.
+class _MainAppState extends State<MainApp> {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+            navigatorKey: navigatorKey,
+          );
+  }
+}
+
+/// Listen to reminder
+///
+/// Delay 3 seconds. This is just to display the reminder dialog 3 seconds
+/// after the app boots. No big deal here.
+Timer(const Duration(seconds: 3), () {
+  /// Listen to the reminder update event.
+  ReminderService.instance.init(onReminder: (reminder) {
+    /// Display the reminder using default dialog UI. You may copy the code
+    /// and customize by yourself.
+    ReminderService.instance.display(
+      /// Use the global NavigatorState to display dialog.
+      context: navigatorKey.currentContext!,
+      data: reminder,
+      onLinkPressed: (page, arguments) {
+        Get.toNamed(page, arguments: arguments);
+      },
+    );
+  });
+});
+```
+
+- For updating, reminder, see the sample come of [ReminderEditScreen](https://github.com/thruthesky/fireflutter/blob/main/example/lib/screens/reminder/reminder.edit.screen.dart).
+
+
+- You may use `controller` to update `imageUrl` outside of `ReminderEdit` widget.
+
+```dart
+final controller = ReminderEditController();
+ReminderEdit(
+  controller: controller,
+  // ...
+);
+
+// ...
+controller.state.imageUrl.text = file.url;
+controller.state.setState(() {});
+```
+
+
+## Reminder logic
+
+- There are `title, content, imageUrl, link` fields on the form.
+- One of `title, content, imageUrl` must have value or dialog will not appear.
+- `link` has the information to which screen the app should move once user pressed on `more info` button. It must not be an empty string.
+  - When `more info` button is pressed, `ReminderService` saves the link on local storage and calls the callback, then app can move the screen.
+    - And when the app start again, it will not get the reminder document again from firestore since the link has already opened.
+  - When user pressed on `don't show again` button, the link will be saved on local storage and when the app starts again, it will not get the reminder document again from firestore.
+  - When `remind me later` button clicked,  the app simply closes the dialog and when the app starts again, the app will fetch the reminder doc from firestore and display the reminder dialog again on screen.
+  - When backdrop had touched, the app works the same as `remind me later` button pressed.
+  - `link` can have in URL format. For instance, `/post-view?postId=123&option=a`. And when callback is being called `/post-view` parts goes to first parameter, and `{'postId': 123, 'option': a}` goes to next parameter.
+    - If `link` changes, the `ReminderService` considers as a new link had been activated.
+    - So, if you want to display a reminder dialog again with same url, then you may simply change the parameter a little like `/post-view?postId=123&option=b`.
+  - Once `link` is saved on local storage, `ReminderService` does not get the same document of `link` again from firestore.
+
+
+- The default dialog UI has three buttons.
+  - `more info`, `don't show again`, and `remind me later`.
+  - User can press on backdrop and it work just as `reminde me later` button.
+
+- There are three buttons on `ReminderEdit` widget. You can update the `/settings/reminder` document with it.
+  - When you press `preview` button, you can see the look of the default dialog UI with the reminder data.
+    - When you press `don't show again` button on `preview` UI dialog, it saves the link on local storage.
+    - When you press `more info` button button on `preview` UI dialog, it saves the link on local storage and calls the callback where the app can move to the intended screen.
+    - Since the link saved, when the app restarts the reminder dialog would not appear.
+    - One fitfall is that, when app starts, `ReminderService` will listen to the `/settings/reminder` with the link saved previously. and  `don't show again` or `more info` button is pressed on `preview mode`. Then, new link had been saved on local storage. the but new link is not the same link that app is listening to.
+    So, when `save` button pressed, the reminder dialog would popup.
+
+  - When you edit and preview, you may add a version (test) value to see the changes.
+    - For instance, `/post-view?postId=123&version=456`.
+  - When you press on `preview`, it does not save the form data into reminder doc in firestore. So, you have to press `save` button to update the reminder doc. And then the updated reminder doc will be downloaded to users' app and reminder UI appears on all the online users' devices.
+  - You may have an image upload button and update `imageUrl` with the uploaded image.
+    But for now, you can input the imageUrl on the `imageUrl` field.
+
+- Only admin whose UID is set in `/settings/admin` can edit the reminder documents.
+
+
+- There is no fixed size of the image of `imageUrl`. The recommended size would be maximum of 512px width and the ratio of the width 3 and height 2.
+
+- If admin updates the reminder with changes of `link` very quickly like 2 times in a minute, then two popup may appear on user's screen. This won't be happening in production mode and won't be a big trouble.
 
 
 
@@ -533,7 +721,7 @@ InformService.instance.inform(widget.room.otherUid, {
 
 ## Building your app
 
-- Simple add it on pubspec dependency
+- To build your app with firelutter, simply add it on pubspec dependency.
 
 ## Building fireflutter
 
@@ -557,7 +745,18 @@ InformService.instance.inform(widget.room.otherUid, {
     - after updating fireflutter, come back to your app and run your app.
 
 
-# Security Rules on Firestore
+# Test
+
+## Test method
+
+- Since the Firebase libraries need to run on an actual device or emulator, we developped our own unit test & UI test.
+
+- We use `Getx` for the example app development and we use it to the test.
+  - There are `example/lib/app.controller.dart` which holds memory data of example app.
+  - When test runs, the test drives screen changes and check if the data of the screen is set properly.
+
+
+## Local test on firestore security rules
 
 - We have local unit test for firestore security rules at `<root>/firebase/test` folder.
 - To run the test,
@@ -571,12 +770,6 @@ InformService.instance.inform(widget.room.otherUid, {
 
 
 
-## Setting admin on firestore security rules
-
-- To set a user admin, Add the user's UID as field name(key) with the value of `true` in `/settings/admin`.
-  - For instance, `{ "UID_AAA": true, "UID_BBB": true }`, then users whose uid is UID_AAA and UID_BBB are the admins.
-
-![Security Rules Admin](https://raw.githubusercontent.com/thruthesky/fireflutter/main/readme/images/security-rules-admin.jpg?raw=true)
 
 
 
@@ -584,6 +777,7 @@ InformService.instance.inform(widget.room.otherUid, {
 
 - These are the common issues you may encount working this package.
 - If you have any issues, please create an git issue.
+
 
 
 ## firebase_database/permission-denied
@@ -606,6 +800,182 @@ If you see this error message while working with Firebase Auth, check the follow
 
 - Check if REVERSE_CLIENT_ID is set on iOS.
 - Check if GCP credential is properly set iOS.
+
+
+
+# Dyanmic Links Service
+
+- The implementaion of `Dynamic Links` are based on https://firebase.flutter.dev/docs/dynamic-links/overview
+
+
+## Installation
+
+### Installation on Anroid
+
+- Refer https://firebase.flutter.dev/docs/dynamic-links/android-integration
+
+### Installation on iOS
+
+- https://firebase.flutter.dev/docs/dynamic-links/apple-integration
+
+
+## Dynamic Links - Coding guide lines
+
+- There are two senarios to handle incoming dynamic link events.
+
+
+
+### Terminated app
+
+- First, initialize firebase app,
+- Then, Pass `await DynamicLinksService.instance.initialLink` to main app.
+
+```dart
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+
+  runApp(MainApp(
+    initialLink: await DynamicLinksService.instance.initialLink,
+  ));
+}
+```
+
+- Then, on MainApp, handle the dynamic links if it has any.
+
+```dart
+class MainApp extends StatefulWidget {
+  const MainApp({required this.initialLink, Key? key}) : super(key: key);
+  final PendingDynamicLinkData? initialLink;
+  @override
+  State<MainApp> createState() => _MainAppState();
+}
+
+class _MainAppState extends State<MainApp> {
+  @override
+  void initState() {
+    if (widget.initialLink != null) {
+      final Uri deepLink = widget.initialLink!.link;
+      /// If you do alert too early, it may not appear on screen.
+      WidgetsBinding.instance?.addPostFrameCallback((dr) {
+        alert('Terminated app',
+            'Got dynamic link event. deepLink.path; ${deepLink.path},  ${deepLink.queryParametersAll}');
+        // Get.toNamed(deepLink.path, arguments: deepLink.queryParameters);
+      });
+    }
+    // ...
+```
+
+- One thing to note on the code above is that, If you do things like (alert, or navigation) too early before the app is rendered, the action may work strange (by racing). So, it would be better to take action after the app is rendered. You may use `Timer` instead of `WidgetsBinding.instance.addPostFrameCallback()`.
+
+
+### For background(or foreground) apps
+
+- Simply listen to the link event.
+
+```dart
+DynamicLinksService.instance.listen((Uri? deepLink) {
+  alert('Background 2',
+      'Dyanmic Link Event on background(or foreground). deepLink.path; ${deepLink?.path}, ${deepLink?.queryParametersAll}');
+});
+```
+
+
+
+
+
+
+
+## Test Dynamic Links
+
+- To test your dynamic link on iOS, you will need to use a real device as it will not work on a simulator. You will also have to run the app in release mode (i.e. flutter run --release) as iOS will block you from opening the app in debug mode from a dynamic link.
+- On Android, you may test with emulator.
+
+
+
+
+# Reports
+
+- `target` is the data that is reported. It can be `post`, `comment`, `user`, `image` or any thing else.
+
+- `targetId` is the key(or document id) of the `target`.
+- `timestamp` is the timestamp of server.
+
+
+## Reports listing
+
+- Many user can report the same post. And when admin lists the reports, the reports of same post should be grouped. Or the listing may go dirty. To implement this, it needs a collection for target & targetId.
+
+- `/reports-listing` is the collection. and the data would be
+
+```json
+{
+	target: "post, comment, user, file"
+	targetId: ".... the key (or document id ) of the target"
+	timestamp: " server time stamp "
+  status: "deleted|passed"
+}
+```
+
+## Reports data
+
+- `/reports` is the collection. and the data would be
+
+```json
+{
+	reporterUid: "...uid of reporter ..."
+  reporterDisplayName: "...display name..."
+  reporteeUid: "...uid of target data author..."
+  reporteeDisplayName: " ... display name of the reportee"
+	target: "post, comment, user, file"
+	targetId: ".... the key (or document id ) of the target"
+	timestamp:  " server time stamp "
+	reason: "reason of why reporter is reporting"
+}
+```
+
+
+- A user cannot report same target & targetId.
+- To implement this,
+	- App must not read to see if the user has already reported.
+	- It must be done by security rule.
+	- Once it fails, it can read the report if the user had already reported and display message to user.
+
+
+
+
+## reporting logic
+
+When user A reports post 5000,
+
+target = post
+targetId = 5000,
+reporterUid = uid_aaa
+reason = I don't like this post.
+
+
+will be recorded.
+
+And then, user B reports post 5001.
+And then, user C reports post 5000 with reason, "I hate this post."
+
+- a user cannot report same target & target_ID twice.
+
+## Admin listing
+
+When admin list, reports
+
+Do not list same target & target_ID twice. which means, post 5000 had reported twice, and there will only one record in the list. the two records must be merged.
+
+
+- Example of listing
+
+target Id|reporters|reasons
+---------|---------|-------
+5000|A|I don't like this post
+____|B|I hate this post,
+5001|C|...
+
 
 
 

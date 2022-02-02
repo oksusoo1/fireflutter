@@ -28,7 +28,7 @@ class _PhoneSignInScreenState extends State<PhoneSignInScreen> {
               onPressed: () {
                 PhoneService.instance.verifyPhoneNumber(
                   codeSent: (verificationId) => Get.toNamed('/sms-code'),
-                  success: () {
+                  androidAutomaticVerificationSuccess: () {
                     Get.defaultDialog(
                       middleText: 'Phone sign-in success',
                       textConfirm: 'Ok',

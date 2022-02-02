@@ -55,10 +55,9 @@ class PhoneService {
 
   /// This method is invoked when user submit sms code, then it will begin
   /// verification process.
-  Future verifySMSCode(
-      {required VoidCallback success, required ErrorCallback error}) {
-    PhoneAuthCredential credential = PhoneAuthProvider.credential(
-        verificationId: verificationId, smsCode: smsCode);
+  Future verifySMSCode({required VoidCallback success, required ErrorCallback error}) {
+    PhoneAuthCredential credential =
+        PhoneAuthProvider.credential(verificationId: verificationId, smsCode: smsCode);
 
     return verifyCredential(credential, success: success, error: error);
   }
@@ -98,12 +97,12 @@ class PhoneService {
   /// on `codeSent`, move to sms code input screen since SMS code has been delivered to user.
   /// on `codeAutoRetrievalTimeout`, alert user that sms code timed out. and redirect to phone number input screen.
   /// on `error`, display error.
-  /// on `success` handler will be called on phone verification complete.
-  /// This `success` handler is only for android that may do automatica sms code resolution and verify the phone auth.
-  verifyPhoneNumber({
+  /// on `androidAutomaticVerificationSuccess` handler will be called on phone verification complete.
+  /// This `androidAutomaticVerificationSuccess` handler is only for android that may do automatic sms code resolution and verify the phone auth.
+  Future<void> verifyPhoneNumber({
     required CodeSentCallback codeSent,
     required VoidStringCallback codeAutoRetrievalTimeout,
-    required VoidCallback success,
+    required VoidCallback androidAutomaticVerificationSuccess,
     required ErrorCallback error,
   }) async {
     try {
@@ -116,7 +115,7 @@ class PhoneService {
         /// automatic sms verification has succeed.
         /// Note that, not all Android phone support automatic sms resolution.
         verificationCompleted: (PhoneAuthCredential c) {
-          verifyCredential(c, success: success, error: error);
+          verifyCredential(c, success: androidAutomaticVerificationSuccess, error: error);
         },
         verificationFailed: (FirebaseAuthException e) {
           print(e);

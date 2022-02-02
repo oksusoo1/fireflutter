@@ -1,4 +1,4 @@
-import 'package:fireflutter/fireflutter.dart';
+import '../../../fireflutter.dart';
 import 'package:flutter/material.dart';
 import 'package:badges/badges.dart';
 

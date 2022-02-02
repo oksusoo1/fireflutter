@@ -1,11 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:fireflutter/src/chat/chat.data.model.dart';
-import 'package:fireflutter/src/chat/chat.defines.dart';
-import 'package:fireflutter/src/chat/chat.service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:paginate_firestore/bloc/pagination_cubit.dart';
 import 'package:paginate_firestore/paginate_firestore.dart';
+import '../../../fireflutter.dart';
 
 class ChatRoom extends StatefulWidget {
   ChatRoom({
@@ -56,8 +54,7 @@ class _ChatRoomState extends State<ChatRoom> {
   }
 
   getRoomInfo() async {
-    DocumentSnapshot res =
-        await ChatService.instance.getRoomInfo(widget.otherUid);
+    DocumentSnapshot res = await ChatService.instance.getRoomInfo(widget.otherUid);
     print(res);
 
     roomInfo = ChatMessageModel.fromJson(res.data() as Map);
@@ -86,14 +83,12 @@ class _ChatRoomState extends State<ChatRoom> {
               //item builder type is compulsory.
               itemBuilder: (context, documentSnapshots, index) {
                 final data = documentSnapshots[index].data() as Map?;
-                final message = ChatMessageModel.fromJson(
-                    data!, documentSnapshots[index].reference);
+                final message =
+                    ChatMessageModel.fromJson(data!, documentSnapshots[index].reference);
                 return widget.messageBuilder(message);
               },
               // orderBy is compulsory to enable pagination
-              query: service
-                  .messagesCol(widget.otherUid)
-                  .orderBy('timestamp', descending: true),
+              query: service.messagesCol(widget.otherUid).orderBy('timestamp', descending: true),
               //Change types accordingly
               itemBuilderType: PaginateBuilderType.listView,
               // To update db data in real time.
@@ -125,8 +120,7 @@ class _ChatRoomState extends State<ChatRoom> {
               },
               onEmpty: widget.emptyDisplay != null
                   ? widget.emptyDisplay!
-                  : Center(
-                      child: Text('No chats, yet. Please send some message.')),
+                  : Center(child: Text('No chats, yet. Please send some message.')),
               // separator: Divider(color: Colors.blue),
             ),
           ),

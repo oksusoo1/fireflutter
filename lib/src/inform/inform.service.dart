@@ -2,9 +2,11 @@ import 'dart:async';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
-import 'package:fireflutter/src/defines.dart';
+import '../../fireflutter.dart';
 
-/// See readme.md
+/// To inform message between users.
+///
+/// See readme.md for more details
 class InformService {
   static InformService? _instance;
   static InformService get instance {
@@ -13,8 +15,7 @@ class InformService {
   }
 
   String get uid => FirebaseAuth.instance.currentUser!.uid;
-  DatabaseReference get myDoc =>
-      FirebaseDatabase.instance.ref("inform").child(uid);
+  DatabaseReference get myDoc => FirebaseDatabase.instance.ref("inform").child(uid);
 
   // ignore: cancel_subscriptions
   StreamSubscription? sub;
@@ -35,8 +36,7 @@ class InformService {
   }
 
   Future inform(String uid, Map<String, dynamic> data) {
-    DatabaseReference otherDoc =
-        FirebaseDatabase.instance.ref("inform").child(uid);
+    DatabaseReference otherDoc = FirebaseDatabase.instance.ref("inform").child(uid);
     return otherDoc.set(data);
   }
 }

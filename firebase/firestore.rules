@@ -26,15 +26,22 @@ service cloud.firestore {
       allow write: if (request.auth.uid == uid);
     }
 
-    match /settings {
-      match /admins {
-        allow read: if true;
-        allow write: if isAdmin();
-      }
-      match /reminder {
-        allow read: if true;
-        allow write: if isAdmin();
-      }
+    match /settings/{docId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /categories/{categoryId} {
+      allow read: if true;
+      allow write: if isAdmin()  && fieldCheck(['category'], ['title', 'description']);
+    }
+
+    match /posts/{postId} {
+      allow read: if true;
+      allow write: if fieldCheck(['category', 'authorUid', 'timestamp'], ['title', 'content']) &&
+        categoryExists() &&
+        debug( request.resource.data.authorUid == request.auth.uid )
+      ;
     }
 
     // check if 'A' & 'B' are blocked. 
@@ -52,11 +59,19 @@ service cloud.firestore {
     function isAdmin() {
       return get(/databases/$(database)/documents/settings/admins).data[request.auth.uid] == true;
     }
+    
+
+    function categoryExists() {
+      // let d = debug('***** category Exists ****');
+      return debug(exists(/databases/$(database)/documents/categories/$(request.resource.data.category)));
+    }
   }
 }
+
 function myChatRoom(roomId) {
   return request.auth.uid in roomId.split('-');
 }
+
 function messageFields() {
   let required = ["to", "from", "timestamp", "text"];
   let optional = ["protocol"];
@@ -66,5 +81,6 @@ function messageFields() {
 // example: fieldCheck(['required', 'fields'], ['optional', 'fields'])
 function fieldCheck(required, optional) {
   let all = required.concat( optional );
-  return request.resource.data.keys().hasAll( required ) && request.resource.data.keys().hasOnly(all);
+  // let fC = debug('****** fieldCheck *****');
+  return debug(request.resource.data.keys().hasAll( required ) && request.resource.data.keys().hasOnly(all));
 }

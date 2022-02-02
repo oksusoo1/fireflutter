@@ -1,5 +1,4 @@
-import 'package:fireflutter/fireflutter.dart';
-import 'package:fireflutter/src/defines.dart';
+import '../../../fireflutter.dart';
 import 'package:flutter/material.dart';
 import 'package:country_code_picker/country_code_picker.dart';
 
@@ -16,8 +15,7 @@ class PhoneNumberInput extends StatefulWidget {
     this.inputTitle = const SizedBox.shrink(),
     this.phoneNumberContainerBuilder,
     this.dialCodeStyle = const TextStyle(fontSize: 24),
-    this.phoneNumberInputDecoration =
-        const InputDecoration(border: InputBorder.none),
+    this.phoneNumberInputDecoration = const InputDecoration(border: InputBorder.none),
     this.phoneNumberInputTextStyle = const TextStyle(),
     this.submitTitle = const SizedBox.shrink(),
     this.submitButton = const Text(
@@ -126,10 +124,8 @@ class _PhoneNumberInputState extends State<PhoneNumberInput> {
                         setState(() {
                           PhoneService.instance.codeSentProgress = true;
                         });
-                        PhoneService.instance.phoneNumber =
-                            PhoneService.instance.completeNumber;
-                        print(
-                            'phone number: ${PhoneService.instance.phoneNumber}');
+                        PhoneService.instance.phoneNumber = PhoneService.instance.completeNumber;
+                        print('phone number: ${PhoneService.instance.phoneNumber}');
                         PhoneService.instance.verifyPhoneNumber(
                           codeSent: (verificationId) {
                             widget.codeSent(verificationId);
@@ -137,15 +133,14 @@ class _PhoneNumberInputState extends State<PhoneNumberInput> {
                               PhoneService.instance.codeSentProgress = false;
                             });
                           },
-                          success: widget.success,
+                          androidAutomaticVerificationSuccess: widget.success,
                           error: (e) {
                             setState(() {
                               PhoneService.instance.codeSentProgress = false;
                             });
                             widget.error(e);
                           },
-                          codeAutoRetrievalTimeout:
-                              widget.codeAutoRetrievalTimeout,
+                          codeAutoRetrievalTimeout: widget.codeAutoRetrievalTimeout,
                         );
                       },
                       child: widget.submitButton,
