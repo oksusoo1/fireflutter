@@ -64,10 +64,6 @@ class _ChatRoomsBlockUserState extends State<ChatRoomsBlockUser> {
           child: Container(
             margin: const EdgeInsets.all(xs),
             padding: const EdgeInsets.all(xs),
-            // decoration: BoxDecoration(
-            //   borderRadius: const BorderRadius.all(Radius.circular(sm)),
-            //   color: room.hasNewMessage ? Colors.blue[50] : Colors.transparent,
-            // ),
             child: Row(
               children: [
                 Avatar(url: user.photoUrl, size: 50),
@@ -92,12 +88,6 @@ class _ChatRoomsBlockUserState extends State<ChatRoomsBlockUser> {
                         ],
                       ),
                       spaceXxs,
-                      // Text(
-                      //   room.text,
-                      //   maxLines: 1,
-                      //   overflow: TextOverflow.ellipsis,
-                      //   style: bodyText4,
-                      // ),
                     ],
                   ),
                 ),
