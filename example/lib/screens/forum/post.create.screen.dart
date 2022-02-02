@@ -43,12 +43,12 @@ class _PostCreateScreenState extends State<PostCreateScreen> with FirestoreBase 
                 // print('post create data; $data');
                 // await postCol.add(data);
 
-                await PostService.instance.create(
+                final doc = await PostService.instance.create(
                   category: Get.arguments['category'],
                   title: title.text,
                   content: content.text,
                 );
-                Get.back();
+                Get.back(result: doc.id);
                 await alert('Post created', 'Thank you');
               } catch (e) {
                 error(e);
