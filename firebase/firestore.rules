@@ -31,6 +31,40 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
+    match /categories/{categoryId} {
+      allow read: if true;
+      allow create: if isAdmin();
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    match /posts/{postId} {
+      allow read: if true;
+      allow create: if required(['category', 'authorUid', 'timestamp']) &&
+        categoryExists() &&
+        willBeMyPost()
+      ;
+      allow update:
+        if
+          // Update my document
+          isMyPost() &&
+          // Don't change authorUid
+          willBeMyPost() &&
+          required(['timestamp'])
+        ;
+      allow delete: if isAdmin() || isMyPost();
+    }
+
+    match /reports/{reportId} {
+      allow read: if (resource.data.reporterUid == request.auth.uid);
+      allow create: if (request.resource.data.reporterUid == request.auth.uid ) &&
+        fieldCheck(['target', 'targetId', 'reporterUid', 'reporteeUid', 'timestamp'], ['reason']) &&
+        !exists(/databases/$(database)/documents/reports/$(reportId))
+      ;
+      allow update: if false;
+      allow delete: if false;
+    }
+
     // check if 'A' & 'B' are blocked. 
     function isBlocked() {
       return
@@ -46,11 +80,19 @@ service cloud.firestore {
     function isAdmin() {
       return get(/databases/$(database)/documents/settings/admins).data[request.auth.uid] == true;
     }
+    
+
+    function categoryExists() {
+      // let d = debug('***** category Exists ****');
+      return debug(exists(/databases/$(database)/documents/categories/$(request.resource.data.category)));
+    }
   }
 }
+
 function myChatRoom(roomId) {
   return request.auth.uid in roomId.split('-');
 }
+
 function messageFields() {
   let required = ["to", "from", "timestamp", "text"];
   let optional = ["protocol"];
@@ -60,5 +102,21 @@ function messageFields() {
 // example: fieldCheck(['required', 'fields'], ['optional', 'fields'])
 function fieldCheck(required, optional) {
   let all = required.concat( optional );
+  // let fC = debug('****** fieldCheck *****');
   return request.resource.data.keys().hasAll( required ) && request.resource.data.keys().hasOnly(all);
+}
+function required(fields) {
+  return request.resource.data.keys().hasAll( fields );
+}
+
+
+// Check if login user is the one who created the post
+function isMyPost() {
+  return resource.data.authorUid == request.auth.uid;
+}
+
+// Check if the post belongs to the user (after create or update).
+// Use this to validate that the author does not change after updating.
+function willBeMyPost() {
+  return request.resource.data.authorUid == request.auth.uid;
 }

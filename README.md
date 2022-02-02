@@ -20,6 +20,7 @@ Table of contents
 
 - [Fire Flutter](#fire-flutter)
 - [TODOs](#todos)
+  - [Admin](#admin)
   - [Chat](#chat)
 - [Installation](#installation)
   - [Running the example](#running-the-example)
@@ -29,13 +30,17 @@ Table of contents
   - [Firebase Realtime Database Installation](#firebase-realtime-database-installation)
   - [Firestore installation](#firestore-installation)
     - [Setting admin on firestore security rules](#setting-admin-on-firestore-security-rules)
+- [Coding Guideline](#coding-guideline)
 - [User](#user)
   - [User installation](#user-installation)
+  - [User data](#user-data)
   - [Test users](#test-users)
   - [Phone number sign-in](#phone-number-sign-in)
   - [Email authentication under phone sign-in](#email-authentication-under-phone-sign-in)
     - [Email authentication under phone sign-in logic](#email-authentication-under-phone-sign-in-logic)
       - [When user has an email already](#when-user-has-an-email-already)
+- [Admin](#admin-1)
+  - [Admin status check & update](#admin-status-check--update)
 - [User presence](#user-presence)
   - [User presence overview](#user-presence-overview)
   - [User Presence Installation](#user-presence-installation)
@@ -65,6 +70,7 @@ Table of contents
   - [Building fireflutter](#building-fireflutter)
   - [Updating fireflutter while building your app](#updating-fireflutter-while-building-your-app)
 - [Test](#test)
+  - [Test method](#test-method)
   - [Local test on firestore security rules](#local-test-on-firestore-security-rules)
 - [Issues](#issues)
   - [firebase_database/permission-denied](#firebase_databasepermission-denied)
@@ -78,8 +84,13 @@ Table of contents
     - [Terminated app](#terminated-app)
     - [For background(or foreground) apps](#for-backgroundor-foreground-apps)
   - [Test Dynamic Links](#test-dynamic-links)
+- [Reports](#reports)
 
 # TODOs
+
+## Admin
+
+- Since email & phone no are saved in firebase auth service, admin needs a special function to know what is the email and phone no of users.
 
 ## Chat
 
@@ -156,6 +167,14 @@ Table of contents
 
 
 
+# Coding Guideline
+
+- The file name of all model end with `xxxx.model.dart`
+- All model have `.data` property (getter) to export its model data to a map which then can be saved into firestore.
+  - Note, that `.data` must contain only the data to be saved in firestore.
+- All model should have `.map` property(getter) to export its model data to a map. while `.data` only contains for saving firestore, `.map` may contain other values.
+
+
 # User
 
 ## User installation
@@ -181,11 +200,21 @@ Table of contents
 <!-- End of the Google Sign-in Section -->
 ```
 
+
+## User data
+
+- Part of the user data are saved in `/users` collection in firestore.
+- Since user's email address and phone number are saved in Firebase Auth service. Email & phone number are not saved in `/users` collection.
+
+
+
 ## Test users
 
-- Create the following four test user accounts with password of `12345a`.
+- Create the following four test user accounts with password of `12345a` using email & password sign-in.
   - `apple@test.com`, `banana@test.com`, `cherry@test.com`, `durian@test.com`
 
+- Create an admin with `admin@test.com` as its email and `12345a` as its password.
+  - And set the uid as admin. Read [Setting admin on firestore security rules](#setting-admin-on-firestore-security-rules) to know how to set admin.
 ## Phone number sign-in
 
 
@@ -268,11 +297,18 @@ PhoneService.instance.verifyPhoneNumber(
       - Then, listen if email is verified.
       - If verified, alert and go home.
 
-- TODO: When user click on the link, return to the app
-  - Refer https://fantashit.com/firebase-auth-sendemailverification-missing-actioncodesettings-parameter/
-  - Or try sign in with email address to return to the app after clicking the link. Refer https://stackoverflow.com/questions/63553161/flutter-firebase-how-to-send-email-verification
 
+# Admin
 
+## Admin status check & update
+
+`UserService.instance.updateAdminStatus()` updates wether the user is an admin or not.
+- Why; when user logs in, to know if the user is admin or not, the app must do an extra read on firestore document. And it costs money.
+- How; this method will update `isAdmin` to true if he is admin or false if not.
+- ide effect; there may be cases that `isAdmin` is set to true when the user is no longer an admin. In that case, UI may show admin buttons but the actions will fail based on the security rules.
+- Usage; call this method when user enters admin page or on any demand.
+- Recommendation; Put a secret(fake) widget like 'app version' that displays app version. And when user do 3 taps and long press, redirect the user to admin screen and call `updateAdminStatus()` on entering admin screen.
+- after calling `updateAdminStatus()`, the user's document will have `isAdmin: true` if the user is admin. 
 
 # User presence
 
@@ -349,6 +385,7 @@ UserPresence(
 - To display a user profile(name or photo), Use `UserDoc` widget with the user's uid and you can build a widget based on the user profile.
   - The builder of `UserDoc` comes from a stream builder, which means when the user profile document changes, it will rebuild the builder widget to update realtime.
 
+
 ```dart
 UserDoc(
   uid: user.uid,
@@ -362,6 +399,13 @@ UserDoc(
   },
 ),
 ```
+
+- Some use cases of `UserDoc`
+  - When user had signed-in Firebase, `auth changes` event happens immediately while the user's document is not available in `UserService.instance.user`
+    - For instance, when app restart, the user signs in to `Firebase Auth` very quickly, and then, `UserService` begins to work to get user document into `UserService.instance.user`. So, user document is not available at the time of user sign in.
+    - To know if the user is admin or not, user document must be downloaded from firestore.
+    - When user document had been downloaded, `UserDoc` will update its child widgets. So, `UserDoc` is a perfect solution to work based on user document.
+    - `UserDoc` will update its child widget on any changes of the user doc.
 
 - To display a user profile, but only one time build (not automatic rebuild), use `UserFutureDoc` widget. The builder of `UserFutureDoc` is based on future builder. So, it does not rebuild even if the user profile document changes.
   - This widget may be used for forms. Like display user profile data in input fields.
@@ -707,6 +751,14 @@ InformService.instance.inform(widget.room.otherUid, {
 
 # Test
 
+## Test method
+
+- Since the Firebase libraries need to run on an actual device or emulator, we developped our own unit test & UI test.
+
+- We use `Getx` for the example app development and we use it to the test.
+  - There are `example/lib/app.controller.dart` which holds memory data of example app.
+  - When test runs, the test drives screen changes and check if the data of the screen is set properly.
+
 
 ## Local test on firestore security rules
 
@@ -722,10 +774,14 @@ InformService.instance.inform(widget.room.otherUid, {
 
 
 
+
+
+
 # Issues
 
 - These are the common issues you may encount working this package.
 - If you have any issues, please create an git issue.
+
 
 
 ## firebase_database/permission-denied
@@ -808,6 +864,7 @@ class _MainAppState extends State<MainApp> {
       WidgetsBinding.instance?.addPostFrameCallback((dr) {
         alert('Terminated app',
             'Got dynamic link event. deepLink.path; ${deepLink.path},  ${deepLink.queryParametersAll}');
+        // Get.toNamed(deepLink.path, arguments: deepLink.queryParameters);
       });
     }
     // ...
@@ -839,5 +896,38 @@ DynamicLinksService.instance.listen((Uri? deepLink) {
 - On Android, you may test with emulator.
 
 
+
+
+# Reports
+
+- `target` is the data that is reported. It can be `post`, `comment`, `user`, `image` or any thing else.
+
+- `targetId` is the key(or document id) of the `target`.
+- `timestamp` is the timestamp of server.
+- `reporterUid` is the uid of the reporter.
+- `reporteeUid` is the uid of the user who is being reported. It is the user's uid who created the content.
+
+- `/reports/` is the report collection.
+
+- `/reports/{reportId}` document will have the following data.
+
+```json
+{
+	reporterUid: "...uid of reporter ..."
+  reporteeUid: "...uid of target data author..."
+	target: "post, comment, user, file"
+	targetId: ".... the key (or document id ) of the target"
+	timestamp:  " server time stamp "
+	reason: "reason of why reporter is reporting"
+}
+```
+
+- The report document key format is `target-targetId-reporterUid`. This is to easily secure by the security rules.
+  - For instance, `post-L8HDc07IYLGWd6puaVrT-1h0pWRlRkEOgQedJL5HriYMxqTw2`.
+
+
+- A user cannot report same target & targetId.
+- To implement this, simple check if previous report exists.
+  - This won't cost a lot since reporting does happens often.
 
 

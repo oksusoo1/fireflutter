@@ -59,15 +59,10 @@ class _ChatRoomsBlockUserState extends State<ChatRoomsBlockUser> {
       uid: otherUid,
       builder: (UserModel user) {
         return GestureDetector(
-          onTap: () =>
-              Get.toNamed('/chat-room-screen', arguments: {'uid': otherUid}),
+          onTap: () => Get.toNamed('/chat-room-screen', arguments: {'uid': otherUid}),
           child: Container(
             margin: const EdgeInsets.all(xs),
             padding: const EdgeInsets.all(xs),
-            // decoration: BoxDecoration(
-            //   borderRadius: const BorderRadius.all(Radius.circular(sm)),
-            //   color: room.hasNewMessage ? Colors.blue[50] : Colors.transparent,
-            // ),
             child: Row(
               children: [
                 Avatar(url: user.photoUrl, size: 50),
@@ -80,7 +75,7 @@ class _ChatRoomsBlockUserState extends State<ChatRoomsBlockUser> {
                         children: [
                           Expanded(
                             child: Text(
-                              '${user.name} ',
+                              '${user.nickname} ',
                               style: const TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.w600,
@@ -92,12 +87,6 @@ class _ChatRoomsBlockUserState extends State<ChatRoomsBlockUser> {
                         ],
                       ),
                       spaceXxs,
-                      // Text(
-                      //   room.text,
-                      //   maxLines: 1,
-                      //   overflow: TextOverflow.ellipsis,
-                      //   style: bodyText4,
-                      // ),
                     ],
                   ),
                 ),

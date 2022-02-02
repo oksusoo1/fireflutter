@@ -17,6 +17,9 @@ dependencies:
   firebase_database: ^9.0.4
   cloud_firestore: ^3.1.6
   firebase_dynamic_links: ^4.0.5
+
+  # Firebase UI.
+  flutterfire_ui: ^0.3.2
   
 
   rxdart: any
@@ -24,7 +27,7 @@ dependencies:
   # PhoneNumberInput widget
   country_code_picker: ^2.0.2
 
-  # Chat room pagination
+  # Chat room pagination. firestore pagination ui helper.
   paginate_firestore: ^1.0.3
 
   # chat badge

@@ -14,14 +14,21 @@ class EmailVerification extends StatefulWidget {
     required this.onTooManyRequests,
     required this.onUpdateEmail,
     required this.onUserTokenExpired,
+    this.actionCodeSettings,
   }) : super(key: key);
 
   final Function(bool updated) onVerified;
   final Function(dynamic) onError;
-  final Function(String) onVerificationEmailSent;
+  final Function onVerificationEmailSent;
   final Function onTooManyRequests;
 
   final Function onUserTokenExpired;
+
+  /// Add domain on the following Firebase console settings:
+  ///  1. Dynamic links -> Allowlist URL
+  ///  2. Authentication -> Sign-in method -> Authorised domains
+  ///
+  final ActionCodeSettings? actionCodeSettings;
 
   /// To update email, it may need to open dialog (or another screen) to
   ///   re-authenticate the login if the user logged in long time ago.
@@ -56,7 +63,7 @@ class _EmailVerificationState extends State<EmailVerification> {
         });
 
         /// if email has changed, then it returns true.
-        widget.onVerificationEmailSent(email.text);
+        widget.onVerificationEmailSent();
       },
 
       /// All error(exception) goes to [onError] except, too many requests.
