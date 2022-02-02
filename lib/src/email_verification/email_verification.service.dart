@@ -118,8 +118,13 @@ class EmailVerificationService {
         throw 'Email address had already verified.';
       }
       await FirebaseAuth.instance.currentUser!.sendEmailVerification(ActionCodeSettings(
-        dynamicLinkDomain: 'withcentertest.page.link',
-        url: 'https://withcentertest.page.link/email-verification',
+        // dynamicLinkDomain: 'withcentertest.page.link',
+        /// Add domain on the following Firebase console settings:
+        ///  1. Dynamic links -> Allowlist URL
+        ///  2. Authentication -> Sign-in method -> Authorised domains
+        url: 'https://wonderfulkorea.kr/email-verification',
+        androidPackageName: 'com.withcenter.test',
+        // handleCodeInApp: true,
       ));
       _onVerificationEmailSent();
       _emailVerificationChecker();
