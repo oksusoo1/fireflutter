@@ -1,5 +1,4 @@
 import 'package:fireflutter/fireflutter.dart';
-import 'package:fireflutter/src/report/report.model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterfire_ui/firestore.dart';
 
@@ -17,13 +16,15 @@ class ReportManagement extends StatefulWidget {
   State<ReportManagement> createState() => _ReportManagementState();
 }
 
-class _ReportManagementState extends State<ReportManagement> with FirestoreBase {
+class _ReportManagementState extends State<ReportManagement>
+    with FirestoreBase {
   final category = TextEditingController();
   final title = TextEditingController();
   final description = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
+    print('report management');
     return FirestoreListView(
       query: reportCol.orderBy('timestamp'),
       itemBuilder: (context, snapshot) {

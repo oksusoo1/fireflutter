@@ -5,4 +5,5 @@ class RouteNames {
   static const String postCreate = '/postCreate';
   static const String admin = '/admin';
   static const String category = '/category';
+  static const String report = '/report';
 }

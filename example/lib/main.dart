@@ -6,6 +6,7 @@ import 'dart:async';
 import 'package:extended/extended.dart';
 import 'package:fe/screens/admin/admin.screen.dart';
 import 'package:fe/screens/admin/category.screen.dart';
+import 'package:fe/screens/admin/report.screen.dart';
 import 'package:fe/screens/forum/forum.list.screen.dart';
 import 'package:fe/screens/forum/post.create.screen.dart';
 import 'package:fe/service/app.controller.dart';
@@ -55,7 +56,6 @@ class _MainAppState extends State<MainApp> {
   @override
   void initState() {
     super.initState();
-
     Get.put(_appController);
 
     /// Instantiate UserService & see debug print message
@@ -69,7 +69,8 @@ class _MainAppState extends State<MainApp> {
 
     // Timer(const Duration(milliseconds: 200), () => Get.toNamed('/email-verify'));
     // Timer(const Duration(milliseconds: 200), AppController.of.openCategory);
-    Timer(const Duration(milliseconds: 200), () => AppController.of.openForumList(category: 'qna'));
+    // Timer(const Duration(milliseconds: 200),
+    //     () => AppController.of.openForumList(category: 'qna'));
 
     /// Dynamic links for terminated app.
     if (widget.initialLink != null) {
@@ -150,7 +151,8 @@ class _MainAppState extends State<MainApp> {
         ),
         GetPage(name: '/phone-sign-in', page: () => const PhoneSignInScreen()),
         GetPage(name: '/sms-code', page: () => const SmsCodeScreen()),
-        GetPage(name: '/phone-sign-in-ui', page: () => const PhoneSignInUIScreen()),
+        GetPage(
+            name: '/phone-sign-in-ui', page: () => const PhoneSignInUIScreen()),
         GetPage(name: '/sms-code-ui', page: () => const SmsCodeUIScreen()),
         GetPage(name: '/help', page: () => const HelpScreen()),
         GetPage(
@@ -174,7 +176,9 @@ class _MainAppState extends State<MainApp> {
         ),
         GetPage(name: '/friend-map', page: () => const FriendMapScreen()),
         GetPage(name: '/reminder-edit', page: () => ReminderEditScreen()),
-        GetPage(name: '/email-verify', page: () => const EmailVerificationScreen())
+        GetPage(name: RouteNames.report, page: () => ReportScreen()),
+        GetPage(
+            name: '/email-verify', page: () => const EmailVerificationScreen())
       ],
     );
   }
