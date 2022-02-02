@@ -11,10 +11,11 @@ service cloud.firestore {
       }
       match /messages/{roomId}/{messageId} {
     	  allow read: if myChatRoom(roomId);
-        allow write: if myChatRoom(roomId) &&
+        allow create, update: if myChatRoom(roomId) &&
           messageParticipants(roomId) &&
           (isBlocked() == false) &&
           messageFields();
+        allow delete: if myChatRoom(roomId) && myChatMessage();
       }
       match /blocks/{myId}/{otherId} {
         allow read: if ( request.auth.uid == myId || request.auth.uid == otherId);
@@ -89,8 +90,13 @@ service cloud.firestore {
   }
 }
 
+// Check if roomId contains my Uid.
 function myChatRoom(roomId) {
   return request.auth.uid in roomId.split('-');
+}
+
+function myChatMessage() {
+  return request.auth.uid == resource.data.from;
 }
 
 function messageFields() {
