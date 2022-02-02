@@ -18,7 +18,6 @@ import 'package:fe/screens/phone_sign_in_ui/sms_code_ui.screen.dart';
 import 'package:fe/screens/reminder/reminder.edit.screen.dart';
 import 'package:fe/widgets/sign_in.widget.dart';
 import 'package:fireflutter/fireflutter.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -32,7 +31,7 @@ void main() async {
   await Firebase.initializeApp();
 
   runApp(MainApp(
-    initialLink: await DynamicLinksService.instance.initialLink,
+    initialLink: await DynamicLinkService.instance.initialLink,
   ));
 }
 
@@ -62,11 +61,12 @@ class _MainAppState extends State<MainApp> {
       WidgetsBinding.instance?.addPostFrameCallback((dr) {
         alert('Terminated app',
             'Got dynamic link event. deepLink.path; ${deepLink.path},  ${deepLink.queryParametersAll}');
+        // Get.toNamed(deepLink.path, arguments: deepLink.queryParameters);
       });
     }
 
     ///
-    DynamicLinksService.instance.listen((Uri? deepLink) {
+    DynamicLinkService.instance.listen((Uri? deepLink) {
       alert('Background 2',
           'Dyanmic Link Event on background(or foreground). deepLink.path; ${deepLink?.path}, ${deepLink?.queryParametersAll}');
     });
