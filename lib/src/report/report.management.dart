@@ -8,12 +8,10 @@ class ReportManagement extends StatefulWidget {
     Key? key,
     this.padding = const EdgeInsets.all(0),
     required this.onError,
-    required this.onCreate,
   }) : super(key: key);
 
   final EdgeInsets padding;
   final Function(dynamic) onError;
-  final Function(Map<String, dynamic>) onCreate;
 
   @override
   State<ReportManagement> createState() => _ReportManagementState();
