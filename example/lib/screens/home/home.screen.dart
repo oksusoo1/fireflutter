@@ -277,18 +277,18 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   testOnReport() async {
-    final ts = TestService.instance;
-    final rs = ReportService.instance;
+    // final ts = TestService.instance;
+    // final rs = ReportService.instance;
 
-    ts.reset();
-    await ts.expectSuccess(rs.report(
-      target: 'post',
-      targetId: '111',
-      reporterUid: 'aaa',
-      reporterDisplayName: 'User A',
-      reporteeUid: 'bbb',
-      reporteeDisplayName: 'User B',
-    ));
+    // ts.reset();
+    // await ts.expectSuccess(rs.report(
+    //   target: 'post',
+    //   targetId: '111',
+    //   reporterUid: 'aaa',
+    //   reporterDisplayName: 'User A',
+    //   reporteeUid: 'bbb',
+    //   reporteeDisplayName: 'User B',
+    // ));
 
     // await ts.expectFailure(rs.report(
     //   target: 'post',
