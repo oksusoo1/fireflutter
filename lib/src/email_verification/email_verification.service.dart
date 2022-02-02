@@ -30,6 +30,8 @@ class EmailVerificationService {
   late Function _onTooManyRequests;
   late Function _onUserTokenExpired;
 
+  late ActionCodeSettings? _actionCodeSettings;
+
   /// Initialize the service and run email verification checker.
   ///
   /// It will unsubscribe / stop when:
@@ -55,12 +57,14 @@ class EmailVerificationService {
     required Function onVerificationEmailSent,
     required Function onTooManyRequests,
     required Function onUserTokenExpired,
+    ActionCodeSettings? actionCodeSettings,
   }) {
     _verificationIntervalSeconds = verificationIntervalSeconds;
     _onVerified = onVerified;
     _onVerificationEmailSent = onVerificationEmailSent;
     _onTooManyRequests = onTooManyRequests;
     _onUserTokenExpired = onUserTokenExpired;
+    _actionCodeSettings = actionCodeSettings;
 
     /// Whether the user is verifying or not, don't run verification checker on init.
     /// Once email verification checker runs, it will automatically invoke the callback function `onVerified` if the user's email is verified.
@@ -117,15 +121,7 @@ class EmailVerificationService {
       if (FirebaseAuth.instance.currentUser!.emailVerified) {
         throw 'Email address had already verified.';
       }
-      await FirebaseAuth.instance.currentUser!.sendEmailVerification(ActionCodeSettings(
-        // dynamicLinkDomain: 'withcentertest.page.link',
-        /// Add domain on the following Firebase console settings:
-        ///  1. Dynamic links -> Allowlist URL
-        ///  2. Authentication -> Sign-in method -> Authorised domains
-        url: 'https://wonderfulkorea.kr/email-verification',
-        androidPackageName: 'com.withcenter.test',
-        // handleCodeInApp: true,
-      ));
+      await FirebaseAuth.instance.currentUser!.sendEmailVerification(_actionCodeSettings);
       _onVerificationEmailSent();
       _emailVerificationChecker();
     } on FirebaseAuthException catch (e) {

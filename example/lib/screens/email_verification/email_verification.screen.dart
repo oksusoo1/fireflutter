@@ -28,6 +28,13 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
               children: [
                 const UserInfo(),
                 EmailVerification(
+                  actionCodeSettings: ActionCodeSettings(
+                    url: 'https://withcentertest.page.link/email-verification',
+                    dynamicLinkDomain: 'withcentertest.page.link',
+                    androidPackageName: 'com.withcenter.test',
+                    iOSBundleId: 'com.withcenter.test',
+                    // handleCodeInApp: true,
+                  ),
                   onVerified: (re) async {
                     await alert(
                       'Success',
