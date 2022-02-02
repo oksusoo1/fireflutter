@@ -54,7 +54,6 @@ class _MainAppState extends State<MainApp> {
   @override
   void initState() {
     super.initState();
-    print('main');
     Get.put(_appController);
 
     /// Instantiate UserService & see debug print message
