@@ -11,3 +11,5 @@ typedef WidgetFunctionCallback = Widget Function(Function);
 typedef BuilderWidgetUserFunction = Widget Function(User);
 // typedef MapCallback = Map<String, dynamic> Function();
 typedef VoidMapCallback = void Function(Map<String, dynamic>);
+
+const ERROR_SIGN_IN = 'ERROR_SIGN_IN';

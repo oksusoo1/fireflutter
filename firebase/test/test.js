@@ -69,7 +69,7 @@ describe('Firestore security test', () => {
 
     });
 
-    it("Chat - message - write - failure - 'to' and 'from'", async () => {
+    it("Chat - message - write - failure - 'to & from'", async () => {
         /// expect fails, due to wrong 'to', 'from'
         const _missing = db(authC).collection("chat").doc("messages").collection(`${A}-${B}`).doc('message-doc-id-a');
         await firebase.assertFails(_missing.set({ to: B, from: A, text: 'yo', timestamp: 1 }));
@@ -157,6 +157,87 @@ describe('Firestore security test', () => {
         await firebase.assertFails(db(authA).collection("settings").doc("reminder").set({ title: "hi" }))
         await firebase.assertSucceeds(db(authB).collection("settings").doc("reminder").set({ title: "hi" }))
         await firebase.assertSucceeds(db(authC).collection("settings").doc("reminder").set({ title: "hi" }))
-    })
+    });
+
+
+
+
+    it("Category - failure - not admin", async () => {
+        await firebase.assertFails(db(authA).collection('categories').add({ category: 'qna' }))
+    });
+
+    it("Category - success - admin", async () => {
+        await admin().collection("settings").doc("admins").set({
+            [A]: true,
+        });
+        await firebase.assertFails(db(authB).collection('categories').add({ category: 'qna' }))
+        await firebase.assertSucceeds(db(authA).collection('categories').add({ category: 'qna' }))
+    });
+
+    it("Category - input test", async () => {
+        await admin().collection("settings").doc("admins").set({
+            [A]: true,
+        });
+        await firebase.assertFails(db(authA).collection('categories').add({ noCategory: 'qna' }));
+        await firebase.assertFails(db(authA).collection('categories').add({ category: 'qna', nonAllowed: true }));
+        await firebase.assertSucceeds(db(authA).collection('categories').add({ category: 'qna', title: 'title', description: 'description' }));
+    });
+
+
+
+    it("Post create failure without category", async () => {
+        await firebase.assertFails(db(authA).collection('posts').add({ category: 'qna' }))
+    });
+
+
+
+
+    it("Post create failure without sign-in", async () => {
+        await admin().collection("categories").doc("qna").set({
+            title: 'QnA'
+        });
+        await firebase.assertFails(db().collection('posts').add({ category: 'qna' }))
+    });
+
+
+    it("Post create failure - wrong input data - category is missing", async () => {
+        await admin().collection("categories").doc("qna").set({
+            title: 'QnA'
+        });
+        await firebase.assertFails(db(authA).collection('posts').add({
+            authorUid: A,
+            title: '...',
+            content: 'content',
+            timestamp: '1',
+        }));
+    });
+
+    it("Post create failure - wrong input data - non-allowed field added", async () => {
+        await admin().collection("categories").doc("qna").set({
+            title: 'QnA'
+        });
+        await firebase.assertFails(db(authA).collection('posts').add({
+            category: 'qna',
+            authorUid: A,
+            title: '...',
+            content: 'content',
+            timestamp: '1',
+            wrong: 'worng-field'
+        }));
+    });
+
+
+    it("Post create success", async () => {
+        await admin().collection("categories").doc("qna").set({
+            title: 'QnA'
+        });
+        await firebase.assertSucceeds(db(authA).collection('posts').add({
+            category: 'qna',
+            authorUid: A,
+            title: '...',
+            content: 'content',
+            timestamp: '1',
+        }));
+    });
 
 });

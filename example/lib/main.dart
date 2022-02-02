@@ -4,6 +4,12 @@
 import 'dart:async';
 
 import 'package:extended/extended.dart';
+import 'package:fe/screens/admin/admin.screen.dart';
+import 'package:fe/screens/forum/forum.list.screen.dart';
+import 'package:fe/screens/forum/post.create.screen.dart';
+import 'package:fe/service/app.controller.dart';
+import 'package:fe/service/global.keys.dart';
+import 'package:fe/service/route.names.dart';
 import 'package:fe/screens/chat/chat.room.screen.dart';
 import 'package:fe/screens/chat/chat.rooms.blocked.screen.dart';
 import 'package:fe/screens/chat/chat.rooms.screen.dart';
@@ -15,6 +21,7 @@ import 'package:fe/screens/phone_sign_in/phone_sign_in.screen.dart';
 import 'package:fe/screens/phone_sign_in/sms_code.screen.dart';
 import 'package:fe/screens/phone_sign_in_ui/phone_sign_in_ui.screen.dart';
 import 'package:fe/screens/phone_sign_in_ui/sms_code_ui.screen.dart';
+import 'package:fe/screens/profile/profile.screen.dart';
 import 'package:fe/screens/reminder/reminder.edit.screen.dart';
 import 'package:fe/widgets/sign_in.widget.dart';
 import 'package:fireflutter/fireflutter.dart';
@@ -43,9 +50,13 @@ class MainApp extends StatefulWidget {
 }
 
 class _MainAppState extends State<MainApp> {
+  final AppController _appController = AppController();
   @override
   void initState() {
     super.initState();
+
+    Get.put(_appController);
+
     PresenceService.instance.activate(
       onError: (e) => debugPrint('--> Presence error: $e'),
     );
@@ -122,9 +133,9 @@ class _MainAppState extends State<MainApp> {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      initialRoute: '/home',
+      initialRoute: RouteNames.home,
       getPages: [
-        GetPage(name: '/home', page: () => const HomeScreen()),
+        GetPage(name: RouteNames.home, page: () => const HomeScreen()),
         GetPage(
           name: '/sign-in',
           page: () => const SignInWidget(),
@@ -134,6 +145,15 @@ class _MainAppState extends State<MainApp> {
         GetPage(name: '/phone-sign-in-ui', page: () => const PhoneSignInUIScreen()),
         GetPage(name: '/sms-code-ui', page: () => const SmsCodeUIScreen()),
         GetPage(name: '/help', page: () => const HelpScreen()),
+        GetPage(
+          name: RouteNames.profile,
+          page: () => ProfileScreen(
+            key: profileScreenKey,
+          ),
+        ),
+        GetPage(name: RouteNames.forumList, page: () => ForumListScreen()),
+        GetPage(name: RouteNames.postCreate, page: () => PostCreateScreen()),
+        GetPage(name: RouteNames.admin, page: () => AdminScreen()),
         GetPage(name: '/chat-room-screen', page: () => const ChatRoomScreen()),
         GetPage(
           name: '/chat-rooms-screen',
