@@ -1,10 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fireflutter/fireflutter.dart';
-import 'package:fireflutter/src/firestore.base.mixin.dart';
 import 'package:flutter/material.dart';
 
-class UserService with FirestoreRules {
+class UserService with FirestoreBase {
   static UserService? _instance;
   static UserService get instance {
     _instance ??= UserService();

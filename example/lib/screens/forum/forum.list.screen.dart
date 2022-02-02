@@ -4,7 +4,6 @@ import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterfire_ui/firestore.dart';
 import 'package:get/get.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ForumListScreen extends StatefulWidget {
   ForumListScreen({Key? key}) : super(key: key);
@@ -16,6 +15,8 @@ class ForumListScreen extends StatefulWidget {
 class _ForumListScreenState extends State<ForumListScreen> with FirestoreBase {
   final app = AppController.of;
   final ForumModel forum = AppController.of.forum;
+  final category = Get.arguments['category'];
+  String newPostId = '';
   @override
   void initState() {
     super.initState();
@@ -29,7 +30,10 @@ class _ForumListScreenState extends State<ForumListScreen> with FirestoreBase {
         title: Text(forum.title),
         actions: [
           IconButton(
-            onPressed: () => app.openPostCreate(category: Get.arguments['category']),
+            onPressed: () async {
+              newPostId = await app.openPostCreate(category: category);
+              setState(() {});
+            },
             icon: Icon(
               Icons.create_rounded,
             ),
@@ -37,9 +41,9 @@ class _ForumListScreenState extends State<ForumListScreen> with FirestoreBase {
         ],
       ),
       body: FirestoreListView(
-        query: postCol
-            .where('category', isEqualTo: Get.arguments['category'])
-            .orderBy('timestamp', descending: true),
+        key: ValueKey(newPostId),
+        query:
+            postCol.where('category', isEqualTo: category).orderBy('timestamp', descending: true),
         itemBuilder: (context, snapshot) {
           final post = PostModel.fromJson(
             snapshot.data() as Json,
@@ -48,14 +52,28 @@ class _ForumListScreenState extends State<ForumListScreen> with FirestoreBase {
 
           return ExpansionTile(
             title: Text(post.title),
+            onExpansionChanged: (value) async {
+              if (value) {
+                try {
+                  await post.increaseViewCounter();
+                } catch (e) {
+                  print('increaseViewCounter() error; $e');
+                  error(e);
+                }
+              }
+            },
             subtitle: Text(
               DateTime.fromMillisecondsSinceEpoch(post.timestamp.millisecondsSinceEpoch).toString(),
             ),
             children: [
               Text(post.content),
+              Text(post.id),
               ElevatedButton(
                 onPressed: () {
-                  post.report().then((x) {}).catchError(error);
+                  post
+                      .report()
+                      .then((x) => alert('Report success', 'You have reported this post.'))
+                      .catchError(error);
                 },
                 child: const Text('Report'),
               ),

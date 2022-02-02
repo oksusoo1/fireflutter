@@ -70,11 +70,15 @@ class PostModel {
     return '''PostModel($map)''';
   }
 
-  Future<DocumentReference> report([String? reason]) {
+  Future<void> report([String? reason]) {
     return PostService.instance.report(
       target: 'post',
       targetId: id,
       reporteeUid: authorUid,
     );
+  }
+
+  Future<void> increaseViewCounter() {
+    return PostService.instance.increaseViewCounter(id);
   }
 }

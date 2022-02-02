@@ -17,4 +17,8 @@ class PostService with FirestoreBase {
     final data = PostModel.toCreate(category: category, title: title, content: content);
     return postCol.add(data);
   }
+
+  Future<void> increaseViewCounter(String id) {
+    return postDoc(id).update({'viewCounter': FieldValue.increment(1)});
+  }
 }

@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:fireflutter/fireflutter.dart';
 
 /// [FirestoreBase] provides
 /// - the paths of firestore structures and
@@ -46,14 +47,31 @@ mixin FirestoreBase {
     return commentDoc(postId, commentId).collection('votes').doc(_user.uid);
   }
 
-  /// ************** Common code ***********************
-  Future<DocumentReference> report({
+  /// ************** Common Methods ***********************
+  ///
+  /// These are the mehods that are used in multiple places
+  ///
+  /// *****************************************************
+  Future<void> report({
     required String target,
     required String targetId,
     required String reporteeUid,
     String? reason,
-  }) {
-    return reportCol.add({
+  }) async {
+    final id = "$target-$targetId-${_user.uid}";
+    try {
+      await reportCol.doc(id).get();
+
+      /// If document exists, then already reporetd
+      throw ERROR_ALREADY_REPORTED;
+    } catch (e) {
+      /// If already reporeted, throw exception and move out.
+      if (e == ERROR_ALREADY_REPORTED) rethrow;
+
+      /// Or continue ...
+    }
+
+    return reportCol.doc(id).set({
       'target': target,
       'targetId': targetId,
       'reporterUid': _user.uid,

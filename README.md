@@ -22,6 +22,7 @@ Table of contents
 - [TODOs](#todos)
   - [Admin](#admin)
   - [Chat](#chat)
+  - [Post](#post)
 - [Installation](#installation)
   - [Running the example](#running-the-example)
   - [Creating a new project](#creating-a-new-project)
@@ -85,6 +86,8 @@ Table of contents
     - [For background(or foreground) apps](#for-backgroundor-foreground-apps)
   - [Test Dynamic Links](#test-dynamic-links)
 - [Reports](#reports)
+- [Forum & Category](#forum--category)
+  - [Category](#category)
 
 # TODOs
 
@@ -95,6 +98,11 @@ Table of contents
 ## Chat
 
 - put many chat messages in one chat message box(balloon) if they are written in 20 minutes.
+
+## Post
+
+- Do not increase view counter on same post. Save data on local storage. It's not a critical feature. It would be okay even if the view counter increases more than once.
+
 
 
 
@@ -927,7 +935,14 @@ DynamicLinksService.instance.listen((Uri? deepLink) {
 
 
 - A user cannot report same target & targetId.
-- To implement this, simple check if previous report exists.
-  - This won't cost a lot since reporting does happens often.
+  - To implement this, simple check if previous report exists.
+    - This won't cost a lot since reporting does happens often.
 
 
+
+# Forum & Category
+
+## Category
+
+- Only admin can write the category, but readable to every one.
+- If category does not exists, posting will be failed.
