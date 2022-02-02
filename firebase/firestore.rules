@@ -57,8 +57,8 @@ service cloud.firestore {
     }
 
     match /reports/{reportId} {
-      allow read: if isAdmin() || (resource.data.reporterUid == request.auth.uid);
-      allow create: if (request.resource.data.reporterUid == request.auth.uid ) &&
+      allow read: if isAdmin() || isMyDoc('reporterUid');
+      allow create: if willBeMyDoc('reporterUid') &&
         fieldCheck(['target', 'targetId', 'reporterUid', 'reporteeUid', 'timestamp'], ['reason']) &&
         !exists(/databases/$(database)/documents/reports/$(reportId))
       ;
@@ -116,13 +116,26 @@ function required(fields) {
 }
 
 
+// Check if the document belongs to the user.
+// [field] must match the user uid.
+function isMyDoc(field) {
+   return resource.data[field] == request.auth.uid;
+}
+
+
+// Check if the document will belong to the user after save.
+// [field] must match the user uid.
+function willBeMyDoc(field) {
+   return request.resource.data[field] == request.auth.uid;
+}
+
 // Check if login user is the one who created the post
 function isMyPost() {
-  return resource.data.authorUid == request.auth.uid;
+  return isMyDoc('authorUid');
 }
 
 // Check if the post belongs to the user (after create or update).
 // Use this to validate that the author does not change after updating.
 function willBeMyPost() {
-  return request.resource.data.authorUid == request.auth.uid;
+  return willBeMyDoc('authorUid');
 }

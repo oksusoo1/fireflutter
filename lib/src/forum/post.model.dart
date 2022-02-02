@@ -77,4 +77,8 @@ class PostModel {
       reporteeUid: authorUid,
     );
   }
+
+  Future<void> increaseViewCounter() {
+    return PostService.instance.increaseViewCounter(id);
+  }
 }

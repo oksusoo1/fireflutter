@@ -47,7 +47,11 @@ mixin FirestoreBase {
     return commentDoc(postId, commentId).collection('votes').doc(_user.uid);
   }
 
-  /// ************** Common code ***********************
+  /// ************** Common Methods ***********************
+  ///
+  /// These are the mehods that are used in multiple places
+  ///
+  /// *****************************************************
   Future<void> report({
     required String target,
     required String targetId,

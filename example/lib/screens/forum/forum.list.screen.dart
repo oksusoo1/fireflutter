@@ -52,11 +52,22 @@ class _ForumListScreenState extends State<ForumListScreen> with FirestoreBase {
 
           return ExpansionTile(
             title: Text(post.title),
+            onExpansionChanged: (value) async {
+              if (value) {
+                try {
+                  await post.increaseViewCounter();
+                } catch (e) {
+                  print('increaseViewCounter() error; $e');
+                  error(e);
+                }
+              }
+            },
             subtitle: Text(
               DateTime.fromMillisecondsSinceEpoch(post.timestamp.millisecondsSinceEpoch).toString(),
             ),
             children: [
               Text(post.content),
+              Text(post.id),
               ElevatedButton(
                 onPressed: () {
                   post
