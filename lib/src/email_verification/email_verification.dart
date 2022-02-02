@@ -19,7 +19,7 @@ class EmailVerification extends StatefulWidget {
 
   final Function(bool updated) onVerified;
   final Function(dynamic) onError;
-  final Function onVerificationEmailSent;
+  final Function(String) onVerificationEmailSent;
   final Function onTooManyRequests;
 
   final Function onUserTokenExpired;
@@ -55,6 +55,7 @@ class _EmailVerificationState extends State<EmailVerification> {
     super.initState();
 
     _emailService.init(
+      actionCodeSettings: widget.actionCodeSettings,
       onVerified: () => widget.onVerified((orgEmail == email.text)),
       onError: widget.onError,
       onVerificationEmailSent: () {
@@ -63,7 +64,7 @@ class _EmailVerificationState extends State<EmailVerification> {
         });
 
         /// if email has changed, then it returns true.
-        widget.onVerificationEmailSent();
+        widget.onVerificationEmailSent(email.text);
       },
 
       /// All error(exception) goes to [onError] except, too many requests.
