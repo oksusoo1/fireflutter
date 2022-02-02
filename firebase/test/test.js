@@ -86,6 +86,24 @@ describe('Firestore security test', () => {
         await firebase.assertSucceeds(right.set({ to: B, from: A, text: 'yo', timestamp: 1 }));
     });
 
+    it("Chat - message - delete", async () => {
+        await db(authA).collection("chat").doc("messages").collection(`${A}-${B}`).doc('right').set({
+            to: B, from: A, text: 'yo', timestamp: 1,
+        });
+        // Fail - wrong user
+        await firebase.assertFails(
+            db(authC).collection("chat").doc("messages").collection(`${A}-${B}`).doc('right').delete()
+        );
+        // Fail - wrong user
+        await firebase.assertFails(
+            db(authB).collection("chat").doc("messages").collection(`${A}-${B}`).doc('right').delete()
+        );
+        // Success
+        await firebase.assertSucceeds(
+            db(authA).collection("chat").doc("messages").collection(`${A}-${B}`).doc('right').delete()
+        );
+    });
+
     it("Chat - block - read", async () => {
 
         /// failure, no auth

@@ -95,6 +95,7 @@ function myChatRoom(roomId) {
   return request.auth.uid in roomId.split('-');
 }
 
+// Check if the message is create by me.
 function myChatMessage() {
   return request.auth.uid == resource.data.from;
 }
