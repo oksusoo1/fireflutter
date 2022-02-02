@@ -85,10 +85,6 @@ Table of contents
     - [For background(or foreground) apps](#for-backgroundor-foreground-apps)
   - [Test Dynamic Links](#test-dynamic-links)
 - [Reports](#reports)
-  - [Reports listing](#reports-listing)
-  - [Reports data](#reports-data)
-  - [reporting logic](#reporting-logic)
-  - [Admin listing](#admin-listing)
 
 # TODOs
 
@@ -389,6 +385,7 @@ UserPresence(
 - To display a user profile(name or photo), Use `UserDoc` widget with the user's uid and you can build a widget based on the user profile.
   - The builder of `UserDoc` comes from a stream builder, which means when the user profile document changes, it will rebuild the builder widget to update realtime.
 
+
 ```dart
 UserDoc(
   uid: user.uid,
@@ -402,6 +399,13 @@ UserDoc(
   },
 ),
 ```
+
+- Some use cases of `UserDoc`
+  - When user had signed-in Firebase, `auth changes` event happens immediately while the user's document is not available in `UserService.instance.user`
+    - For instance, when app restart, the user signs in to `Firebase Auth` very quickly, and then, `UserService` begins to work to get user document into `UserService.instance.user`. So, user document is not available at the time of user sign in.
+    - To know if the user is admin or not, user document must be downloaded from firestore.
+    - When user document had been downloaded, `UserDoc` will update its child widgets. So, `UserDoc` is a perfect solution to work based on user document.
+    - `UserDoc` will update its child widget on any changes of the user doc.
 
 - To display a user profile, but only one time build (not automatic rebuild), use `UserFutureDoc` widget. The builder of `UserFutureDoc` is based on future builder. So, it does not rebuild even if the user profile document changes.
   - This widget may be used for forms. Like display user profile data in input fields.
@@ -900,33 +904,17 @@ DynamicLinksService.instance.listen((Uri? deepLink) {
 
 - `targetId` is the key(or document id) of the `target`.
 - `timestamp` is the timestamp of server.
+- `reporterUid` is the uid of the reporter.
+- `reporteeUid` is the uid of the user who is being reported. It is the user's uid who created the content.
 
+- `/reports/` is the report collection.
 
-## Reports listing
-
-- Many user can report the same post. And when admin lists the reports, the reports of same post should be grouped. Or the listing may go dirty. To implement this, it needs a collection for target & targetId.
-
-- `/reports-listing` is the collection. and the data would be
-
-```json
-{
-	target: "post, comment, user, file"
-	targetId: ".... the key (or document id ) of the target"
-	timestamp: " server time stamp "
-  status: "deleted|passed"
-}
-```
-
-## Reports data
-
-- `/reports` is the collection. and the data would be
+- `/reports/{reportId}` document will have the following data.
 
 ```json
 {
 	reporterUid: "...uid of reporter ..."
-  reporterDisplayName: "...display name..."
   reporteeUid: "...uid of target data author..."
-  reporteeDisplayName: " ... display name of the reportee"
 	target: "post, comment, user, file"
 	targetId: ".... the key (or document id ) of the target"
 	timestamp:  " server time stamp "
@@ -934,48 +922,12 @@ DynamicLinksService.instance.listen((Uri? deepLink) {
 }
 ```
 
+- The report document key format is `target-targetId-reporterUid`. This is to easily secure by the security rules.
+  - For instance, `post-L8HDc07IYLGWd6puaVrT-1h0pWRlRkEOgQedJL5HriYMxqTw2`.
+
 
 - A user cannot report same target & targetId.
-- To implement this,
-	- App must not read to see if the user has already reported.
-	- It must be done by security rule.
-	- Once it fails, it can read the report if the user had already reported and display message to user.
-
-
-
-
-## reporting logic
-
-When user A reports post 5000,
-
-target = post
-targetId = 5000,
-reporterUid = uid_aaa
-reason = I don't like this post.
-
-
-will be recorded.
-
-And then, user B reports post 5001.
-And then, user C reports post 5000 with reason, "I hate this post."
-
-- a user cannot report same target & target_ID twice.
-
-## Admin listing
-
-When admin list, reports
-
-Do not list same target & target_ID twice. which means, post 5000 had reported twice, and there will only one record in the list. the two records must be merged.
-
-
-- Example of listing
-
-target Id|reporters|reasons
----------|---------|-------
-5000|A|I don't like this post
-____|B|I hate this post,
-5001|C|...
-
-
+- To implement this, simple check if previous report exists.
+  - This won't cost a lot since reporting does happens often.
 
 

@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_database/firebase_database.dart';
 import 'package:fireflutter/fireflutter.dart';
 
 class PostModel {
@@ -26,9 +25,9 @@ class PostModel {
 
   Timestamp timestamp;
 
-  factory PostModel.fromJson(Map<String, dynamic> data) {
+  factory PostModel.fromJson(Map<String, dynamic> data, String id) {
     return PostModel(
-      id: data['id'],
+      id: id,
       title: data['title'] ?? '',
       content: data['content'] ?? '',
       authorUid: data['authorUid'] ?? '',
@@ -39,17 +38,19 @@ class PostModel {
   }
 
   static Map<String, dynamic> toCreate({
+    required String category,
     String? title,
     String? content,
     String? featuredPhotoUrl,
   }) {
     return {
+      'category': category,
       'title': title,
       'content': content,
       'authorUid': UserService.instance.user.uid,
       'authorNickname': UserService.instance.user.nickname,
       'authorPhotoUrl': UserService.instance.user.photoUrl,
-      'timestamp': ServerValue.timestamp,
+      'timestamp': FieldValue.serverTimestamp(),
     };
   }
 
@@ -67,5 +68,13 @@ class PostModel {
   @override
   String toString() {
     return '''PostModel($map)''';
+  }
+
+  Future<DocumentReference> report([String? reason]) {
+    return PostService.instance.report(
+      target: 'post',
+      targetId: id,
+      reporteeUid: authorUid,
+    );
   }
 }

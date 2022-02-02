@@ -5,6 +5,7 @@ import 'dart:async';
 
 import 'package:extended/extended.dart';
 import 'package:fe/screens/admin/admin.screen.dart';
+import 'package:fe/screens/forum/category.screen.dart';
 import 'package:fe/screens/forum/forum.list.screen.dart';
 import 'package:fe/screens/forum/post.create.screen.dart';
 import 'package:fe/service/app.controller.dart';
@@ -67,6 +68,8 @@ class _MainAppState extends State<MainApp> {
     );
 
     // Timer(const Duration(milliseconds: 200), () => Get.toNamed('/email-verify'));
+    // Timer(const Duration(milliseconds: 200), AppController.of.openCategory);
+    Timer(const Duration(milliseconds: 200), () => AppController.of.openForumList(category: 'qna'));
 
     /// Dynamic links for terminated app.
     if (widget.initialLink != null) {
@@ -159,6 +162,7 @@ class _MainAppState extends State<MainApp> {
         GetPage(name: RouteNames.forumList, page: () => ForumListScreen()),
         GetPage(name: RouteNames.postCreate, page: () => PostCreateScreen()),
         GetPage(name: RouteNames.admin, page: () => AdminScreen()),
+        GetPage(name: RouteNames.category, page: () => CategoryScreen()),
         GetPage(name: '/chat-room-screen', page: () => const ChatRoomScreen()),
         GetPage(
           name: '/chat-rooms-screen',

@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fireflutter/fireflutter.dart';
-import 'package:fireflutter/src/firestore.rules.mixin.dart';
+import 'package:fireflutter/src/firestore.base.mixin.dart';
 import 'package:flutter/material.dart';
 
 class UserService with FirestoreRules {
@@ -93,11 +93,13 @@ class UserService with FirestoreRules {
   Future<void> updateAdminStatus() async {
     final DocumentSnapshot doc = await adminsDoc.get();
     if (doc.exists) {
-      final Map<String, bool> data = doc.data()! as Map<String, bool>;
+      final data = doc.data()! as Map<String, dynamic>;
       if (data[user.uid] == true) {
-        return update(field: 'isAdmin', value: true);
+        await update(field: 'isAdmin', value: true);
+        user.isAdmin = true;
       } else {
-        return update(field: 'isAdmin', value: false);
+        await update(field: 'isAdmin', value: FieldValue.delete());
+        user.isAdmin = false;
       }
     }
   }

@@ -32,4 +32,8 @@ class AppController extends GetxController {
   Future<void> openAdmin() async {
     return Get.toNamed(RouteNames.admin);
   }
+
+  Future<void> openCategory() async {
+    return Get.toNamed(RouteNames.category);
+  }
 }
