@@ -85,6 +85,8 @@ Table of contents
     - [For background(or foreground) apps](#for-backgroundor-foreground-apps)
   - [Test Dynamic Links](#test-dynamic-links)
 - [Reports](#reports)
+- [Forum & Category](#forum--category)
+  - [Category](#category)
 
 # TODOs
 
@@ -931,3 +933,10 @@ DynamicLinksService.instance.listen((Uri? deepLink) {
     - This won't cost a lot since reporting does happens often.
 
 
+
+# Forum & Category
+
+## Category
+
+- Only admin can write the category, but readable to every one.
+- If category does not exists, posting will be failed.

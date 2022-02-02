@@ -47,3 +47,4 @@ export 'src/forum/forum.model.dart';
 export 'src/forum/post.model.dart';
 export 'src/forum/post.service.dart';
 export 'src/forum/widgets/category.management.dart';
+export 'src/report/report.management.dart';

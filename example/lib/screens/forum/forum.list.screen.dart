@@ -15,6 +15,8 @@ class ForumListScreen extends StatefulWidget {
 class _ForumListScreenState extends State<ForumListScreen> with FirestoreBase {
   final app = AppController.of;
   final ForumModel forum = AppController.of.forum;
+  final category = Get.arguments['category'];
+  String newPostId = '';
   @override
   void initState() {
     super.initState();
@@ -28,7 +30,10 @@ class _ForumListScreenState extends State<ForumListScreen> with FirestoreBase {
         title: Text(forum.title),
         actions: [
           IconButton(
-            onPressed: () => app.openPostCreate(category: Get.arguments['category']),
+            onPressed: () async {
+              newPostId = await app.openPostCreate(category: category);
+              setState(() {});
+            },
             icon: Icon(
               Icons.create_rounded,
             ),
@@ -36,9 +41,9 @@ class _ForumListScreenState extends State<ForumListScreen> with FirestoreBase {
         ],
       ),
       body: FirestoreListView(
-        query: postCol
-            .where('category', isEqualTo: Get.arguments['category'])
-            .orderBy('timestamp', descending: true),
+        key: ValueKey(newPostId),
+        query:
+            postCol.where('category', isEqualTo: category).orderBy('timestamp', descending: true),
         itemBuilder: (context, snapshot) {
           final post = PostModel.fromJson(
             snapshot.data() as Json,
