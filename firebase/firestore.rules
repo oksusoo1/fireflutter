@@ -62,14 +62,16 @@ service cloud.firestore {
     
 
     function categoryExists() {
-      let d = debug('***** category Exists ****');
+      // let d = debug('***** category Exists ****');
       return debug(exists(/databases/$(database)/documents/categories/$(request.resource.data.category)));
     }
   }
 }
+
 function myChatRoom(roomId) {
   return request.auth.uid in roomId.split('-');
 }
+
 function messageFields() {
   let required = ["to", "from", "timestamp", "text"];
   let optional = ["protocol"];
@@ -79,6 +81,6 @@ function messageFields() {
 // example: fieldCheck(['required', 'fields'], ['optional', 'fields'])
 function fieldCheck(required, optional) {
   let all = required.concat( optional );
-  let fC = debug('****** fieldCheck *****');
+  // let fC = debug('****** fieldCheck *****');
   return debug(request.resource.data.keys().hasAll( required ) && request.resource.data.keys().hasOnly(all));
 }

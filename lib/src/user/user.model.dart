@@ -1,5 +1,8 @@
 import 'package:fireflutter/fireflutter.dart';
 
+/// UserModel
+///
+///
 class UserModel {
   UserModel({
     this.nickname = '',

@@ -12,11 +12,14 @@ import 'package:firebase_auth/firebase_auth.dart';
 mixin FirestoreRules {
   /// Returns Firestore instance. Firebase database instance.
   final FirebaseFirestore db = FirebaseFirestore.instance;
-  User get user => FirebaseAuth.instance.currentUser!;
+  User get _user => FirebaseAuth.instance.currentUser!;
 
   CollectionReference get categoryCol => db.collection('categories');
   CollectionReference get postCol => db.collection('posts');
   CollectionReference get tokenCol => db.collection('tokens');
+  CollectionReference get settingDoc => db.collection('settings');
+
+  DocumentReference get adminsDoc => settingDoc.doc('admins');
 
   CollectionReference commentCol(String postId) {
     return postDoc(postId).collection('comments');
@@ -31,7 +34,7 @@ mixin FirestoreRules {
   }
 
   DocumentReference voteDoc(String id) {
-    return postCol.doc(id).collection('votes').doc(user.uid);
+    return postCol.doc(id).collection('votes').doc(_user.uid);
   }
 
   DocumentReference commentDoc(String postId, String commentId) {
@@ -39,6 +42,6 @@ mixin FirestoreRules {
   }
 
   DocumentReference commentVoteDoc(String postId, String commentId) {
-    return commentDoc(postId, commentId).collection('votes').doc(user.uid);
+    return commentDoc(postId, commentId).collection('votes').doc(_user.uid);
   }
 }

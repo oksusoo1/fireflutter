@@ -189,7 +189,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: const Text('Test on forum'),
                   ),
                 ],
-              )
+              ),
+              Divider(color: Colors.blue),
+              AdminButton()
             ],
           ),
         ),
@@ -285,9 +287,33 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   testOnForum() async {
-    final ts = TestService.instance;
     final tag = DateTime.now().toString().split('.').last;
     PostService.instance.create(title: 'title-$tag', content: 'content-$tag');
+  }
+}
+
+class AdminButton extends StatelessWidget {
+  AdminButton({
+    Key? key,
+  }) : super(key: key);
+
+  final count = {'count': 0};
+
+  @override
+  Widget build(BuildContext context) {
+    return TextButton(
+      onPressed: () {
+        int c = count['count']!;
+        c = c + 1;
+        count['count'] = c;
+      },
+      onLongPress: () {
+        if (count['count']! > 3) {
+          AppController.of.openAdmin();
+        }
+      },
+      child: const Text('Admin Screen - 3 tap & long press'),
+    );
   }
 }
 

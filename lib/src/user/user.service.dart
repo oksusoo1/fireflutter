@@ -1,9 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fireflutter/fireflutter.dart';
+import 'package:fireflutter/src/firestore.rules.mixin.dart';
 import 'package:flutter/material.dart';
 
-class UserService {
+class UserService with FirestoreRules {
   static UserService? _instance;
   static UserService get instance {
     _instance ??= UserService();
@@ -17,6 +18,7 @@ class UserService {
   }
 
   UserModel user = UserModel();
+  User? currentUser = FirebaseAuth.instance.currentUser;
 
   /// User auth changes
   ///
@@ -41,6 +43,7 @@ class UserService {
           user = UserModel();
         } else {
           if (_user.isAnonymous) {
+            /// Note, anonymous sigin-in is not supported by fireflutter.
             print('User sign-in as Anonymous;');
             user = UserModel();
           } else {
@@ -57,12 +60,21 @@ class UserService {
 
   /// Update user name of currently login user.
   Future<void> updateNickname(String name) {
-    return _myDoc.set({'nickname': name}, SetOptions(merge: true));
+    return update(field: 'nickname', value: name);
   }
 
   /// Update photoUrl of currently login user.
   Future<void> updatePhotoUrl(String url) {
-    return _myDoc.set({'photoUrl': url}, SetOptions(merge: true));
+    return update(field: 'photoUrl', value: url);
+  }
+
+  /// Update login user's document
+  ///
+  /// ```dart
+  /// return update(field: 'nickname', value: name);
+  /// ```
+  Future<void> update({required String field, required dynamic value}) {
+    return _myDoc.set({field: value}, SetOptions(merge: true));
   }
 
   Future<UserModel> get() async {
@@ -70,5 +82,19 @@ class UserService {
     final user = UserModel.fromJson(doc.data() as Map<String, dynamic>);
     user.id = doc.id;
     return user;
+  }
+
+  /// Update wether if the user is an admin or not.
+  /// Refer readme for details
+  Future<void> updateAdminStatus() async {
+    final DocumentSnapshot doc = await adminsDoc.get();
+    if (doc.exists) {
+      final Map<String, bool> data = doc.data()! as Map<String, bool>;
+      if (data[user.uid] == true) {
+        return update(field: 'isAdmin', value: true);
+      } else {
+        return update(field: 'isAdmin', value: false);
+      }
+    }
   }
 }

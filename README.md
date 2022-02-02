@@ -39,6 +39,8 @@ Table of contents
   - [Email authentication under phone sign-in](#email-authentication-under-phone-sign-in)
     - [Email authentication under phone sign-in logic](#email-authentication-under-phone-sign-in-logic)
       - [When user has an email already](#when-user-has-an-email-already)
+- [Admin](#admin-1)
+  - [Admin status check & update](#admin-status-check--update)
 - [User presence](#user-presence)
   - [User presence overview](#user-presence-overview)
   - [User Presence Installation](#user-presence-installation)
@@ -212,9 +214,11 @@ Table of contents
 
 ## Test users
 
-- Create the following four test user accounts with password of `12345a`.
+- Create the following four test user accounts with password of `12345a` using email & password sign-in.
   - `apple@test.com`, `banana@test.com`, `cherry@test.com`, `durian@test.com`
 
+- Create an admin with `admin@test.com` as its email and `12345a` as its password.
+  - And set the uid as admin. Read [Setting admin on firestore security rules](#setting-admin-on-firestore-security-rules) to know how to set admin.
 ## Phone number sign-in
 
 
@@ -298,6 +302,17 @@ PhoneService.instance.verifyPhoneNumber(
       - If verified, alert and go home.
 
 
+# Admin
+
+## Admin status check & update
+
+`UserService.instance.updateAdminStatus()` updates wether the user is an admin or not.
+- Why; when user logs in, to know if the user is admin or not, the app must do an extra read on firestore document. And it costs money.
+- How; this method will update `isAdmin` to true if he is admin or false if not.
+- ide effect; there may be cases that `isAdmin` is set to true when the user is no longer an admin. In that case, UI may show admin buttons but the actions will fail based on the security rules.
+- Usage; call this method when user enters admin page or on any demand.
+- Recommendation; Put a secret(fake) widget like 'app version' that displays app version. And when user do 3 taps and long press, redirect the user to admin screen and call `updateAdminStatus()` on entering admin screen.
+- after calling `updateAdminStatus()`, the user's document will have `isAdmin: true` if the user is admin. 
 
 # User presence
 

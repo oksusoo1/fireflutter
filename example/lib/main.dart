@@ -4,6 +4,7 @@
 import 'dart:async';
 
 import 'package:extended/extended.dart';
+import 'package:fe/screens/admin/admin.screen.dart';
 import 'package:fe/screens/forum/forum.list.screen.dart';
 import 'package:fe/screens/forum/post.create.screen.dart';
 import 'package:fe/service/app.controller.dart';
@@ -152,6 +153,7 @@ class _MainAppState extends State<MainApp> {
         ),
         GetPage(name: RouteNames.forumList, page: () => ForumListScreen()),
         GetPage(name: RouteNames.postCreate, page: () => PostCreateScreen()),
+        GetPage(name: RouteNames.admin, page: () => AdminScreen()),
         GetPage(name: '/chat-room-screen', page: () => const ChatRoomScreen()),
         GetPage(
           name: '/chat-rooms-screen',

@@ -45,7 +45,7 @@ class TestUser extends StatelessWidget {
                     .catchError(error);
               });
             },
-            child: const Text('Login'),
+            child: const Text('Sign-In'),
           ),
         ],
       ),

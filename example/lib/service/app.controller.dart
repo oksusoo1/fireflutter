@@ -28,4 +28,8 @@ class AppController extends GetxController {
   Future<void> openPostCreate({String? category}) async {
     return Get.toNamed(RouteNames.postCreate, arguments: {'category': category});
   }
+
+  Future<void> openAdmin() async {
+    return Get.toNamed(RouteNames.admin);
+  }
 }

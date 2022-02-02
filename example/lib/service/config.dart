@@ -22,5 +22,10 @@ class Config {
       'name': 'Durian',
       'uid': 'LLaX6TwVQSO2os2dzK3kJyTzSzs1',
     },
+    'admin': {
+      'email': 'admin@test.com',
+      'name': 'Admin',
+      'uid': '1h0pWRlRkEOgQedJL5HriYMxqTw2',
+    },
   };
 }
