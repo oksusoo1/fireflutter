@@ -31,6 +31,11 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
+    match /categories/{categoryId} {
+      allow read: if true;
+      allow write: if isAdmin()  && fieldCheck(['category'], ['title', 'description']);
+    }
+
     match /posts/{postId} {
       allow read: if true;
       allow write: if fieldCheck(['category', 'authorUid', 'timestamp'], ['title', 'content']) &&

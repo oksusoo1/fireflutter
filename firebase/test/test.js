@@ -162,9 +162,35 @@ describe('Firestore security test', () => {
 
 
 
+    it("Category - failure - not admin", async () => {
+        await firebase.assertFails(db(authA).collection('categories').add({ category: 'qna' }))
+    });
+
+    it("Category - success - admin", async () => {
+        await admin().collection("settings").doc("admins").set({
+            [A]: true,
+        });
+        await firebase.assertFails(db(authB).collection('categories').add({ category: 'qna' }))
+        await firebase.assertSucceeds(db(authA).collection('categories').add({ category: 'qna' }))
+    });
+
+    it("Category - input test", async () => {
+        await admin().collection("settings").doc("admins").set({
+            [A]: true,
+        });
+        await firebase.assertFails(db(authA).collection('categories').add({ noCategory: 'qna' }));
+        await firebase.assertFails(db(authA).collection('categories').add({ category: 'qna', nonAllowed: true }));
+        await firebase.assertSucceeds(db(authA).collection('categories').add({ category: 'qna', title: 'title', description: 'description' }));
+    });
+
+
+
     it("Post create failure without category", async () => {
         await firebase.assertFails(db(authA).collection('posts').add({ category: 'qna' }))
     });
+
+
+
 
     it("Post create failure without sign-in", async () => {
         await admin().collection("categories").doc("qna").set({
