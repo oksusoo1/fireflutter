@@ -13,6 +13,12 @@ function admin() {
     return firebase.initializeAdminApp({ projectId: TEST_PROJECT_ID }).firestore();
 }
 
+async function setAdmin(uid) {
+    return admin().collection("settings").doc("admins").set({
+        [uid]: true,
+    });
+}
+
 /// 테스트 전에, 이전의 데이터를 모두 지운다.
 beforeEach(async () => {
     await firebase.clearFirestoreData({ projectId: TEST_PROJECT_ID })
@@ -355,6 +361,13 @@ describe('Firestore security test', () => {
         // fails on deletion. deletion is not allowed.
         await firebase.assertFails(db(authA).collection('reports').doc('post-aaa-A').delete());
 
+
+        // Fail - getting all docs from reports collection as a user
+        await firebase.assertFails(db(authA).collection('reports').get());
+
+        // Success - admin can get all report docs.
+        await setAdmin(B);
+        await firebase.assertSucceeds(db(authB).collection('reports').get());
 
     });
 });

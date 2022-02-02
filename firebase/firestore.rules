@@ -57,7 +57,7 @@ service cloud.firestore {
     }
 
     match /reports/{reportId} {
-      allow read: if (resource.data.reporterUid == request.auth.uid);
+      allow read: if isAdmin() || (resource.data.reporterUid == request.auth.uid);
       allow create: if (request.resource.data.reporterUid == request.auth.uid ) &&
         fieldCheck(['target', 'targetId', 'reporterUid', 'reporteeUid', 'timestamp'], ['reason']) &&
         !exists(/databases/$(database)/documents/reports/$(reportId))
