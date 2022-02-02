@@ -1,3 +1,5 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:fireflutter/fireflutter.dart';
 
 /// UserModel
@@ -5,33 +7,38 @@ import 'package:fireflutter/fireflutter.dart';
 ///
 class UserModel {
   UserModel({
+    this.id = '',
     this.nickname = '',
     this.photoUrl = '',
     this.birthday = '',
-    this.id = '',
+    this.isAdmin = false,
   });
+
+  /// This is the user's document id which is the uid.
+  /// If it is empty, the user may not be signed-in
+  String id;
+  String get uid => id;
+
+  bool isAdmin;
 
   String nickname;
   String photoUrl;
   String birthday;
 
-  /// This is the user's document id which is the uid.
-  /// If it is empty, then it means that, the user does not exist.
-  String id;
-  String get uid => id;
-
-  bool get signedIn => id != '';
-  bool get signedOut => id == '';
+  bool get signedIn => FirebaseAuth.instance.currentUser != null;
+  bool get signedOut => signedIn == false;
 
   factory UserModel.fromJson(Map<String, dynamic> data) {
     return UserModel(
+      id: data['id'] ?? '',
+      isAdmin: data['isAdmin'] ?? false,
       nickname: data['nickname'] ?? '',
       photoUrl: data['photoUrl'] ?? '',
       birthday: data['birthday'] ?? '',
-      id: data['id'] ?? '',
     );
   }
 
+  /// Data for updating firestore user document
   Map<String, dynamic> get data {
     return {
       'nickname': nickname,
@@ -40,9 +47,11 @@ class UserModel {
     };
   }
 
+  /// Data of all user model
   Map<String, dynamic> get map {
     final re = data;
     re['id'] = id;
+    re['isAdmin'] = isAdmin;
     return re;
   }
 

@@ -57,6 +57,11 @@ class _MainAppState extends State<MainApp> {
 
     Get.put(_appController);
 
+    /// Instantiate UserService & see debug print message
+    if (UserService.instance.user.isAdmin) {
+      print('The user is admin...');
+    }
+
     PresenceService.instance.activate(
       onError: (e) => debugPrint('--> Presence error: $e'),
     );
