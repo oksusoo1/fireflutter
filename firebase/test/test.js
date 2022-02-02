@@ -212,22 +212,7 @@ describe('Firestore security test', () => {
         }));
     });
 
-    it("Post create failure - wrong input data - non-allowed field added", async () => {
-        await admin().collection("categories").doc("qna").set({
-            title: 'QnA'
-        });
-        await firebase.assertFails(db(authA).collection('posts').add({
-            category: 'qna',
-            authorUid: A,
-            title: '...',
-            content: 'content',
-            timestamp: '1',
-            wrong: 'worng-field'
-        }));
-    });
-
-
-    it("Post create success", async () => {
+    it("Post create success - input any data", async () => {
         await admin().collection("categories").doc("qna").set({
             title: 'QnA'
         });
@@ -237,7 +222,77 @@ describe('Firestore security test', () => {
             title: '...',
             content: 'content',
             timestamp: '1',
+            anyField: 'anyData'
         }));
     });
 
+    it("Post update - failure", async () => {
+        await admin().collection("categories").doc("qna").set({
+            title: 'QnA'
+        });
+
+        // update non-existing post
+        await firebase.assertFails(db(authA).collection('posts').doc('non-existing-post').update({
+            authorUid: A,
+        }));
+
+        await admin().collection("posts").doc("aaa").set({
+            authorUid: A,
+            title: 'update test'
+        });
+
+        // update with wrong auth
+        await firebase.assertFails(db(authB).collection('posts').doc('aaa').update({
+            timestamp: '123',
+        }));
+
+    });
+
+    it("Post update - success", async () => {
+        await admin().collection("categories").doc("qna").set({
+            title: 'QnA'
+        });
+        await admin().collection("posts").doc("aaa").set({
+            authorUid: A,
+            title: 'update test'
+        });
+        // timestamp is missing
+        await firebase.assertFails(db(authA).collection('posts').doc('aaa').update({
+            authorUid: A,
+        }));
+        // It is okay that authorUid is missing.
+        await firebase.assertSucceeds(db(authA).collection('posts').doc('aaa').update({
+            timestamp: '123',
+        }));
+    });
+
+    it("Post delete", async () => {
+        await admin().collection("categories").doc("qna").set({
+            title: 'QnA'
+        });
+        await admin().collection("posts").doc("aaa").set({
+            authorUid: A,
+            title: 'update test'
+        });
+        // delete with wrong auth
+        await firebase.assertFails(db(authB).collection('posts').doc('aaa').delete());
+
+        // delete with correct auth
+        await firebase.assertSucceeds(db(authA).collection('posts').doc('aaa').delete());
+
+        /// A post created by C
+        await admin().collection("posts").doc("admin-test").set({
+            authorUid: C,
+            title: 'update test'
+        });
+
+        // Set user A to admin
+        await admin().collection("settings").doc("admins").set({
+            [A]: true,
+        });
+
+        // Delete post by admin
+        await firebase.assertSucceeds(db(authA).collection('posts').doc('admin-test').delete());
+
+    });
 });

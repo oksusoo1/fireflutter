@@ -1,3 +1,5 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:fireflutter/fireflutter.dart';
 
 /// UserModel
@@ -13,7 +15,7 @@ class UserModel {
   });
 
   /// This is the user's document id which is the uid.
-  /// If it is empty, then it means that, the user does not exist.
+  /// If it is empty, the user may not be signed-in
   String id;
   String get uid => id;
 
@@ -23,8 +25,8 @@ class UserModel {
   String photoUrl;
   String birthday;
 
-  bool get signedIn => id != '';
-  bool get signedOut => id == '';
+  bool get signedIn => FirebaseAuth.instance.currentUser != null;
+  bool get signedOut => signedIn == false;
 
   factory UserModel.fromJson(Map<String, dynamic> data) {
     return UserModel(
