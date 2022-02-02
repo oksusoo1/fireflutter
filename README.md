@@ -22,6 +22,7 @@ Table of contents
 - [TODOs](#todos)
   - [Admin](#admin)
   - [Chat](#chat)
+  - [Post](#post)
 - [Installation](#installation)
   - [Running the example](#running-the-example)
   - [Creating a new project](#creating-a-new-project)
@@ -97,6 +98,11 @@ Table of contents
 ## Chat
 
 - put many chat messages in one chat message box(balloon) if they are written in 20 minutes.
+
+## Post
+
+- Do not increase view counter on same post. Save data on local storage. It's not a critical feature. It would be okay even if the view counter increases more than once.
+
 
 
 
