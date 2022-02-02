@@ -5,7 +5,7 @@ import 'dart:async';
 
 import 'package:extended/extended.dart';
 import 'package:fe/screens/admin/admin.screen.dart';
-import 'package:fe/screens/forum/category.screen.dart';
+import 'package:fe/screens/admin/category.screen.dart';
 import 'package:fe/screens/forum/forum.list.screen.dart';
 import 'package:fe/screens/forum/post.create.screen.dart';
 import 'package:fe/service/app.controller.dart';

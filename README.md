@@ -927,7 +927,7 @@ DynamicLinksService.instance.listen((Uri? deepLink) {
 
 
 - A user cannot report same target & targetId.
-- To implement this, simple check if previous report exists.
-  - This won't cost a lot since reporting does happens often.
+  - To implement this, simple check if previous report exists.
+    - This won't cost a lot since reporting does happens often.
 
 

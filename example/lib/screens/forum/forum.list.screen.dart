@@ -4,7 +4,6 @@ import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterfire_ui/firestore.dart';
 import 'package:get/get.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ForumListScreen extends StatefulWidget {
   ForumListScreen({Key? key}) : super(key: key);
@@ -55,7 +54,10 @@ class _ForumListScreenState extends State<ForumListScreen> with FirestoreBase {
               Text(post.content),
               ElevatedButton(
                 onPressed: () {
-                  post.report().then((x) {}).catchError(error);
+                  post
+                      .report()
+                      .then((x) => alert('Report success', 'You have reported this post.'))
+                      .catchError(error);
                 },
                 child: const Text('Report'),
               ),
