@@ -28,10 +28,32 @@ class _ReportManagementState extends State<ReportManagement>
     return FirestoreListView(
       query: reportCol.orderBy('timestamp'),
       itemBuilder: (context, snapshot) {
-        final report = ReportModel.fromJson(snapshot.data() as Json);
+        final report =
+            ReportModel.fromJson(snapshot.data() as Json, snapshot.reference);
 
         return ListTile(
-          title: Text(report.reason),
+          title: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Text(report.ref.id),
+
+              Text('Source: ' + report.target),
+              UserDoc(
+                uid: report.reporterUid,
+                builder: (user) {
+                  return Text('Reporter: ' +
+                      (user.nickname != '' ? user.nickname : 'no_name'));
+                },
+              ),
+              UserDoc(
+                uid: report.reporteeUid,
+                builder: (user) {
+                  return Text('Reportee: ' + user.nickname);
+                },
+              ),
+              Text(report.reason != '' ? report.reason : 'no_reason'),
+            ],
+          ),
         );
       },
     );

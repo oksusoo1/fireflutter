@@ -19,6 +19,8 @@ class UserService with FirestoreBase {
   UserModel user = UserModel();
   User? currentUser = FirebaseAuth.instance.currentUser;
 
+  Map<String, UserModel> otherUsersData = {};
+
   /// User auth changes
   ///
   /// Warning! When user sign-out and sign-in quickly, it is expected
@@ -54,8 +56,9 @@ class UserService with FirestoreBase {
     );
   }
 
-  DocumentReference get _myDoc =>
-      FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser!.uid);
+  DocumentReference get _myDoc => FirebaseFirestore.instance
+      .collection('users')
+      .doc(FirebaseAuth.instance.currentUser!.uid);
 
   /// Update user name of currently login user.
   Future<void> updateNickname(String name) {
