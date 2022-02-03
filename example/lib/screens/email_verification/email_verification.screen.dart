@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
 
+typedef FutureFunction = Future Function();
+
 class EmailVerificationScreen extends StatefulWidget {
   const EmailVerificationScreen({Key? key}) : super(key: key);
 
@@ -28,6 +30,12 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
               children: [
                 const UserInfo(),
                 EmailVerification(
+                  actionCodeSettings: ActionCodeSettings(
+                    url: 'https://withcentertest.page.link/email-verification',
+                    dynamicLinkDomain: 'withcentertest.page.link',
+                    androidPackageName: 'com.withcenter.test',
+                    iOSBundleId: 'com.withcenter.test',
+                  ),
                   onVerified: (re) async {
                     await alert(
                       'Success',
@@ -36,7 +44,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                     Get.toNamed('/home');
                   },
                   onError: error,
-                  onVerificationEmailSent: () => alert(
+                  onVerificationEmailSent: (email) => alert(
                     'Email verification',
                     'Please open your email box and click the verification link.',
                   ),
@@ -64,11 +72,11 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
 
   Future<void> updateEmail(
     String email,
-    Function callback,
+    FutureFunction callback,
   ) async {
     try {
       await FirebaseAuth.instance.currentUser!.updateEmail(email);
-      callback();
+      await callback();
     } on FirebaseAuthException catch (e) {
       if (e.code == 'requires-recent-login') {
         /// User logged in long time agao. Needs to re-login to update email address.
@@ -78,10 +86,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
           codeSent: (verificationId) => Get.defaultDialog(
             title: 'Enter SMS Code to verify it\'s you.',
             content: SmsCodeInput(
-              success: () async {
-                await onReAuthenticationSuccess(email);
-                callback();
-              },
+              success: () => onReAuthenticationSuccess(email).then((value) => callback()),
               error: error,
               submitButton: (callback) => TextButton(
                 child: const Text('Submit'),
@@ -89,10 +94,9 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
               ),
             ),
           ),
-          androidAutomaticVerificationSuccess: () async {
-            await onReAuthenticationSuccess(email);
-            callback();
-          },
+          androidAutomaticVerificationSuccess: () => onReAuthenticationSuccess(email).then(
+            (value) => callback(),
+          ),
           error: error,
           codeAutoRetrievalTimeout: (String verificationId) {
             Get.defaultDialog(
@@ -102,10 +106,10 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
           },
         );
       } else {
-        rethrow;
+        error(e);
       }
     } catch (e) {
-      rethrow;
+      error(e);
     }
   }
 
