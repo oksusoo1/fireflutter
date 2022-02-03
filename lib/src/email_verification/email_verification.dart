@@ -5,6 +5,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import './email_verification.service.dart';
 
+typedef FutureFunction = Future Function();
+
 class EmailVerification extends StatefulWidget {
   EmailVerification({
     Key? key,
@@ -35,7 +37,7 @@ class EmailVerification extends StatefulWidget {
   /// To update email, it may need to open dialog (or another screen) to
   ///   re-authenticate the login if the user logged in long time ago.
   ///   so, updating the email address should be done one root app for UI.
-  final Function(String email, Function callback) onUpdateEmail;
+  final Function(String email, FutureFunction callback) onUpdateEmail;
 
   @override
   State<EmailVerification> createState() => _EmailVerificationState();
@@ -133,26 +135,22 @@ class _EmailVerificationState extends State<EmailVerification> {
   }
 
   /// verify email or update mail had been pressed.
-  verifyEmail() async {
+  verifyEmail() {
     if (emailChanged) {
-      if (emailChanged) {
-        /// onUpdateEmail() is not async/await. So, we do not know when it will
-        /// be finished.
-        /// So, just put 10 seconds of loader. the loader will be disappear 10
-        /// seconds later or when the verification email had sent.
-        setState(() => loading = true);
-        Timer(Duration(seconds: 10), () => setState(() => loading = false));
-        widget.onUpdateEmail(email.text, () async {
-          sendVerificationLink();
-        });
-      }
+      /// onUpdateEmail() is not async/await. So, we do not know when it will
+      /// be finished.
+      /// So, just put 10 seconds of loader. the loader will be disappear 10
+      /// seconds later or when the verification email had sent.
+      setState(() => loading = true);
+      Timer(Duration(seconds: 10), () => setState(() => loading = false));
+      widget.onUpdateEmail(email.text, sendVerificationLink);
     } else {
       sendVerificationLink();
     }
   }
 
   /// Send verification link to email box.
-  sendVerificationLink() async {
+  Future sendVerificationLink() async {
     try {
       setState(() => loading = true);
       await _emailService.sendVerificationEmail();
