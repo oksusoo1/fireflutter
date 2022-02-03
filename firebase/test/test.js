@@ -1,4 +1,5 @@
 const firebase = require('@firebase/testing');
+const { auth } = require('firebase');
 const TEST_PROJECT_ID = "withcenter-test-project";
 const A = "user_A";
 const B = "user_B";
@@ -19,19 +20,46 @@ async function setAdmin(uid) {
     });
 }
 
+/// Create a category by admin
 async function createCategory(id) {
     return admin().collection("categories").doc(id).set({
         title: id
     });
 }
 
+/// Create category by admin
 async function createPost(category, docId, userUid, title) {
     return admin().collection("posts").doc(docId).set({
         category: category,
         authorUid: userUid,
         title: title,
+        timestamp: 123,
     });
 }
+
+/// create a category and post
+async function createCategoryPost(category, docId, userUid, title) {
+    await createCategory(category);
+    await createPost(category, docId, userUid, title);
+}
+
+
+/// Create a comment with userUid and random sample data.
+/// ```
+/// const doc = await createComment(A);
+/// console.log((await doc.get()).data());
+/// await firebase.assertFails(db(authC).doc(doc.path).delete());
+/// ```
+async function createComment(userUid) {
+    await createCategoryPost('cat', 'doc', userUid, 'title');
+    const doc = await db(authA).collection('posts').doc('doc').collection('comments').add({
+        authorUid: userUid,
+        timestamp: 123,
+    });
+    return doc;
+}
+
+
 
 /// 테스트 전에, 이전의 데이터를 모두 지운다.
 beforeEach(async () => {
@@ -420,59 +448,132 @@ describe('Firestore security test', () => {
     });
 
 
-
-    // it('Reports', async () => {
-    //     // missing input data
-    //     await firebase.assertFails(db(authB).collection('reports').doc('a').set({
-    //         'timestamp': '123',
-    //     }));
-
-    //     // success
-    //     await firebase.assertSucceeds(db(authA).collection('reports').doc('post-aaa-A').set({
-    //         'target': 'post',
-    //         'targetId': 'aaa',
-    //         'reporterUid': A,
-    //         'reporteeUid': B,
-    //         'timestamp': '123',
-    //     }));
-
-
-    //     // fails - wrong uid
-    //     await firebase.assertFails(db(authA).collection('reports').doc('post-aaa-wrong-uid').set({
-    //         'target': 'post',
-    //         'targetId': 'post-aaa',
-    //         'reporterUid': B,
-    //         'reporteeUid': C,
-    //         'timestamp': '123',
-    //     }));
+    it('Comment - create', async () => {
+        await createCategoryPost('cat', 'doc', A, 'title');
+        const col = db(authA).collection('posts').doc('doc').collection('comments');
+        /// success
+        await firebase.assertSucceeds(col.add({
+            authorUid: A,
+            timestamp: 123,
+        }));
+        /// missing timestamp
+        await firebase.assertFails(col.add({
+            authorUid: A,
+        }));
+        /// Wrong uid
+        await firebase.assertFails(col.add({
+            authorUid: B,
+            timestamp: 123,
+        }));
+    });
 
 
-    //     // fails - same target & targetId
-    //     await firebase.assertFails(db(authA).collection('reports').doc('post-aaa-A').set({
-    //         'target': 'post',
-    //         'targetId': 'post-aaa',
-    //         'reporterUid': A,
-    //         'reporteeUid': B,
-    //         'timestamp': '123',
-    //     }));
 
-    //     // fails on updating. update is not allowed.
-    //     await firebase.assertFails(db(authA).collection('reports').doc('post-aaa-A').update({
-    //         'target': '...',
-    //     }));
+    it('Comment - update', async () => {
+        await createCategoryPost('cat', 'doc', A, 'title');
+        const doc = await db(authA).collection('posts').doc('doc').collection('comments').add({
+            authorUid: A,
+            timestamp: 123,
+        });
 
-    //     // fails on deletion. deletion is not allowed.
-    //     await firebase.assertFails(db(authA).collection('reports').doc('post-aaa-A').delete());
+        // console.log((await doc.get()).data());
+
+        // success
+        await firebase.assertSucceeds(doc.update({
+            timestamp: 456,
+        }));
+
+        // success - update nothing
+        await firebase.assertSucceeds(doc.update({}));
 
 
-    //     // Fail - getting all docs from reports collection as a user
-    //     await firebase.assertFails(db(authA).collection('reports').get());
 
-    //     // Success - admin can get all report docs.
-    //     await setAdmin(B);
-    //     await firebase.assertSucceeds(db(authB).collection('reports').get());
+        // fail - timestamp is missing
+        await firebase.assertFails(doc.update({
+            content: '...',
+        }));
 
-    // });
+        // console.log(doc.path);
+        const docB = db(authB).doc(doc.path);
+
+        // fail - update with wrong auth
+        await firebase.assertFails(docB.update({ timestamp: 789 }));
+        // success - updating only like, dislike,
+        await firebase.assertSucceeds(docB.update({ like: 1 }));
+        await firebase.assertSucceeds(docB.update({ like: 0, dislike: 1 }));
+
+    });
+
+
+    it('Comment - delete', async () => {
+        const doc = await createComment(A);
+        // console.log((await doc.get()).data());
+
+
+        // fail - no auth
+        await firebase.assertFails(db().doc(doc.path).delete());
+
+        // fail - wrong auth
+        await firebase.assertFails(db(authC).doc(doc.path).delete());
+
+        // success - correct auth
+        await firebase.assertSucceeds(db(authA).doc(doc.path).delete());
+    })
+
+
+
+    it('Reports', async () => {
+        // missing input data
+        await firebase.assertFails(db(authB).collection('reports').doc('a').set({
+            'timestamp': '123',
+        }));
+
+        // success
+        await firebase.assertSucceeds(db(authA).collection('reports').doc('post-aaa-A').set({
+            'target': 'post',
+            'targetId': 'aaa',
+            'reporterUid': A,
+            'reporteeUid': B,
+            'timestamp': '123',
+        }));
+
+
+        // fails - wrong uid
+        await firebase.assertFails(db(authA).collection('reports').doc('post-aaa-wrong-uid').set({
+            'target': 'post',
+            'targetId': 'post-aaa',
+            'reporterUid': B,
+            'reporteeUid': C,
+            'timestamp': '123',
+        }));
+
+
+        // fails - same target & targetId
+        await firebase.assertFails(db(authA).collection('reports').doc('post-aaa-A').set({
+            'target': 'post',
+            'targetId': 'post-aaa',
+            'reporterUid': A,
+            'reporteeUid': B,
+            'timestamp': '123',
+        }));
+
+        // fails on updating. update is not allowed.
+        await firebase.assertFails(db(authA).collection('reports').doc('post-aaa-A').update({
+            'target': '...',
+        }));
+
+        // fails on deletion. deletion is not allowed.
+        await firebase.assertFails(db(authA).collection('reports').doc('post-aaa-A').delete());
+
+
+        // Fail - getting all docs from reports collection as a user
+        await firebase.assertFails(db(authA).collection('reports').get());
+
+        // Success - admin can get all report docs.
+        await setAdmin(B);
+        await firebase.assertSucceeds(db(authB).collection('reports').get());
+
+    });
 });
 
 

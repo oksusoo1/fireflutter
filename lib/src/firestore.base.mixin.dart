@@ -52,7 +52,7 @@ mixin FirestoreBase {
   /// These are the mehods that are used in multiple places
   ///
   /// *****************************************************
-  Future<void> report({
+  Future<void> createReport({
     required String target,
     required String targetId,
     required String reporteeUid,

@@ -77,8 +77,15 @@ class _ForumListScreenState extends State<ForumListScreen> with FirestoreBase {
                         builder: (_) {
                           return CommentEditDialog(
                             onCancel: Get.back,
-                            onCreate: (PostModel post) async {
-                              print(post.commentCreateData);
+                            onCreate: (PostModel comment) async {
+                              try {
+                                comment.id = post.id;
+                                await comment.commentCreate();
+                                Get.back();
+                                alert('Comment created', 'Your comment has created successfully');
+                              } catch (e) {
+                                error(e);
+                              }
                             },
                           );
                         },

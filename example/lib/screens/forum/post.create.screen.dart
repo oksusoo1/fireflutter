@@ -35,20 +35,16 @@ class _PostCreateScreenState extends State<PostCreateScreen> with FirestoreBase 
         ElevatedButton(
             onPressed: () async {
               try {
-                // final data = PostModel.toCreate(
-                //   category: Get.arguments['category'],
-                //   title: title.text,
-                //   content: content.text,
-                // );
-                // print('post create data; $data');
-                // await postCol.add(data);
-
-                final doc = await PostService.instance.create(
+                final ref = await PostModel(
                   category: Get.arguments['category'],
                   title: title.text,
                   content: content.text,
-                );
-                Get.back(result: doc.id);
+                ).create(extra: {'yo': 'hey'});
+
+                print('post created; ${ref.id}');
+                print('post created; $ref');
+
+                Get.back(result: ref.id);
                 await alert('Post created', 'Thank you');
               } catch (e) {
                 error(e);

@@ -54,9 +54,20 @@ service cloud.firestore {
       allow update: if
         (isMyPost() && willBeMyPost() && mustUpdating(['timestamp']))
         ||
-        onlyUpdating(['viewCounter'])
+        onlyUpdating(['viewCounter', 'like', 'dislike'])
       ;
       allow delete: if isAdmin() || isMyPost();
+
+      match /comments/{commentId} {
+        allow read: if true;
+        allow create: if required(['authorUid', 'timestamp']) && willBeMyDoc('authorUid');
+        allow update: if
+          (isMyDoc('authorUid')) && mustUpdating(['timestamp'])
+          ||
+          onlyUpdating(['like', 'dislike'])
+        ;
+        allow delete: if isAdmin() || isMyDoc('authorUid');
+      }
     }
 
     match /reports/{reportId} {

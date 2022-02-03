@@ -6,7 +6,7 @@ import 'package:fireflutter/fireflutter.dart';
 /// Post and comment are a lot similiar. So both uses the same model.
 /// And [PostModel] may be customized and used for something else like shopping
 /// item model.
-class PostModel {
+class PostModel with FirestoreBase {
   PostModel({
     this.id = '',
     this.category = '',
@@ -16,7 +16,12 @@ class PostModel {
     this.authorPhotoUrl = '',
     this.authorUid = '',
     this.timestamp_,
+    this.data_,
   });
+
+  /// data is the document data object.
+  Json? data_;
+  Json get data => data_ ?? const {};
 
   /// This is the user's document id.
   /// If it is empty, then it means that, the user does not exist.
@@ -37,7 +42,8 @@ class PostModel {
   Timestamp? timestamp_;
   Timestamp get timestamp => timestamp_ ?? Timestamp.now();
 
-  factory PostModel.fromJson(Map<String, dynamic> data, String id) {
+  /// Get document data of map and convert it into post model
+  factory PostModel.fromJson(Json data, String id) {
     return PostModel(
       id: id,
       category: data['category'] ?? '',
@@ -47,7 +53,17 @@ class PostModel {
       authorNickname: data['authorNickname'] ?? '',
       authorPhotoUrl: data['authorPhotoUrl'] ?? '',
       timestamp_: data['timestamp'] ?? Timestamp.now(),
+      data_: data,
     );
+  }
+
+  /// Convert post model from firestore document snapshot
+  factory PostModel.fromSnapshot(DocumentSnapshot doc) {
+    if (doc.exists) {
+      return PostModel();
+    } else {
+      return PostModel();
+    }
   }
 
   Map<String, dynamic> get createData {
@@ -72,6 +88,7 @@ class PostModel {
     };
   }
 
+  /// Contains all the data
   Map<String, dynamic> get map {
     return {
       'title': title,
@@ -80,6 +97,7 @@ class PostModel {
       'authorNickname': authorNickname,
       'authorPhotoUrl': authorPhotoUrl,
       'timestamp': timestamp,
+      'data': data,
     };
   }
 
@@ -89,7 +107,7 @@ class PostModel {
   }
 
   Future<void> report([String? reason]) {
-    return PostService.instance.report(
+    return createReport(
       target: 'post',
       targetId: id,
       reporteeUid: authorUid,
@@ -97,6 +115,17 @@ class PostModel {
   }
 
   Future<void> increaseViewCounter() {
-    return PostService.instance.increaseViewCounter(id);
+    return postDoc(id).update({'viewCounter': FieldValue.increment(1)});
+  }
+
+  /// Create a post with extra data
+  Future<DocumentReference<Object?>> create({Json extra = const {}}) {
+    return postCol.add({...createData, ...extra});
+  }
+
+  /// Create a comment with extra data
+  Future<DocumentReference<Object?>> commentCreate({Json extra = const {}}) {
+    final col = commentCol(id);
+    return col.add({...commentCreateData, ...extra});
   }
 }
