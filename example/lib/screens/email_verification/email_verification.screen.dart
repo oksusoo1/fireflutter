@@ -33,7 +33,6 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                     dynamicLinkDomain: 'withcentertest.page.link',
                     androidPackageName: 'com.withcenter.test',
                     iOSBundleId: 'com.withcenter.test',
-                    // handleCodeInApp: true,
                   ),
                   onVerified: (re) async {
                     await alert(
