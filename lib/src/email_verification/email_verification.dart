@@ -10,6 +10,7 @@ class EmailVerification extends StatefulWidget {
     Key? key,
     required this.onVerified,
     required this.onError,
+    this.onCancel,
     required this.onVerificationEmailSent,
     required this.onTooManyRequests,
     required this.onUpdateEmail,
@@ -20,6 +21,7 @@ class EmailVerification extends StatefulWidget {
   final Function(bool updated) onVerified;
   final Function(dynamic) onError;
   final Function(String) onVerificationEmailSent;
+  final Function()? onCancel;
   final Function onTooManyRequests;
 
   final Function onUserTokenExpired;
@@ -89,29 +91,43 @@ class _EmailVerificationState extends State<EmailVerification> {
             emailChanged = orgEmail != v;
             emailVerificationCodeSent = false;
           }),
+          decoration: InputDecoration(hintText: 'Enter email ..'),
         ),
+        SizedBox(height: 8),
         loading
             ? Center(child: const CircularProgressIndicator.adaptive())
-            : emailVerificationCodeSent
-                ? ElevatedButton(
-                    onPressed: () async {
-                      try {
-                        setState(() => loading = true);
-                        await _emailService.sendVerificationEmail();
-                      } catch (e) {
-                        widget.onError(e);
-                      } finally {
-                        setState(() => loading = false);
-                      }
-                    },
-                    child: const Text('Re-send'),
-                  )
-                : ElevatedButton(
-                    onPressed: (emailChanged || !emailVerified) ? verifyEmail : null,
-                    child: Text(
-                      (emailChanged || emailVerified) ? 'Update email' : 'Verify email',
+            : Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  ElevatedButton(
+                    onPressed: widget.onCancel,
+                    child: const Text('Cancel'),
+                    style: ElevatedButton.styleFrom(
+                      primary: Colors.redAccent,
                     ),
                   ),
+                  emailVerificationCodeSent
+                      ? ElevatedButton(
+                          onPressed: () async {
+                            try {
+                              setState(() => loading = true);
+                              await _emailService.sendVerificationEmail();
+                            } catch (e) {
+                              widget.onError(e);
+                            } finally {
+                              setState(() => loading = false);
+                            }
+                          },
+                          child: const Text('Re-send'),
+                        )
+                      : ElevatedButton(
+                          onPressed: (emailChanged || !emailVerified) ? verifyEmail : null,
+                          child: Text(
+                            (emailChanged || emailVerified) ? 'Update email' : 'Verify email',
+                          ),
+                        ),
+                ],
+              )
       ],
     );
   }
