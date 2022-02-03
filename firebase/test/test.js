@@ -161,6 +161,7 @@ describe('Firestore security test', () => {
     })
 
 
+
     it("Chat - message - write - failure test", async () => {
 
         /// expect fail, no auth
@@ -405,6 +406,7 @@ describe('Firestore security test', () => {
 
 
 
+    /// Post deletion is not allowed.
     it("Post delete", async () => {
         await admin().collection("categories").doc("qna").set({
             title: 'QnA'
@@ -413,11 +415,9 @@ describe('Firestore security test', () => {
             authorUid: A,
             title: 'update test'
         });
-        // delete with wrong auth
-        await firebase.assertFails(db(authB).collection('posts').doc('aaa').delete());
 
         // delete with correct auth
-        await firebase.assertSucceeds(db(authA).collection('posts').doc('aaa').delete());
+        await firebase.assertFails(db(authA).collection('posts').doc('aaa').delete());
 
         /// A post created by C
         await admin().collection("posts").doc("admin-test").set({
@@ -431,7 +431,7 @@ describe('Firestore security test', () => {
         });
 
         // Delete post by admin
-        await firebase.assertSucceeds(db(authA).collection('posts').doc('admin-test').delete());
+        await firebase.assertFails(db(authA).collection('posts').doc('admin-test').delete());
 
     });
 
@@ -505,10 +505,10 @@ describe('Firestore security test', () => {
     });
 
 
+    /// Comment deletion is not allowed.
     it('Comment - delete', async () => {
         const doc = await createComment(A);
         // console.log((await doc.get()).data());
-
 
         // fail - no auth
         await firebase.assertFails(db().doc(doc.path).delete());
@@ -517,7 +517,7 @@ describe('Firestore security test', () => {
         await firebase.assertFails(db(authC).doc(doc.path).delete());
 
         // success - correct auth
-        await firebase.assertSucceeds(db(authA).doc(doc.path).delete());
+        await firebase.assertFails(db(authA).doc(doc.path).delete());
     })
 
 
