@@ -39,20 +39,23 @@ service cloud.firestore {
       allow delete: if isAdmin();
     }
 
+
     match /posts/{postId} {
       allow read: if true;
       allow create: if required(['category', 'authorUid', 'timestamp']) &&
         categoryExists() &&
         willBeMyPost()
       ;
-      allow update:
-        if
-          // Update my document
-          isMyPost() &&
-          // Don't change authorUid
-          willBeMyPost() &&
-          required(['timestamp'])
-        ;
+
+      // Post update rule;
+      // - Fails if timestamp is missing
+      // - Success if nothing changes. if request.resource.data is same as resource.data
+      // - Success if 'viewCounter' is updated only.
+      allow update: if
+        (isMyPost() && willBeMyPost() && mustUpdating(['timestamp']))
+        ||
+        onlyUpdating(['viewCounter'])
+      ;
       allow delete: if isAdmin() || isMyPost();
     }
 
@@ -65,6 +68,37 @@ service cloud.firestore {
       allow update: if false;
       allow delete: if false;
     }
+
+    // ***** For security test purpose *****
+    //
+    //
+    match /test {
+      match /notUpdating/{col}/{doc} {
+        allow create: if true;
+        allow update: if notUpdating(['a', 'b']);
+      }
+      match /onlyUpdating/{col}/{doc} {
+        allow create: if true;
+        allow update: if onlyUpdating(['a', 'b']);
+      }
+      match /mustUpdating/{col}/{doc} {
+        allow create: if true;
+        allow update: if mustUpdating(['a', 'b']);
+      }
+      match /fieldCheck/{col} {
+        match /optionalOnly {
+          allow create: if fieldCheck([], ['a', 'b', 'c']);
+          allow update: if fieldCheck([], ['a', 'b', 'c']);
+        }
+        match /requiredAndOptional {
+          allow create: if fieldCheck(['r'], ['a', 'b', 'c']);
+          allow update: if fieldCheck(['r'], ['a', 'b', 'c']);
+        }
+      }
+    }
+
+
+    // ***** methods ****
 
     // check if 'A' & 'B' are blocked. 
     function isBlocked() {
@@ -89,6 +123,8 @@ service cloud.firestore {
   }
 }
 
+// ***** methods *****
+
 // Check if roomId contains my Uid.
 function myChatRoom(roomId) {
   return request.auth.uid in roomId.split('-');
@@ -109,22 +145,30 @@ function messageFields() {
 function fieldCheck(required, optional) {
   let all = required.concat( optional );
   // let fC = debug('****** fieldCheck *****');
-  return request.resource.data.keys().hasAll( required ) && request.resource.data.keys().hasOnly(all);
+  return required( required ) && request.resource.data.keys().hasOnly(all);
 }
+
+
+// * Warning : It's check the fields after save.
+// * Warning : !!! It's not checking the incoming data fields !!!
 function required(fields) {
   return request.resource.data.keys().hasAll( fields );
 }
 
 
-// Check if the document belongs to the user.
+// Check if the field matches to the user id before save
+//
 // [field] must match the user uid.
+// Use this to see if the document belongs to the user.
 function isMyDoc(field) {
    return resource.data[field] == request.auth.uid;
 }
 
 
-// Check if the document will belong to the user after save.
+// Check if the field matches to the user uid
+//
 // [field] must match the user uid.
+// Use this to see if the document belongs to the user after save.
 function willBeMyDoc(field) {
    return request.resource.data[field] == request.auth.uid;
 }
@@ -139,3 +183,60 @@ function isMyPost() {
 function willBeMyPost() {
   return willBeMyDoc('authorUid');
 }
+
+
+// Check if the [fields] does not change.
+//
+// Use this to block chainging on the properties in [fields].
+// ```
+// allow update: if notUpdating(['a', 'b', 'c']);
+// ```
+// Fields that are not listen in the fields parameters may change.
+function notUpdating(fields) {
+  return request.resource.data.diff(resource.data).unchangedKeys().hasAll(fields);
+}
+
+// Only updating [fields]
+// - Updating only one or none of the [fields] is okay.
+// - Fails if other properties rather than the [fields] are changed.
+//
+// - Success if only the properties in the list of [fields] should be changed.
+// - Success if none of the properties are changed.
+//
+// Note, the action will succeed even if
+//  the value of the fields do not changed or does not exists in incoming data.
+//  This means, even if the incoming data is empty, it will succeed.
+//  FIY, `[].hasOnly(['a', 'b'])` is true expressoin.
+//  See, https://firebase.google.com/docs/reference/rules/rules.List#hasOnly
+// 
+// For instance, when client can only update like and dislike; see the following code;
+// ```
+// rule => onlyUpdating(['like', 'dislike']);
+// code => succeed on `doc.update({})`, `doc.update({like: x})`,
+// code => fails on `doc.update({title: 'x'})` 
+// ```
+// For anthother instance, the client can update 'viewCounter';
+// ```
+// rule => allow update: if onlyUpdating('viewCounter');
+// code succeeds => doc.update({ viewCounter: FieldValue.increment(1) });
+// code succeeds => doc.update({}); // no update is okay.
+// code fials => doc.update({b: 'Banana'})
+// ```
+function onlyUpdating(fields) {
+  return request.resource.data.diff(resource.data).affectedKeys().hasOnly(fields);
+}
+
+
+// The value of [fields] must be changed.
+// Chaging other properties rather than [fields] is fine.
+function mustUpdating(fields) {
+  return request.resource.data.diff(resource.data).affectedKeys().hasAll(fields);
+}
+
+
+
+
+
+
+
+
