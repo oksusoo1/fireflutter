@@ -24,12 +24,6 @@ class _UserDocState extends State<UserDoc> {
   void initState() {
     super.initState();
 
-    if (UserService.instance.otherUsersData[widget.uid] != null) {
-      setState(() {
-        user = UserService.instance.otherUsersData[widget.uid];
-      });
-      return;
-    }
     userDocSubscription = FirebaseFirestore.instance
         .collection('users')
         .doc(widget.uid)
@@ -39,7 +33,6 @@ class _UserDocState extends State<UserDoc> {
         setState(() {
           if (snapshot.exists) {
             user = UserModel.fromJson(snapshot.data()!);
-            UserService.instance.otherUsersData[widget.uid] = user!;
           } else {
             user = UserModel();
           }

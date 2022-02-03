@@ -19,8 +19,6 @@ class UserService with FirestoreBase {
   UserModel user = UserModel();
   User? currentUser = FirebaseAuth.instance.currentUser;
 
-  Map<String, UserModel> otherUsersData = {};
-
   /// User auth changes
   ///
   /// Warning! When user sign-out and sign-in quickly, it is expected

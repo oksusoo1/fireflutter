@@ -42,8 +42,9 @@ class _ForumListScreenState extends State<ForumListScreen> with FirestoreBase {
       ),
       body: FirestoreListView(
         key: ValueKey(newPostId),
-        query:
-            postCol.where('category', isEqualTo: category).orderBy('timestamp', descending: true),
+        query: postCol
+            .where('category', isEqualTo: category)
+            .orderBy('timestamp', descending: true),
         itemBuilder: (context, snapshot) {
           final post = PostModel.fromJson(
             snapshot.data() as Json,
@@ -63,7 +64,9 @@ class _ForumListScreenState extends State<ForumListScreen> with FirestoreBase {
               }
             },
             subtitle: Text(
-              DateTime.fromMillisecondsSinceEpoch(post.timestamp.millisecondsSinceEpoch).toString(),
+              DateTime.fromMillisecondsSinceEpoch(
+                      post.timestamp.millisecondsSinceEpoch)
+                  .toString(),
             ),
             children: [
               Text(post.content),
@@ -87,10 +90,46 @@ class _ForumListScreenState extends State<ForumListScreen> with FirestoreBase {
                     child: const Text('Comment'),
                   ),
                   ElevatedButton(
-                    onPressed: () {
+                    onPressed: () async {
+                      final input = TextEditingController(text: '');
+                      String? re = await showDialog(
+                        context: Get.context!,
+                        builder: (c) => AlertDialog(
+                          title: Text('Report Post'),
+                          content: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text('Reason'),
+                              TextField(
+                                controller: input,
+                                maxLines: 4,
+                              ),
+                            ],
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () {
+                                Get.back();
+                              },
+                              child: Text('close'),
+                            ),
+                            TextButton(
+                              onPressed: () async {
+                                Get.back(result: input.text);
+                              },
+                              child: Text('submit'),
+                            ),
+                          ],
+                        ),
+                      );
+
+                      if (re == null) return;
+
                       post
-                          .report()
-                          .then((x) => alert('Report success', 'You have reported this post.'))
+                          .report(reason: input.text)
+                          .then((x) => alert(
+                              'Report success', 'You have reported this post.'))
                           .catchError(error);
                     },
                     child: const Text('Report'),

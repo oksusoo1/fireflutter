@@ -88,11 +88,12 @@ class PostModel {
     return '''PostModel($map)''';
   }
 
-  Future<void> report([String? reason]) {
+  Future<void> report({String? reason}) {
     return PostService.instance.report(
       target: 'post',
       targetId: id,
       reporteeUid: authorUid,
+      reason: reason,
     );
   }
 

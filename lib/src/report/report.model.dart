@@ -23,12 +23,13 @@ class ReportModel {
 
   factory ReportModel.fromJson(Json json, DocumentReference reference) {
     return ReportModel(
-        target: json['target'],
-        targetId: json['targetId'],
-        reporterUid: json['reporterUid'],
-        reporteeUid: json['reporteeUid'],
-        reason: json['reason'] ?? '',
-        timestamp: json['timestamp'],
-        ref: reference);
+      target: json['target'],
+      targetId: json['targetId'],
+      reporterUid: json['reporterUid'],
+      reporteeUid: json['reporteeUid'],
+      reason: json['reason'] ?? '',
+      timestamp: json['timestamp'],
+      ref: reference,
+    );
   }
 }

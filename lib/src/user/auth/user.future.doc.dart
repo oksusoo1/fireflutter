@@ -18,18 +18,11 @@ class _UserFutureDocState extends State<UserFutureDoc> {
   void initState() {
     super.initState();
 
-    if (UserService.instance.otherUsersData[widget.uid] != null) {
-      setState(() {
-        user = UserService.instance.otherUsersData[widget.uid];
-      });
-      return;
-    }
     FirebaseFirestore.instance.collection('users').doc(widget.uid).get().then(
       (DocumentSnapshot<Map<String, dynamic>> snapshot) {
         setState(() {
           if (snapshot.exists) {
             user = UserModel.fromJson(snapshot.data()!);
-            UserService.instance.otherUsersData[widget.uid] = user!;
           } else {
             user = UserModel();
           }

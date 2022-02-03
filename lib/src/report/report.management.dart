@@ -1,3 +1,6 @@
+import 'dart:html';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterfire_ui/firestore.dart';
@@ -7,10 +10,12 @@ class ReportManagement extends StatefulWidget {
     Key? key,
     this.padding = const EdgeInsets.all(0),
     required this.onError,
+    this.target,
   }) : super(key: key);
 
   final EdgeInsets padding;
   final Function(dynamic) onError;
+  final String? target;
 
   @override
   State<ReportManagement> createState() => _ReportManagementState();
@@ -18,44 +23,70 @@ class ReportManagement extends StatefulWidget {
 
 class _ReportManagementState extends State<ReportManagement>
     with FirestoreBase {
-  final category = TextEditingController();
-  final title = TextEditingController();
-  final description = TextEditingController();
+  late Query query;
+  @override
+  void initState() {
+    super.initState();
+    CollectionReference q = reportCol;
+    if (widget.target != null) {
+      query = q.where('target', isEqualTo: widget.target);
+    }
+    query = query.orderBy('timestamp');
+  }
 
   @override
   Widget build(BuildContext context) {
-    print('report management');
-    return FirestoreListView(
-      query: reportCol.orderBy('timestamp'),
-      itemBuilder: (context, snapshot) {
-        final report =
-            ReportModel.fromJson(snapshot.data() as Json, snapshot.reference);
+    return Column(
+      children: [
+        Row(
+          children: [
+            ElevatedButton(
+              onPressed: () {
+                print('admin actions');
+              },
+              child: const Text('Post'),
+            ),
+          ],
+        ),
+        FirestoreListView(
+          query: query,
+          itemBuilder: (context, snapshot) {
+            final report = ReportModel.fromJson(
+                snapshot.data() as Json, snapshot.reference);
 
-        return ListTile(
-          title: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Text(report.ref.id),
-
-              Text('Source: ' + report.target),
-              UserDoc(
-                uid: report.reporterUid,
-                builder: (user) {
-                  return Text('Reporter: ' +
-                      (user.nickname != '' ? user.nickname : 'no_name'));
-                },
+            return ExpansionTile(
+              title: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Source: ' + report.target),
+                  UserFutureDoc(
+                    uid: report.reporterUid,
+                    builder: (user) {
+                      return Text('Reporter: ' +
+                          (user.nickname != '' ? user.nickname : 'no_name'));
+                    },
+                  ),
+                  UserFutureDoc(
+                    uid: report.reporteeUid,
+                    builder: (user) {
+                      return Text('Reportee: ' + user.nickname);
+                    },
+                  ),
+                  Text(report.reason != '' ? report.reason : 'no_reason'),
+                ],
               ),
-              UserDoc(
-                uid: report.reporteeUid,
-                builder: (user) {
-                  return Text('Reportee: ' + user.nickname);
-                },
-              ),
-              Text(report.reason != '' ? report.reason : 'no_reason'),
-            ],
-          ),
-        );
-      },
+              children: [
+                ElevatedButton(
+                  onPressed: () {
+                    print('admin actions');
+                  },
+                  child: const Text('admin action'),
+                ),
+              ],
+            );
+          },
+        ),
+      ],
     );
   }
 }
