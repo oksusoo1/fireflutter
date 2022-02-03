@@ -11,13 +11,16 @@ class PostService with FirestoreBase {
 
   Future<DocumentReference<Object?>> create({
     required String category,
-    String? title,
-    String? content,
+    String title = '',
+    String content = '',
   }) {
-    final data = PostModel.toCreate(category: category, title: title, content: content);
+    final data = PostModel(category: category, title: title, content: content).createData;
     return postCol.add(data);
   }
 
+  /// Increases the view counter.
+  ///
+  /// Firestore normally works fine by surpassing 1 write in 1 second per document.
   Future<void> increaseViewCounter(String id) {
     return postDoc(id).update({'viewCounter': FieldValue.increment(1)});
   }

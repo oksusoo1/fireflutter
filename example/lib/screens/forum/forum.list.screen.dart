@@ -68,14 +68,34 @@ class _ForumListScreenState extends State<ForumListScreen> with FirestoreBase {
             children: [
               Text(post.content),
               Text(post.id),
-              ElevatedButton(
-                onPressed: () {
-                  post
-                      .report()
-                      .then((x) => alert('Report success', 'You have reported this post.'))
-                      .catchError(error);
-                },
-                child: const Text('Report'),
+              Wrap(
+                children: [
+                  ElevatedButton(
+                    onPressed: () async {
+                      await showDialog(
+                        context: context,
+                        builder: (_) {
+                          return CommentEditDialog(
+                            onCancel: Get.back,
+                            onCreate: (PostModel post) async {
+                              print(post.commentCreateData);
+                            },
+                          );
+                        },
+                      );
+                    },
+                    child: const Text('Comment'),
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      post
+                          .report()
+                          .then((x) => alert('Report success', 'You have reported this post.'))
+                          .catchError(error);
+                    },
+                    child: const Text('Report'),
+                  ),
+                ],
               ),
             ],
           );
