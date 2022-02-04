@@ -538,6 +538,12 @@ describe('Firestore security test', () => {
         }));
 
 
+        /// success - read by the creator
+        await firebase.assertSucceeds(db(authA).collection('reports').doc('post-aaa-A').get());
+
+
+
+
         // fails - wrong uid
         await firebase.assertFails(db(authA).collection('reports').doc('post-aaa-wrong-uid').set({
             'target': 'post',
@@ -568,10 +574,13 @@ describe('Firestore security test', () => {
 
         // Fail - getting all docs from reports collection as a user
         await firebase.assertFails(db(authA).collection('reports').get());
+        await firebase.assertFails(db(authA).collection('reports').doc('doc').get());
+        await firebase.assertFails(db().collection('reports').get());
 
         // Success - admin can get all report docs.
         await setAdmin(B);
         await firebase.assertSucceeds(db(authB).collection('reports').get());
+        await firebase.assertSucceeds(db(authB).collection('reports').doc('doc').get());
 
     });
 });

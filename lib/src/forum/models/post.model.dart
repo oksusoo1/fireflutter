@@ -14,6 +14,7 @@ class PostModel with FirestoreBase, ForumBase {
     this.authorNickname = '',
     this.authorPhotoUrl = '',
     this.authorUid = '',
+    this.files = const [],
     this.timestamp_,
     this.data_,
   });
@@ -35,6 +36,8 @@ class PostModel with FirestoreBase, ForumBase {
   String authorUid;
   String authorNickname;
   String authorPhotoUrl;
+
+  List<String> files;
 
   Timestamp? timestamp_;
   Timestamp get timestamp => timestamp_ ?? Timestamp.now();
