@@ -37,16 +37,6 @@ class _ReportManagementState extends State<ReportManagement>
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Row(
-          children: [
-            ElevatedButton(
-              onPressed: () {
-                print('admin actions');
-              },
-              child: const Text('Post'),
-            ),
-          ],
-        ),
         FirestoreListView(
           query: query,
           itemBuilder: (context, snapshot) {

@@ -80,8 +80,16 @@ class _ForumListScreenState extends State<ForumListScreen> with FirestoreBase {
                         builder: (_) {
                           return CommentEditDialog(
                             onCancel: Get.back,
-                            onCreate: (PostModel post) async {
-                              print(post.commentCreateData);
+                            onCreate: (PostModel comment) async {
+                              try {
+                                comment.id = post.id;
+                                await comment.commentCreate();
+                                Get.back();
+                                alert('Comment created',
+                                    'Your comment has created successfully');
+                              } catch (e) {
+                                error(e);
+                              }
                             },
                           );
                         },
@@ -127,7 +135,7 @@ class _ForumListScreenState extends State<ForumListScreen> with FirestoreBase {
                       if (re == null) return;
 
                       post
-                          .report(reason: input.text)
+                          .report(input.text)
                           .then((x) => alert(
                               'Report success', 'You have reported this post.'))
                           .catchError(error);
