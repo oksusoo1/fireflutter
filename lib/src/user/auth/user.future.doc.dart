@@ -1,6 +1,5 @@
-import 'package:firebase_database/firebase_database.dart';
-import '../../../fireflutter.dart';
 import 'package:flutter/material.dart';
+import '../../../fireflutter.dart';
 
 class UserFutureDoc extends StatefulWidget {
   const UserFutureDoc({required this.uid, required this.builder, Key? key}) : super(key: key);
@@ -11,17 +10,14 @@ class UserFutureDoc extends StatefulWidget {
   State<UserFutureDoc> createState() => _UserFutureDocState();
 }
 
-class _UserFutureDocState extends State<UserFutureDoc> {
+class _UserFutureDocState extends State<UserFutureDoc> with DatabaseMixin {
   UserModel? user;
-
-  /// TODO: Move it to FirebaseCode. And change FirebaseBase to FirebaseCode.
-  DatabaseReference get _doc => FirebaseDatabase.instance.ref('users').child(widget.uid);
 
   @override
   void initState() {
     super.initState();
 
-    _doc.get().then(
+    userDoc(widget.uid).get().then(
       (event) {
         if (event.exists) {
           user = UserModel.fromJson(event.value);

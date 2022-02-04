@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../fireflutter.dart';
 
-/// [FirestoreBase] provides
+/// [FirestoreMixin] provides
 /// - the paths of firestore structures and
 /// - rule (validation) check up
 ///
@@ -10,7 +10,7 @@ import '../fireflutter.dart';
 ///
 /// It has paths of collections, documents of users, forums, and etc
 /// except chat. chat has its own mixin for path.
-mixin FirestoreBase {
+mixin FirestoreMixin {
   /// Returns Firestore instance. Firebase database instance.
   final FirebaseFirestore db = FirebaseFirestore.instance;
   User get _user => FirebaseAuth.instance.currentUser!;

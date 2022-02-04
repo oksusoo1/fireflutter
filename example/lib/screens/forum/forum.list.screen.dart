@@ -12,7 +12,7 @@ class ForumListScreen extends StatefulWidget {
   State<ForumListScreen> createState() => _ForumListScreenState();
 }
 
-class _ForumListScreenState extends State<ForumListScreen> with FirestoreBase {
+class _ForumListScreenState extends State<ForumListScreen> with FirestoreMixin {
   final app = AppController.of;
   final category = Get.arguments['category'];
   String newPostId = '';

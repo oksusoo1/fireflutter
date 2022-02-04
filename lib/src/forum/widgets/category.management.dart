@@ -19,7 +19,7 @@ class CategoryManagement extends StatefulWidget {
   State<CategoryManagement> createState() => _CategoryManagementState();
 }
 
-class _CategoryManagementState extends State<CategoryManagement> with FirestoreBase {
+class _CategoryManagementState extends State<CategoryManagement> with FirestoreMixin {
   final category = TextEditingController();
   final title = TextEditingController();
   final description = TextEditingController();

@@ -7,7 +7,7 @@
 // >>>>>>> c0a497023af3630903b2a7f34aabdbc12f0b03e1
 
 // // /// See readme.md
-// // class PostService with FirestoreBase {
+// // class PostService with FirestoreMixin {
 // //   static PostService? _instance;
 // //   static PostService get instance {
 // //     _instance ??= PostService();

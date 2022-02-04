@@ -5,7 +5,7 @@ import '../../../fireflutter.dart';
 ///
 /// Post and comment are a lot similiar. So both uses the same model.
 /// Refer readme for details
-class PostModel with FirestoreBase, ForumBase {
+class PostModel with FirestoreMixin, ForumBase {
   PostModel({
     this.id = '',
     this.category = '',

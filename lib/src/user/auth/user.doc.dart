@@ -1,8 +1,6 @@
 import 'dart:async';
 
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_database/firebase_database.dart';
 import '../../../fireflutter.dart';
 
 /// UserDoc
@@ -16,19 +14,17 @@ class UserDoc extends StatefulWidget {
   State<UserDoc> createState() => _UserDocState();
 }
 
-class _UserDocState extends State<UserDoc> {
+class _UserDocState extends State<UserDoc> with DatabaseMixin {
   UserModel? user;
 
   // ignore: cancel_subscriptions
   StreamSubscription? userDocSubscription;
 
-  DatabaseReference get _doc => FirebaseDatabase.instance.ref('users').child(widget.uid);
-
   @override
   void initState() {
     super.initState();
 
-    userDocSubscription = _doc.onValue.listen(
+    userDocSubscription = userDoc(widget.uid).onValue.listen(
       (event) {
         if (event.snapshot.exists) {
           user = UserModel.fromJson(event.snapshot.value);

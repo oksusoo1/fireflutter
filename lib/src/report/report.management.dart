@@ -20,8 +20,7 @@ class ReportManagement extends StatefulWidget {
   State<ReportManagement> createState() => _ReportManagementState();
 }
 
-class _ReportManagementState extends State<ReportManagement>
-    with FirestoreBase {
+class _ReportManagementState extends State<ReportManagement> with FirestoreMixin {
   Query? query;
   @override
   void initState() {
@@ -43,8 +42,7 @@ class _ReportManagementState extends State<ReportManagement>
     return FirestoreListView(
       query: query!,
       itemBuilder: (context, snapshot) {
-        final report =
-            ReportModel.fromJson(snapshot.data() as Json, snapshot.reference);
+        final report = ReportModel.fromJson(snapshot.data() as Json, snapshot.reference);
 
         return ListTile(
           title: Column(
@@ -54,8 +52,7 @@ class _ReportManagementState extends State<ReportManagement>
               UserFutureDoc(
                 uid: report.reporterUid,
                 builder: (user) {
-                  return Text('Reporter: ' +
-                      (user.nickname != '' ? user.nickname : 'no_name'));
+                  return Text('Reporter: ' + (user.nickname != '' ? user.nickname : 'no_name'));
                 },
               ),
               UserFutureDoc(

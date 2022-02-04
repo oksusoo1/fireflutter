@@ -4,7 +4,7 @@ import '../../../fireflutter.dart';
 /// CommentModel
 ///
 /// Refer readme for details
-class CommentModel with FirestoreBase, ForumBase {
+class CommentModel with FirestoreMixin, ForumBase {
   CommentModel({
     this.id = '',
     this.postId = '',

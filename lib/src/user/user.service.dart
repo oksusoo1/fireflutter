@@ -4,7 +4,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../fireflutter.dart';
 
-class UserService with FirestoreBase {
+class UserService with FirestoreMixin {
   static UserService? _instance;
   static UserService get instance {
     _instance ??= UserService();
