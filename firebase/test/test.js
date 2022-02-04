@@ -31,7 +31,7 @@ async function createCategory(id) {
 async function createPost(category, docId, userUid, title) {
     return admin().collection("posts").doc(docId).set({
         category: category,
-        authorUid: userUid,
+        uid: userUid,
         title: title,
         timestamp: 123,
     });
@@ -53,7 +53,7 @@ async function createCategoryPost(category, docId, userUid, title) {
 async function createComment(userUid) {
     await createCategoryPost('cat', 'doc', userUid, 'title');
     const doc = await db(authA).collection('posts').doc('doc').collection('comments').add({
-        authorUid: userUid,
+        uid: userUid,
         timestamp: 123,
     });
     return doc;
@@ -125,17 +125,18 @@ describe('Firestore security test', () => {
 
 
 
-    it("User - read", async () => {
-        const read = db().collection("users").doc("any-uid");
-        await firebase.assertSucceeds(read.get());
-    });
-    it("User - write", async () => {
-        const read = db().collection("users").doc("any-uid");
-        await firebase.assertFails(read.set({ foo: "bar" }));
+    // it("User - read", async () => {
+    //     const read = db().collection("users").doc("any-uid");
+    //     await firebase.assertSucceeds(read.get());
+    // });
 
-        const write = db(authA).collection("users").doc(A);
-        await firebase.assertSucceeds(write.set({ foo: "bar" }));
-    });
+    // it("User - write", async () => {
+    //     const read = db().collection("users").doc("any-uid");
+    //     await firebase.assertFails(read.set({ foo: "bar" }));
+
+    //     const write = db(authA).collection("users").doc(A);
+    //     await firebase.assertSucceeds(write.set({ foo: "bar" }));
+    // });
 
     it("Chat - message - read - failure test", async () => {
 
@@ -327,7 +328,7 @@ describe('Firestore security test', () => {
             title: 'QnA'
         });
         await firebase.assertFails(db(authA).collection('posts').add({
-            authorUid: A,
+            uid: A,
             title: '...',
             content: 'content',
             timestamp: '1',
@@ -335,12 +336,13 @@ describe('Firestore security test', () => {
     });
 
     it("Post create success - input any data", async () => {
-        await admin().collection("categories").doc("qna").set({
-            title: 'QnA'
-        });
+        // await admin().collection("categories").doc("qna").set({
+        //     title: 'QnA'
+        // });
+        await createCategory('qna');
         await firebase.assertSucceeds(db(authA).collection('posts').add({
             category: 'qna',
-            authorUid: A,
+            uid: A,
             title: '...',
             content: 'content',
             timestamp: '1',
@@ -349,26 +351,24 @@ describe('Firestore security test', () => {
     });
 
     it("Post update - failure", async () => {
-        await admin().collection("categories").doc("qna").set({
-            title: 'QnA'
-        });
+        await createCategory('qna');
 
         // update non-existing post
         await firebase.assertFails(db(authA).collection('posts').doc('non-existing-post').update({
-            authorUid: A,
-        }));
-
-        await admin().collection("posts").doc("aaa").set({
-            authorUid: A,
-            title: 'update test'
-        });
-
-        // update with wrong auth
-        await firebase.assertFails(db(authB).collection('posts').doc('aaa').update({
-            timestamp: '123',
+            uid: A,
         }));
 
     });
+
+    it("Post update - fail - wrong auth ", async () => {
+        await createCategoryPost('qna', 'docId', A, 'title');
+
+        // update with wrong auth
+        await firebase.assertFails(db(authB).collection('posts').doc('docId').update({
+            timestamp: '123',
+        }));
+    });
+
 
     it("Post fails - update by wrong auth", async () => {
         await createCategory('qna');
@@ -412,7 +412,7 @@ describe('Firestore security test', () => {
             title: 'QnA'
         });
         await admin().collection("posts").doc("aaa").set({
-            authorUid: A,
+            uid: A,
             title: 'update test'
         });
 
@@ -421,7 +421,7 @@ describe('Firestore security test', () => {
 
         /// A post created by C
         await admin().collection("posts").doc("admin-test").set({
-            authorUid: C,
+            uid: C,
             title: 'update test'
         });
 
@@ -453,16 +453,16 @@ describe('Firestore security test', () => {
         const col = db(authA).collection('posts').doc('doc').collection('comments');
         /// success
         await firebase.assertSucceeds(col.add({
-            authorUid: A,
+            uid: A,
             timestamp: 123,
         }));
         /// missing timestamp
         await firebase.assertFails(col.add({
-            authorUid: A,
+            uid: A,
         }));
         /// Wrong uid
         await firebase.assertFails(col.add({
-            authorUid: B,
+            uid: B,
             timestamp: 123,
         }));
     });
@@ -472,7 +472,7 @@ describe('Firestore security test', () => {
     it('Comment - update', async () => {
         await createCategoryPost('cat', 'doc', A, 'title');
         const doc = await db(authA).collection('posts').doc('doc').collection('comments').add({
-            authorUid: A,
+            uid: A,
             timestamp: 123,
         });
 
@@ -583,6 +583,7 @@ describe('Firestore security test', () => {
         await firebase.assertSucceeds(db(authB).collection('reports').doc('doc').get());
 
     });
+
 });
 
 

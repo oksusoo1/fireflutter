@@ -11,9 +11,7 @@ class PostModel with FirestoreMixin, ForumBase {
     this.category = '',
     this.title = '',
     this.content = '',
-    this.authorNickname = '',
-    this.authorPhotoUrl = '',
-    this.authorUid = '',
+    this.uid = '',
     this.files = const [],
     this.deleted = false,
     this.timestamp_,
@@ -36,9 +34,7 @@ class PostModel with FirestoreMixin, ForumBase {
 
   bool deleted;
 
-  String authorUid;
-  String authorNickname;
-  String authorPhotoUrl;
+  String uid;
 
   List<String> files;
 
@@ -53,9 +49,7 @@ class PostModel with FirestoreMixin, ForumBase {
       title: data['title'] ?? '',
       content: data['content'] ?? '',
       deleted: data['deleted'] ?? false,
-      authorUid: data['authorUid'] ?? '',
-      authorNickname: data['authorNickname'] ?? '',
-      authorPhotoUrl: data['authorPhotoUrl'] ?? '',
+      uid: data['uid'] ?? '',
       timestamp_: data['timestamp'] ?? Timestamp.now(),
       data_: data,
     );
@@ -67,9 +61,7 @@ class PostModel with FirestoreMixin, ForumBase {
       'title': title,
       'content': content,
       'deleted': deleted,
-      'authorUid': UserService.instance.user.uid,
-      'authorNickname': UserService.instance.user.nickname,
-      'authorPhotoUrl': UserService.instance.user.photoUrl,
+      'uid': UserService.instance.user.uid,
       'timestamp': FieldValue.serverTimestamp(),
     };
   }
@@ -80,9 +72,7 @@ class PostModel with FirestoreMixin, ForumBase {
       'title': title,
       'content': content,
       'deleted': deleted,
-      'authorUid': authorUid,
-      'authorNickname': authorNickname,
-      'authorPhotoUrl': authorPhotoUrl,
+      'uid': uid,
       'timestamp': timestamp,
       'data': data,
     };
@@ -97,7 +87,7 @@ class PostModel with FirestoreMixin, ForumBase {
     return createReport(
       target: 'post',
       targetId: id,
-      reporteeUid: authorUid,
+      reporteeUid: uid,
       reason: reason,
     );
   }
