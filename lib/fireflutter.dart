@@ -49,3 +49,4 @@ export 'src/forum/post.service.dart';
 export 'src/forum/widgets/category.management.dart';
 export 'src/report/report.management.dart';
 export 'src/forum/widgets/comment.edit.dialog.dart';
+export 'src/forum/widgets/comment.dart';

@@ -88,6 +88,7 @@ Table of contents
 - [Reports](#reports)
 - [Forum & Category](#forum--category)
   - [Category](#category)
+  - [Post model](#post-model)
 
 # TODOs
 
@@ -946,3 +947,13 @@ DynamicLinksService.instance.listen((Uri? deepLink) {
 
 - Only admin can write the category, but readable to every one.
 - If category does not exists, posting will be failed.
+
+
+## Post model
+
+- Post model and comment model are a lot similiar, so they use same `PostModel`.
+
+- `PostModel` can be customized and used for something else like shopping mall feature.
+  When you want to build a shopping mall app, it needs product model and the product model may have comments or reviews. The forum functionality with customized `PostModel` can do the shopping mall feature.
+
+- `PostModel` has methods like create, update, delete, like, dislike, and so on.

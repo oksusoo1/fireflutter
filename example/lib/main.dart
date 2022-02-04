@@ -72,6 +72,14 @@ class _MainAppState extends State<MainApp> {
     // Timer(const Duration(milliseconds: 200),
     //     () => AppController.of.openForumList(category: 'qna'));
 
+    // Open qna & open first post
+    Timer(const Duration(milliseconds: 100), () async {
+      AppController.of.openForumList(category: 'qna');
+
+      /// wait
+      await Future.delayed(Duration(milliseconds: 200));
+    });
+
     /// Dynamic links for terminated app.
     if (widget.initialLink != null) {
       final Uri deepLink = widget.initialLink!.link;
@@ -151,8 +159,7 @@ class _MainAppState extends State<MainApp> {
         ),
         GetPage(name: '/phone-sign-in', page: () => const PhoneSignInScreen()),
         GetPage(name: '/sms-code', page: () => const SmsCodeScreen()),
-        GetPage(
-            name: '/phone-sign-in-ui', page: () => const PhoneSignInUIScreen()),
+        GetPage(name: '/phone-sign-in-ui', page: () => const PhoneSignInUIScreen()),
         GetPage(name: '/sms-code-ui', page: () => const SmsCodeUIScreen()),
         GetPage(name: '/help', page: () => const HelpScreen()),
         GetPage(
@@ -177,8 +184,7 @@ class _MainAppState extends State<MainApp> {
         GetPage(name: '/friend-map', page: () => const FriendMapScreen()),
         GetPage(name: '/reminder-edit', page: () => ReminderEditScreen()),
         GetPage(name: RouteNames.report, page: () => ReportScreen()),
-        GetPage(
-            name: '/email-verify', page: () => const EmailVerificationScreen())
+        GetPage(name: '/email-verify', page: () => const EmailVerificationScreen())
       ],
     );
   }

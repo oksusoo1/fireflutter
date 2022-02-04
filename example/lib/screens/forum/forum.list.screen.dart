@@ -42,15 +42,21 @@ class _ForumListScreenState extends State<ForumListScreen> with FirestoreBase {
       ),
       body: FirestoreListView(
         key: ValueKey(newPostId),
-        query:
-            postCol.where('category', isEqualTo: category).orderBy('timestamp', descending: true),
+        query: postCol.where('category', isEqualTo: category).orderBy(
+              'timestamp',
+              descending: true,
+            ),
         itemBuilder: (context, snapshot) {
           final post = PostModel.fromJson(
             snapshot.data() as Json,
             snapshot.id,
           );
 
+          print('got new doc id; ${post.id}');
+
           return ExpansionTile(
+            initiallyExpanded: false,
+            maintainState: true,
             title: Text(post.title),
             onExpansionChanged: (value) async {
               if (value) {
@@ -63,7 +69,10 @@ class _ForumListScreenState extends State<ForumListScreen> with FirestoreBase {
               }
             },
             subtitle: Text(
-              DateTime.fromMillisecondsSinceEpoch(post.timestamp.millisecondsSinceEpoch).toString(),
+              DateTime.fromMillisecondsSinceEpoch(post.timestamp.millisecondsSinceEpoch)
+                      .toString() +
+                  ', ' +
+                  post.id,
             ),
             children: [
               Text(post.content),
@@ -79,8 +88,7 @@ class _ForumListScreenState extends State<ForumListScreen> with FirestoreBase {
                             onCancel: Get.back,
                             onCreate: (PostModel comment) async {
                               try {
-                                comment.id = post.id;
-                                await comment.commentCreate();
+                                await comment.commentCreate(postId: post.id);
                                 Get.back();
                                 alert('Comment created', 'Your comment has created successfully');
                               } catch (e) {
@@ -104,6 +112,8 @@ class _ForumListScreenState extends State<ForumListScreen> with FirestoreBase {
                   ),
                 ],
               ),
+              Divider(color: Colors.red),
+              Comment(postId: post.id),
             ],
           );
         },

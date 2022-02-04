@@ -39,7 +39,7 @@ class _PostCreateScreenState extends State<PostCreateScreen> with FirestoreBase 
                   category: Get.arguments['category'],
                   title: title.text,
                   content: content.text,
-                ).create(extra: {'yo': 'hey'});
+                ).create();
 
                 print('post created; ${ref.id}');
                 print('post created; $ref');

@@ -4,8 +4,7 @@ import '../../fireflutter.dart';
 /// PostModel
 ///
 /// Post and comment are a lot similiar. So both uses the same model.
-/// And [PostModel] may be customized and used for something else like shopping
-/// item model.
+/// Refer readme for details
 class PostModel with FirestoreBase {
   PostModel({
     this.id = '',
@@ -78,16 +77,6 @@ class PostModel with FirestoreBase {
     };
   }
 
-  Map<String, dynamic> get commentCreateData {
-    return {
-      'content': content,
-      'authorUid': UserService.instance.user.uid,
-      'authorNickname': UserService.instance.user.nickname,
-      'authorPhotoUrl': UserService.instance.user.photoUrl,
-      'timestamp': FieldValue.serverTimestamp(),
-    };
-  }
-
   /// Contains all the data
   Map<String, dynamic> get map {
     return {
@@ -114,18 +103,54 @@ class PostModel with FirestoreBase {
     );
   }
 
+  /// TODO: Make it work for comment also.
   Future<void> increaseViewCounter() {
     return postDoc(id).update({'viewCounter': FieldValue.increment(1)});
   }
 
   /// Create a post with extra data
+  ///
+  /// ```dart
+  /// final ref = await PostModel(
+  ///   category: Get.arguments['category'],
+  ///   title: title.text,
+  ///   content: content.text,
+  /// ).create(extra: {'yo': 'hey'});
+  /// print('post created; ${ref.id}');
+  /// ```
   Future<DocumentReference<Object?>> create({Json extra = const {}}) {
     return postCol.add({...createData, ...extra});
   }
 
-  /// Create a comment with extra data
-  Future<DocumentReference<Object?>> commentCreate({Json extra = const {}}) {
-    final col = commentCol(id);
-    return col.add({...commentCreateData, ...extra});
+  /// **************************************************************************
+  ///
+  ///               Comment Member Variables & Methods
+  ///
+  /// **************************************************************************
+
+  Map<String, dynamic> get commentCreateData {
+    return {
+      'content': content,
+      'authorUid': UserService.instance.user.uid,
+      'authorNickname': UserService.instance.user.nickname,
+      'authorPhotoUrl': UserService.instance.user.photoUrl,
+      'timestamp': FieldValue.serverTimestamp(),
+    };
   }
+
+  /// Create a comment with extra data
+  Future<DocumentReference<Object?>> commentCreate({
+    required String postId,
+    Json extra = const {},
+  }) {
+    final col = commentCol(postId);
+    return col.add({
+      ...commentCreateData,
+      ...{'parent': 'root'},
+      ...extra,
+    });
+  }
+
+  /// **************** EO Comment Member Variables & Methods *******************
+
 }
