@@ -1,6 +1,7 @@
 import 'package:extended/extended.dart';
 import 'package:flutter/material.dart';
 import 'package:fireflutter/fireflutter.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:get/get.dart';
 
 class PostCreateScreen extends StatefulWidget {
@@ -32,6 +33,7 @@ class _PostCreateScreenState extends State<PostCreateScreen> with FirestoreBase 
           controller: content,
         ),
         spaceLg,
+        // ElevatedButton(onPressed: () => uploadFile(), child: const Text('Upload File')),
         ElevatedButton(
             onPressed: () async {
               try {
@@ -53,5 +55,40 @@ class _PostCreateScreenState extends State<PostCreateScreen> with FirestoreBase 
             child: const Text('CREATE POST')),
       ]),
     );
+  }
+
+  uploadFile() async {
+    final ImageSource? re = await Get.bottomSheet(
+      Container(
+        color: Colors.white,
+        child: SafeArea(
+          child: Wrap(
+            children: <Widget>[
+              ListTile(
+                  leading: Icon(Icons.camera_alt),
+                  title: Text('Take Photo from Camera'),
+                  onTap: () => Get.back(result: ImageSource.camera)),
+              ListTile(
+                  leading: Icon(Icons.photo),
+                  title: Text('Choose from Gallery'),
+                  onTap: () => Get.back(result: ImageSource.gallery)),
+              ListTile(leading: Icon(Icons.cancel), title: Text('Cancel'), onTap: () => Get.back()),
+            ],
+          ),
+        ),
+      ),
+    );
+
+    try {
+      if (re == null) return;
+      String uploadedFileUrl = await FileUploadService.instance.pickUpload(
+        onProgress: (progress) => print("Upload progress =>> ${progress.toString()}"),
+        source: re,
+      );
+
+      /// TODO update post files.
+    } catch (e) {
+      print('uploadFile:error ==>>> ${e.toString()}');
+    }
   }
 }
