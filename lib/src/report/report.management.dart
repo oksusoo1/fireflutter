@@ -20,9 +20,8 @@ class ReportManagement extends StatefulWidget {
   State<ReportManagement> createState() => _ReportManagementState();
 }
 
-class _ReportManagementState extends State<ReportManagement>
-    with FirestoreBase {
-  late Query query;
+class _ReportManagementState extends State<ReportManagement> with FirestoreBase {
+  Query? query;
   @override
   void initState() {
     super.initState();
@@ -30,52 +29,51 @@ class _ReportManagementState extends State<ReportManagement>
     if (widget.target != null) {
       query = q.where('target', isEqualTo: widget.target);
     }
-    query = query.orderBy('timestamp');
+
+    if (query != null) {
+      query = query!.orderBy('timestamp');
+    } else {
+      query = q.orderBy('timestamp');
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        FirestoreListView(
-          query: query,
-          itemBuilder: (context, snapshot) {
-            final report = ReportModel.fromJson(
-                snapshot.data() as Json, snapshot.reference);
+    return FirestoreListView(
+      query: query!,
+      itemBuilder: (context, snapshot) {
+        final report = ReportModel.fromJson(snapshot.data() as Json, snapshot.reference);
 
-            return ExpansionTile(
-              title: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('Source: ' + report.target),
-                  UserFutureDoc(
-                    uid: report.reporterUid,
-                    builder: (user) {
-                      return Text('Reporter: ' +
-                          (user.nickname != '' ? user.nickname : 'no_name'));
-                    },
-                  ),
-                  UserFutureDoc(
-                    uid: report.reporteeUid,
-                    builder: (user) {
-                      return Text('Reportee: ' + user.nickname);
-                    },
-                  ),
-                  Text(report.reason != '' ? report.reason : 'no_reason'),
-                ],
+        return ExpansionTile(
+          title: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('Source: ' + report.target),
+              UserFutureDoc(
+                uid: report.reporterUid,
+                builder: (user) {
+                  return Text('Reporter: ' + (user.nickname != '' ? user.nickname : 'no_name'));
+                },
               ),
-              children: [
-                ElevatedButton(
-                  onPressed: () {
-                    print('admin actions');
-                  },
-                  child: const Text('admin action'),
-                ),
-              ],
-            );
-          },
-        ),
-      ],
+              UserFutureDoc(
+                uid: report.reporteeUid,
+                builder: (user) {
+                  return Text('Reportee: ' + user.nickname);
+                },
+              ),
+              Text(report.reason != '' ? report.reason : 'no_reason'),
+            ],
+          ),
+          children: [
+            ElevatedButton(
+              onPressed: () {
+                print('admin actions');
+              },
+              child: const Text('admin action'),
+            ),
+          ],
+        );
+      },
     );
   }
 }

@@ -1,11 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import '../../fireflutter.dart';
+import '../../../fireflutter.dart';
 
 /// PostModel
 ///
 /// Post and comment are a lot similiar. So both uses the same model.
 /// Refer readme for details
-class PostModel with FirestoreBase {
+class PostModel with FirestoreBase, ForumBase {
   PostModel({
     this.id = '',
     this.category = '',
@@ -14,6 +14,8 @@ class PostModel with FirestoreBase {
     this.authorNickname = '',
     this.authorPhotoUrl = '',
     this.authorUid = '',
+    this.files = const [],
+    this.deleted = false,
     this.timestamp_,
     this.data_,
   });
@@ -22,8 +24,6 @@ class PostModel with FirestoreBase {
   Json? data_;
   Json get data => data_ ?? const {};
 
-  /// This is the user's document id.
-  /// If it is empty, then it means that, the user does not exist.
   String id;
 
   /// Category of the post.
@@ -34,9 +34,13 @@ class PostModel with FirestoreBase {
   String title;
   String content;
 
+  bool deleted;
+
   String authorUid;
   String authorNickname;
   String authorPhotoUrl;
+
+  List<String> files;
 
   Timestamp? timestamp_;
   Timestamp get timestamp => timestamp_ ?? Timestamp.now();
@@ -48,6 +52,7 @@ class PostModel with FirestoreBase {
       category: data['category'] ?? '',
       title: data['title'] ?? '',
       content: data['content'] ?? '',
+      deleted: data['deleted'] ?? false,
       authorUid: data['authorUid'] ?? '',
       authorNickname: data['authorNickname'] ?? '',
       authorPhotoUrl: data['authorPhotoUrl'] ?? '',
@@ -56,20 +61,12 @@ class PostModel with FirestoreBase {
     );
   }
 
-  /// Convert post model from firestore document snapshot
-  factory PostModel.fromSnapshot(DocumentSnapshot doc) {
-    if (doc.exists) {
-      return PostModel();
-    } else {
-      return PostModel();
-    }
-  }
-
   Map<String, dynamic> get createData {
     return {
       'category': category,
       'title': title,
       'content': content,
+      'deleted': deleted,
       'authorUid': UserService.instance.user.uid,
       'authorNickname': UserService.instance.user.nickname,
       'authorPhotoUrl': UserService.instance.user.photoUrl,
@@ -82,6 +79,7 @@ class PostModel with FirestoreBase {
     return {
       'title': title,
       'content': content,
+      'deleted': deleted,
       'authorUid': authorUid,
       'authorNickname': authorNickname,
       'authorPhotoUrl': authorPhotoUrl,
@@ -104,11 +102,6 @@ class PostModel with FirestoreBase {
     );
   }
 
-  /// TODO: Make it work for comment also.
-  Future<void> increaseViewCounter() {
-    return postDoc(id).update({'viewCounter': FieldValue.increment(1)});
-  }
-
   /// Create a post with extra data
   ///
   /// ```dart
@@ -123,36 +116,11 @@ class PostModel with FirestoreBase {
     return postCol.add({...createData, ...extra});
   }
 
-  /// **************************************************************************
-  ///
-  ///               Comment Member Variables & Methods
-  ///
-  /// **************************************************************************
-
-  Map<String, dynamic> get commentCreateData {
-    return {
-      'content': content,
-      'authorUid': UserService.instance.user.uid,
-      'authorNickname': UserService.instance.user.nickname,
-      'authorPhotoUrl': UserService.instance.user.photoUrl,
-      'timestamp': FieldValue.serverTimestamp(),
-    };
+  Future<void> delete() {
+    return postDoc(id).update({'deleted': true, 'content': '', 'title': ''});
   }
 
-  /// Create a comment with extra data
-  Future<DocumentReference<Object?>> commentCreate({
-    required String postId,
-    String parent = 'root',
-    Json extra = const {},
-  }) {
-    final col = commentCol(postId);
-    return col.add({
-      ...commentCreateData,
-      ...{'parent': parent},
-      ...extra,
-    });
+  Future<void> increaseViewCounter() {
+    return increaseForumViewCounter(postDoc(id));
   }
-
-  /// **************** EO Comment Member Variables & Methods *******************
-
 }

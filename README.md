@@ -20,6 +20,7 @@ Table of contents
 
 - [Fire Flutter](#fire-flutter)
 - [TODOs](#todos)
+  - [Bug on security rule](#bug-on-security-rule)
   - [Admin](#admin)
   - [Chat](#chat)
   - [Post](#post)
@@ -92,6 +93,10 @@ Table of contents
 
 # TODOs
 
+
+## Bug on security rule
+
+- User can list all the reports which must be shown to admin only.
 ## Admin
 
 - Since email & phone no are saved in firebase auth service, admin needs a special function to know what is the email and phone no of users.

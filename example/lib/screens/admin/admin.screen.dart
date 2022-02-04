@@ -15,9 +15,7 @@ class _AdminScreenState extends State<AdminScreen> {
   void initState() {
     super.initState();
     print('initState;');
-    UserService.instance
-        .updateAdminStatus()
-        .then((value) => setState(() => {}));
+    UserService.instance.updateAdminStatus().then((value) => setState(() => {}));
   }
 
   @override
@@ -45,12 +43,18 @@ class _AdminScreenState extends State<AdminScreen> {
           Wrap(
             children: [
               ElevatedButton(
-                onPressed: () => AppController.of.openReport,
+                onPressed: () {
+                  AppController.of.openReport();
+                },
                 child: const Text('All'),
               ),
               ElevatedButton(
                 onPressed: () => AppController.of.openReport('post'),
                 child: const Text('Posts'),
+              ),
+              ElevatedButton(
+                onPressed: () => AppController.of.openReport('comment'),
+                child: const Text('Comments'),
               ),
               ElevatedButton(
                 onPressed: () => AppController.of.openReport('user'),
