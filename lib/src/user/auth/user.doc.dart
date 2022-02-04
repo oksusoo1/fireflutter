@@ -5,7 +5,8 @@ import '../../../fireflutter.dart';
 import 'package:flutter/material.dart';
 
 class UserDoc extends StatefulWidget {
-  const UserDoc({required this.uid, required this.builder, Key? key}) : super(key: key);
+  const UserDoc({required this.uid, required this.builder, Key? key})
+      : super(key: key);
   final String uid;
   final Widget Function(UserModel) builder;
 
@@ -16,13 +17,18 @@ class UserDoc extends StatefulWidget {
 class _UserDocState extends State<UserDoc> {
   UserModel? user;
 
-  late StreamSubscription userDocSubscription;
+  // ignore: cancel_subscriptions
+  StreamSubscription? userDocSubscription;
+
   @override
   void initState() {
     super.initState();
 
-    userDocSubscription =
-        FirebaseFirestore.instance.collection('users').doc(widget.uid).snapshots().listen(
+    userDocSubscription = FirebaseFirestore.instance
+        .collection('users')
+        .doc(widget.uid)
+        .snapshots()
+        .listen(
       (DocumentSnapshot<Map<String, dynamic>> snapshot) {
         setState(() {
           if (snapshot.exists) {
@@ -37,13 +43,14 @@ class _UserDocState extends State<UserDoc> {
 
   @override
   void dispose() {
-    userDocSubscription.cancel();
+    if (userDocSubscription != null) userDocSubscription!.cancel();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    if (user == null) return Center(child: CircularProgressIndicator.adaptive());
+    if (user == null)
+      return Center(child: CircularProgressIndicator.adaptive());
     return widget.builder(user!);
 
     // return StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(

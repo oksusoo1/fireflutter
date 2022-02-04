@@ -9,6 +9,8 @@ class ReportModel {
   String reason;
   Timestamp timestamp;
 
+  DocumentReference ref;
+
   ReportModel({
     required this.target,
     required this.targetId,
@@ -16,9 +18,10 @@ class ReportModel {
     required this.reporteeUid,
     required this.reason,
     required this.timestamp,
+    required this.ref,
   });
 
-  factory ReportModel.fromJson(Json json) {
+  factory ReportModel.fromJson(Json json, DocumentReference reference) {
     return ReportModel(
       target: json['target'],
       targetId: json['targetId'],
@@ -26,6 +29,7 @@ class ReportModel {
       reporteeUid: json['reporteeUid'],
       reason: json['reason'] ?? '',
       timestamp: json['timestamp'],
+      ref: reference,
     );
   }
 }

@@ -39,7 +39,7 @@ class AppController extends GetxController {
     return Get.toNamed(RouteNames.category);
   }
 
-  Future<void> openReport() async {
-    return Get.toNamed(RouteNames.report);
+  Future<void> openReport(String? target) async {
+    return Get.toNamed(RouteNames.report, arguments: {'target': target});
   }
 }

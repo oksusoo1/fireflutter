@@ -54,8 +54,9 @@ class UserService with FirestoreBase {
     );
   }
 
-  DocumentReference get _myDoc =>
-      FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser!.uid);
+  DocumentReference get _myDoc => FirebaseFirestore.instance
+      .collection('users')
+      .doc(FirebaseAuth.instance.currentUser!.uid);
 
   /// Update user name of currently login user.
   Future<void> updateNickname(String name) {

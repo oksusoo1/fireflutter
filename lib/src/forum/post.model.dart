@@ -95,11 +95,12 @@ class PostModel with FirestoreBase {
     return '''PostModel($map)''';
   }
 
-  Future<void> report([String? reason]) {
+  Future<void> report(String? reason) {
     return createReport(
       target: 'post',
       targetId: id,
       reporteeUid: authorUid,
+      reason: reason,
     );
   }
 

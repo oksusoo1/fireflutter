@@ -41,9 +41,22 @@ class _AdminScreenState extends State<AdminScreen> {
             onPressed: AppController.of.openCategory,
             child: const Text('Category Management'),
           ),
-          ElevatedButton(
-            onPressed: AppController.of.openReport,
-            child: const Text('Report Management'),
+          Text('Report Management'),
+          Wrap(
+            children: [
+              ElevatedButton(
+                onPressed: () => AppController.of.openReport,
+                child: const Text('All'),
+              ),
+              ElevatedButton(
+                onPressed: () => AppController.of.openReport('post'),
+                child: const Text('Posts'),
+              ),
+              ElevatedButton(
+                onPressed: () => AppController.of.openReport('user'),
+                child: const Text('Users'),
+              ),
+            ],
           ),
         ],
       ),
