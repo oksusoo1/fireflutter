@@ -45,7 +45,9 @@ class _AdminScreenState extends State<AdminScreen> {
           Wrap(
             children: [
               ElevatedButton(
-                onPressed: () => AppController.of.openReport,
+                onPressed: () {
+                  AppController.of.openReport();
+                },
                 child: const Text('All'),
               ),
               ElevatedButton(
