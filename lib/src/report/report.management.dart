@@ -21,7 +21,7 @@ class ReportManagement extends StatefulWidget {
 }
 
 class _ReportManagementState extends State<ReportManagement> with FirestoreBase {
-  late Query query;
+  Query? query;
   @override
   void initState() {
     super.initState();
@@ -29,13 +29,18 @@ class _ReportManagementState extends State<ReportManagement> with FirestoreBase 
     if (widget.target != null) {
       query = q.where('target', isEqualTo: widget.target);
     }
-    query = query.orderBy('timestamp');
+
+    if (query != null) {
+      query = query!.orderBy('timestamp');
+    } else {
+      query = q.orderBy('timestamp');
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return FirestoreListView(
-      query: query,
+      query: query!,
       itemBuilder: (context, snapshot) {
         final report = ReportModel.fromJson(snapshot.data() as Json, snapshot.reference);
 
