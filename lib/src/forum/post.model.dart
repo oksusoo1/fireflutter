@@ -142,12 +142,13 @@ class PostModel with FirestoreBase {
   /// Create a comment with extra data
   Future<DocumentReference<Object?>> commentCreate({
     required String postId,
+    String parent = 'root',
     Json extra = const {},
   }) {
     final col = commentCol(postId);
     return col.add({
       ...commentCreateData,
-      ...{'parent': 'root'},
+      ...{'parent': parent},
       ...extra,
     });
   }

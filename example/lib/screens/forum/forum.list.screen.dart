@@ -55,7 +55,7 @@ class _ForumListScreenState extends State<ForumListScreen> with FirestoreBase {
           print('got new doc id; ${post.id}');
 
           return ExpansionTile(
-            initiallyExpanded: false,
+            initiallyExpanded: true,
             maintainState: true,
             title: Text(post.title),
             onExpansionChanged: (value) async {
@@ -80,25 +80,7 @@ class _ForumListScreenState extends State<ForumListScreen> with FirestoreBase {
               Wrap(
                 children: [
                   ElevatedButton(
-                    onPressed: () async {
-                      await showDialog(
-                        context: context,
-                        builder: (_) {
-                          return CommentEditDialog(
-                            onCancel: Get.back,
-                            onCreate: (PostModel comment) async {
-                              try {
-                                await comment.commentCreate(postId: post.id);
-                                Get.back();
-                                alert('Comment created', 'Your comment has created successfully');
-                              } catch (e) {
-                                error(e);
-                              }
-                            },
-                          );
-                        },
-                      );
-                    },
+                    onPressed: () => onReply(post),
                     child: const Text('Comment'),
                   ),
                   ElevatedButton(
@@ -148,11 +130,34 @@ class _ForumListScreenState extends State<ForumListScreen> with FirestoreBase {
                 ],
               ),
               Divider(color: Colors.red),
-              Comment(postId: post.id),
+              Comment(
+                post: post,
+                onReply: onReply,
+              ),
             ],
           );
         },
       ),
+    );
+  }
+
+  onReply(PostModel post, [PostModel? comment]) async {
+    return showDialog(
+      context: context,
+      builder: (_) {
+        return CommentEditDialog(
+          onCancel: Get.back,
+          onCreate: (PostModel form) async {
+            try {
+              await form.commentCreate(postId: post.id, parent: comment?.id ?? 'root');
+              Get.back();
+              alert('Comment created', 'Your comment has created successfully');
+            } catch (e) {
+              error(e);
+            }
+          },
+        );
+      },
     );
   }
 }
