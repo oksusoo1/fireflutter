@@ -32,6 +32,7 @@ Table of contents
   - [Firebase Realtime Database Installation](#firebase-realtime-database-installation)
   - [Firestore installation](#firestore-installation)
     - [Setting admin on firestore security rules](#setting-admin-on-firestore-security-rules)
+- [Concept of Database](#concept-of-database)
 - [Coding Guideline](#coding-guideline)
 - [User](#user)
   - [User installation](#user-installation)
@@ -180,6 +181,14 @@ Table of contents
 ![Security Rules Admin](https://raw.githubusercontent.com/thruthesky/fireflutter/main/readme/images/security-rules-admin.jpg?raw=true)
 
 
+# Concept of Database
+
+- Firebase Realtime Databases and Firestore are NoSQL.
+- It is meant to be containing all necessary information in one document.
+  For instance, the traditional SQL databases do not contain user information on every posts and comments while NoSQL database should contain those.
+- Realtime databases vs Firestore.
+  Let's say you are building forum with Firestore. On every posts and comments need to display user profile like name and photo. If you put user information on Firestore, then you would probably want to put same user info into every Firestore posts and comments documents since you don't want to extra cost by reading user document. This is fine, but the user name and photo in firestore posts and comments will not be sync if user changes his name or profile photo.
+  So, what if user info goes to realtime database while posts and comments stay in firestore? Realtime database is cheaper. It's not that expensive to read user info in realtime database on every display of posts and comemnts. And you don't have to put user info on every firestore posts and comments documents having user info as one source of truth.
 
 # Coding Guideline
 
