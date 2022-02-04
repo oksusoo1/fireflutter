@@ -53,39 +53,27 @@ class _ForumListScreenState extends State<ForumListScreen> with FirestoreMixin {
           print('got new doc id; ${post.id}');
 
           return ExpansionTile(
-            initiallyExpanded: true,
-            maintainState: true,
+            initiallyExpanded: false,
             title: Text(post.title),
-            onExpansionChanged: (value) async {
+            subtitle: Row(
+              children: [
+                UserFutureDoc(
+                  uid: post.uid,
+                  builder: (user) => user.exists ? Text('By: ${user.nickname} ') : Text('NoUser'),
+                ),
+                ShortDate(post.timestamp.millisecondsSinceEpoch),
+              ],
+            ),
+            onExpansionChanged: (value) {
               if (value) {
-                try {
-                  await post.increaseViewCounter();
-                } catch (e) {
-                  print('increaseViewCounter() error; $e');
-                  error(e);
-                }
+                post.increaseViewCounter().catchError(error);
               }
             },
-            subtitle: Text(
-              DateTime.fromMillisecondsSinceEpoch(post.timestamp.millisecondsSinceEpoch)
-                      .toString() +
-                  ', ' +
-                  post.id,
-            ),
             children: [
-              Text(post.content),
-              Text(post.id),
-              Wrap(
-                children: [
-                  ElevatedButton(
-                    onPressed: () => onReply(post),
-                    child: const Text('Comment'),
-                  ),
-                  ElevatedButton(
-                    onPressed: () => onReport(post),
-                    child: const Text('Report'),
-                  ),
-                ],
+              Post(
+                post: post,
+                onReply: onReply,
+                onReport: onReport,
               ),
               Divider(color: Colors.red),
               Comment(

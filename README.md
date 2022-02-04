@@ -32,6 +32,7 @@ Table of contents
   - [Firebase Realtime Database Installation](#firebase-realtime-database-installation)
   - [Firestore installation](#firestore-installation)
     - [Setting admin on firestore security rules](#setting-admin-on-firestore-security-rules)
+- [Sources and packages](#sources-and-packages)
 - [Concept of Database](#concept-of-database)
 - [Coding Guideline](#coding-guideline)
 - [User](#user)
@@ -180,6 +181,10 @@ Table of contents
 
 ![Security Rules Admin](https://raw.githubusercontent.com/thruthesky/fireflutter/main/readme/images/security-rules-admin.jpg?raw=true)
 
+
+# Sources and packages
+
+- Fireflutter uses [intl](https://pub.dev/packages/intl) package for date and time computation
 
 # Concept of Database
 

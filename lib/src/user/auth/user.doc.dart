@@ -27,7 +27,7 @@ class _UserDocState extends State<UserDoc> with DatabaseMixin {
     userDocSubscription = userDoc(widget.uid).onValue.listen(
       (event) {
         if (event.snapshot.exists) {
-          user = UserModel.fromJson(event.snapshot.value);
+          user = UserModel.fromJson(event.snapshot.value, event.snapshot.key!);
         } else {
           user = UserModel();
         }

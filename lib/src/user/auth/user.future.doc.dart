@@ -1,3 +1,4 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import '../../../fireflutter.dart';
 
@@ -17,15 +18,29 @@ class _UserFutureDocState extends State<UserFutureDoc> with DatabaseMixin {
   void initState() {
     super.initState();
 
-    userDoc(widget.uid).get().then(
-      (event) {
+    () async {
+      try {
+        final event = await userDoc(widget.uid).get();
+
         if (event.exists) {
-          user = UserModel.fromJson(event.value);
+          user = UserModel.fromJson(event.value, event.key!);
         } else {
           user = UserModel();
         }
-      },
-    );
+        setState(() {});
+      } on FirebaseException catch (e) {
+        if (e.code == 'permission-denied') {
+          // If user document does not exists, it comes here with the follow error;
+          // [firebase_database/permission-denied] Client doesn't have permission to access the desired data.
+          // debugPrint(e.toString());
+          setState(() => user = UserModel());
+        } else {
+          rethrow;
+        }
+      } catch (e) {
+        rethrow;
+      }
+    }();
   }
 
   @override

@@ -80,11 +80,10 @@ class UserService with FirestoreMixin {
   Future<UserModel> get() async {
     final doc = await _myDoc.get();
     if (doc.exists) {
-      final user = UserModel.fromJson(doc.value);
-      user.id = doc.key!;
+      final user = UserModel.fromJson(doc.value, doc.key!);
       return user;
     } else {
-      return UserModel(id: currentUser?.uid ?? '');
+      return UserModel(uid: currentUser?.uid ?? '');
     }
   }
 
