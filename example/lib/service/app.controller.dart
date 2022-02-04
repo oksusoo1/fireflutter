@@ -26,8 +26,8 @@ class AppController extends GetxController {
   }
 
   /// Returns post id of newly created post.
-  Future<dynamic> openPostCreate({String? category}) async {
-    return Get.toNamed(RouteNames.postCreate, arguments: {'category': category});
+  Future<dynamic> openPostCreate({String? category, String? id}) async {
+    return Get.toNamed(RouteNames.postCreate, arguments: {'category': category, 'id': id});
   }
 
   Future<void> openAdmin() async {

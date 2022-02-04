@@ -16,6 +16,18 @@ class _PostCreateScreenState extends State<PostCreateScreen> with FirestoreBase 
 
   final content = TextEditingController();
 
+  final post = PostModel();
+
+  @override
+  void initState() {
+    super.initState();
+
+    post..category = Get.arguments['category'] ?? '';
+    post..id = Get.arguments['id'] ?? '';
+
+    print(post.toString());
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -24,35 +36,40 @@ class _PostCreateScreenState extends State<PostCreateScreen> with FirestoreBase 
       ),
       body: PagePadding(vertical: sm, children: [
         const Text('Title'),
-        TextField(
-          controller: title,
-        ),
+        TextField(controller: title),
         spaceLg,
         const Text('Content'),
-        TextField(
-          controller: content,
-        ),
+        TextField(controller: content),
         spaceLg,
-        // ElevatedButton(onPressed: () => uploadFile(), child: const Text('Upload File')),
-        ElevatedButton(
-            onPressed: () async {
-              try {
-                final ref = await PostModel(
-                  category: Get.arguments['category'],
-                  title: title.text,
-                  content: content.text,
-                ).create();
+        Row(
+          children: [
+            ElevatedButton(onPressed: () => uploadFile(), child: const Text('Upload File')),
+            ElevatedButton(
+                onPressed: () async {
+                  post..title = title.text;
+                  post..content = content.text;
 
-                print('post created; ${ref.id}');
-                print('post created; $ref');
+                  try {
+                    final ref = await post.create();
+                    // final ref = await PostModel(
+                    //   category: Get.arguments['category'],
+                    //   title: title.text,
+                    //   content: content.text,
+                    // ).create();
 
-                Get.back(result: ref.id);
-                await alert('Post created', 'Thank you');
-              } catch (e) {
-                error(e);
-              }
-            },
-            child: const Text('CREATE POST')),
+                    print('post created; ${ref.id}');
+                    print('post created; $ref');
+
+                    Get.back(result: ref.id);
+                    await alert('Post created', 'Thank you');
+                  } catch (e) {
+                    error(e);
+                  }
+                },
+                child: const Text('CREATE POST')),
+          ],
+        ),
+        for (String fileUrl in post.files) Text('$fileUrl')
       ]),
     );
   }
@@ -86,9 +103,10 @@ class _PostCreateScreenState extends State<PostCreateScreen> with FirestoreBase 
         source: re,
       );
 
-      /// TODO update post files.
+      post.files = [...post.files, uploadedFileUrl];
+      setState(() {});
     } catch (e) {
-      print('uploadFile:error ==>>> ${e.toString()}');
+      error(e);
     }
   }
 }

@@ -15,7 +15,7 @@ class ForumListScreen extends StatefulWidget {
 class _ForumListScreenState extends State<ForumListScreen> with FirestoreBase {
   final app = AppController.of;
   final category = Get.arguments['category'];
-  String newPostId = '';
+  String? newPostId;
   @override
   void initState() {
     super.initState();
@@ -84,6 +84,10 @@ class _ForumListScreenState extends State<ForumListScreen> with FirestoreBase {
                   ElevatedButton(
                     onPressed: () => onReport(post),
                     child: const Text('Report'),
+                  ),
+                  ElevatedButton(
+                    onPressed: () => app.openPostCreate(id: post.id),
+                    child: const Text('Edit'),
                   ),
                 ],
               ),

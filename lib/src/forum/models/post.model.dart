@@ -66,6 +66,7 @@ class PostModel with FirestoreBase, ForumBase {
       'category': category,
       'title': title,
       'content': content,
+      'files': files,
       'deleted': deleted,
       'authorUid': UserService.instance.user.uid,
       'authorNickname': UserService.instance.user.nickname,
@@ -77,8 +78,10 @@ class PostModel with FirestoreBase, ForumBase {
   /// Contains all the data
   Map<String, dynamic> get map {
     return {
+      'category': category,
       'title': title,
       'content': content,
+      'files': files,
       'deleted': deleted,
       'authorUid': authorUid,
       'authorNickname': authorNickname,
@@ -114,6 +117,10 @@ class PostModel with FirestoreBase, ForumBase {
   /// ```
   Future<DocumentReference<Object?>> create({Json extra = const {}}) {
     return postCol.add({...createData, ...extra});
+  }
+
+  Future<void> update() {
+    return postDoc(id).update(data);
   }
 
   Future<void> delete() {
