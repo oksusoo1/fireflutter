@@ -17,11 +17,17 @@ dependencies:
   firebase_database: ^9.0.4
   cloud_firestore: ^3.1.6
   firebase_dynamic_links: ^4.0.5
+  firebase_storage: ^10.2.6
 
   # Firebase UI.
   flutterfire_ui: ^0.3.2
 
   rxdart: any
+
+  # File upload
+  path_provider: ^2.0.8
+  image_picker: ^0.8.4+6
+  flutter_image_compress: ^1.1.0
 
   # PhoneNumberInput widget
   country_code_picker: ^2.0.2
