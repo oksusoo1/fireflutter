@@ -8,6 +8,7 @@ class Comment extends StatelessWidget with FirestoreBase {
     required this.post,
     this.parent = 'root',
     required this.onReply,
+    required this.onReport,
   }) : super(key: key);
 
   final PostModel post;
@@ -15,7 +16,8 @@ class Comment extends StatelessWidget with FirestoreBase {
 
   /// Callback on reply button pressed. The parameter is the parent comment of
   /// the new comment to be created.
-  final Function(PostModel post, PostModel comment) onReply;
+  final Function(PostModel post, CommentModel comment) onReply;
+  final Function(CommentModel comment) onReport;
   @override
   Widget build(BuildContext context) {
     final query = commentCol(post.id).where('parent', isEqualTo: parent).orderBy(
@@ -28,9 +30,10 @@ class Comment extends StatelessWidget with FirestoreBase {
       shrinkWrap: true,
       query: query,
       itemBuilder: (context, snapshot) {
-        final comment = PostModel.fromJson(
+        final comment = CommentModel.fromJson(
           snapshot.data() as Json,
-          snapshot.id,
+          id: snapshot.id,
+          postId: post.id,
         );
 
         return Container(
@@ -40,9 +43,20 @@ class Comment extends StatelessWidget with FirestoreBase {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text("content: ${comment.content}"),
-              ElevatedButton(onPressed: () => onReply(post, comment), child: const Text('Reply')),
+              Wrap(
+                children: [
+                  ElevatedButton(
+                    onPressed: () => onReply(post, comment),
+                    child: const Text('Reply'),
+                  ),
+                  ElevatedButton(
+                    onPressed: () => onReport(comment),
+                    child: const Text('Report'),
+                  ),
+                ],
+              ),
               Divider(color: Colors.black),
-              Comment(post: post, parent: comment.id, onReply: onReply)
+              Comment(post: post, parent: comment.id, onReply: onReply, onReport: onReport)
             ],
           ),
         );

@@ -14,20 +14,18 @@ class ForumListScreen extends StatefulWidget {
 
 class _ForumListScreenState extends State<ForumListScreen> with FirestoreBase {
   final app = AppController.of;
-  final ForumModel forum = AppController.of.forum;
   final category = Get.arguments['category'];
   String newPostId = '';
   @override
   void initState() {
     super.initState();
-    forum.reset(category: Get.arguments['category']);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(forum.title),
+        title: Text(category),
         actions: [
           IconButton(
             onPressed: () async {
@@ -84,47 +82,7 @@ class _ForumListScreenState extends State<ForumListScreen> with FirestoreBase {
                     child: const Text('Comment'),
                   ),
                   ElevatedButton(
-                    onPressed: () async {
-                      final input = TextEditingController(text: '');
-                      String? re = await showDialog(
-                        context: Get.context!,
-                        builder: (c) => AlertDialog(
-                          title: Text('Report Post'),
-                          content: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text('Reason'),
-                              TextField(
-                                controller: input,
-                                maxLines: 4,
-                              ),
-                            ],
-                          ),
-                          actions: [
-                            TextButton(
-                              onPressed: () {
-                                Get.back();
-                              },
-                              child: Text('close'),
-                            ),
-                            TextButton(
-                              onPressed: () async {
-                                Get.back(result: input.text);
-                              },
-                              child: Text('submit'),
-                            ),
-                          ],
-                        ),
-                      );
-
-                      if (re == null) return;
-
-                      post
-                          .report(input.text)
-                          .then((x) => alert('Report success', 'You have reported this post.'))
-                          .catchError(error);
-                    },
+                    onPressed: () => onReport(post),
                     child: const Text('Report'),
                   ),
                 ],
@@ -133,6 +91,7 @@ class _ForumListScreenState extends State<ForumListScreen> with FirestoreBase {
               Comment(
                 post: post,
                 onReply: onReply,
+                onReport: onReport,
               ),
             ],
           );
@@ -141,15 +100,15 @@ class _ForumListScreenState extends State<ForumListScreen> with FirestoreBase {
     );
   }
 
-  onReply(PostModel post, [PostModel? comment]) async {
+  onReply(PostModel post, [CommentModel? comment]) async {
     return showDialog(
       context: context,
       builder: (_) {
         return CommentEditDialog(
           onCancel: Get.back,
-          onCreate: (PostModel form) async {
+          onCreate: (CommentModel form) async {
             try {
-              await form.commentCreate(postId: post.id, parent: comment?.id ?? 'root');
+              await form.create(postId: post.id, parent: comment?.id ?? 'root');
               Get.back();
               alert('Comment created', 'Your comment has created successfully');
             } catch (e) {
@@ -159,5 +118,48 @@ class _ForumListScreenState extends State<ForumListScreen> with FirestoreBase {
         );
       },
     );
+  }
+
+  onReport(dynamic postOrComment) async {
+    final input = TextEditingController(text: '');
+    String? re = await showDialog(
+      context: Get.context!,
+      builder: (c) => AlertDialog(
+        title: Text('Report Post'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Reason'),
+            TextField(
+              controller: input,
+              maxLines: 4,
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Get.back();
+            },
+            child: Text('close'),
+          ),
+          TextButton(
+            onPressed: () async {
+              Get.back(result: input.text);
+            },
+            child: Text('submit'),
+          ),
+        ],
+      ),
+    );
+
+    if (re == null) return;
+    try {
+      await postOrComment.report(input.text);
+      alert('Report success', 'You have reported this post.');
+    } catch (e) {
+      error(e);
+    }
   }
 }

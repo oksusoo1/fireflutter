@@ -43,8 +43,9 @@ export 'src/report/report.service.dart';
 export 'src/test/test.service.dart';
 
 export 'src/firestore.base.mixin.dart';
-export 'src/forum/forum.model.dart';
-export 'src/forum/post.model.dart';
+export 'src/forum/models/comment.model.dart';
+export 'src/forum/models/post.model.dart';
+export 'src/forum/forum.base.mixin.dart';
 export 'src/forum/post.service.dart';
 export 'src/forum/widgets/category.management.dart';
 export 'src/report/report.management.dart';
