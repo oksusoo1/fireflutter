@@ -59,7 +59,7 @@ class _ForumListScreenState extends State<ForumListScreen> with FirestoreMixin {
               children: [
                 UserFutureDoc(
                   uid: post.uid,
-                  builder: (user) => user.exists ? Text('By: ${user.nickname} ') : Text('NoUser'),
+                  builder: (user) => user.exists ? Text('By: ${user.nickname} ') : Text('NO-USER '),
                 ),
                 ShortDate(post.timestamp.millisecondsSinceEpoch),
               ],
