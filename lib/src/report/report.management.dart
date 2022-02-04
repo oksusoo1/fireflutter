@@ -20,7 +20,8 @@ class ReportManagement extends StatefulWidget {
   State<ReportManagement> createState() => _ReportManagementState();
 }
 
-class _ReportManagementState extends State<ReportManagement> with FirestoreBase {
+class _ReportManagementState extends State<ReportManagement>
+    with FirestoreBase {
   Query? query;
   @override
   void initState() {
@@ -42,9 +43,10 @@ class _ReportManagementState extends State<ReportManagement> with FirestoreBase 
     return FirestoreListView(
       query: query!,
       itemBuilder: (context, snapshot) {
-        final report = ReportModel.fromJson(snapshot.data() as Json, snapshot.reference);
+        final report =
+            ReportModel.fromJson(snapshot.data() as Json, snapshot.reference);
 
-        return ExpansionTile(
+        return ListTile(
           title: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -52,7 +54,8 @@ class _ReportManagementState extends State<ReportManagement> with FirestoreBase 
               UserFutureDoc(
                 uid: report.reporterUid,
                 builder: (user) {
-                  return Text('Reporter: ' + (user.nickname != '' ? user.nickname : 'no_name'));
+                  return Text('Reporter: ' +
+                      (user.nickname != '' ? user.nickname : 'no_name'));
                 },
               ),
               UserFutureDoc(
@@ -64,14 +67,12 @@ class _ReportManagementState extends State<ReportManagement> with FirestoreBase 
               Text(report.reason != '' ? report.reason : 'no_reason'),
             ],
           ),
-          children: [
-            ElevatedButton(
-              onPressed: () {
-                print('admin actions');
-              },
-              child: const Text('admin action'),
-            ),
-          ],
+          trailing: IconButton(
+            onPressed: () {
+              print('goto');
+            },
+            icon: Icon(Icons.open_in_new),
+          ),
         );
       },
     );
