@@ -27,7 +27,7 @@ class UserModel {
   bool get signedIn => FirebaseAuth.instance.currentUser != null;
   bool get signedOut => signedIn == false;
 
-  factory UserModel.fromJson(Map<String, dynamic> data) {
+  factory UserModel.fromJson(dynamic data) {
     return UserModel(
       id: data['id'] ?? '',
       isAdmin: data['isAdmin'] ?? false,
