@@ -15,6 +15,7 @@ class PostModel with FirestoreBase, ForumBase {
     this.authorPhotoUrl = '',
     this.authorUid = '',
     this.files = const [],
+    this.deleted = false,
     this.timestamp_,
     this.data_,
   });
@@ -33,6 +34,8 @@ class PostModel with FirestoreBase, ForumBase {
   String title;
   String content;
 
+  bool deleted;
+
   String authorUid;
   String authorNickname;
   String authorPhotoUrl;
@@ -49,6 +52,7 @@ class PostModel with FirestoreBase, ForumBase {
       category: data['category'] ?? '',
       title: data['title'] ?? '',
       content: data['content'] ?? '',
+      deleted: data['deleted'] ?? false,
       authorUid: data['authorUid'] ?? '',
       authorNickname: data['authorNickname'] ?? '',
       authorPhotoUrl: data['authorPhotoUrl'] ?? '',
@@ -62,6 +66,7 @@ class PostModel with FirestoreBase, ForumBase {
       'category': category,
       'title': title,
       'content': content,
+      'deleted': deleted,
       'authorUid': UserService.instance.user.uid,
       'authorNickname': UserService.instance.user.nickname,
       'authorPhotoUrl': UserService.instance.user.photoUrl,
@@ -74,6 +79,7 @@ class PostModel with FirestoreBase, ForumBase {
     return {
       'title': title,
       'content': content,
+      'deleted': deleted,
       'authorUid': authorUid,
       'authorNickname': authorNickname,
       'authorPhotoUrl': authorPhotoUrl,
@@ -108,6 +114,10 @@ class PostModel with FirestoreBase, ForumBase {
   /// ```
   Future<DocumentReference<Object?>> create({Json extra = const {}}) {
     return postCol.add({...createData, ...extra});
+  }
+
+  Future<void> delete() {
+    return postDoc(id).update({'deleted': true, 'content': '', 'title': ''});
   }
 
   Future<void> increaseViewCounter() {
