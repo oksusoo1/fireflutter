@@ -107,19 +107,15 @@ class CommentModel with FirestoreMixin, ForumBase {
       'uid': FirebaseAuth.instance.currentUser?.uid ?? '',
     });
   }
-  // factory CommentModel.create({
-  //   required String postId,
-  //   required String parentId,
-  //   String content = '',
-  // }) {
-  //       final ref = commentCol.add({
-  //       'postId': postId,
-  //       'parentId': parentId,
-  //       'content': content,
-  //       'timestamp': FieldValue.serverTimestamp(),
-  //     });
-  //     return CommentModel(postId: postId, parentId: parentId, uid: uid, timestamp: timestamp, data: data)
-  // }
+
+  Future<void> update({
+    required String content,
+  }) {
+    return commentDoc(id).update({
+      'content': content,
+      'timestamp': FieldValue.serverTimestamp(),
+    });
+  }
 
   Future<void> report(String? reason) {
     return createReport(
