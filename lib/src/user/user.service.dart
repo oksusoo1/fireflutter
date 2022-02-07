@@ -1,9 +1,10 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import '../../fireflutter.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import '../../fireflutter.dart';
 
-class UserService with FirestoreBase {
+class UserService with FirestoreMixin {
   static UserService? _instance;
   static UserService get instance {
     _instance ??= UserService();
@@ -18,6 +19,9 @@ class UserService with FirestoreBase {
 
   UserModel user = UserModel();
   User? currentUser = FirebaseAuth.instance.currentUser;
+
+  DatabaseReference get _myDoc =>
+      FirebaseDatabase.instance.ref('users').child(FirebaseAuth.instance.currentUser!.uid);
 
   /// User auth changes
   ///
@@ -54,10 +58,6 @@ class UserService with FirestoreBase {
     );
   }
 
-  DocumentReference get _myDoc => FirebaseFirestore.instance
-      .collection('users')
-      .doc(FirebaseAuth.instance.currentUser!.uid);
-
   /// Update user name of currently login user.
   Future<void> updateNickname(String name) {
     return update(field: 'nickname', value: name);
@@ -74,17 +74,16 @@ class UserService with FirestoreBase {
   /// return update(field: 'nickname', value: name);
   /// ```
   Future<void> update({required String field, required dynamic value}) {
-    return _myDoc.set({field: value}, SetOptions(merge: true));
+    return _myDoc.update({field: value});
   }
 
   Future<UserModel> get() async {
     final doc = await _myDoc.get();
     if (doc.exists) {
-      final user = UserModel.fromJson(doc.data() as Map<String, dynamic>);
-      user.id = doc.id;
+      final user = UserModel.fromJson(doc.value, doc.key!);
       return user;
     } else {
-      return UserModel(id: currentUser?.uid ?? '');
+      return UserModel(uid: currentUser?.uid ?? '');
     }
   }
 

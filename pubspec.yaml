@@ -47,6 +47,11 @@ dependencies:
   # reminder service,
   shared_preferences: ^2.0.12
 
+  # date & time
+  intl: ^0.17.0
+  
+
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

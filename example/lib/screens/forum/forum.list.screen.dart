@@ -12,7 +12,7 @@ class ForumListScreen extends StatefulWidget {
   State<ForumListScreen> createState() => _ForumListScreenState();
 }
 
-class _ForumListScreenState extends State<ForumListScreen> with FirestoreBase {
+class _ForumListScreenState extends State<ForumListScreen> with FirestoreMixin {
   final app = AppController.of;
   final category = Get.arguments['category'];
   String? newPostId;
@@ -53,43 +53,28 @@ class _ForumListScreenState extends State<ForumListScreen> with FirestoreBase {
           print('got new doc id; ${post.id}');
 
           return ExpansionTile(
-            initiallyExpanded: true,
-            maintainState: true,
+            initiallyExpanded: false,
             title: Text(post.title),
-            onExpansionChanged: (value) async {
+            subtitle: Row(
+              children: [
+                UserFutureDoc(
+                  uid: post.uid,
+                  builder: (user) => user.exists ? Text('By: ${user.nickname} ') : Text('NO-USER '),
+                ),
+                ShortDate(post.timestamp.millisecondsSinceEpoch),
+              ],
+            ),
+            onExpansionChanged: (value) {
               if (value) {
-                try {
-                  await post.increaseViewCounter();
-                } catch (e) {
-                  print('increaseViewCounter() error; $e');
-                  error(e);
-                }
+                post.increaseViewCounter().catchError(error);
               }
             },
-            subtitle: Text(
-              DateTime.fromMillisecondsSinceEpoch(post.timestamp.millisecondsSinceEpoch)
-                      .toString() +
-                  ', ' +
-                  post.id,
-            ),
             children: [
-              Text(post.content),
-              Text(post.id),
-              Wrap(
-                children: [
-                  ElevatedButton(
-                    onPressed: () => onReply(post),
-                    child: const Text('Comment'),
-                  ),
-                  ElevatedButton(
-                    onPressed: () => onReport(post),
-                    child: const Text('Report'),
-                  ),
-                  ElevatedButton(
-                    onPressed: () => app.openPostCreate(id: post.id),
-                    child: const Text('Edit'),
-                  ),
-                ],
+              Post(
+                post: post,
+                onReply: onReply,
+                onReport: onReport,
+                onEdit: (post) => app.openPostCreate(id: post.id),
               ),
               Divider(color: Colors.red),
               Comment(

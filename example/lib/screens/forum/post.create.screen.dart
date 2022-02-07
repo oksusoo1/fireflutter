@@ -11,7 +11,7 @@ class PostCreateScreen extends StatefulWidget {
   State<PostCreateScreen> createState() => _PostCreateScreenState();
 }
 
-class _PostCreateScreenState extends State<PostCreateScreen> with FirestoreBase {
+class _PostCreateScreenState extends State<PostCreateScreen> with FirestoreMixin {
   final title = TextEditingController();
 
   final content = TextEditingController();

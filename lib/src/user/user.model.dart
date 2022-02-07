@@ -6,7 +6,7 @@ import '../../fireflutter.dart';
 ///
 class UserModel {
   UserModel({
-    this.id = '',
+    this.uid = '',
     this.nickname = '',
     this.photoUrl = '',
     this.birthday = '',
@@ -15,9 +15,10 @@ class UserModel {
 
   /// This is the user's document id which is the uid.
   /// If it is empty, the user may not be signed-in
-  String id;
-  String get uid => id;
+  String uid;
 
+  /// If id is empty string, then the model has no user info or the doc of the model does not exists.
+  bool get exists => uid != '';
   bool isAdmin;
 
   String nickname;
@@ -27,9 +28,9 @@ class UserModel {
   bool get signedIn => FirebaseAuth.instance.currentUser != null;
   bool get signedOut => signedIn == false;
 
-  factory UserModel.fromJson(Map<String, dynamic> data) {
+  factory UserModel.fromJson(dynamic data, String uid) {
     return UserModel(
-      id: data['id'] ?? '',
+      uid: uid,
       isAdmin: data['isAdmin'] ?? false,
       nickname: data['nickname'] ?? '',
       photoUrl: data['photoUrl'] ?? '',
@@ -49,7 +50,7 @@ class UserModel {
   /// Data of all user model
   Map<String, dynamic> get map {
     final re = data;
-    re['id'] = id;
+    re['uid'] = uid;
     re['isAdmin'] = isAdmin;
     return re;
   }

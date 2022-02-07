@@ -42,7 +42,8 @@ export 'src/report/report.service.dart';
 
 export 'src/test/test.service.dart';
 
-export 'src/firestore.base.mixin.dart';
+export 'src/firestore.mixin.dart';
+export 'src/database.mixin.dart';
 export 'src/forum/models/comment.model.dart';
 export 'src/forum/models/post.model.dart';
 export 'src/forum/forum.base.mixin.dart';
@@ -50,6 +51,8 @@ export 'src/forum/post.service.dart';
 export 'src/forum/widgets/category.management.dart';
 export 'src/report/report.management.dart';
 export 'src/forum/widgets/comment.edit.dialog.dart';
+export 'src/forum/widgets/post.dart';
 export 'src/forum/widgets/comment.dart';
 
 export 'src/file_upload/file_upload.service.dart';
+export 'src/widgets/short_date.dart';

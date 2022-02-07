@@ -4,14 +4,12 @@ import '../../../fireflutter.dart';
 /// CommentModel
 ///
 /// Refer readme for details
-class CommentModel with FirestoreBase, ForumBase {
+class CommentModel with FirestoreMixin, ForumBase {
   CommentModel({
     this.id = '',
     this.postId = '',
     this.content = '',
-    this.authorNickname = '',
-    this.authorPhotoUrl = '',
-    this.authorUid = '',
+    this.uid = '',
     this.timestamp_,
     this.data_,
   });
@@ -25,9 +23,7 @@ class CommentModel with FirestoreBase, ForumBase {
 
   String content;
 
-  String authorUid;
-  String authorNickname;
-  String authorPhotoUrl;
+  String uid;
 
   Timestamp? timestamp_;
   Timestamp get timestamp => timestamp_ ?? Timestamp.now();
@@ -42,9 +38,7 @@ class CommentModel with FirestoreBase, ForumBase {
       id: id,
       postId: postId,
       content: data['content'] ?? '',
-      authorUid: data['authorUid'] ?? '',
-      authorNickname: data['authorNickname'] ?? '',
-      authorPhotoUrl: data['authorPhotoUrl'] ?? '',
+      uid: data['uid'] ?? '',
       timestamp_: data['timestamp'] ?? Timestamp.now(),
       data_: data,
     );
@@ -55,9 +49,7 @@ class CommentModel with FirestoreBase, ForumBase {
     return {
       'id': id,
       'content': content,
-      'authorUid': authorUid,
-      'authorNickname': authorNickname,
-      'authorPhotoUrl': authorPhotoUrl,
+      'uid': uid,
       'timestamp': timestamp,
       'data': data,
     };
@@ -71,9 +63,7 @@ class CommentModel with FirestoreBase, ForumBase {
   Map<String, dynamic> get createData {
     return {
       'content': content,
-      'authorUid': UserService.instance.user.uid,
-      'authorNickname': UserService.instance.user.nickname,
-      'authorPhotoUrl': UserService.instance.user.photoUrl,
+      'uid': UserService.instance.user.uid,
       'timestamp': FieldValue.serverTimestamp(),
     };
   }
@@ -95,7 +85,7 @@ class CommentModel with FirestoreBase, ForumBase {
     return createReport(
       target: 'comment',
       targetId: id,
-      reporteeUid: authorUid,
+      reporteeUid: uid,
       reason: reason,
     );
   }

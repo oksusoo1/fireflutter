@@ -2,7 +2,7 @@ import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterfire_ui/firestore.dart';
 
-class Comment extends StatelessWidget with FirestoreBase {
+class Comment extends StatelessWidget with FirestoreMixin {
   Comment({
     Key? key,
     required this.post,

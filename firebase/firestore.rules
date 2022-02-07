@@ -22,10 +22,13 @@ service cloud.firestore {
         allow write: if ( request.auth.uid == myId );
       }
     }
-    match /users/{uid} {
-      allow read: if true;
-      allow write: if (request.auth.uid == uid);
-    }
+
+
+    // User collection is not being used. It had moved to realtime database.
+    // match /users/{uid} {
+    //   allow read: if true;
+    //   allow write: if (request.auth.uid == uid);
+    // }
 
     match /settings/{docId} {
       allow read: if true;
@@ -42,7 +45,7 @@ service cloud.firestore {
 
     match /posts/{postId} {
       allow read: if true;
-      allow create: if required(['category', 'authorUid', 'timestamp']) &&
+      allow create: if required(['category', 'uid', 'timestamp']) &&
         categoryExists() &&
         willBeMyPost()
       ;
@@ -61,9 +64,9 @@ service cloud.firestore {
 
       match /comments/{commentId} {
         allow read: if true;
-        allow create: if required(['authorUid', 'timestamp']) && willBeMyDoc('authorUid');
+        allow create: if required(['uid', 'timestamp']) && willBeMyDoc('uid');
         allow update: if
-          (isMyDoc('authorUid')) && mustUpdating(['timestamp'])
+          (isMyDoc('uid')) && mustUpdating(['timestamp'])
           ||
           onlyUpdating(['like', 'dislike'])
         ;
@@ -173,6 +176,9 @@ function required(fields) {
 //
 // [field] must match the user uid.
 // Use this to see if the document belongs to the user.
+// For instance, when data is `{authorUid: 'aaa', ...}`,
+//  - you can call `isMyDoc('authorUid')`,
+//  - And if the authorUid is your uid, then it's your document.
 function isMyDoc(field) {
    return resource.data[field] == request.auth.uid;
 }
@@ -188,13 +194,13 @@ function willBeMyDoc(field) {
 
 // Check if login user is the one who created the post
 function isMyPost() {
-  return isMyDoc('authorUid');
+  return isMyDoc('uid');
 }
 
 // Check if the post belongs to the user (after create or update).
 // Use this to validate that the author does not change after updating.
 function willBeMyPost() {
-  return willBeMyDoc('authorUid');
+  return willBeMyDoc('uid');
 }
 
 
