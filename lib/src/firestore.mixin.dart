@@ -17,15 +17,16 @@ mixin FirestoreMixin {
 
   CollectionReference get categoryCol => db.collection('categories');
   CollectionReference get postCol => db.collection('posts');
+  CollectionReference get commentCol => db.collection('comments');
   CollectionReference get tokenCol => db.collection('tokens');
   CollectionReference get settingDoc => db.collection('settings');
   CollectionReference get reportCol => db.collection('reports');
 
   DocumentReference get adminsDoc => settingDoc.doc('admins');
 
-  CollectionReference commentCol(String postId) {
-    return postDoc(postId).collection('comments');
-  }
+  // CollectionReference commentCol(String postId) {
+  //   return postDoc(postId).collection('comments');
+  // }
 
   DocumentReference categoryDoc(String id) {
     return db.collection('categories').doc(id);
@@ -39,12 +40,12 @@ mixin FirestoreMixin {
     return postCol.doc(id).collection('votes').doc(_user.uid);
   }
 
-  DocumentReference commentDoc(String postId, String commentId) {
-    return commentCol(postId).doc(commentId);
+  DocumentReference commentDoc(String commentId) {
+    return commentCol.doc(commentId);
   }
 
-  DocumentReference commentVoteDoc(String postId, String commentId) {
-    return commentDoc(postId, commentId).collection('votes').doc(_user.uid);
+  DocumentReference commentVoteDoc(String commentId) {
+    return commentDoc(commentId).collection('votes').doc(_user.uid);
   }
 
   /// ************** Common Methods ***********************

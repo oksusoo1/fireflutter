@@ -69,15 +69,17 @@ class CommentModel with FirestoreMixin, ForumBase {
   }
 
   Future<void> increaseViewCounter() {
-    return increaseForumViewCounter(commentDoc(postId, id));
+    return increaseForumViewCounter(commentDoc(id));
   }
 
   /// Create a comment with extra data
-  Future<DocumentReference<Object?>> create({required String postId, String parent = 'root'}) {
-    final col = commentCol(postId);
-    return col.add({
+  Future<DocumentReference<Object?>> create({required String postId, required String parentId}) {
+    return commentCol.add({
       ...createData,
-      ...{'parent': parent},
+      ...{
+        'postId': postId,
+        'parentId': parentId,
+      },
     });
   }
 

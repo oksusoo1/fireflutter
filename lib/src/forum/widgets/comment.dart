@@ -6,13 +6,13 @@ class Comment extends StatelessWidget with FirestoreMixin {
   Comment({
     Key? key,
     required this.post,
-    this.parent = 'root',
+    required this.parentId,
     required this.onReply,
     required this.onReport,
   }) : super(key: key);
 
   final PostModel post;
-  final String parent;
+  final String parentId;
 
   /// Callback on reply button pressed. The parameter is the parent comment of
   /// the new comment to be created.
@@ -20,7 +20,7 @@ class Comment extends StatelessWidget with FirestoreMixin {
   final Function(CommentModel comment) onReport;
   @override
   Widget build(BuildContext context) {
-    final query = commentCol(post.id).where('parent', isEqualTo: parent).orderBy(
+    final query = commentCol.where('parentId', isEqualTo: parentId).orderBy(
           'timestamp',
           descending: true,
         );
@@ -42,6 +42,7 @@ class Comment extends StatelessWidget with FirestoreMixin {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              UserDoc(uid: comment.uid, builder: (u) => Text('Name: ${u.nickname}')),
               Text("content: ${comment.content}"),
               Wrap(
                 children: [
@@ -56,7 +57,7 @@ class Comment extends StatelessWidget with FirestoreMixin {
                 ],
               ),
               Divider(color: Colors.black),
-              Comment(post: post, parent: comment.id, onReply: onReply, onReport: onReport)
+              Comment(post: post, parentId: comment.id, onReply: onReply, onReport: onReport)
             ],
           ),
         );

@@ -7,11 +7,13 @@ class Post extends StatelessWidget {
     required this.post,
     required this.onReply,
     required this.onReport,
+    required this.onEdit,
   }) : super(key: key);
 
   final PostModel post;
   final Function(PostModel post) onReport;
   final Function(PostModel post) onReply;
+  final Function(PostModel post) onEdit;
 
   @override
   Widget build(BuildContext context) {
@@ -28,6 +30,10 @@ class Post extends StatelessWidget {
             ElevatedButton(
               onPressed: () => onReport(post),
               child: const Text('Report'),
+            ),
+            ElevatedButton(
+              onPressed: () => onEdit(post),
+              child: const Text('Edit'),
             ),
           ],
         ),

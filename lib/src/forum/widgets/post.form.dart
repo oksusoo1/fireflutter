@@ -1,42 +1,48 @@
-import 'package:extended/extended.dart';
-import 'package:flutter/material.dart';
 import 'package:fireflutter/fireflutter.dart';
-import 'package:get/get.dart';
+import 'package:flutter/material.dart';
 
-class PostCreateScreen extends StatefulWidget {
-  const PostCreateScreen({Key? key}) : super(key: key);
+class PostForm extends StatefulWidget {
+  const PostForm({
+    this.category,
+    required this.onCreate,
+    required this.onError,
+    this.heightBetween = 10.0,
+    Key? key,
+  }) : super(key: key);
 
+  final String? category;
+  final double heightBetween;
+
+  final Function(String) onCreate;
+  final Function(dynamic) onError;
   @override
-  State<PostCreateScreen> createState() => _PostCreateScreenState();
+  State<PostForm> createState() => _PostFormState();
 }
 
-class _PostCreateScreenState extends State<PostCreateScreen> with FirestoreMixin {
+class _PostFormState extends State<PostForm> {
   final title = TextEditingController();
 
   final content = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Post Create'),
-      ),
-      body: PagePadding(vertical: sm, children: [
+    return Column(
+      children: [
         const Text('Title'),
         TextField(
           controller: title,
         ),
-        spaceLg,
+        SizedBox(height: widget.heightBetween),
         const Text('Content'),
         TextField(
           controller: content,
         ),
-        spaceLg,
+        SizedBox(height: widget.heightBetween),
         ElevatedButton(
             onPressed: () async {
               try {
                 final ref = await PostModel(
-                  category: Get.arguments['category'],
+                  category: widget.category!,
                   title: title.text,
                   content: content.text,
                 ).create();
@@ -44,14 +50,13 @@ class _PostCreateScreenState extends State<PostCreateScreen> with FirestoreMixin
                 print('post created; ${ref.id}');
                 print('post created; $ref');
 
-                Get.back(result: ref.id);
-                await alert('Post created', 'Thank you');
+                widget.onCreate(ref.id);
               } catch (e) {
-                error(e);
+                widget.onError(e);
               }
             },
             child: const Text('CREATE POST')),
-      ]),
+      ],
     );
   }
 }
