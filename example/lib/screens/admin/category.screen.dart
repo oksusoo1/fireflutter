@@ -12,7 +12,8 @@ class CategoryScreen extends StatelessWidget {
         title: const Text('Category Management'),
       ),
       body: CategoryManagement(
-        onCreate: (data) => alert('Category Create', '"${data['title']}" had been created'),
+        onCreate: (data) =>
+            alert('Category Create', '"${data['title']}" had been created'),
         onError: error,
       ),
     );

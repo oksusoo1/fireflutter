@@ -4,7 +4,7 @@ import '../../fireflutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterfire_ui/firestore.dart';
 
-class ReportManagement extends StatefulWidget {
+class ReportManagement extends StatelessWidget with FirestoreMixin {
   ReportManagement({
     Key? key,
     this.padding = const EdgeInsets.all(0),
@@ -17,32 +17,23 @@ class ReportManagement extends StatefulWidget {
   final String? target;
 
   @override
-  State<ReportManagement> createState() => _ReportManagementState();
-}
-
-class _ReportManagementState extends State<ReportManagement> with FirestoreMixin {
-  Query? query;
-  @override
-  void initState() {
-    super.initState();
+  Widget build(BuildContext context) {
+    Query? query;
     CollectionReference q = reportCol;
-    if (widget.target != null) {
-      query = q.where('target', isEqualTo: widget.target);
+    if (target != null) {
+      query = q.where('target', isEqualTo: target);
     }
 
     if (query != null) {
-      query = query!.orderBy('timestamp');
+      query = query.orderBy('timestamp');
     } else {
       query = q.orderBy('timestamp');
     }
-  }
-
-  @override
-  Widget build(BuildContext context) {
     return FirestoreListView(
-      query: query!,
+      query: query,
       itemBuilder: (context, snapshot) {
-        final report = ReportModel.fromJson(snapshot.data() as Json, snapshot.reference);
+        final report =
+            ReportModel.fromJson(snapshot.data() as Json, snapshot.reference);
 
         return ListTile(
           title: Column(
@@ -52,7 +43,8 @@ class _ReportManagementState extends State<ReportManagement> with FirestoreMixin
               UserFutureDoc(
                 uid: report.reporterUid,
                 builder: (user) {
-                  return Text('Reporter: ' + (user.nickname != '' ? user.nickname : 'no_name'));
+                  return Text('Reporter: ' +
+                      (user.nickname != '' ? user.nickname : 'no_name'));
                 },
               ),
               UserFutureDoc(
