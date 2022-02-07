@@ -53,5 +53,6 @@ export 'src/report/report.management.dart';
 export 'src/forum/widgets/comment.edit.dialog.dart';
 export 'src/forum/widgets/post.dart';
 export 'src/forum/widgets/comment.dart';
+export 'src/forum/widgets/post.form.dart';
 
 export 'src/widgets/short_date.dart';

@@ -61,26 +61,71 @@ service cloud.firestore {
       ;
       // Post deletion is not allowed.
       allow delete: if false;
+    }
 
-      match /comments/{commentId} {
-        allow read: if true;
-        allow create: if required(['uid', 'timestamp']) && willBeMyDoc('uid');
-        allow update: if
-          (isMyDoc('uid')) && mustUpdating(['timestamp'])
-          ||
-          onlyUpdating(['like', 'dislike'])
-        ;
-        // Comment deletion is not allowed.
-        allow delete: if false;
-      }
+
+    match /comments/{commentId} {
+      allow read: if true;
+      allow create: if
+        required(['parentId', 'postId', 'timestamp', 'uid'])
+        &&
+        postExists(request.resource.data.postId)
+        &&
+        // Check if if it is immediate child comment(comment's parent id is the same as post id)
+        //  or comment parent id is exists.
+        (
+            request.resource.data.postId == request.resource.data.parentId
+            ||
+            commentExists(request.resource.data.parentId)
+        )
+        &&
+        willBeMyDoc('uid');
+
+      // Security Rule Condition #C1:
+      // Timestamp must be changed on update, and if the data is { timestamp: 1 },
+      //  - {timestamp: 1} will succeed,
+      //  - {timestamp: 2} will also succeed.
+      // Why?
+      //  - If only one of 'like', 'dislike' are changed or **none of them changed**,
+      //    it will succeed.
+      //  - when {timestamp: 1} submitted, timestamp didn't change and 'like', 'dislike' didn't changed,
+      //    so, it will succeed.
+      //  - If {timestamp: 1, content: 'abc'} submitted, timestamp didn't changed, and something else aside from 'like' and 'dislike' changed,
+      //    so, it will fail.
+      // For the test, see "Comment - update - timestamp & like" in test.js
+      allow update: if
+        // #C1: If timestamp does not change, it will be deny here.
+        // C11
+        (
+            isMyDoc('uid')
+            &&
+            mustUpdating(['timestamp'])
+            &&
+            notUpdating(['parentId', 'postId', 'uid'])
+        )
+        ||
+        // C1: But it will succeed here since time stmap does not change.
+        // C12
+        onlyUpdating(['like', 'dislike'])
+      ;
+
+      // Comment deletion is not allowed.
+      allow delete: if false;                             
     }
 
     match /reports/{reportId} {
       allow read: if isAdmin() || isMyDoc('reporterUid');
       allow create: if willBeMyDoc('reporterUid') &&
         fieldCheck(['target', 'targetId', 'reporterUid', 'reporteeUid', 'timestamp'], ['reason']) &&
+        (
+          (request.resource.data.target == 'post' && exists(/databases/$(database)/documents/posts/$(request.resource.data.targetId)))
+          ||
+          (request.resource.data.target == 'comment' && exists(/databases/$(database)/documents/comments/$(request.resource.data.targetId)))
+        )
+        &&
         !exists(/databases/$(database)/documents/reports/$(reportId))
       ;
+
       allow update: if false;
       allow delete: if false;
     }
@@ -134,7 +179,14 @@ service cloud.firestore {
     
 
     function categoryExists() {
-      return debug(exists(/databases/$(database)/documents/categories/$(request.resource.data.category)));
+      return exists(/databases/$(database)/documents/categories/$(request.resource.data.category));
+    }
+
+    function postExists(postId) {
+      return exists(/databases/$(database)/documents/posts/$(postId));
+    }
+    function commentExists(commentId) {
+      return exists(/databases/$(database)/documents/comments/$(commentId));
     }
   }
 }
@@ -168,6 +220,8 @@ function fieldCheck(required, optional) {
 // * Warning : It's check the fields after save.
 // * Warning : !!! It's not checking the incoming data fields !!!
 function required(fields) {
+  // let d = debug('**** required ****');
+  // let e = debug(request.resource.data);
   return request.resource.data.keys().hasAll( fields );
 }
 
@@ -216,7 +270,7 @@ function notUpdating(fields) {
 }
 
 // Only updating [fields]
-// - Updating only one or none of the [fields] is okay.
+// - Succeeds if no property changes or only one or all of the [fields] changes.
 // - Fails if other properties rather than the [fields] are changed.
 //
 // - Success if only the properties in the list of [fields] should be changed.

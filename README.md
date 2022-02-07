@@ -16,6 +16,8 @@ A free, open source, complete, rapid development package for creating Social app
 
 - I am looking for community devleopers who can join this work. Please email me at thruthesky@gmail.com
 
+- Please post your issues at https://github.com/thruthesky/fireflutter/projects/1
+
 Table of contents
 
 - [Fire Flutter](#fire-flutter)
@@ -33,7 +35,6 @@ Table of contents
   - [Firestore installation](#firestore-installation)
     - [Setting admin on firestore security rules](#setting-admin-on-firestore-security-rules)
 - [Sources and packages](#sources-and-packages)
-- [Concept of Database](#concept-of-database)
 - [Coding Guideline](#coding-guideline)
 - [User](#user)
   - [User installation](#user-installation)
@@ -89,9 +90,10 @@ Table of contents
     - [For background(or foreground) apps](#for-backgroundor-foreground-apps)
   - [Test Dynamic Links](#test-dynamic-links)
 - [Reports](#reports)
-- [Forum & Category](#forum--category)
+- [Forum](#forum)
   - [Category](#category)
-  - [Post model](#post-model)
+  - [Post](#post-1)
+  - [Comment](#comment)
 
 # TODOs
 
@@ -186,16 +188,6 @@ Table of contents
 
 - Fireflutter uses [intl](https://pub.dev/packages/intl) package for date and time computation
 
-# Concept of Database
-
-- Firebase Realtime Databases and Firestore are NoSQL.
-- It is meant to be containing all necessary information in one document.
-  For instance, the traditional SQL databases do not contain user information on every posts and comments while NoSQL database should contain those.
-- Realtime databases vs Firestore.
-  Let's say you are building forum with Firestore. On every posts and comments need to display user profile like name and photo. If you put user information on Firestore, then you would probably want to put same user info into every Firestore posts and comments documents since you don't want to extra cost by reading user document. This is fine, but the user name and photo in firestore posts and comments will not be sync if user changes his name or profile photo.
-  So, what if user info goes to realtime database while posts and comments stay in firestore? Realtime database is cheaper. It's not that expensive to read user info in realtime database on every display of posts and comemnts. And you don't have to put user info on every firestore posts and comments documents having user info as one source of truth.
-
-- We built forum functionality with firestore because it has more flexibility when it comes to managing documents.
 
 # Coding Guideline
 
@@ -233,9 +225,9 @@ Table of contents
 
 ## User data
 
-- Part of the user data are saved in `/users` collection in firestore.
-- Since user's email address and phone number are saved in Firebase Auth service. Email & phone number are not saved in `/users` collection.
-
+- User email and phone number are saved in firebase auth.
+- Other user properties are saved in `/users` inside realtime database.
+- User information would be displayed as extra information on posts, comments, public profiles, and so on. Realtime database costs by GB download that is cheap enough to use it as normalized.
 
 
 ## Test users
@@ -962,7 +954,13 @@ DynamicLinksService.instance.listen((Uri? deepLink) {
 
 
 
-# Forum & Category
+# Forum
+
+- Forum functionality uses firestore to provide maximum flexibility for customzation.
+  - You may extend forum functionality for shopping app.
+    - To build shopping app, you may need to manage products as a post model and reviews as comment model.
+      - You may add extra properties for products(product name, price, etc) and its reviews(rating, etc). And to search the properties, firestore would be better fit than realtime database.
+
 
 ## Category
 
@@ -970,7 +968,7 @@ DynamicLinksService.instance.listen((Uri? deepLink) {
 - If category does not exists, posting will be failed.
 
 
-## Post model
+## Post
 
 - Post model and comment model are a lot similiar, so they use same `PostModel`.
 
@@ -978,3 +976,17 @@ DynamicLinksService.instance.listen((Uri? deepLink) {
   When you want to build a shopping mall app, it needs product model and the product model may have comments or reviews. The forum functionality with customized `PostModel` can do the shopping mall feature.
 
 - `PostModel` has methods like create, update, delete, like, dislike, and so on.
+
+
+## Comment
+
+- Comments are saved in `/comments` so it is better to be search. If it is saved under `/posts/(postId)/comments/`, then it is not easy to search.
+
+
+- Properties
+  - `postId` has the post id of that the comment belongs to.
+  - `parentId` is the post id if the comment is the immediate child coment of the post.Or parent comment id.
+  - `uid` is the author id.
+  - `timestamp` is the server time.
+
+
