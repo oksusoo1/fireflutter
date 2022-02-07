@@ -22,7 +22,6 @@ class FileUploadService {
     required ImageSource source,
     int quality = 90,
     Function(double)? onProgress,
-    String folderPath = '',
   }) async {
     // print('pickUpload;');
 
@@ -37,9 +36,9 @@ class FileUploadService {
     File file = await _imageCompressor(pickedFile.path, quality);
 
     /// Reference
-    final String fileName = file.toString().split('/').last;
+    final String fileName = file.path.split('/').last;
+    Reference ref = firebaseStorage.ref("uploads/$fileName");
 
-    Reference ref = firebaseStorage.ref(folderPath.isEmpty ? '$folderPath/$fileName' : fileName);
     UploadTask uploadTask = ref.putFile(file);
 
     /// Progress listener
