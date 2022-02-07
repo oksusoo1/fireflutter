@@ -8,7 +8,6 @@ import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:image_picker/image_picker.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -54,8 +53,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         UserDoc(
                           uid: user.uid,
                           builder: (UserModel u) {
-                            return Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
+                            return Wrap(
                               children: [
                                 Text('Profile name: ${u.nickname}'),
                                 Text(', photo: ${u.photoUrl}'),
