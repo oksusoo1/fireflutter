@@ -8,7 +8,7 @@ import 'package:fe/screens/admin/admin.screen.dart';
 import 'package:fe/screens/admin/category.screen.dart';
 import 'package:fe/screens/admin/report.screen.dart';
 import 'package:fe/screens/forum/forum.list.screen.dart';
-import 'package:fe/screens/forum/post.create.screen.dart';
+import 'package:fe/screens/forum/post.edit.screen.dart';
 import 'package:fe/service/app.controller.dart';
 import 'package:fe/service/global.keys.dart';
 import 'package:fe/service/route.names.dart';
@@ -169,7 +169,7 @@ class _MainAppState extends State<MainApp> {
           ),
         ),
         GetPage(name: RouteNames.forumList, page: () => ForumListScreen()),
-        GetPage(name: RouteNames.postCreate, page: () => PostCreateScreen()),
+        GetPage(name: RouteNames.postCreate, page: () => PostEditScreen()),
         GetPage(name: RouteNames.admin, page: () => AdminScreen()),
         GetPage(name: RouteNames.category, page: () => CategoryScreen()),
         GetPage(name: '/chat-room-screen', page: () => const ChatRoomScreen()),

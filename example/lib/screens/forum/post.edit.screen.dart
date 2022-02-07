@@ -4,14 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:fireflutter/fireflutter.dart';
 import 'package:get/get.dart';
 
-class PostCreateScreen extends StatefulWidget {
-  const PostCreateScreen({Key? key}) : super(key: key);
+class PostEditScreen extends StatefulWidget {
+  const PostEditScreen({Key? key}) : super(key: key);
 
   @override
-  State<PostCreateScreen> createState() => _PostCreateScreenState();
+  State<PostEditScreen> createState() => _PostEditScreenState();
 }
 
-class _PostCreateScreenState extends State<PostCreateScreen> with FirestoreMixin {
+class _PostEditScreenState extends State<PostEditScreen> with FirestoreMixin {
   final title = TextEditingController();
 
   final content = TextEditingController();
