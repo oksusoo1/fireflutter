@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import '../../../fireflutter.dart';
 
 /// CommentModel
@@ -7,40 +8,56 @@ import '../../../fireflutter.dart';
 class CommentModel with FirestoreMixin, ForumBase {
   CommentModel({
     this.id = '',
-    this.postId = '',
+    required this.postId,
+    required this.parentId,
     this.content = '',
-    this.uid = '',
-    this.timestamp_,
-    this.data_,
+    required this.uid,
+    required this.timestamp,
+    required this.data,
   });
 
   /// data is the document data object.
-  Json? data_;
-  Json get data => data_ ?? const {};
+  Json data;
 
   String id;
   String postId;
+  String parentId;
 
   String content;
 
   String uid;
 
-  Timestamp? timestamp_;
-  Timestamp get timestamp => timestamp_ ?? Timestamp.now();
+  Timestamp timestamp;
+  int depth = 0;
 
   /// Get document data of map and convert it into post model
   factory CommentModel.fromJson(
     Json data, {
     required String id,
-    required String postId,
   }) {
     return CommentModel(
-      id: id,
-      postId: postId,
       content: data['content'] ?? '',
-      uid: data['uid'] ?? '',
-      timestamp_: data['timestamp'] ?? Timestamp.now(),
-      data_: data,
+      id: id,
+      postId: data['postId'],
+      parentId: data['parentId'],
+      uid: data['uid'],
+      timestamp: data['timestamp'] ?? Timestamp.now(),
+      data: data,
+    );
+  }
+
+  /// Returns an empty object.
+  ///
+  /// Use this when you need to use comment model's methods, like when you are
+  /// going to create a new comment.
+  factory CommentModel.empty() {
+    return CommentModel(
+      postId: '',
+      parentId: '',
+      content: '',
+      uid: '',
+      timestamp: Timestamp.now(),
+      data: {},
     );
   }
 
@@ -48,7 +65,10 @@ class CommentModel with FirestoreMixin, ForumBase {
   Map<String, dynamic> get map {
     return {
       'id': id,
+      'postId': postId,
+      'parentId': parentId,
       'content': content,
+      'depth': depth,
       'uid': uid,
       'timestamp': timestamp,
       'data': data,
@@ -60,28 +80,46 @@ class CommentModel with FirestoreMixin, ForumBase {
     return '''CommentModel($map)''';
   }
 
-  Map<String, dynamic> get createData {
-    return {
-      'content': content,
-      'uid': UserService.instance.user.uid,
-      'timestamp': FieldValue.serverTimestamp(),
-    };
-  }
+  // Map<String, dynamic> get createData {
+  //   return {
+  //     'content': content,
+  //     'uid': UserService.instance.user.uid,
+  //     'timestamp': FieldValue.serverTimestamp(),
+  //   };
+  // }
 
   Future<void> increaseViewCounter() {
     return increaseForumViewCounter(commentDoc(id));
   }
 
   /// Create a comment with extra data
-  Future<DocumentReference<Object?>> create({required String postId, required String parentId}) {
-    return commentCol.add({
-      ...createData,
-      ...{
-        'postId': postId,
-        'parentId': parentId,
-      },
+  static Future<DocumentReference<Object?>> create({
+    required String postId,
+    required String parentId,
+    String content = '',
+  }) {
+    final _ = CommentModel.empty();
+    return _.commentCol.add({
+      'postId': postId,
+      'parentId': parentId,
+      'content': content,
+      'timestamp': FieldValue.serverTimestamp(),
+      'uid': FirebaseAuth.instance.currentUser?.uid ?? '',
     });
   }
+  // factory CommentModel.create({
+  //   required String postId,
+  //   required String parentId,
+  //   String content = '',
+  // }) {
+  //       final ref = commentCol.add({
+  //       'postId': postId,
+  //       'parentId': parentId,
+  //       'content': content,
+  //       'timestamp': FieldValue.serverTimestamp(),
+  //     });
+  //     return CommentModel(postId: postId, parentId: parentId, uid: uid, timestamp: timestamp, data: data)
+  // }
 
   Future<void> report(String? reason) {
     return createReport(

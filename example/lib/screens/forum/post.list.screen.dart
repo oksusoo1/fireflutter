@@ -50,7 +50,7 @@ class _PostListScreenState extends State<PostListScreen> with FirestoreMixin {
             snapshot.id,
           );
 
-          print('got new doc id; ${post.id}: ${post.title}');
+          // print('got new doc id; ${post.id}: ${post.title}');
 
           return ExpansionTile(
             initiallyExpanded: false,
@@ -96,9 +96,14 @@ class _PostListScreenState extends State<PostListScreen> with FirestoreMixin {
       builder: (_) {
         return CommentEditDialog(
           onCancel: Get.back,
-          onCreate: (CommentModel form) async {
+          onCreate: (Json form) async {
             try {
-              await form.create(postId: post.id, parentId: comment?.id ?? post.id);
+              await CommentModel.create(
+                postId: post.id,
+                parentId: comment?.id ?? post.id,
+                content: form['content'],
+              );
+              // form.create(postId: post.id, parentId: comment?.id ?? post.id);
               Get.back();
               setState(() {});
               alert('Comment created', 'Your comment has created successfully');

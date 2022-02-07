@@ -9,7 +9,7 @@ class CommentEditDialog extends StatefulWidget {
   }) : super(key: key);
 
   final Function() onCancel;
-  final Function(CommentModel) onCreate;
+  final Function(Json) onCreate;
 
   @override
   State<CommentEditDialog> createState() => _CommentEditDialogState();
@@ -37,9 +37,7 @@ class _CommentEditDialogState extends State<CommentEditDialog> {
             TextButton(
               child: const Text('CREATE COMMENT'),
               onPressed: () {
-                widget.onCreate(CommentModel(
-                  content: content.text,
-                ));
+                widget.onCreate({'content': content.text});
               },
             ),
           ]),
