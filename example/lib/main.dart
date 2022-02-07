@@ -7,7 +7,7 @@ import 'package:extended/extended.dart';
 import 'package:fe/screens/admin/admin.screen.dart';
 import 'package:fe/screens/admin/category.screen.dart';
 import 'package:fe/screens/admin/report.screen.dart';
-import 'package:fe/screens/forum/forum.list.screen.dart';
+import 'package:fe/screens/forum/post.list.screen.dart';
 import 'package:fe/screens/forum/post.form.screen.dart';
 import 'package:fe/service/app.controller.dart';
 import 'package:fe/service/global.keys.dart';
@@ -168,7 +168,7 @@ class _MainAppState extends State<MainApp> {
             key: profileScreenKey,
           ),
         ),
-        GetPage(name: RouteNames.forumList, page: () => ForumListScreen()),
+        GetPage(name: RouteNames.postList, page: () => PostListScreen()),
         GetPage(name: RouteNames.postForm, page: () => PostFormScreen()),
         GetPage(name: RouteNames.admin, page: () => AdminScreen()),
         GetPage(name: RouteNames.category, page: () => CategoryScreen()),

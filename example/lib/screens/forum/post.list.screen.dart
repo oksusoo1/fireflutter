@@ -5,14 +5,14 @@ import 'package:flutter/material.dart';
 import 'package:flutterfire_ui/firestore.dart';
 import 'package:get/get.dart';
 
-class ForumListScreen extends StatefulWidget {
-  ForumListScreen({Key? key}) : super(key: key);
+class PostListScreen extends StatefulWidget {
+  PostListScreen({Key? key}) : super(key: key);
 
   @override
-  State<ForumListScreen> createState() => _ForumListScreenState();
+  State<PostListScreen> createState() => _PostListScreenState();
 }
 
-class _ForumListScreenState extends State<ForumListScreen> with FirestoreMixin {
+class _PostListScreenState extends State<PostListScreen> with FirestoreMixin {
   final app = AppController.of;
   final category = Get.arguments['category'];
   String? newPostId;
@@ -74,7 +74,7 @@ class _ForumListScreenState extends State<ForumListScreen> with FirestoreMixin {
                 post: post,
                 onReply: onReply,
                 onReport: onReport,
-                onEdit: (post) => AppController.of.openPostForm(),
+                onEdit: (post) => AppController.of.openPostForm(post: post),
               ),
               Divider(color: Colors.red),
               Comment(

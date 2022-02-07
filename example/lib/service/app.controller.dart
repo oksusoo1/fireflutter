@@ -20,7 +20,7 @@ class AppController extends GetxController {
   }
 
   Future<void> openForumList({String? category}) async {
-    return Get.toNamed(RouteNames.forumList, arguments: {'category': category});
+    return Get.toNamed(RouteNames.postList, arguments: {'category': category});
   }
 
   /// Returns post id of newly created post.
