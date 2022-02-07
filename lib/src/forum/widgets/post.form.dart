@@ -1,4 +1,5 @@
 import 'package:fireflutter/fireflutter.dart';
+import 'package:fireflutter/src/file_storage/widgets/file_list.edit.dart';
 import 'package:flutter/material.dart';
 
 class PostForm extends StatefulWidget {
@@ -25,12 +26,15 @@ class _PostFormState extends State<PostForm> {
   final title = TextEditingController();
   final content = TextEditingController();
 
+  late List<String> files = [];
+
   @override
   void initState() {
     super.initState();
     setState(() {
       title.text = widget.post?.title ?? '';
       content.text = widget.post?.content ?? '';
+      files = widget.post?.files ?? [];
     });
   }
 
@@ -49,28 +53,44 @@ class _PostFormState extends State<PostForm> {
           controller: content,
         ),
         SizedBox(height: widget.heightBetween),
-        ElevatedButton(
-            onPressed: () async {
-              try {
-                if (widget.category != null) {
-                  final ref = await PostModel().create(
-                    category: widget.category!,
-                    title: title.text,
-                    content: content.text,
-                  );
-                  widget.onCreate(ref.id);
-                } else {
-                  await widget.post!.update(
-                    title: title.text,
-                    content: content.text,
-                  );
-                  widget.onCreate(widget.post!.id);
-                }
-              } catch (e) {
-                widget.onError(e);
-              }
-            },
-            child: const Text('CREATE POST')),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            FileUploadButton(
+              onUploaded: (url) {
+                files = [...files, url];
+                if (mounted) setState(() {});
+              },
+              onProgress: (progress) {},
+              onError: widget.onError,
+            ),
+            ElevatedButton(
+                onPressed: () async {
+                  try {
+                    if (widget.category != null) {
+                      final ref = await PostModel().create(
+                        category: widget.category!,
+                        title: title.text,
+                        content: content.text,
+                        extra: {'files': files},
+                      );
+                      widget.onCreate(ref.id);
+                    } else {
+                      await widget.post!.update(
+                        title: title.text,
+                        content: content.text,
+                        extra: {'files': files},
+                      );
+                      widget.onCreate(widget.post!.id);
+                    }
+                  } catch (e) {
+                    widget.onError(e);
+                  }
+                },
+                child: const Text('SUBMIT')),
+          ],
+        ),
+        FileListEdit(files: files, onError: widget.onError),
       ],
     );
   }

@@ -53,8 +53,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         UserDoc(
                           uid: user.uid,
                           builder: (UserModel u) {
-                            return Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
+                            return Wrap(
                               children: [
                                 Text('Profile name: ${u.nickname}'),
                                 Text(', photo: ${u.photoUrl}'),

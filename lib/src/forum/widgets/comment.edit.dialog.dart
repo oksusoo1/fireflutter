@@ -5,11 +5,11 @@ class CommentEditDialog extends StatefulWidget {
   CommentEditDialog({
     Key? key,
     required this.onCancel,
-    required this.onCreate,
+    required this.onSubmit,
   }) : super(key: key);
 
   final Function() onCancel;
-  final Function(CommentModel) onCreate;
+  final Function(Json) onSubmit;
 
   @override
   State<CommentEditDialog> createState() => _CommentEditDialogState();
@@ -17,6 +17,7 @@ class CommentEditDialog extends StatefulWidget {
 
 class _CommentEditDialogState extends State<CommentEditDialog> {
   final content = TextEditingController();
+  final List<String> files = [];
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
@@ -28,7 +29,11 @@ class _CommentEditDialogState extends State<CommentEditDialog> {
             controller: content,
           ),
           Row(children: [
-            Icon(Icons.camera_alt_rounded),
+            FileUploadButton(
+              onUploaded: (url) {},
+              onProgress: (progress) {},
+              onError: (e) {},
+            ),
             Spacer(),
             TextButton(
               child: const Text('CANCEL'),
@@ -37,9 +42,7 @@ class _CommentEditDialogState extends State<CommentEditDialog> {
             TextButton(
               child: const Text('CREATE COMMENT'),
               onPressed: () {
-                widget.onCreate(CommentModel(
-                  content: content.text,
-                ));
+                widget.onSubmit({'content': content.text});
               },
             ),
           ]),

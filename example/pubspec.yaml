@@ -19,6 +19,8 @@ dependencies:
   url_launcher: ^6.0.18
   flutterfire_ui: ^0.3.0
 
+  image_picker: ^0.8.4+6
+
   extended: ^0.1.5
 
   fireflutter:

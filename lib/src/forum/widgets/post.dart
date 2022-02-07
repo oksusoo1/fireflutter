@@ -15,6 +15,8 @@ class Post extends StatelessWidget {
   final Function(PostModel post) onReply;
   final Function(PostModel post) onEdit;
 
+  bool get isMine => UserService.instance.currentUser?.uid == post.uid;
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -31,12 +33,14 @@ class Post extends StatelessWidget {
               onPressed: () => onReport(post),
               child: const Text('Report'),
             ),
-            ElevatedButton(
-              onPressed: () => onEdit(post),
-              child: const Text('Edit'),
-            ),
+            if (isMine)
+              ElevatedButton(
+                onPressed: () => onEdit(post),
+                child: const Text('Edit'),
+              ),
           ],
         ),
+        FileList(files: post.files),
       ],
     );
   }
