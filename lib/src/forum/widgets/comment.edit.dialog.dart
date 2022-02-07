@@ -17,6 +17,7 @@ class CommentEditDialog extends StatefulWidget {
 
 class _CommentEditDialogState extends State<CommentEditDialog> {
   final content = TextEditingController();
+  final List<String> files = [];
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
@@ -28,7 +29,11 @@ class _CommentEditDialogState extends State<CommentEditDialog> {
             controller: content,
           ),
           Row(children: [
-            Icon(Icons.camera_alt_rounded),
+            FileUploadButton(
+              onUploaded: (url) {},
+              onProgress: (progress) {},
+              onError: (e) {},
+            ),
             Spacer(),
             TextButton(
               child: const Text('CANCEL'),

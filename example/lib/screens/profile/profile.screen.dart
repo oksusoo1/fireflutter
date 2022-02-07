@@ -16,6 +16,8 @@ class ProfileScreenState extends State<ProfileScreen> {
   final nickname = TextEditingController(text: UserService.instance.user.nickname);
   final photoUrl = TextEditingController(text: UserService.instance.user.photoUrl);
 
+  double uploadProgress = 0;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -33,11 +35,13 @@ class ProfileScreenState extends State<ProfileScreen> {
                     ? Image.network(u.photoUrl, height: 100, width: 100, fit: BoxFit.cover)
                     : Icon(Icons.person, size: 40),
                 onUploaded: updatePhotoUrl,
-                onProgress: (progress) => print('Upload progress =>>> $progress'),
+                onProgress: (progress) => setState(() => uploadProgress = progress),
                 onError: error,
               );
             },
           ),
+          spaceSm,
+          if (uploadProgress != 0) LinearProgressIndicator(value: uploadProgress),
           spaceXl,
           const Text('Nickname'),
           Row(
@@ -82,14 +86,15 @@ class ProfileScreenState extends State<ProfileScreen> {
   }
 
   updatePhotoUrl(t) {
-    setState(() => photoUrlLoader = true);
+    // setState(() => photoUrlLoader = true);
     bounce('photo url', 500, (s) async {
       final user = UserService.instance.user;
+      /// delete previous profile photo.
       if (user.photoUrl.isNotEmpty) {
         await FileStorageService.instance.delete(user.photoUrl);
       }
       await user.updatePhotoUrl(t).catchError(error);
-      setState(() => photoUrlLoader = false);
+      setState(() => uploadProgress = 0);
     });
   }
 }
