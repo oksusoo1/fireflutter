@@ -36,7 +36,7 @@ class _PostEditScreenState extends State<PostEditScreen> with FirestoreMixin {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Post Create'),
+        title: const Text('Post Edit'),
       ),
       body: PagePadding(vertical: sm, children: [
         const Text('Title'),
@@ -56,28 +56,29 @@ class _PostEditScreenState extends State<PostEditScreen> with FirestoreMixin {
               onProgress: (progress) => print("upload progress =>>> $progress"),
             ),
             ElevatedButton(
-                onPressed: () async {
-                  post..title = title.text;
-                  post..content = content.text;
+              onPressed: () async {
+                post..title = title.text;
+                post..content = content.text;
 
-                  try {
-                    if (post.id.isNotEmpty) {
-                      await post.update();
-                      Get.back();
-                    } else {
-                      final ref = await post.create();
-                      Get.back(result: ref.id);
+                try {
+                  if (post.id.isNotEmpty) {
+                    await post.update();
+                    Get.back();
+                  } else {
+                    final ref = await post.create();
+                    Get.back(result: ref.id);
 
-                      print('post created; ${ref.id}');
-                      print('post created; $ref');
-                    }
-
-                    await alert("Post ${post.id.isNotEmpty ? 'updated' : 'created'}", 'Thank you');
-                  } catch (e) {
-                    error(e);
+                    print('post created; ${ref.id}');
+                    print('post created; $ref');
                   }
-                },
-                child: const Text('SUBMIT')),
+
+                  await alert("Post ${post.id.isNotEmpty ? 'updated' : 'created'}", 'Thank you');
+                } catch (e) {
+                  error(e);
+                }
+              },
+              child: const Text('SUBMIT'),
+            ),
           ],
         ),
         for (String fileUrl in post.files) Text('$fileUrl')
