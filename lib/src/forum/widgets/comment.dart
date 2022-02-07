@@ -11,6 +11,7 @@ class Comment extends StatefulWidget {
     required this.parentId,
     required this.onReply,
     required this.onReport,
+    required this.onEdit,
   }) : super(key: key);
 
   final PostModel post;
@@ -19,6 +20,7 @@ class Comment extends StatefulWidget {
   /// Callback on reply button pressed. The parameter is the parent comment of
   /// the new comment to be created.
   final Function(PostModel post, CommentModel comment) onReply;
+  final Function(CommentModel comment) onEdit;
   final Function(CommentModel comment) onReport;
 
   @override
@@ -107,6 +109,10 @@ class _CommentState extends State<Comment> with FirestoreMixin {
                     ElevatedButton(
                       onPressed: () => widget.onReport(comment),
                       child: const Text('Report'),
+                    ),
+                    ElevatedButton(
+                      onPressed: () => widget.onEdit(comment),
+                      child: const Text('Edit'),
                     ),
                   ],
                 ),

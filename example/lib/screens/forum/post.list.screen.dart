@@ -82,6 +82,7 @@ class _PostListScreenState extends State<PostListScreen> with FirestoreMixin {
                 parentId: post.id,
                 onReply: onReply,
                 onReport: onReport,
+                onEdit: onEdit,
               ),
             ],
           );
@@ -90,13 +91,15 @@ class _PostListScreenState extends State<PostListScreen> with FirestoreMixin {
     );
   }
 
+  /// [post] is the post
+  /// [comment] is null for immediate child comment or the parent comment
   onReply(PostModel post, [CommentModel? comment]) async {
     return showDialog(
       context: context,
       builder: (_) {
         return CommentEditDialog(
           onCancel: Get.back,
-          onCreate: (Json form) async {
+          onSubmit: (Json form) async {
             try {
               await CommentModel.create(
                 postId: post.id,
@@ -105,8 +108,30 @@ class _PostListScreenState extends State<PostListScreen> with FirestoreMixin {
               );
               // form.create(postId: post.id, parentId: comment?.id ?? post.id);
               Get.back();
-              setState(() {});
               alert('Comment created', 'Your comment has created successfully');
+            } catch (e) {
+              error(e);
+            }
+          },
+        );
+      },
+    );
+  }
+
+  onEdit(CommentModel comment) async {
+    return showDialog(
+      context: context,
+      builder: (_) {
+        return CommentEditDialog(
+          onCancel: Get.back,
+          onSubmit: (Json form) async {
+            try {
+              await comment.update(
+                content: form['content'],
+              );
+              // form.create(postId: post.id, parentId: comment?.id ?? post.id);
+              Get.back();
+              alert('Comment updated', 'You have updated the comment successfully');
             } catch (e) {
               error(e);
             }
