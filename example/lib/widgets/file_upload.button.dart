@@ -49,7 +49,7 @@ class FileUploadButton extends StatelessWidget {
 
     try {
       if (re == null) return;
-      String uploadedFileUrl = await FileUploadService.instance.pickUpload(
+      String uploadedFileUrl = await FileStorageService.instance.pickUpload(
         onProgress: onProgress,
         source: re,
       );

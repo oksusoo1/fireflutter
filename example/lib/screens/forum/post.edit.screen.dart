@@ -104,7 +104,7 @@ class _PostEditScreenState extends State<PostEditScreen> with FirestoreMixin {
                     );
                     if (re == null) return;
                     try {
-                      await FileUploadService.instance.delete(fileUrl);
+                      await FileStorageService.instance.delete(fileUrl);
                       post.files.remove(fileUrl);
                       print('file deleted $fileUrl');
                       if (mounted) setState(() {});

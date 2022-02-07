@@ -9,10 +9,10 @@ import 'package:flutter_image_compress/flutter_image_compress.dart';
 
 import 'package:firebase_storage/firebase_storage.dart';
 
-class FileUploadService {
-  static FileUploadService? _instance;
-  static FileUploadService get instance {
-    _instance ??= FileUploadService();
+class FileStorageService {
+  static FileStorageService? _instance;
+  static FileStorageService get instance {
+    _instance ??= FileStorageService();
     return _instance!;
   }
 

@@ -207,50 +207,11 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               Divider(color: Colors.blue),
               AdminButton(),
-              ElevatedButton(
-                onPressed: uploadFile,
-                child: const Text('Upload file'),
-              ),
             ],
           ),
         ),
       ),
     );
-  }
-
-  uploadFile() async {
-    final ImageSource? re = await Get.bottomSheet(
-      Container(
-        color: Colors.white,
-        child: SafeArea(
-          child: Wrap(
-            children: <Widget>[
-              ListTile(
-                  leading: Icon(Icons.camera_alt),
-                  title: Text('Take Photo from Camera'),
-                  onTap: () => Get.back(result: ImageSource.camera)),
-              ListTile(
-                  leading: Icon(Icons.photo),
-                  title: Text('Choose from Gallery'),
-                  onTap: () => Get.back(result: ImageSource.gallery)),
-              ListTile(leading: Icon(Icons.cancel), title: Text('Cancel'), onTap: () => Get.back()),
-            ],
-          ),
-        ),
-      ),
-    );
-
-    try {
-      if (re == null) return;
-      String uploadedFileUrl = await FileUploadService.instance.pickUpload(
-        onProgress: (progress) => print("Upload progress =>> ${progress.toString()}"),
-        source: re,
-      );
-
-      print('uploadedFileUrl ===>>> $uploadedFileUrl');
-    } catch (e) {
-      print('uploadFile:error ==>>> ${e.toString()}');
-    }
   }
 
   /// Test user profile page

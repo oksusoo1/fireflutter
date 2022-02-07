@@ -54,5 +54,5 @@ export 'src/forum/widgets/comment.edit.dialog.dart';
 export 'src/forum/widgets/post.dart';
 export 'src/forum/widgets/comment.dart';
 
-export 'src/file_upload/file_upload.service.dart';
+export 'src/file_storage/file_storage.service.dart';
 export 'src/widgets/short_date.dart';
