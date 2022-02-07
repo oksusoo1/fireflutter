@@ -30,11 +30,20 @@ class PostModel with FirestoreMixin, ForumBase {
   String category;
 
   String title;
+  String get displayTitle {
+    return deleted ? 'post-title-deleted' : title;
+  }
+
   String content;
+  String get displayContent {
+    return deleted ? 'post-content-deleted' : content;
+  }
 
   bool deleted;
 
   String uid;
+
+  bool get isMine => UserService.instance.uid == uid;
 
   List<String> files;
 
@@ -118,6 +127,7 @@ class PostModel with FirestoreMixin, ForumBase {
     required String content,
     Json extra = const {},
   }) {
+    if (deleted) throw ERROR_ALREADY_DELETED;
     return postDoc(id).update({
       ...{
         'title': title,
@@ -129,7 +139,13 @@ class PostModel with FirestoreMixin, ForumBase {
   }
 
   Future<void> delete() {
-    return postDoc(id).update({'deleted': true, 'content': '', 'title': ''});
+    if (deleted) throw ERROR_ALREADY_DELETED;
+    return postDoc(id).update({
+      'deleted': true,
+      'content': '',
+      'title': '',
+      'timestamp': FieldValue.serverTimestamp(),
+    });
   }
 
   Future<void> increaseViewCounter() {

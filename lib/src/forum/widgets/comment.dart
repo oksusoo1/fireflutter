@@ -12,6 +12,7 @@ class Comment extends StatefulWidget {
     required this.onReply,
     required this.onReport,
     required this.onEdit,
+    required this.onDelete,
   }) : super(key: key);
 
   final PostModel post;
@@ -22,6 +23,7 @@ class Comment extends StatefulWidget {
   final Function(PostModel post, CommentModel comment) onReply;
   final Function(CommentModel comment) onEdit;
   final Function(CommentModel comment) onReport;
+  final Function(CommentModel comment) onDelete;
 
   @override
   State<Comment> createState() => _CommentState();
@@ -99,7 +101,7 @@ class _CommentState extends State<Comment> with FirestoreMixin {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 UserDoc(uid: comment.uid, builder: (u) => Text('Name: ${u.nickname}')),
-                Text("content: ${comment.content}"),
+                Text("content: ${comment.displayContent}"),
                 Wrap(
                   children: [
                     ElevatedButton(
@@ -113,6 +115,10 @@ class _CommentState extends State<Comment> with FirestoreMixin {
                     ElevatedButton(
                       onPressed: () => widget.onEdit(comment),
                       child: const Text('Edit'),
+                    ),
+                    ElevatedButton(
+                      onPressed: () => widget.onDelete(comment),
+                      child: const Text('Delete'),
                     ),
                   ],
                 ),

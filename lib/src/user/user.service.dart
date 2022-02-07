@@ -20,8 +20,10 @@ class UserService with FirestoreMixin {
   UserModel user = UserModel();
   User? currentUser = FirebaseAuth.instance.currentUser;
 
-  DatabaseReference get _myDoc =>
-      FirebaseDatabase.instance.ref('users').child(FirebaseAuth.instance.currentUser!.uid);
+  /// Returns currently signed in user's uid or null.
+  String? get uid => FirebaseAuth.instance.currentUser?.uid;
+
+  DatabaseReference get _myDoc => FirebaseDatabase.instance.ref('users').child(uid!);
 
   /// User auth changes
   ///

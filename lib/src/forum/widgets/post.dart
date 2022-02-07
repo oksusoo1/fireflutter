@@ -8,12 +8,14 @@ class Post extends StatelessWidget {
     required this.onReply,
     required this.onReport,
     required this.onEdit,
+    required this.onDelete,
   }) : super(key: key);
 
   final PostModel post;
   final Function(PostModel post) onReport;
   final Function(PostModel post) onReply;
   final Function(PostModel post) onEdit;
+  final Function(PostModel post) onDelete;
 
   bool get isMine => UserService.instance.currentUser?.uid == post.uid;
 
@@ -21,7 +23,7 @@ class Post extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Text(post.content),
+        Text(post.displayContent),
         Text(post.id),
         Wrap(
           children: [
@@ -37,6 +39,11 @@ class Post extends StatelessWidget {
               ElevatedButton(
                 onPressed: () => onEdit(post),
                 child: const Text('Edit'),
+              ),
+            if (isMine)
+              ElevatedButton(
+                onPressed: () => onDelete(post),
+                child: const Text('Delete'),
               ),
           ],
         ),

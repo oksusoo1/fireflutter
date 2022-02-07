@@ -12,6 +12,7 @@ class CommentModel with FirestoreMixin, ForumBase {
     required this.parentId,
     this.content = '',
     required this.uid,
+    this.deleted = false,
     required this.timestamp,
     required this.data,
   });
@@ -24,8 +25,13 @@ class CommentModel with FirestoreMixin, ForumBase {
   String parentId;
 
   String content;
+  String get displayContent {
+    return deleted ? 'comment-content-deleted' : content;
+  }
 
   String uid;
+
+  bool deleted;
 
   Timestamp timestamp;
   int depth = 0;
@@ -41,6 +47,7 @@ class CommentModel with FirestoreMixin, ForumBase {
       postId: data['postId'],
       parentId: data['parentId'],
       uid: data['uid'],
+      deleted: data['deleted'] ?? false,
       timestamp: data['timestamp'] ?? Timestamp.now(),
       data: data,
     );
@@ -70,6 +77,7 @@ class CommentModel with FirestoreMixin, ForumBase {
       'content': content,
       'depth': depth,
       'uid': uid,
+      'deleted': deleted,
       'timestamp': timestamp,
       'data': data,
     };
@@ -111,8 +119,18 @@ class CommentModel with FirestoreMixin, ForumBase {
   Future<void> update({
     required String content,
   }) {
+    if (deleted) throw ERROR_ALREADY_DELETED;
     return commentDoc(id).update({
       'content': content,
+      'timestamp': FieldValue.serverTimestamp(),
+    });
+  }
+
+  Future<void> delete() {
+    if (deleted) throw ERROR_ALREADY_DELETED;
+    return commentDoc(id).update({
+      'deleted': true,
+      'content': '',
       'timestamp': FieldValue.serverTimestamp(),
     });
   }

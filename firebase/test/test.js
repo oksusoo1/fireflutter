@@ -434,7 +434,7 @@ describe('Firestore security test', () => {
             [A]: true,
         });
 
-        // Delete post by admin
+        // Delete post by admin - admin can't delete
         await firebase.assertFails(db(authA).collection('posts').doc('admin-test').delete());
 
     });

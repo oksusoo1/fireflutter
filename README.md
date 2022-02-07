@@ -977,6 +977,8 @@ DynamicLinksService.instance.listen((Uri? deepLink) {
 
 - `PostModel` has methods like create, update, delete, like, dislike, and so on.
 
+- When user deletes a post, the document is marked as deleted, instead of remove it from the database. And user may update the document even if the post is marked as deleted. Editing post of delete mark is banned by security rule. This is by design and is not harmful. So, there should be some code to inform user not to edit deleted post. This goes the same to comment delete.
+
 
 ## Comment
 

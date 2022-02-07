@@ -54,7 +54,7 @@ class _PostListScreenState extends State<PostListScreen> with FirestoreMixin {
 
           return ExpansionTile(
             initiallyExpanded: false,
-            title: Text(post.title),
+            title: Text(post.displayTitle),
             subtitle: Row(
               children: [
                 UserFutureDoc(
@@ -75,6 +75,7 @@ class _PostListScreenState extends State<PostListScreen> with FirestoreMixin {
                 onReply: onReply,
                 onReport: onReport,
                 onEdit: (post) => AppController.of.openPostForm(post: post),
+                onDelete: onDelete,
               ),
               Divider(color: Colors.red),
               Comment(
@@ -83,6 +84,7 @@ class _PostListScreenState extends State<PostListScreen> with FirestoreMixin {
                 onReply: onReply,
                 onReport: onReport,
                 onEdit: onEdit,
+                onDelete: onDelete,
               ),
             ],
           );
@@ -139,6 +141,20 @@ class _PostListScreenState extends State<PostListScreen> with FirestoreMixin {
         );
       },
     );
+  }
+
+  onDelete(dynamic postOrComment) async {
+    try {
+      if (postOrComment is PostModel) {
+        await postOrComment.delete();
+        alert('Post deleted', 'You have deleted this post.');
+      } else if (postOrComment is CommentModel) {
+        await postOrComment.delete();
+        alert('Comment deleted', 'You have deleted this comment.');
+      }
+    } catch (e) {
+      error(e);
+    }
   }
 
   onReport(dynamic postOrComment) async {
