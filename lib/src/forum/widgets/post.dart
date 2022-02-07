@@ -40,6 +40,7 @@ class Post extends StatelessWidget {
               ),
           ],
         ),
+        FileList(files: post.files),
       ],
     );
   }
