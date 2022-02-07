@@ -53,7 +53,7 @@ class _PostListScreenState extends State<PostListScreen> with FirestoreMixin {
           print('got new doc id; ${post.id}: ${post.title}');
 
           return ExpansionTile(
-            initiallyExpanded: true,
+            initiallyExpanded: false,
             title: Text(post.title),
             subtitle: Row(
               children: [
@@ -100,6 +100,7 @@ class _PostListScreenState extends State<PostListScreen> with FirestoreMixin {
             try {
               await form.create(postId: post.id, parentId: comment?.id ?? post.id);
               Get.back();
+              setState(() {});
               alert('Comment created', 'Your comment has created successfully');
             } catch (e) {
               error(e);
