@@ -5,14 +5,14 @@ import 'package:flutter/material.dart';
 import 'package:flutterfire_ui/firestore.dart';
 import 'package:get/get.dart';
 
-class ForumListScreen extends StatefulWidget {
-  ForumListScreen({Key? key}) : super(key: key);
+class PostListScreen extends StatefulWidget {
+  PostListScreen({Key? key}) : super(key: key);
 
   @override
-  State<ForumListScreen> createState() => _ForumListScreenState();
+  State<PostListScreen> createState() => _PostListScreenState();
 }
 
-class _ForumListScreenState extends State<ForumListScreen> with FirestoreMixin {
+class _PostListScreenState extends State<PostListScreen> with FirestoreMixin {
   final app = AppController.of;
   final category = Get.arguments['category'];
   String? newPostId;
@@ -29,8 +29,8 @@ class _ForumListScreenState extends State<ForumListScreen> with FirestoreMixin {
         actions: [
           IconButton(
             onPressed: () async {
-              newPostId = await app.openPostCreate(category: category);
-              setState(() {});
+              newPostId = await app.openPostForm(category: category);
+              if (newPostId != null) setState(() {});
             },
             icon: Icon(
               Icons.create_rounded,
@@ -50,7 +50,7 @@ class _ForumListScreenState extends State<ForumListScreen> with FirestoreMixin {
             snapshot.id,
           );
 
-          print('got new doc id; ${post.id}');
+          print('got new doc id; ${post.id}: ${post.title}');
 
           return ExpansionTile(
             initiallyExpanded: false,
@@ -74,11 +74,12 @@ class _ForumListScreenState extends State<ForumListScreen> with FirestoreMixin {
                 post: post,
                 onReply: onReply,
                 onReport: onReport,
-                onEdit: (post) => app.openPostCreate(post: post),
+                onEdit: (post) => AppController.of.openPostForm(post: post),
               ),
               Divider(color: Colors.red),
               Comment(
                 post: post,
+                parentId: post.id,
                 onReply: onReply,
                 onReport: onReport,
               ),
@@ -97,8 +98,9 @@ class _ForumListScreenState extends State<ForumListScreen> with FirestoreMixin {
           onCancel: Get.back,
           onCreate: (CommentModel form) async {
             try {
-              await form.create(postId: post.id, parent: comment?.id ?? 'root');
+              await form.create(postId: post.id, parentId: comment?.id ?? post.id);
               Get.back();
+              setState(() {});
               alert('Comment created', 'Your comment has created successfully');
             } catch (e) {
               error(e);

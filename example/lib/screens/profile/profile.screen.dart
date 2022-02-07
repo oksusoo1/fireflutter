@@ -1,5 +1,4 @@
 import 'package:extended/extended.dart';
-import 'package:fe/widgets/file_upload.button.dart';
 import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
 
@@ -35,6 +34,7 @@ class ProfileScreenState extends State<ProfileScreen> {
                     : Icon(Icons.person, size: 40),
                 onUploaded: updatePhotoUrl,
                 onProgress: (progress) => print('Upload progress =>>> $progress'),
+                onError: error,
               );
             },
           ),
