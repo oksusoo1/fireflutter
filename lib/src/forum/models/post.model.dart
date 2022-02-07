@@ -43,11 +43,14 @@ class PostModel with FirestoreMixin, ForumBase {
 
   /// Get document data of map and convert it into post model
   factory PostModel.fromJson(Json data, String id) {
+    List<String> _files = data['files'] != null ? new List<String>.from(data['files']) : <String>[];
+
     return PostModel(
       id: id,
       category: data['category'] ?? '',
       title: data['title'] ?? '',
       content: data['content'] ?? '',
+      files: _files,
       deleted: data['deleted'] ?? false,
       uid: data['uid'] ?? '',
       timestamp_: data['timestamp'] ?? Timestamp.now(),
@@ -63,6 +66,15 @@ class PostModel with FirestoreMixin, ForumBase {
       'files': files,
       'deleted': deleted,
       'uid': UserService.instance.user.uid,
+      'timestamp': FieldValue.serverTimestamp(),
+    };
+  }
+
+  Map<String, dynamic> get updateData {
+    return {
+      'title': title,
+      'content': content,
+      'files': files,
       'timestamp': FieldValue.serverTimestamp(),
     };
   }
@@ -110,7 +122,7 @@ class PostModel with FirestoreMixin, ForumBase {
   }
 
   Future<void> update() {
-    return postDoc(id).update(data);
+    return postDoc(id).update({...updateData});
   }
 
   Future<void> delete() {

@@ -74,7 +74,7 @@ class _ForumListScreenState extends State<ForumListScreen> with FirestoreMixin {
                 post: post,
                 onReply: onReply,
                 onReport: onReport,
-                onEdit: (post) => app.openPostCreate(id: post.id),
+                onEdit: (post) => app.openPostCreate(post: post),
               ),
               Divider(color: Colors.red),
               Comment(
