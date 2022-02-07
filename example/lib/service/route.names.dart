@@ -6,4 +6,5 @@ class RouteNames {
   static const String admin = '/admin';
   static const String category = '/category';
   static const String report = '/report';
+  static const String reportForumManagement = '/reportForumManagement';
 }

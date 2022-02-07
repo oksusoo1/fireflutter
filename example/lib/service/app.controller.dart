@@ -42,4 +42,11 @@ class AppController extends GetxController {
   Future<void> openReport([String? target]) async {
     return Get.toNamed(RouteNames.report, arguments: {'target': target});
   }
+
+  Future<void> openReportForumMangement(String target, String id) async {
+    return Get.toNamed(RouteNames.reportForumManagement, arguments: {
+      'target': target,
+      'id': id,
+    });
+  }
 }

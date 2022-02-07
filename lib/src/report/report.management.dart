@@ -9,12 +9,14 @@ class ReportManagement extends StatelessWidget with FirestoreMixin {
     Key? key,
     this.padding = const EdgeInsets.all(0),
     required this.onError,
+    required this.onPressed,
     this.target,
   }) : super(key: key);
 
   final EdgeInsets padding;
-  final Function(dynamic) onError;
   final String? target;
+  final Function(dynamic) onError;
+  final Function(ReportModel) onPressed;
 
   @override
   Widget build(BuildContext context) {
@@ -57,9 +59,7 @@ class ReportManagement extends StatelessWidget with FirestoreMixin {
             ],
           ),
           trailing: IconButton(
-            onPressed: () {
-              print('goto');
-            },
+            onPressed: () => onPressed(report),
             icon: Icon(Icons.open_in_new),
           ),
         );

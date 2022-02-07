@@ -6,6 +6,7 @@ import 'dart:async';
 import 'package:extended/extended.dart';
 import 'package:fe/screens/admin/admin.screen.dart';
 import 'package:fe/screens/admin/category.screen.dart';
+import 'package:fe/screens/admin/report.post.management.screen.dart';
 import 'package:fe/screens/admin/report.screen.dart';
 import 'package:fe/screens/forum/post.list.screen.dart';
 import 'package:fe/screens/forum/post.form.screen.dart';
@@ -159,7 +160,8 @@ class _MainAppState extends State<MainApp> {
         ),
         GetPage(name: '/phone-sign-in', page: () => const PhoneSignInScreen()),
         GetPage(name: '/sms-code', page: () => const SmsCodeScreen()),
-        GetPage(name: '/phone-sign-in-ui', page: () => const PhoneSignInUIScreen()),
+        GetPage(
+            name: '/phone-sign-in-ui', page: () => const PhoneSignInUIScreen()),
         GetPage(name: '/sms-code-ui', page: () => const SmsCodeUIScreen()),
         GetPage(name: '/help', page: () => const HelpScreen()),
         GetPage(
@@ -171,6 +173,9 @@ class _MainAppState extends State<MainApp> {
         GetPage(name: RouteNames.postList, page: () => PostListScreen()),
         GetPage(name: RouteNames.postForm, page: () => PostFormScreen()),
         GetPage(name: RouteNames.admin, page: () => AdminScreen()),
+        GetPage(
+            name: RouteNames.reportForumManagement,
+            page: () => ReportPostManagementScreen()),
         GetPage(name: RouteNames.category, page: () => CategoryScreen()),
         GetPage(name: '/chat-room-screen', page: () => const ChatRoomScreen()),
         GetPage(
@@ -184,7 +189,8 @@ class _MainAppState extends State<MainApp> {
         GetPage(name: '/friend-map', page: () => const FriendMapScreen()),
         GetPage(name: '/reminder-edit', page: () => ReminderEditScreen()),
         GetPage(name: RouteNames.report, page: () => ReportScreen()),
-        GetPage(name: '/email-verify', page: () => const EmailVerificationScreen())
+        GetPage(
+            name: '/email-verify', page: () => const EmailVerificationScreen())
       ],
     );
   }
