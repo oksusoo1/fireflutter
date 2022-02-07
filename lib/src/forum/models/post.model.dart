@@ -43,11 +43,14 @@ class PostModel with FirestoreMixin, ForumBase {
 
   /// Get document data of map and convert it into post model
   factory PostModel.fromJson(Json data, String id) {
+    List<String> _files = data['files'] != null ? new List<String>.from(data['files']) : <String>[];
+
     return PostModel(
       id: id,
       category: data['category'] ?? '',
       title: data['title'] ?? '',
       content: data['content'] ?? '',
+      files: _files,
       deleted: data['deleted'] ?? false,
       uid: data['uid'] ?? '',
       timestamp_: data['timestamp'] ?? Timestamp.now(),
@@ -58,8 +61,10 @@ class PostModel with FirestoreMixin, ForumBase {
   /// Contains all the data
   Map<String, dynamic> get map {
     return {
+      'category': category,
       'title': title,
       'content': content,
+      'files': files,
       'deleted': deleted,
       'uid': uid,
       'timestamp': timestamp,
@@ -101,6 +106,7 @@ class PostModel with FirestoreMixin, ForumBase {
       'category': category,
       'title': title,
       'content': content,
+      'files': files,
       'uid': UserService.instance.user.uid,
       'timestamp': FieldValue.serverTimestamp(),
     };

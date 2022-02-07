@@ -25,6 +25,20 @@ class ProfileScreenState extends State<ProfileScreen> {
       body: PagePadding(
         vertical: 16,
         children: [
+          UserDoc(
+            uid: UserService.instance.user.uid,
+            builder: (UserModel u) {
+              return FileUploadButton(
+                child: u.photoUrl.isNotEmpty
+                    ? Image.network(u.photoUrl, height: 100, width: 100, fit: BoxFit.cover)
+                    : Icon(Icons.person, size: 40),
+                onUploaded: updatePhotoUrl,
+                onProgress: (progress) => print('Upload progress =>>> $progress'),
+                onError: error,
+              );
+            },
+          ),
+          spaceXl,
           const Text('Nickname'),
           Row(
             children: [
@@ -39,21 +53,21 @@ class ProfileScreenState extends State<ProfileScreen> {
             ],
           ),
           spaceXl,
-          const Text('Photo Url'),
-          Row(
-            children: [
-              Expanded(
-                child: TextField(
-                  controller: photoUrl,
-                  decoration: const InputDecoration(
-                    hintText: 'Input photo url',
-                  ),
-                  onChanged: updatePhotoUrl,
-                ),
-              ),
-              if (photoUrlLoader) CircularProgressIndicator.adaptive(),
-            ],
-          ),
+          // const Text('Photo Url'),
+          // Row(
+          //   children: [
+          //     Expanded(
+          //       child: TextField(
+          //         controller: photoUrl,
+          //         decoration: const InputDecoration(
+          //           hintText: 'Input photo url',
+          //         ),
+          //         onChanged: updatePhotoUrl,
+          //       ),
+          //     ),
+          //     if (photoUrlLoader) CircularProgressIndicator.adaptive(),
+          //   ],
+          // ),
         ],
       ),
     );
@@ -70,7 +84,11 @@ class ProfileScreenState extends State<ProfileScreen> {
   updatePhotoUrl(t) {
     setState(() => photoUrlLoader = true);
     bounce('photo url', 500, (s) async {
-      await UserService.instance.user.updatePhotoUrl(t).catchError(error);
+      final user = UserService.instance.user;
+      if (user.photoUrl.isNotEmpty) {
+        await FileStorageService.instance.delete(user.photoUrl);
+      }
+      await user.updatePhotoUrl(t).catchError(error);
       setState(() => photoUrlLoader = false);
     });
   }
