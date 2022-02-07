@@ -85,4 +85,8 @@ class FileUploadService {
     if (prefix != null && prefix.isNotEmpty) t = prefix + t;
     return t;
   }
+
+  Future<void> delete(String url) async {
+    return firebaseStorage.refFromURL(url).delete();
+  }
 }

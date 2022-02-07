@@ -81,7 +81,41 @@ class _PostEditScreenState extends State<PostEditScreen> with FirestoreMixin {
             ),
           ],
         ),
-        for (String fileUrl in post.files) Text('$fileUrl')
+        for (String fileUrl in post.files)
+          Stack(
+            children: [
+              Image.network(fileUrl, height: 100, width: 100, fit: BoxFit.cover),
+              Positioned(
+                top: 10,
+                left: 10,
+                child: GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  child: Icon(Icons.delete_forever_rounded, color: Colors.redAccent),
+                  onTap: () async {
+                    bool? re = await showDialog(
+                      context: Get.context!,
+                      builder: (c) => AlertDialog(
+                        title: Text('Delete file?'),
+                        actions: [
+                          TextButton(onPressed: () => Get.back(), child: Text('Cancel')),
+                          TextButton(onPressed: () => Get.back(result: true), child: Text('Yes')),
+                        ],
+                      ),
+                    );
+                    if (re == null) return;
+                    try {
+                      await FileUploadService.instance.delete(fileUrl);
+                      post.files.remove(fileUrl);
+                      print('file deleted $fileUrl');
+                      if (mounted) setState(() {});
+                    } catch (e) {
+                      error(e);
+                    }
+                  },
+                ),
+              )
+            ],
+          )
       ]),
     );
   }
