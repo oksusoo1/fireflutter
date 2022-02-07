@@ -20,6 +20,7 @@ class _PostFormScreenState extends State<PostFormScreen> with FirestoreMixin {
       body: PagePadding(vertical: sm, children: [
         PostForm(
           category: Get.arguments['category'],
+          post: Get.arguments['post'],
           onCreate: (postId) {
             Get.back(result: postId);
             alert('Post created', 'Thank you');

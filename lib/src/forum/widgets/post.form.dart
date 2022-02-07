@@ -4,12 +4,14 @@ import 'package:flutter/material.dart';
 class PostForm extends StatefulWidget {
   const PostForm({
     this.category,
+    this.post,
     required this.onCreate,
     required this.onError,
     this.heightBetween = 10.0,
     Key? key,
   }) : super(key: key);
 
+  final PostModel? post;
   final String? category;
   final double heightBetween;
 
@@ -21,12 +23,21 @@ class PostForm extends StatefulWidget {
 
 class _PostFormState extends State<PostForm> {
   final title = TextEditingController();
-
   final content = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    setState(() {
+      title.text = widget.post?.title ?? '';
+      content.text = widget.post?.content ?? '';
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Text('Title'),
         TextField(
@@ -41,16 +52,20 @@ class _PostFormState extends State<PostForm> {
         ElevatedButton(
             onPressed: () async {
               try {
-                final ref = await PostModel(
-                  category: widget.category!,
-                  title: title.text,
-                  content: content.text,
-                ).create();
-
-                print('post created; ${ref.id}');
-                print('post created; $ref');
-
-                widget.onCreate(ref.id);
+                if (widget.category != null) {
+                  final ref = await PostModel().create(
+                    category: widget.category!,
+                    title: title.text,
+                    content: content.text,
+                  );
+                  widget.onCreate(ref.id);
+                } else {
+                  await widget.post!.update(
+                    title: title.text,
+                    content: content.text,
+                  );
+                  widget.onCreate(widget.post!.id);
+                }
               } catch (e) {
                 widget.onError(e);
               }

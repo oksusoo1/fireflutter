@@ -55,17 +55,6 @@ class PostModel with FirestoreMixin, ForumBase {
     );
   }
 
-  Map<String, dynamic> get createData {
-    return {
-      'category': category,
-      'title': title,
-      'content': content,
-      'deleted': deleted,
-      'uid': UserService.instance.user.uid,
-      'timestamp': FieldValue.serverTimestamp(),
-    };
-  }
-
   /// Contains all the data
   Map<String, dynamic> get map {
     return {
@@ -102,8 +91,35 @@ class PostModel with FirestoreMixin, ForumBase {
   /// ).create(extra: {'yo': 'hey'});
   /// print('post created; ${ref.id}');
   /// ```
-  Future<DocumentReference<Object?>> create({Json extra = const {}}) {
+  Future<DocumentReference<Object?>> create({
+    required String category,
+    required String title,
+    required String content,
+    Json extra = const {},
+  }) {
+    final createData = {
+      'category': category,
+      'title': title,
+      'content': content,
+      'uid': UserService.instance.user.uid,
+      'timestamp': FieldValue.serverTimestamp(),
+    };
     return postCol.add({...createData, ...extra});
+  }
+
+  Future<void> update({
+    required String title,
+    required String content,
+    Json extra = const {},
+  }) {
+    return postDoc(id).update({
+      ...{
+        'title': title,
+        'content': content,
+        'timestamp': FieldValue.serverTimestamp(),
+      },
+      ...extra
+    });
   }
 
   Future<void> delete() {
