@@ -17,7 +17,7 @@ class ReportPostManagementScreen extends StatelessWidget {
       body: ReportPostManagement(
         id: Get.arguments['id'],
         onError: error,
-        builder: (PostModel post) {
+        builder: (post) {
           print(target);
           return Column(
             children: [
@@ -26,8 +26,13 @@ class ReportPostManagementScreen extends StatelessWidget {
               Row(
                 children: [
                   ElevatedButton(
-                    onPressed: () {
-                      print('mark as deleted');
+                    onPressed: () async {
+                      try {
+                        await post.delete();
+                        alert('Post deleted', 'You have deleted this post.');
+                      } catch (e) {
+                        error(e);
+                      }
                     },
                     child: const Text('Delete'),
                   ),
