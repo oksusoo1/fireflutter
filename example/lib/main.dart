@@ -80,12 +80,12 @@ class _MainAppState extends State<MainApp> {
     //     () => AppController.of.openForumList(category: 'qna'));
 
     // Open qna & open first post
-    Timer(const Duration(milliseconds: 100), () async {
-      AppController.of.openForumList(category: 'qna');
+    // Timer(const Duration(milliseconds: 100), () async {
+    //   AppController.of.openForumList(category: 'qna');
 
-      /// wait
-      await Future.delayed(Duration(milliseconds: 200));
-    });
+    //   /// wait
+    //   await Future.delayed(Duration(milliseconds: 200));
+    // });
 
     /// Dynamic links for terminated app.
     if (widget.initialLink != null) {
