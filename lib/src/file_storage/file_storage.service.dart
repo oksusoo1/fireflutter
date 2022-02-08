@@ -36,14 +36,13 @@ class FileStorageService {
     File file = await _imageCompressor(pickedFile.path, quality);
 
     /// Reference
-    final String fileName = file.path.split('/').last;
-    Reference ref = firebaseStorage.ref("uploads/$fileName");
+    final String filenameExtension = file.path.split('/').last;
+    Reference ref = firebaseStorage.ref("uploads/$filenameExtension");
     // Thumbnail ref
-    // Reference thumbnailRef = firebaseStorage.ref("uploads/$fileName" + "_200x200.webp")
+    final String filename = filenameExtension.split('.').first;
 
     // Upload Task
     UploadTask uploadTask = ref.putFile(file);
-    ;
 
     /// Progress listener
     if (onProgress != null) {
@@ -59,9 +58,54 @@ class FileStorageService {
     await Future.delayed(Duration(seconds: 1));
 
     /// Return uploaded file Url.
-    // return thumbnailRef.getDownloadURL();
-    return ref.getDownloadURL();
+    // return ref.getDownloadURL();
+    /// Return uploaded file thumbnail Url.
+    return getThumbnailUrl(filename, 10);
   }
+
+  /// Returns url of created thumbnail.
+  ///
+  /// It runs recursively until the url is resolve or it runs out of retry.
+  ///
+  /// We don't know how long the thumbnail url will be created.
+  /// https://stackoverflow.com/a/58978012
+  Future<String> getThumbnailUrl(String filename, [int retry = 5]) async {
+    final ref = firebaseStorage.ref("uploads/$filename" + "_200x200.webp");
+
+    /// Retries
+    if (retry < 0) {
+      return Future.error('File not found.');
+    }
+
+    try {
+      await Future.delayed(Duration(seconds: 2));
+      return ref.getDownloadURL();
+    } on FirebaseException catch (e) {
+      if (e.code == 'object-not-found' && retry != 0) {
+        return getThumbnailUrl(filename, retry - 1);
+      } else {
+        rethrow;
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  /// TODO: Delete original and thumbnail image on storage.
+  Future<void> delete(String url) async {
+    try {
+      await firebaseStorage.refFromURL(url).delete();
+    } on FirebaseException catch (e) {
+      print('firebase storage error ====> $e');
+      if (e.code != 'object-not-found') rethrow;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  ///
+  /// HELPER FUNCTIONS
+  ///
 
   /// 파일을 압축하고, 가로/세로를 맞춘다.
   _imageCompressor(String filepath, int quality) async {
@@ -91,16 +135,5 @@ class FileStorageService {
     }
     if (prefix != null && prefix.isNotEmpty) t = prefix + t;
     return t;
-  }
-
-  Future<void> delete(String url) async {
-    try {
-      await firebaseStorage.refFromURL(url).delete();
-    } on FirebaseException catch (e) {
-      print('firebase storage error ====> $e');
-      if (!e.toString().contains('object-not-found')) rethrow;
-    } catch (e) {
-      rethrow;
-    }
   }
 }
