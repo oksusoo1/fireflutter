@@ -1,5 +1,4 @@
-import 'package:fireflutter/fireflutter.dart';
-import 'package:fireflutter/src/file_storage/widgets/file_list.edit.dart';
+import '../../../fireflutter.dart';
 import 'package:flutter/material.dart';
 
 class PostForm extends StatefulWidget {

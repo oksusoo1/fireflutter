@@ -63,5 +63,12 @@
 	<string>This app needs access to location when open.</string>
 	<key>NSLocationAlwaysUsageDescription</key>
 	<string>This app needs access to location when in the background.</string>
+
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>WonderfulKorea app requires access to photo library to upload and share.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>WonderfulKorea app requires access to the camera to take photos, upload, and share.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>WonderfulKorea app requires access to mic to record microphone.</string>
 </dict>
 </plist>

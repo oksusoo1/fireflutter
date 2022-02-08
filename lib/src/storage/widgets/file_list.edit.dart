@@ -1,5 +1,5 @@
-import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
+import '../../../fireflutter.dart';
 
 class FileListEdit extends StatefulWidget {
   const FileListEdit({required this.files, required this.onError, Key? key}) : super(key: key);
@@ -43,7 +43,7 @@ class _FileListEditState extends State<FileListEdit> {
                     );
                     if (re == null) return;
                     try {
-                      await FileStorageService.instance.delete(fileUrl);
+                      await StorageService.instance.delete(fileUrl);
                       widget.files.remove(fileUrl);
                       print('file deleted $fileUrl');
                       if (mounted) setState(() {});

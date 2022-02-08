@@ -1,6 +1,8 @@
 import 'dart:io';
 import 'dart:math';
 
+import 'package:intl/intl.dart';
+
 import '../../fireflutter.dart';
 import 'package:path/path.dart' as p;
 import 'package:image_picker/image_picker.dart';
@@ -9,10 +11,13 @@ import 'package:flutter_image_compress/flutter_image_compress.dart';
 
 import 'package:firebase_storage/firebase_storage.dart';
 
-class FileStorageService {
-  static FileStorageService? _instance;
-  static FileStorageService get instance {
-    _instance ??= FileStorageService();
+/// Firebase Storage Service
+///
+/// Refer readme file for details.
+class StorageService {
+  static StorageService? _instance;
+  static StorageService get instance {
+    _instance ??= StorageService();
     return _instance!;
   }
 
@@ -42,11 +47,14 @@ class FileStorageService {
     File file = await _imageCompressor(pickedFile.path, quality);
 
     /// Get generated filename.
-    final String filenameExtension = file.path.split('/').last;
-    final String filename = filenameExtension.split('.').first;
+    final String basename = file.path.split('/').last;
+    // final String filename = basename.split('.').first;
+
+    final dt = DateFormat('yMMddHHmmss').format(DateTime.now());
+    final ref = uploadsFolder.child("$dt$basename");
 
     /// Upload Task
-    UploadTask uploadTask = uploadsFolder.child("$filenameExtension").putFile(file);
+    UploadTask uploadTask = ref.putFile(file);
 
     /// Progress listener
     if (onProgress != null) {
@@ -59,39 +67,41 @@ class FileStorageService {
     /// Wait for upload to finish.
     await uploadTask;
 
+    return ref.getDownloadURL();
+
     /// Return uploaded file thumbnail Url.
-    return generatedThumbnailUrl(filename, 10);
+    // return generatedThumbnailUrl(filename, 10);
   }
 
   /// Returns url of generated thumbnail.
-  /// 
+  ///
   /// It will retry until the thumbnail is generated on storage.
   ///
   /// https://stackoverflow.com/a/58978012
-  Future<String> generatedThumbnailUrl(String filename, [int retry = 5]) async {
-    final ref = uploadsFolder.child(filename + "_200x200.webp");
+  // Future<String> generatedThumbnailUrl(String filename, [int retry = 5]) async {
+  //   final ref = uploadsFolder.child(filename + "_200x200.webp");
 
-    /// Retries
-    if (retry == 0) {
-      return Future.error(ERROR_IMAGE_NOT_FOUND);
-    }
+  //   /// Retries
+  //   if (retry == 0) {
+  //     return Future.error(ERROR_IMAGE_NOT_FOUND);
+  //   }
 
-    try {
-      await Future.delayed(Duration(seconds: 2));
-      return ref.getDownloadURL();
-    } on FirebaseException catch (e) {
-      if (e.code == 'object-not-found' && retry != 0) {
-        return generatedThumbnailUrl(filename, retry - 1);
-      } else {
-        rethrow;
-      }
-    } catch (e) {
-      rethrow;
-    }
-  }
+  //   try {
+  //     await Future.delayed(Duration(seconds: 2));
+  //     return ref.getDownloadURL();
+  //   } on FirebaseException catch (e) {
+  //     if (e.code == 'object-not-found' && retry != 0) {
+  //       return generatedThumbnailUrl(filename, retry - 1);
+  //     } else {
+  //       rethrow;
+  //     }
+  //   } catch (e) {
+  //     rethrow;
+  //   }
+  // }
 
   /// Delete files from storage.
-  /// 
+  ///
   /// Todo delete original and thumbnail image on storage.
   Future<void> delete(String url) async {
     try {
