@@ -23,21 +23,17 @@ class ReportPostManagementScreen extends StatelessWidget {
             children: [
               Text(post.content),
               Text(post.id),
-              Row(
-                children: [
-                  ElevatedButton(
-                    onPressed: () {
-                      print('mark as deleted');
-                    },
-                    child: const Text('Delete'),
-                  ),
-                  ElevatedButton(
-                    onPressed: () {
-                      print('mark as resolve');
-                    },
-                    child: const Text('Resolve'),
-                  ),
-                ],
+              ElevatedButton(
+                onPressed: () {
+                  print('mark as deleted');
+                },
+                child: const Text('Delete'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  print('mark as resolve');
+                },
+                child: const Text('Resolve'),
               ),
             ],
           );
