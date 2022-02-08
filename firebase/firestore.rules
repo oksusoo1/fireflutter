@@ -114,6 +114,10 @@ service cloud.firestore {
       allow delete: if false;                             
     }
 
+    match /feeds/{feedId} {
+      allow read, write: if true;
+    }
+
     match /reports/{reportId} {
       allow read: if isAdmin() || isMyDoc('reporterUid');
       allow create: if willBeMyDoc('reporterUid') &&

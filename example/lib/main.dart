@@ -166,8 +166,7 @@ class _MainAppState extends State<MainApp> {
         ),
         GetPage(name: '/phone-sign-in', page: () => const PhoneSignInScreen()),
         GetPage(name: '/sms-code', page: () => const SmsCodeScreen()),
-        GetPage(
-            name: '/phone-sign-in-ui', page: () => const PhoneSignInUIScreen()),
+        GetPage(name: '/phone-sign-in-ui', page: () => const PhoneSignInUIScreen()),
         GetPage(name: '/sms-code-ui', page: () => const SmsCodeUIScreen()),
         GetPage(name: '/help', page: () => const HelpScreen()),
         GetPage(
@@ -180,8 +179,9 @@ class _MainAppState extends State<MainApp> {
         GetPage(name: RouteNames.postForm, page: () => PostFormScreen()),
         GetPage(name: RouteNames.admin, page: () => AdminScreen()),
         GetPage(
-            name: RouteNames.reportForumManagement,
-            page: () => ReportPostManagementScreen()),
+          name: RouteNames.reportForumManagement,
+          page: () => ReportPostManagementScreen(),
+        ),
         GetPage(name: RouteNames.category, page: () => CategoryScreen()),
         GetPage(name: '/chat-room-screen', page: () => const ChatRoomScreen()),
         GetPage(
@@ -195,8 +195,7 @@ class _MainAppState extends State<MainApp> {
         GetPage(name: '/friend-map', page: () => const FriendMapScreen()),
         GetPage(name: '/reminder-edit', page: () => ReminderEditScreen()),
         GetPage(name: RouteNames.report, page: () => ReportScreen()),
-        GetPage(
-            name: '/email-verify', page: () => const EmailVerificationScreen())
+        GetPage(name: '/email-verify', page: () => const EmailVerificationScreen())
       ],
     );
   }
