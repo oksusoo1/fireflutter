@@ -38,8 +38,12 @@ class FileStorageService {
     /// Reference
     final String fileName = file.path.split('/').last;
     Reference ref = firebaseStorage.ref("uploads/$fileName");
+    // Thumbnail ref
+    // Reference thumbnailRef = firebaseStorage.ref("uploads/$fileName" + "_200x200.webp")
 
+    // Upload Task
     UploadTask uploadTask = ref.putFile(file);
+    ;
 
     /// Progress listener
     if (onProgress != null) {
@@ -52,7 +56,10 @@ class FileStorageService {
     /// Wait for upload to finish.
     await uploadTask;
 
+    await Future.delayed(Duration(seconds: 1));
+
     /// Return uploaded file Url.
+    // return thumbnailRef.getDownloadURL();
     return ref.getDownloadURL();
   }
 
@@ -87,6 +94,13 @@ class FileStorageService {
   }
 
   Future<void> delete(String url) async {
-    return firebaseStorage.refFromURL(url).delete();
+    try {
+      await firebaseStorage.refFromURL(url).delete();
+    } on FirebaseException catch (e) {
+      print('firebase storage error ====> $e');
+      if (!e.toString().contains('object-not-found')) rethrow;
+    } catch (e) {
+      rethrow;
+    }
   }
 }
