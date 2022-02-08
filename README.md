@@ -94,6 +94,7 @@ Table of contents
   - [Category](#category)
   - [Post](#post-1)
   - [Comment](#comment)
+- [Push notification](#push-notification)
 
 # TODOs
 
@@ -994,5 +995,67 @@ DynamicLinksService.instance.listen((Uri? deepLink) {
   - `parentId` is the post id if the comment is the immediate child coment of the post.Or parent comment id.
   - `uid` is the author id.
   - `timestamp` is the server time.
+
+
+
+
+# Push notification
+
+- User tokens are saved under `/message-tokens/(tokenId)`
+  - properties;
+    - `uid` - user id or empty string if user didn't logged in.
+
+- user topic are saved under `/users/(uid)`.
+  - `{ topics: ['posts_qna', 'posts_discussion', 'comments_qna', ...] }`
+
+
+
+
+new logic)
+terms;
+
+	- 'comment notification' - Send me notification for new comments under my posts or comments.
+
+
+conditions;
+	- There is no more subscribing for all new posts and all new comments.
+		Users must enable or disable indivisually.
+		User can also enable all or disable all by one button touch in the setting screen.
+
+how;
+	- When a user subscribed 'comments_qna' and the user also enabled 'comment notification',
+		and if the user create a post under qna forum, and somebody commented on it.
+		Then, 'comment notification' will be ignored.
+
+
+	- for posts,
+		A - subscribed 'posts_qna'.
+		B wrote a post under 'qna'. then send push notification to 'posts_qna'.
+		then A gets a push notification.
+
+
+	- for comments
+		R - didn't subscribe both of comments_job and "comment notification".
+		A - subscribed "comments_job" only.
+		B - subscribed "comment notification" only.
+
+		R wrote a post(postJob) under job cateogry.
+		A wrote a comment A-1 under postJob.
+		B wrote a comment B-1 under A-1.
+		C wrote a comemnt C-1 under B-1.
+		Then, send push notifications to topic 'comment notification'.
+		Then, the app needs to find the authors of ancesters. that are R, A and B.
+		And, see if they subscribed 'comment notification'.
+			B subscribed 'comment notification', so he got push notification already.
+			A didn't subscribe 'comment notification', so need to check if he subscribed 'comments_job' and yes, he subscribed to it. so, send a push notification.
+			R didn't subscribe 'comment notification', so check if he subscribed to 'comments_job' and no, he didn't. so, he gets no push notification.
+
+
+when user changes devices;
+	- The app knows when the device has a token that are not saved in firestore, it is considered as new device.
+	- Subscribe all the topics that the user has.
+
+when sending push notification fails, see the error messages and remove that token from the database. so, it won't waste the network bandwidth.
+
 
 
