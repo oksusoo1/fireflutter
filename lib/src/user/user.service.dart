@@ -1,10 +1,12 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../fireflutter.dart';
 
-class UserService with FirestoreMixin {
+class UserService with FirestoreMixin, DatabaseMixin {
   static UserService? _instance;
   static UserService get instance {
     _instance ??= UserService();
@@ -25,6 +27,9 @@ class UserService with FirestoreMixin {
 
   DatabaseReference get _myDoc => FirebaseDatabase.instance.ref('users').child(uid!);
 
+  StreamSubscription? authSubscription;
+  StreamSubscription? userSubscription;
+
   /// User auth changes
   ///
   /// Warning! When user sign-out and sign-in quickly, it is expected
@@ -41,7 +46,8 @@ class UserService with FirestoreMixin {
   ///
   initAuthChanges() {
     print('UserService::initAuthChanges');
-    FirebaseAuth.instance.authStateChanges().listen(
+    authSubscription?.cancel();
+    authSubscription = FirebaseAuth.instance.authStateChanges().listen(
       (_user) async {
         if (_user == null) {
           print('User signed-out');
@@ -52,8 +58,18 @@ class UserService with FirestoreMixin {
             print('User sign-in as Anonymous;');
             user = UserModel();
           } else {
-            user = await UserService.instance.get();
-            print("User signed-in as; $user");
+            userSubscription?.cancel();
+            final doc = userDoc(_user.uid);
+            doc.onValue.listen((event) {
+              // if user doc does not exists, create one.
+              if (event.snapshot.exists == false) {
+                create();
+              } else {
+                user = UserModel.fromJson(event.snapshot.value, _user.uid);
+              }
+            }, onError: (e) {
+              print('UserDoc listening error; $e');
+            });
           }
         }
       },
@@ -68,6 +84,10 @@ class UserService with FirestoreMixin {
   /// Update photoUrl of currently login user.
   Future<void> updatePhotoUrl(String url) {
     return update(field: 'photoUrl', value: url);
+  }
+
+  Future<void> create() {
+    return _myDoc.set({'timestamp_registered': ServerValue.timestamp});
   }
 
   /// Update login user's document

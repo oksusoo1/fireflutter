@@ -21,6 +21,7 @@ class CommentModel with FirestoreMixin, ForumBase {
   Json data;
 
   String id;
+  String get path => commentDoc(id).path;
   String postId;
   String parentId;
 

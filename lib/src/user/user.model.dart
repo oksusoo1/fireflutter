@@ -29,6 +29,7 @@ class UserModel {
   bool get signedOut => signedIn == false;
 
   factory UserModel.fromJson(dynamic data, String uid) {
+    if (data == null) return UserModel();
     return UserModel(
       uid: uid,
       isAdmin: data['isAdmin'] ?? false,
