@@ -26,6 +26,8 @@ mixin FirestoreMixin {
   CollectionReference get reportCol => db.collection('reports');
   CollectionReference get feedCol => db.collection('feeds');
 
+  CollectionReference get messageTokensCol => db.collection('message-tokens');
+
   DocumentReference get adminsDoc => settingDoc.doc('admins');
 
   // CollectionReference commentCol(String postId) {

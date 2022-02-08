@@ -1,6 +1,8 @@
 import 'dart:io';
 
+import 'package:extended/extended.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter_app_badger/flutter_app_badger.dart';
 
 // import 'package:firebase_core/firebase_core.dart';
@@ -16,10 +18,10 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   }
 }
 
-class MessagingService {
+class MessagingFunction {
   String token = '';
 
-  MessagingService() {
+  MessagingFunction() {
     FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
     _init();
@@ -89,7 +91,7 @@ class MessagingService {
     //   if (re == null) {
     //     return;
     //   } else {
-    //     _updateToken(token);
+    _updateToken(token);
     //   }
     // });
   }
@@ -99,11 +101,11 @@ class MessagingService {
   _updateToken(String token) async {
     this.token = token;
     if (this.token == '') return;
-    // try {
-    //   await MessagingApi.instance.updateToken(token);
-    // } catch (e) {
-    //   service.error(e);
-    // }
+    try {
+      await MessagingService.instance.updateToken(token);
+    } catch (e) {
+      error(e);
+    }
   }
 
   /// Forground Message

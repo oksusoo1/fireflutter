@@ -12,7 +12,7 @@ import 'package:fe/screens/forum/post.list.screen.dart';
 import 'package:fe/screens/forum/post.form.screen.dart';
 import 'package:fe/service/app.controller.dart';
 import 'package:fe/service/global.keys.dart';
-import 'package:fe/service/messaging.service.dart';
+import 'package:fe/service/messaging.function.dart';
 import 'package:fe/service/route.names.dart';
 import 'package:fe/screens/chat/chat.room.screen.dart';
 import 'package:fe/screens/chat/chat.rooms.blocked.screen.dart';
@@ -57,13 +57,13 @@ class MainApp extends StatefulWidget {
 class _MainAppState extends State<MainApp> {
   final AppController _appController = AppController();
 
-  late final MessagingService messaging;
+  late final MessagingFunction messaging;
   @override
   void initState() {
     super.initState();
     Get.put(_appController);
 
-    messaging = MessagingService();
+    messaging = MessagingFunction();
 
     /// Instantiate UserService & see debug print message
     if (UserService.instance.user.isAdmin) {
@@ -166,7 +166,8 @@ class _MainAppState extends State<MainApp> {
         ),
         GetPage(name: '/phone-sign-in', page: () => const PhoneSignInScreen()),
         GetPage(name: '/sms-code', page: () => const SmsCodeScreen()),
-        GetPage(name: '/phone-sign-in-ui', page: () => const PhoneSignInUIScreen()),
+        GetPage(
+            name: '/phone-sign-in-ui', page: () => const PhoneSignInUIScreen()),
         GetPage(name: '/sms-code-ui', page: () => const SmsCodeUIScreen()),
         GetPage(name: '/help', page: () => const HelpScreen()),
         GetPage(
@@ -195,7 +196,8 @@ class _MainAppState extends State<MainApp> {
         GetPage(name: '/friend-map', page: () => const FriendMapScreen()),
         GetPage(name: '/reminder-edit', page: () => ReminderEditScreen()),
         GetPage(name: RouteNames.report, page: () => ReportScreen()),
-        GetPage(name: '/email-verify', page: () => const EmailVerificationScreen())
+        GetPage(
+            name: '/email-verify', page: () => const EmailVerificationScreen())
       ],
     );
   }

@@ -118,6 +118,10 @@ service cloud.firestore {
       allow read, write: if true;
     }
 
+    match /message-tokens/{token} {
+    	allow read,write: if true;
+    }
+
     match /reports/{reportId} {
       allow read: if isAdmin() || isMyDoc('reporterUid');
       allow create: if willBeMyDoc('reporterUid') &&
