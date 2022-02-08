@@ -90,7 +90,7 @@ class UserService with FirestoreMixin, DatabaseMixin {
     return _myDoc.set({'timestamp_registered': ServerValue.timestamp});
   }
 
-  /// Update login user's document
+  /// Update login user's document on `/users/{userDoc}` in realtime database.
   ///
   /// ```dart
   /// return update(field: 'nickname', value: name);
@@ -119,7 +119,7 @@ class UserService with FirestoreMixin, DatabaseMixin {
         await update(field: 'isAdmin', value: true);
         user.isAdmin = true;
       } else {
-        await update(field: 'isAdmin', value: FieldValue.delete());
+        await update(field: 'isAdmin', value: null);
         user.isAdmin = false;
       }
     }
