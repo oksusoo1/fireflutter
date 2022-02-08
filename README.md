@@ -962,6 +962,11 @@ DynamicLinksService.instance.listen((Uri? deepLink) {
       - You may add extra properties for products(product name, price, etc) and its reviews(rating, etc). And to search the properties, firestore would be better fit than realtime database.
 
 
+- Security
+  - We want to avoid complicated security rules and cloud functions.
+  - Mandatory permission check must be done by the security rules, like only allowing document update by the author.
+  - But counting the like or dislike is not really critical. It won't be a big harm even if there would be a mis-counting. So, we don't do this work on clould functions. Instead, we do it on client side with transaction.
+
 ## Category
 
 - Only admin can write the category, but readable to every one.
@@ -978,7 +983,6 @@ DynamicLinksService.instance.listen((Uri? deepLink) {
 - `PostModel` has methods like create, update, delete, like, dislike, and so on.
 
 - When user deletes a post, the document is marked as deleted, instead of remove it from the database. And user may update the document even if the post is marked as deleted. Editing post of delete mark is banned by security rule. This is by design and is not harmful. So, there should be some code to inform user not to edit deleted post. This goes the same to comment delete.
-
 
 ## Comment
 

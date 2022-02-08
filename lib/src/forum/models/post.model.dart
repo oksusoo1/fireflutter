@@ -13,6 +13,8 @@ class PostModel with FirestoreMixin, ForumBase {
     this.content = '',
     this.uid = '',
     this.files = const [],
+    this.like = 0,
+    this.dislike = 0,
     this.deleted = false,
     this.timestamp_,
     this.data_,
@@ -23,6 +25,7 @@ class PostModel with FirestoreMixin, ForumBase {
   Json get data => data_ ?? const {};
 
   String id;
+  String get path => postDoc(id).path;
 
   /// Category of the post.
   ///
@@ -47,6 +50,9 @@ class PostModel with FirestoreMixin, ForumBase {
 
   List<String> files;
 
+  int like;
+  int dislike;
+
   Timestamp? timestamp_;
   Timestamp get timestamp => timestamp_ ?? Timestamp.now();
 
@@ -62,6 +68,8 @@ class PostModel with FirestoreMixin, ForumBase {
       files: _files,
       deleted: data['deleted'] ?? false,
       uid: data['uid'] ?? '',
+      like: data['like'] ?? 0,
+      dislike: data['dislike'] ?? 0,
       timestamp_: data['timestamp'] ?? Timestamp.now(),
       data_: data,
     );
@@ -76,6 +84,8 @@ class PostModel with FirestoreMixin, ForumBase {
       'files': files,
       'deleted': deleted,
       'uid': uid,
+      'like': like,
+      'dislike': dislike,
       'timestamp': timestamp,
       'data': data,
     };
@@ -111,6 +121,8 @@ class PostModel with FirestoreMixin, ForumBase {
     required String content,
     Json extra = const {},
   }) {
+    if (signedIn == false) throw ERROR_SIGN_IN;
+    if (UserService.instance.user.exists == false) throw ERROR_USER_DOCUMENT_NOT_EXISTS;
     final createData = {
       'category': category,
       'title': title,

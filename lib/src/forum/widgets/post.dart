@@ -9,6 +9,8 @@ class Post extends StatelessWidget {
     required this.onReport,
     required this.onEdit,
     required this.onDelete,
+    required this.onLike,
+    required this.onDislike,
   }) : super(key: key);
 
   final PostModel post;
@@ -16,6 +18,8 @@ class Post extends StatelessWidget {
   final Function(PostModel post) onReply;
   final Function(PostModel post) onEdit;
   final Function(PostModel post) onDelete;
+  final Function(PostModel post) onLike;
+  final Function(PostModel post) onDislike;
 
   bool get isMine => UserService.instance.currentUser?.uid == post.uid;
 
@@ -45,6 +49,14 @@ class Post extends StatelessWidget {
                 onPressed: () => onDelete(post),
                 child: const Text('Delete'),
               ),
+            ElevatedButton(
+              onPressed: () => onLike(post),
+              child: Text('Like ${post.like}'),
+            ),
+            ElevatedButton(
+              onPressed: () => onDislike(post),
+              child: Text('Dislike: ${post.dislike}'),
+            ),
           ],
         ),
         FileList(files: post.files),

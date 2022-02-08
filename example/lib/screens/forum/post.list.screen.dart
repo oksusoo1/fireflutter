@@ -39,7 +39,7 @@ class _PostListScreenState extends State<PostListScreen> with FirestoreMixin {
         ],
       ),
       body: FirestoreListView(
-        key: ValueKey(newPostId),
+        // key: ValueKey(newPostId),
         query: postCol.where('category', isEqualTo: category).orderBy(
               'timestamp',
               descending: true,
@@ -53,6 +53,7 @@ class _PostListScreenState extends State<PostListScreen> with FirestoreMixin {
           // print('got new doc id; ${post.id}: ${post.title}');
 
           return ExpansionTile(
+            key: ValueKey(post.id),
             initiallyExpanded: false,
             title: Text(post.displayTitle),
             subtitle: Row(
@@ -76,6 +77,8 @@ class _PostListScreenState extends State<PostListScreen> with FirestoreMixin {
                 onReport: onReport,
                 onEdit: (post) => AppController.of.openPostForm(post: post),
                 onDelete: onDelete,
+                onLike: onLike,
+                onDislike: onDislike,
               ),
               Divider(color: Colors.red),
               Comment(
@@ -152,6 +155,22 @@ class _PostListScreenState extends State<PostListScreen> with FirestoreMixin {
         await postOrComment.delete();
         alert('Comment deleted', 'You have deleted this comment.');
       }
+    } catch (e) {
+      error(e);
+    }
+  }
+
+  onLike(dynamic postOrComment) async {
+    try {
+      await feed(postOrComment.path, 'like');
+    } catch (e) {
+      error(e);
+    }
+  }
+
+  onDislike(dynamic postOrComment) async {
+    try {
+      await feed(postOrComment.path, 'dislike');
     } catch (e) {
       error(e);
     }
