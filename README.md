@@ -97,6 +97,7 @@ Table of contents
   - [Comment](#comment)
 - [Push notification](#push-notification)
 - [Fil upload - Firebase Storage](#fil-upload---firebase-storage)
+  - [pickImage](#pickimage)
   - [FileUploadButton](#fileuploadbutton)
 
 # TODOs
@@ -178,16 +179,31 @@ Table of contents
   - thumbnail folder: /uploads
   - thumbnail convertion type: webp
 
-- Set the storage rules like below;
+- Copy the following rules and paste it into the storage rules section.
+
 ```js
 rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
     match /{allPaths=**} {
     	allow read: if request.auth!=null || resource.contentType.matches('image/.*');
-      allow write: if request.auth != null;
+      allow create: if willBeMine() && lessThan(10);
+      allow update: if isMine();
+      allow delete: if isMine();
     }
   }
+}
+
+function willBeMine() {
+	return request.auth != null && request.resource.metadata.uid == request.auth.uid;
+}
+
+function isMine() {
+	return request.auth != null && resource.metadata.uid == request.auth.uid;
+}
+
+function lessThan(n) {
+	return request.resource.size < n * 1024 * 1024;
 }
 ```
 
@@ -1092,6 +1108,11 @@ when sending push notification fails, see the error messages and remove that tok
 
 - Install `Image Resize` extension as described in [Firebase Storage Installation](#firebase-storage-installation).
 - Set the rules in Firebase Storage section as described in [Firebase Storage Installation](#firebase-storage-installation).
+
+
+## pickImage
+
+- `StorageService.instance.pickImage`
 
 
 ## FileUploadButton
