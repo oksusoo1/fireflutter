@@ -38,8 +38,7 @@ class _PhoneSignInUIScreenState extends State<PhoneSignInUIScreen> {
             PhoneNumberInput(
               /// [countryButtonBuilder] is the button design to select country dial code.
               countryButtonBuilder: () => Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                 width: double.infinity,
                 decoration: BoxDecoration(
                   color: Colors.blue,
@@ -61,8 +60,7 @@ class _PhoneSignInUIScreenState extends State<PhoneSignInUIScreen> {
               ///
               countrySelectedBuilder: (CountryCode code) {
                 return Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                   width: double.infinity,
                   decoration: BoxDecoration(
                     color: Colors.blue[100],
@@ -130,8 +128,7 @@ class _PhoneSignInUIScreenState extends State<PhoneSignInUIScreen> {
               /// [submitButton] is the submit button. It's not a builder function.
               ///
               submitButton: Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                 width: double.infinity,
                 decoration: BoxDecoration(
                   color: Colors.blue,
