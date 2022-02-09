@@ -12,39 +12,45 @@ import 'package:flutter/material.dart';
 /// When [useThumbnail] is set to false, it will display original image.
 ///   - and if original image does not exists then it will display error widget.
 class UploadedImage extends StatelessWidget {
-  UploadedImage(
-      {Key? key,
-      required this.url,
-      this.useThumbnail = true,
-      this.errorWidget = const Icon(Icons.error)})
-      : super(key: key);
+  UploadedImage({
+    Key? key,
+    required this.url,
+    this.useThumbnail = true,
+    this.errorWidget = const Icon(Icons.error),
+    this.onTap,
+  }) : super(key: key);
 
   final String url;
   final bool useThumbnail;
   final Widget errorWidget;
+  final Function()? onTap;
 
   @override
   Widget build(BuildContext context) {
     final _finalUrl = useThumbnail ? StorageService.instance.getThumbnailUrl(url) : url;
     print('_finalUrl; $_finalUrl');
 
-    return CachedNetworkImage(
-      imageUrl: _finalUrl,
-      placeholder: (context, _recursiveUrl) => CircularProgressIndicator(),
-      errorWidget: (context, _recursiveUrl, error) {
-        /// if it is original image and there is an error, then display error widget.
-        if (useThumbnail == false) {
-          return errorWidget;
-        } else {
-          /// If it failed on displaying thumbnail image, then try to display
-          /// original image.
-          return UploadedImage(
-            url: url,
-            useThumbnail: false,
-            errorWidget: errorWidget,
-          );
-        }
-      },
+    return GestureDetector(
+      onTap: onTap,
+      behavior: HitTestBehavior.opaque,
+      child: CachedNetworkImage(
+        imageUrl: _finalUrl,
+        placeholder: (context, _recursiveUrl) => CircularProgressIndicator(),
+        errorWidget: (context, _recursiveUrl, error) {
+          /// if it is original image and there is an error, then display error widget.
+          if (useThumbnail == false) {
+            return errorWidget;
+          } else {
+            /// If it failed on displaying thumbnail image, then try to display
+            /// original image.
+            return UploadedImage(
+              url: url,
+              useThumbnail: false,
+              errorWidget: errorWidget,
+            );
+          }
+        },
+      ),
     );
   }
 }

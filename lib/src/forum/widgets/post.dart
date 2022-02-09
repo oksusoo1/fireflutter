@@ -11,6 +11,7 @@ class Post extends StatelessWidget {
     required this.onDelete,
     required this.onLike,
     required this.onDislike,
+    this.onImageTap,
   }) : super(key: key);
 
   final PostModel post;
@@ -20,6 +21,7 @@ class Post extends StatelessWidget {
   final Function(PostModel post) onDelete;
   final Function(PostModel post) onLike;
   final Function(PostModel post) onDislike;
+  final Function(int index, String url)? onImageTap;
 
   bool get isMine => UserService.instance.currentUser?.uid == post.uid;
 
@@ -59,7 +61,7 @@ class Post extends StatelessWidget {
             ),
           ],
         ),
-        FileList(files: post.files),
+        FileList(files: post.files, onImageTap: onImageTap),
       ],
     );
   }

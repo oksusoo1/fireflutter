@@ -32,7 +32,6 @@ class ProfileScreenState extends State<ProfileScreen> {
             builder: (UserModel u) {
               return FileUploadButton(
                 child: u.photoUrl.isNotEmpty
-                    // Image.network(u.photoUrl, height: 100, width: 100, fit: BoxFit.cover)
                     ? UploadedImage(url: u.photoUrl)
                     : Icon(Icons.person, size: 40),
                 onUploaded: updatePhotoUrl,
