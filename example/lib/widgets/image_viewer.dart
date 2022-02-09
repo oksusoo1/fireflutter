@@ -4,7 +4,11 @@ import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
 
 class ImageViewer extends StatefulWidget {
-  ImageViewer(this.files, {this.initialIndex, Key? key}) : super(key: key);
+  ImageViewer(
+    this.files, {
+    this.initialIndex,
+    Key? key,
+  }) : super(key: key);
 
   final List<String> files;
   final int? initialIndex;

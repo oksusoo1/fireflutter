@@ -1,5 +1,5 @@
-import '../../../fireflutter.dart';
 import 'package:flutter/material.dart';
+import '../../../fireflutter.dart';
 
 class PostForm extends StatefulWidget {
   const PostForm({
@@ -89,7 +89,7 @@ class _PostFormState extends State<PostForm> {
                 child: const Text('SUBMIT')),
           ],
         ),
-        FileListEdit(files: files, onError: widget.onError),
+        ImageListEdit(files: files, onError: widget.onError),
       ],
     );
   }

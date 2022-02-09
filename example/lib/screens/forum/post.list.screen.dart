@@ -5,7 +5,6 @@ import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterfire_ui/firestore.dart';
 import 'package:get/get.dart';
-import 'package:photo_view/photo_view_gallery.dart';
 
 class PostListScreen extends StatefulWidget {
   PostListScreen({Key? key}) : super(key: key);
@@ -88,7 +87,7 @@ class _PostListScreenState extends State<PostListScreen> with FirestoreMixin {
                 onDelete: onDelete,
                 onLike: onLike,
                 onDislike: onDislike,
-                onImageTap: (idx, url) => onImageTapped(post.files, idx),
+                onImageTap: onImageTapped,
               ),
               Divider(color: Colors.red),
               Comment(
@@ -98,6 +97,7 @@ class _PostListScreenState extends State<PostListScreen> with FirestoreMixin {
                 onReport: onReport,
                 onEdit: onEdit,
                 onDelete: onDelete,
+                onImageTap: onImageTapped,
               ),
             ],
           );
@@ -235,7 +235,7 @@ class _PostListScreenState extends State<PostListScreen> with FirestoreMixin {
     }
   }
 
-  onImageTapped(List<String> files, int initialIndex) {
+  onImageTapped(int initialIndex, List<String> files) {
     return Get.dialog(ImageViewer(files, initialIndex: initialIndex));
   }
 }

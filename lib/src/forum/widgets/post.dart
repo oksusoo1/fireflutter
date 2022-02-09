@@ -1,5 +1,5 @@
-import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
+import '../../../fireflutter.dart';
 
 class Post extends StatelessWidget {
   const Post({
@@ -11,7 +11,7 @@ class Post extends StatelessWidget {
     required this.onDelete,
     required this.onLike,
     required this.onDislike,
-    this.onImageTap,
+    required this.onImageTap,
   }) : super(key: key);
 
   final PostModel post;
@@ -21,7 +21,7 @@ class Post extends StatelessWidget {
   final Function(PostModel post) onDelete;
   final Function(PostModel post) onLike;
   final Function(PostModel post) onDislike;
-  final Function(int index, String url)? onImageTap;
+  final Function(int index, List<String> fileList) onImageTap;
 
   bool get isMine => UserService.instance.currentUser?.uid == post.uid;
 
@@ -61,7 +61,7 @@ class Post extends StatelessWidget {
             ),
           ],
         ),
-        FileList(files: post.files, onImageTap: onImageTap),
+        ImageList(files: post.files, onImageTap: (i) => onImageTap(i, post.files)),
       ],
     );
   }

@@ -1,6 +1,6 @@
-import '../../../fireflutter.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import '../../../fireflutter.dart';
 
 class FileUploadButton extends StatelessWidget {
   const FileUploadButton({

@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 import '../../../fireflutter.dart';
 
-class FileListEdit extends StatefulWidget {
-  const FileListEdit({required this.files, required this.onError, Key? key}) : super(key: key);
+class ImageListEdit extends StatefulWidget {
+  const ImageListEdit({required this.files, required this.onError, Key? key}) : super(key: key);
 
   final List<String> files;
   final Function(dynamic) onError;
 
   @override
-  State<FileListEdit> createState() => _FileListEditState();
+  State<ImageListEdit> createState() => _ImageListEditState();
 }
 
-class _FileListEditState extends State<FileListEdit> {
+class _ImageListEditState extends State<ImageListEdit> {
   @override
   Widget build(BuildContext context) {
     return Wrap(

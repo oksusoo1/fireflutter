@@ -1,5 +1,5 @@
-import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
+import '../../../fireflutter.dart';
 
 class CommentEditDialog extends StatefulWidget {
   CommentEditDialog({
@@ -70,7 +70,7 @@ class _CommentEditDialogState extends State<CommentEditDialog> {
             ),
           ]),
           if (uploadProgress > 0) LinearProgressIndicator(value: uploadProgress),
-          FileListEdit(files: files, onError: widget.onError)
+          ImageListEdit(files: files, onError: widget.onError)
         ],
       ),
     );
