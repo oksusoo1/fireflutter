@@ -30,6 +30,7 @@ class Post extends StatelessWidget {
     return Column(
       children: [
         Text(post.displayContent),
+        ImageList(files: post.files, onImageTap: (i) => onImageTap(i, post.files)),
         Text(post.id),
         Wrap(
           children: [
@@ -61,7 +62,6 @@ class Post extends StatelessWidget {
             ),
           ],
         ),
-        ImageList(files: post.files, onImageTap: (i) => onImageTap(i, post.files)),
       ],
     );
   }

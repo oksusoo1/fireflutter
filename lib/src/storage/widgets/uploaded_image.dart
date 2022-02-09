@@ -17,6 +17,8 @@ class UploadedImage extends StatelessWidget {
     required this.url,
     this.useThumbnail = true,
     this.errorWidget = const Icon(Icons.error),
+    this.height,
+    this.width,
     this.onTap,
   }) : super(key: key);
 
@@ -24,16 +26,21 @@ class UploadedImage extends StatelessWidget {
   final bool useThumbnail;
   final Widget errorWidget;
   final Function()? onTap;
+  final double? height;
+  final double? width;
 
   @override
   Widget build(BuildContext context) {
     final _finalUrl = useThumbnail ? StorageService.instance.getThumbnailUrl(url) : url;
-    print('_finalUrl; $_finalUrl');
+    // print('_finalUrl; $_finalUrl');
 
     return GestureDetector(
       onTap: onTap,
       behavior: HitTestBehavior.opaque,
       child: CachedNetworkImage(
+        fit: BoxFit.cover,
+        height: height,
+        width: width,
         imageUrl: _finalUrl,
         placeholder: (context, _recursiveUrl) => CircularProgressIndicator(),
         errorWidget: (context, _recursiveUrl, error) {

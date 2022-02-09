@@ -70,7 +70,7 @@ class _CommentEditDialogState extends State<CommentEditDialog> {
             ),
           ]),
           if (uploadProgress > 0) LinearProgressIndicator(value: uploadProgress),
-          ImageListEdit(files: files, onError: widget.onError)
+          ImageListEdit(files: files, onError: widget.onError),
         ],
       ),
     );
