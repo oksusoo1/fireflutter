@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:math';
 
-import 'package:firebase_database/ui/utils/stream_subscriber_mixin.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -71,25 +70,18 @@ class StorageService {
           'basename': basename,
           'uid': uid,
         }));
-    StreamSubscription sub;
 
     /// Progress listener
     StreamSubscription? _sub;
     if (onProgress != null) {
-      /// TODO: memory leak here. when it is 100, cancel the listener.
       _sub = uploadTask.snapshotEvents.listen((event) {
         double progress = event.bytesTransferred.toDouble() / event.totalBytes.toDouble();
         onProgress(progress);
-        print('progress; $progress');
       });
-
-      print('_sub ==> ${_sub.toString()}');
     }
 
     /// Wait for upload to finish.
     await uploadTask.whenComplete(() => _sub?.cancel());
-    print('_sub ==> ${_sub.toString()}');
-
     return ref.getDownloadURL();
   }
 
@@ -99,11 +91,12 @@ class StorageService {
   ///
   /// Ignore object-not-found exception.
   Future<void> delete(String url) async {
+    final String thumbnailUrl = getThumbnailUrl(url);
     try {
       await Future.wait(
         [
           storage.refFromURL(url).delete(),
-          storage.refFromURL(getThumbnailUrl(url)).delete(),
+          storage.refFromURL(thumbnailUrl).delete(),
         ],
       );
     } on FirebaseException catch (e) {

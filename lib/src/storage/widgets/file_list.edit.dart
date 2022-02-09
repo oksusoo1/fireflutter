@@ -19,7 +19,7 @@ class _FileListEditState extends State<FileListEdit> {
         for (String fileUrl in widget.files)
           Stack(
             children: [
-              Image.network(fileUrl, height: 100, width: 100, fit: BoxFit.cover),
+              UploadedImage(url: fileUrl),
               Positioned(
                 top: 10,
                 left: 10,

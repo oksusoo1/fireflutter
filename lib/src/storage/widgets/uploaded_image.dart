@@ -12,12 +12,12 @@ import 'package:flutter/material.dart';
 /// When [useThumbnail] is set to false, it will display original image.
 ///   - and if original image does not exists then it will display error widget.
 class UploadedImage extends StatelessWidget {
-  UploadedImage({
-    Key? key,
-    required this.url,
-    this.useThumbnail = true,
-    this.errorWidget = const Icon(Icons.error),
-  }) : super(key: key);
+  UploadedImage(
+      {Key? key,
+      required this.url,
+      this.useThumbnail = true,
+      this.errorWidget = const Icon(Icons.error)})
+      : super(key: key);
 
   final String url;
   final bool useThumbnail;

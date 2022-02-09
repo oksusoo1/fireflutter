@@ -1,3 +1,4 @@
+import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
 
 class FileList extends StatelessWidget {
@@ -8,9 +9,7 @@ class FileList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Wrap(
-      children: [
-        for (final url in files) Image.network(url, height: 100, width: 100, fit: BoxFit.cover)
-      ],
+      children: [for (final url in files) UploadedImage(url: url)],
     );
   }
 }
