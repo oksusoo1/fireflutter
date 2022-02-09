@@ -24,7 +24,7 @@ dependencies:
   # Firebase UI.
   flutterfire_ui: ^0.3.2
 
-  rxdart: any
+  rxdart: ^0.27.3
 
   # File upload
   path_provider: ^2.0.8

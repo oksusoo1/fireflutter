@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:fireflutter/fireflutter.dart';
 import '../../fireflutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterfire_ui/firestore.dart';
@@ -34,8 +33,7 @@ class ReportManagement extends StatelessWidget with FirestoreMixin {
     return FirestoreListView(
       query: query,
       itemBuilder: (context, snapshot) {
-        final report =
-            ReportModel.fromJson(snapshot.data() as Json, snapshot.reference);
+        final report = ReportModel.fromJson(snapshot.data() as Json, snapshot.reference);
 
         return ListTile(
           title: Column(
@@ -45,8 +43,7 @@ class ReportManagement extends StatelessWidget with FirestoreMixin {
               UserFutureDoc(
                 uid: report.reporterUid,
                 builder: (user) {
-                  return Text('Reporter: ' +
-                      (user.nickname != '' ? user.nickname : 'no_name'));
+                  return Text('Reporter: ' + (user.nickname != '' ? user.nickname : 'no_name'));
                 },
               ),
               UserFutureDoc(
