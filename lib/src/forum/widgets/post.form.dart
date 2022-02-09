@@ -27,6 +27,8 @@ class _PostFormState extends State<PostForm> {
 
   late List<String> files = [];
 
+  double uploadProgress = 0;
+
   @override
   void initState() {
     super.initState();
@@ -60,7 +62,9 @@ class _PostFormState extends State<PostForm> {
                 files = [...files, url];
                 if (mounted) setState(() {});
               },
-              onProgress: (progress) {},
+              onProgress: (progress) {
+                if (mounted) setState(() => uploadProgress = progress);
+              },
               onError: widget.onError,
             ),
             ElevatedButton(

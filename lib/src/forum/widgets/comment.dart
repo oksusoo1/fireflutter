@@ -104,7 +104,10 @@ class _CommentState extends State<Comment> with FirestoreMixin {
               children: [
                 UserDoc(uid: comment.uid, builder: (u) => Text('Name: ${u.nickname}')),
                 Text("content: ${comment.displayContent}"),
-                ImageList(files: comment.files, onImageTap: (i) => widget.onImageTap(i, comment.files),),
+                ImageList(
+                  files: comment.files,
+                  onImageTap: (i) => widget.onImageTap(i, comment.files),
+                ),
                 Wrap(
                   children: [
                     ElevatedButton(

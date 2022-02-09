@@ -1,6 +1,5 @@
 import 'package:extended/extended.dart';
 import 'package:fe/service/app.controller.dart';
-import 'package:fe/widgets/image_viewer.dart';
 import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterfire_ui/firestore.dart';

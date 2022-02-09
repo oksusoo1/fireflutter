@@ -42,7 +42,7 @@ class UploadedImage extends StatelessWidget {
         height: height,
         width: width,
         imageUrl: _finalUrl,
-        placeholder: (context, _recursiveUrl) => CircularProgressIndicator(),
+        placeholder: (context, _recursiveUrl) => Center(child: CircularProgressIndicator()),
         errorWidget: (context, _recursiveUrl, error) {
           /// if it is original image and there is an error, then display error widget.
           if (useThumbnail == false) {

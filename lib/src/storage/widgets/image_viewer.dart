@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
 
@@ -55,7 +54,7 @@ class _ImageViewerState extends State<ImageViewer> {
           Container(
             child: IconButton(
               icon: Icon(Icons.close_rounded, color: Colors.redAccent, size: 28),
-              onPressed: () => Get.back(),
+              onPressed: () => Navigator.of(context).pop(),
             ),
           ),
           if (currentIndex != 0)

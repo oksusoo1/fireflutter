@@ -17,17 +17,19 @@ class _PostFormScreenState extends State<PostFormScreen> with FirestoreMixin {
       appBar: AppBar(
         title: const Text('Post Create'),
       ),
-      body: PagePadding(vertical: sm, children: [
-        PostForm(
-          category: Get.arguments['category'],
-          post: Get.arguments['post'],
-          onCreate: (postId) {
-            Get.back(result: postId);
-            alert('Post created', 'Thank you');
-          },
-          onError: error,
-        ),
-      ]),
+      body: SingleChildScrollView(
+        child: PagePadding(vertical: sm, children: [
+          PostForm(
+            category: Get.arguments['category'],
+            post: Get.arguments['post'],
+            onCreate: (postId) {
+              Get.back(result: postId);
+              alert('Post created', 'Thank you');
+            },
+            onError: error,
+          ),
+        ]),
+      ),
     );
   }
 }
