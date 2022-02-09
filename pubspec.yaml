@@ -32,7 +32,6 @@ dependencies:
   # Caching uploaded image
   cached_network_image: ^3.2.0
   
-
   # PhoneNumberInput widget
   country_code_picker: ^2.0.2
 
