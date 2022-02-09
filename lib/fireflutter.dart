@@ -33,6 +33,8 @@ export 'src/reminder/widgets/reminder.edit.dart';
 export 'src/report/report.management.dart';
 export 'src/report/report.model.dart';
 
+export 'src/messaging/messaging.service.dart';
+
 export 'src/email_verification/email_verification.dart';
 export 'src/email_verification/email_verification.service.dart';
 
@@ -55,6 +57,7 @@ export 'src/forum/widgets/comment.edit.dialog.dart';
 export 'src/forum/widgets/post.dart';
 export 'src/forum/widgets/comment.dart';
 export 'src/forum/widgets/post.form.dart';
+export 'src/forum/widgets/push_notification/forum.list.push_notification.icon.dart';
 
 export 'src/storage/storage.service.dart';
 export 'src/storage/widgets/file_upload.button.dart';

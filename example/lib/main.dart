@@ -12,6 +12,7 @@ import 'package:fe/screens/forum/post.list.screen.dart';
 import 'package:fe/screens/forum/post.form.screen.dart';
 import 'package:fe/service/app.controller.dart';
 import 'package:fe/service/global.keys.dart';
+import 'package:fe/service/messaging.function.dart';
 import 'package:fe/service/route.names.dart';
 import 'package:fe/screens/chat/chat.room.screen.dart';
 import 'package:fe/screens/chat/chat.rooms.blocked.screen.dart';
@@ -48,16 +49,21 @@ void main() async {
 class MainApp extends StatefulWidget {
   const MainApp({required this.initialLink, Key? key}) : super(key: key);
   final PendingDynamicLinkData? initialLink;
+
   @override
   State<MainApp> createState() => _MainAppState();
 }
 
 class _MainAppState extends State<MainApp> {
   final AppController _appController = AppController();
+
+  late final MessagingFunction messaging;
   @override
   void initState() {
     super.initState();
     Get.put(_appController);
+
+    messaging = MessagingFunction();
 
     /// Instantiate UserService & see debug print message
     if (UserService.instance.user.isAdmin) {
@@ -136,6 +142,18 @@ class _MainAppState extends State<MainApp> {
         );
       });
     });
+
+    // MessagingService.instance.init(
+    //   onTokenUpdated: (x) {
+
+    //   },
+    //   onForegroundMessage: (x) {
+
+    //   },
+    //   onBackgroundMessage: (x) {
+
+    //   },
+    // )
   }
 
   @override

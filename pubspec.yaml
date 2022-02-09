@@ -18,6 +18,7 @@ dependencies:
   cloud_firestore: ^3.1.6
   firebase_dynamic_links: ^4.0.5
   firebase_storage: ^10.2.6
+  firebase_messaging: ^11.2.6
 
   # Firebase UI.
   flutterfire_ui: ^0.3.2
@@ -32,7 +33,6 @@ dependencies:
   # Caching uploaded image
   cached_network_image: ^3.2.0
   
-
   # PhoneNumberInput widget
   country_code_picker: ^2.0.2
 
@@ -51,9 +51,9 @@ dependencies:
   # reminder service,
   shared_preferences: ^2.0.12
 
-
   # date & time
   intl: ^0.17.0
+
 
 dev_dependencies:
   flutter_test:

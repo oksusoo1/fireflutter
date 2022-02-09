@@ -703,6 +703,34 @@ describe('Firestore security test', () => {
 
     });
 
+    it("Messaging tokenUpdate", async () => {
+
+        const doc = db().collection("message-tokens").doc("tokenA");
+
+        // fail - field required is wrong must be uid only
+        await firebase.assertFails(doc.set({ id: 'Apple'} , {merge:true}));
+
+        // succes - field required is wrong must be uid only
+        await firebase.assertSucceeds(doc.set({ uid: 'Apple'} , {merge:true}));
+        
+        // succes - data exist
+        await firebase.assertSucceeds(doc.get());
+    });
+
+    it("Users subscribe topics", async () => {
+
+        const doc = db().collection("message-tokens").doc("tokenA");
+
+        // fail - field required is wrong must be uid only
+        await firebase.assertFails(doc.set({ id: 'Apple'} , {merge:true}));
+
+        // succes - field required is wrong must be uid only
+        await firebase.assertSucceeds(doc.set({ uid: 'Apple'} , {merge:true}));
+        
+        // succes - data exist
+        await firebase.assertSucceeds(doc.get());
+    });
+
 });
 
 

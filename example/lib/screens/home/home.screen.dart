@@ -196,8 +196,10 @@ class _HomeScreenState extends State<HomeScreen> {
                   ElevatedButton(
                     onPressed: () async {
                       try {
-                        uploadUrl = await StorageService.instance
-                            .pickUpload(source: ImageSource.gallery, onProgress: print);
+                        uploadUrl = await StorageService.instance.pickUpload(
+                          source: ImageSource.gallery,
+                          onProgress: print,
+                        );
                         alert('Success', 'Image uploaded successfully');
                       } catch (e) {
                         debugPrint('Upload exception; $e');

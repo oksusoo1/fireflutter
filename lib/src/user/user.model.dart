@@ -11,6 +11,7 @@ class UserModel {
     this.photoUrl = '',
     this.birthday = '',
     this.isAdmin = false,
+    this.topics = const [],
   });
 
   /// This is the user's document id which is the uid.
@@ -25,8 +26,17 @@ class UserModel {
   String photoUrl;
   String birthday;
 
+  List<String> topics;
+
   bool get signedIn => FirebaseAuth.instance.currentUser != null;
   bool get signedOut => signedIn == false;
+
+  /// Returns true if the user has subscribed the topic.
+  /// If user subscribed the topic, that topic name will be saved into user meta in backend
+  /// And when user profile is loaded, the subscriptions are saved into [subscriptions]
+  bool hasSubscription(String topic) {
+    return topics.contains(topic);
+  }
 
   factory UserModel.fromJson(dynamic data, String uid) {
     if (data == null) return UserModel();
@@ -36,6 +46,7 @@ class UserModel {
       nickname: data['nickname'] ?? '',
       photoUrl: data['photoUrl'] ?? '',
       birthday: data['birthday'] ?? '',
+      topics: data['topics'] ?? [],
     );
   }
 
