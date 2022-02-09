@@ -3,7 +3,6 @@ description: A free, open source, complete, rapid development package for creati
 version: 0.2.14
 homepage: https://github.com/thruthesky/fireflutter
 
-
 environment:
   sdk: ">=2.15.0 <3.0.0"
   flutter: ">=2.2.0"
@@ -31,10 +30,10 @@ dependencies:
   image_picker: ^0.8.4+6
   flutter_image_compress: ^1.1.0
   photo_view: ^0.13.0
-  
+
   # Caching uploaded image
   cached_network_image: ^3.2.0
-  
+
   # PhoneNumberInput widget
   country_code_picker: ^2.0.2
 
@@ -55,7 +54,6 @@ dependencies:
 
   # date & time
   intl: ^0.17.0
-
 
 dev_dependencies:
   flutter_test:
