@@ -2,6 +2,13 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
 
+/// UploadedImage
+///
+/// When [useThumbnail] is set to true, it will look for thumbnail image, first.
+///   - and when thumbnail image does not exist, then it will show original image
+///     and if original image does not exists, then it will display error widget.
+/// When [useThumbnail] is set to false, it will display original image.
+///   - and if original image does not exists then it will display error widget.
 class UploadedImage extends StatelessWidget {
   UploadedImage({
     Key? key,
@@ -23,11 +30,18 @@ class UploadedImage extends StatelessWidget {
       imageUrl: _finalUrl,
       placeholder: (context, _recursiveUrl) => CircularProgressIndicator(),
       errorWidget: (context, _recursiveUrl, error) {
-        return UploadedImage(
-          url: url,
-          useThumbnail: false,
-          errorWidget: errorWidget,
-        );
+        /// if it is original image and there is an error, then display error widget.
+        if (useThumbnail == false) {
+          return errorWidget;
+        } else {
+          /// If it failed on displaying thumbnail image, then try to display
+          /// original image.
+          return UploadedImage(
+            url: url,
+            useThumbnail: false,
+            errorWidget: errorWidget,
+          );
+        }
       },
     );
   }

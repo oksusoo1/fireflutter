@@ -81,6 +81,7 @@ class ProfileScreenState extends State<ProfileScreen> {
       await user.updatePhotoUrl(t).catchError(error);
       setState(() => uploadProgress = 0);
     } catch (e) {
+      debugPrint('updatePhotoUrl() => StorageService.instance.delete(${user.photoUrl})');
       error(e);
     }
   }

@@ -1,6 +1,9 @@
+import 'dart:async';
 import 'dart:io';
 import 'dart:math';
 
+import 'package:firebase_database/ui/utils/stream_subscriber_mixin.dart';
+import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import '../../fireflutter.dart';
@@ -26,15 +29,18 @@ class StorageService {
   // final String _thumbnailSize = '200';
   // final String _thumbnailType = 'webp';
 
-  final firebaseStorage = FirebaseStorage.instance;
-  Reference get uploadsFolder => firebaseStorage.ref().child(_uploadsPath);
+  final storage = FirebaseStorage.instance;
+  Reference get uploadsFolder => storage.ref().child(_uploadsPath);
+  Reference ref(String url) {
+    return storage.refFromURL(url);
+  }
 
   Future<String> pickUpload({
     required ImageSource source,
     int quality = 90,
     Function(double)? onProgress,
   }) async {
-    // print('pickUpload;');
+    if (UserService.instance.notSignIn) throw ERROR_SIGN_IN;
 
     /// Pick image
     final picker = ImagePicker();
@@ -49,24 +55,37 @@ class StorageService {
     /// Get generated filename.
     final String basename = file.path.split('/').last;
     // final String filename = basename.split('.').first;
+    final String extension = basename.split('.').last;
 
     final dt = DateFormat('yMMddHHmmss').format(DateTime.now());
-    final ref = uploadsFolder.child("$dt-$basename");
+    final uid = UserService.instance.uid!;
+    final randomString = _getRandomString();
+    final filename = "$uid-$dt-$randomString.$extension";
+    print('filename; $filename');
+    final ref = uploadsFolder.child(filename);
 
     /// Upload Task
-    UploadTask uploadTask = ref.putFile(file);
+    UploadTask uploadTask = ref.putFile(
+        file,
+        SettableMetadata(customMetadata: {
+          'basename': basename,
+          'uid': uid,
+        }));
+    StreamSubscription sub;
 
     /// Progress listener
     if (onProgress != null) {
-      /// TODO: memory leak here. when it is 100, cancel the listener.
-      uploadTask.snapshotEvents.listen((event) {
+      sub = uploadTask.snapshotEvents.listen((event) {
         double progress = event.bytesTransferred.toDouble() / event.totalBytes.toDouble();
         onProgress(progress);
+        print('progress; $progress');
       });
     }
 
     /// Wait for upload to finish.
-    await uploadTask;
+    await uploadTask.whenComplete(() {
+      sub?.cancel();
+    });
 
     return ref.getDownloadURL();
 
@@ -74,44 +93,25 @@ class StorageService {
     // return generatedThumbnailUrl(filename, 10);
   }
 
-  /// Returns url of generated thumbnail.
+  /// Delete orignal and thumbnail files from storage.
   ///
-  /// It will retry until the thumbnail is generated on storage.
+  /// [url] must be the original image url.
   ///
-  /// https://stackoverflow.com/a/58978012
-  // Future<String> generatedThumbnailUrl(String filename, [int retry = 5]) async {
-  //   final ref = uploadsFolder.child(filename + "_200x200.webp");
-
-  //   /// Retries
-  //   if (retry == 0) {
-  //     return Future.error(ERROR_IMAGE_NOT_FOUND);
-  //   }
-
-  //   try {
-  //     await Future.delayed(Duration(seconds: 2));
-  //     return ref.getDownloadURL();
-  //   } on FirebaseException catch (e) {
-  //     if (e.code == 'object-not-found' && retry != 0) {
-  //       return generatedThumbnailUrl(filename, retry - 1);
-  //     } else {
-  //       rethrow;
-  //     }
-  //   } catch (e) {
-  //     rethrow;
-  //   }
-  // }
-
-  /// Delete files from storage.
-  ///
-  /// Todo delete original and thumbnail image on storage.
+  /// Ignore object-not-found exception.
   Future<void> delete(String url) async {
     try {
-      await FirebaseStorage.instance.refFromURL(url).delete();
+      await Future.wait(
+        [
+          storage.refFromURL(url).delete(),
+          storage.refFromURL(getThumbnailUrl(url)).delete(),
+        ],
+      );
     } on FirebaseException catch (e) {
-      print('firebase storage error ====> $e');
-      if (e.code != 'object-not-found') rethrow;
-    } catch (e) {
-      rethrow;
+      if (e.code == 'object-not-found') {
+        debugPrint('object-not-found exception happened with: $url');
+      } else {
+        rethrow;
+      }
     }
   }
 
@@ -124,7 +124,9 @@ class StorageService {
     /// This method will be called when image was taken by [Api.takeUploadFile].
     /// It can compress the image and then return it as a File object.
 
-    String localFile = await _getAbsoluteTemporaryFilePath(_getRandomString() + '.jpeg');
+    final String basename = filepath.split('/').last;
+    String localFile =
+        await _getAbsoluteTemporaryFilePath('$basename-' + _getRandomString() + '.jpeg');
     File? file = await FlutterImageCompress.compressAndGetFile(
       filepath, // source file
       localFile, // target file. Overwrite the source with compressed.
