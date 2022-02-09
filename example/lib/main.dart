@@ -12,7 +12,6 @@ import 'package:fe/screens/forum/post.list.screen.dart';
 import 'package:fe/screens/forum/post.form.screen.dart';
 import 'package:fe/service/app.controller.dart';
 import 'package:fe/service/global.keys.dart';
-import 'package:fe/service/messaging.function.dart';
 import 'package:fe/service/route.names.dart';
 import 'package:fe/screens/chat/chat.room.screen.dart';
 import 'package:fe/screens/chat/chat.rooms.blocked.screen.dart';
@@ -32,6 +31,7 @@ import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_app_badger/flutter_app_badger.dart';
 import 'package:get/get.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 
@@ -57,13 +57,10 @@ class MainApp extends StatefulWidget {
 class _MainAppState extends State<MainApp> {
   final AppController _appController = AppController();
 
-  late final MessagingFunction messaging;
   @override
   void initState() {
     super.initState();
     Get.put(_appController);
-
-    messaging = MessagingFunction();
 
     /// Instantiate UserService & see debug print message
     if (UserService.instance.user.isAdmin) {
@@ -143,17 +140,46 @@ class _MainAppState extends State<MainApp> {
       });
     });
 
-    // MessagingService.instance.init(
-    //   onTokenUpdated: (x) {
+    MessagingService.instance.init(
+      // while the app is close and notification arrive you can use this to do small work
+      // example are changing the badge count or informing backend.
+      onBackgroundMessage: _firebaseMessagingBackgroundHandler,
+      onForegroundMessage: (message) {
+        // this will triggered while the app is opened
+        // If the message has data, then do some extra work based on the data.
+        onMessageOpenedShowMessage(message);
+      },
+      onMessageOpenedFromTermiated: (message) {
+        // this will triggered when the notification on tray was tap while the app is closed
+        onMessageOpenedShowMessage(message);
+      },
+      onMessageOpenedFromBackground: (message) {
+        // this will triggered when the notification on tray was tap while the app is open but in background state.
+        onMessageOpenedShowMessage(message);
+      },
+      onNotificationPermissionDenied: () {
+        print('onNotificationPermissionDenied()');
+      },
+      onNotificationPermissionNotDetermined: () {
+        print('onNotificationPermissionNotDetermined()');
+      },
+      onTokenUpdated: (token) {
+        print('##########onTokenUpdated###########');
+        print(token);
+      },
+    );
+  }
 
-    //   },
-    //   onForegroundMessage: (x) {
-
-    //   },
-    //   onBackgroundMessage: (x) {
-
-    //   },
-    // )
+  onMessageOpenedShowMessage(message) {
+    // Handle the message here
+    // print(message);
+    showDialog(
+      context: context,
+      builder: (c) => AlertDialog(
+        title: Text(message.notification!.title ?? ''),
+        content: Text(message.notification!.body ?? ''),
+      ),
+    );
   }
 
   @override
@@ -178,7 +204,8 @@ class _MainAppState extends State<MainApp> {
         ),
         GetPage(name: '/phone-sign-in', page: () => const PhoneSignInScreen()),
         GetPage(name: '/sms-code', page: () => const SmsCodeScreen()),
-        GetPage(name: '/phone-sign-in-ui', page: () => const PhoneSignInUIScreen()),
+        GetPage(
+            name: '/phone-sign-in-ui', page: () => const PhoneSignInUIScreen()),
         GetPage(name: '/sms-code-ui', page: () => const SmsCodeUIScreen()),
         GetPage(name: '/help', page: () => const HelpScreen()),
         GetPage(
@@ -207,8 +234,20 @@ class _MainAppState extends State<MainApp> {
         GetPage(name: '/friend-map', page: () => const FriendMapScreen()),
         GetPage(name: '/reminder-edit', page: () => ReminderEditScreen()),
         GetPage(name: RouteNames.report, page: () => ReportScreen()),
-        GetPage(name: '/email-verify', page: () => const EmailVerificationScreen())
+        GetPage(
+            name: '/email-verify', page: () => const EmailVerificationScreen())
       ],
     );
+  }
+}
+
+Future<void> _firebaseMessagingBackgroundHandler(message) async {
+  // If you're going to use other Firebase services in the background, such as Firestore,
+  // make sure you call `initializeApp` before using other Firebase services.
+  // await Firebase.initializeApp();
+
+  // print("---> Handling a background message: ${message.messageId}");
+  if (message.data['type'] == 'chat' && message.data['badge'] != null) {
+    FlutterAppBadger.updateBadgeCount(int.parse(message.data['badge']));
   }
 }
