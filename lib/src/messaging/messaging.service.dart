@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -15,18 +14,25 @@ class MessagingService with FirestoreMixin, DatabaseMixin {
     debugPrint('MessagingService::constructor');
   }
 
+  /// Create or update token info
+  ///
+  /// User may not signed in. That is why we cannot put this code in user model.
   Future<void> updateToken(String token) {
-    return messageTokensCol.doc(token).set({
-      'uid': FirebaseAuth.instance.currentUser?.uid ?? '',
-    }, SetOptions(merge: true));
+    return messageTokensCol.doc(token).set(
+      {
+        'uid': UserService.instance.uid,
+      },
+      SetOptions(merge: true),
+    );
   }
 
+  /// Updates the subscriptions (subscribe or unsubscribe)
   Future<dynamic> updateSubscription(String topic) async {
     List<String> list = UserService.instance.user.topics;
     if (list.contains(topic)) {
-      list.add(topic);
-    } else {
       list.remove(topic);
+    } else {
+      list.add(topic);
     }
 
     await UserService.instance.update(

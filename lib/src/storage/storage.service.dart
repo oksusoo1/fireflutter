@@ -57,7 +57,7 @@ class StorageService {
     final String extension = basename.split('.').last;
 
     final dt = DateFormat('yMMddHHmmss').format(DateTime.now());
-    final uid = UserService.instance.uid!;
+    final uid = UserService.instance.uid;
     final randomString = _getRandomString();
     final filename = "$uid-$dt-$randomString.$extension";
     print('filename; $filename');

@@ -34,7 +34,7 @@ class UserModel {
   /// Returns true if the user has subscribed the topic.
   /// If user subscribed the topic, that topic name will be saved into user meta in backend
   /// And when user profile is loaded, the subscriptions are saved into [subscriptions]
-  bool hasSubscriptions(String topic) {
+  bool hasSubscription(String topic) {
     return topics.contains(topic);
   }
 
