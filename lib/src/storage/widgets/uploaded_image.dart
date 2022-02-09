@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 
 /// UploadedImage
 ///
+/// [url] is always the original image. Not thumbnail image.
+///
 /// When [useThumbnail] is set to true, it will look for thumbnail image, first.
 ///   - and when thumbnail image does not exist, then it will show original image
 ///     and if original image does not exists, then it will display error widget.
