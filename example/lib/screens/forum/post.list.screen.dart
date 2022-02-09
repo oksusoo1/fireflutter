@@ -107,12 +107,14 @@ class _PostListScreenState extends State<PostListScreen> with FirestoreMixin {
       builder: (_) {
         return CommentEditDialog(
           onCancel: Get.back,
+          onError: error,
           onSubmit: (Json form) async {
             try {
               await CommentModel.create(
                 postId: post.id,
                 parentId: comment?.id ?? post.id,
                 content: form['content'],
+                files: form['files'],
               );
               // form.create(postId: post.id, parentId: comment?.id ?? post.id);
               Get.back();
@@ -131,11 +133,14 @@ class _PostListScreenState extends State<PostListScreen> with FirestoreMixin {
       context: context,
       builder: (_) {
         return CommentEditDialog(
+          comment: comment,
           onCancel: Get.back,
+          onError: error,
           onSubmit: (Json form) async {
             try {
               await comment.update(
                 content: form['content'],
+                files: form['files'],
               );
               // form.create(postId: post.id, parentId: comment?.id ?? post.id);
               Get.back();

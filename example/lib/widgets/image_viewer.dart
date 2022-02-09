@@ -43,7 +43,7 @@ class _ImageViewerState extends State<ImageViewer> {
                   heroAttributes: PhotoViewHeroAttributes(tag: widget.files[i]),
                 );
               },
-              loadingBuilder: (context, event) => CircularProgressIndicator(),
+              loadingBuilder: (context, event) => Center(child: CircularProgressIndicator()),
               pageController: _controller,
               onPageChanged: (i) => setState(() => currentIndex = i),
             ),

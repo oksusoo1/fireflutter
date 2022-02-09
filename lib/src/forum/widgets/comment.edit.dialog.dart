@@ -6,10 +6,14 @@ class CommentEditDialog extends StatefulWidget {
     Key? key,
     required this.onCancel,
     required this.onSubmit,
+    required this.onError,
+    this.comment,
   }) : super(key: key);
 
   final Function() onCancel;
   final Function(Json) onSubmit;
+  final Function(dynamic) onError;
+  final CommentModel? comment;
 
   @override
   State<CommentEditDialog> createState() => _CommentEditDialogState();
@@ -17,7 +21,20 @@ class CommentEditDialog extends StatefulWidget {
 
 class _CommentEditDialogState extends State<CommentEditDialog> {
   final content = TextEditingController();
-  final List<String> files = [];
+  List<String> files = [];
+
+  double uploadProgress = 0;
+
+  @override
+  void initState() {
+    super.initState();
+
+    if (widget.comment != null) {
+      content.text = widget.comment!.content;
+      files = widget.comment!.files;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
@@ -30,9 +47,15 @@ class _CommentEditDialogState extends State<CommentEditDialog> {
           ),
           Row(children: [
             FileUploadButton(
-              onUploaded: (url) {},
-              onProgress: (progress) {},
-              onError: (e) {},
+              onUploaded: (url) {
+                files = [...files, url];
+                uploadProgress = 0;
+                if (mounted) setState(() {});
+              },
+              onProgress: (progress) {
+                if (mounted) setState(() => uploadProgress = progress);
+              },
+              onError: widget.onError,
             ),
             Spacer(),
             TextButton(
@@ -42,10 +65,12 @@ class _CommentEditDialogState extends State<CommentEditDialog> {
             TextButton(
               child: const Text('CREATE COMMENT'),
               onPressed: () {
-                widget.onSubmit({'content': content.text});
+                widget.onSubmit({'content': content.text, 'files': files});
               },
             ),
           ]),
+          if (uploadProgress > 0) LinearProgressIndicator(value: uploadProgress),
+          FileListEdit(files: files, onError: widget.onError)
         ],
       ),
     );

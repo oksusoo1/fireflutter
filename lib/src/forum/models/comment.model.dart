@@ -15,6 +15,7 @@ class CommentModel with FirestoreMixin, ForumBase {
     this.deleted = false,
     required this.timestamp,
     required this.data,
+    this.files = const [],
   });
 
   /// data is the document data object.
@@ -34,6 +35,8 @@ class CommentModel with FirestoreMixin, ForumBase {
 
   bool deleted;
 
+  List<String> files;
+
   Timestamp timestamp;
   int depth = 0;
 
@@ -42,8 +45,11 @@ class CommentModel with FirestoreMixin, ForumBase {
     Json data, {
     required String id,
   }) {
+    List<String> _files = data['files'] != null ? new List<String>.from(data['files']) : <String>[];
+
     return CommentModel(
       content: data['content'] ?? '',
+      files: _files,
       id: id,
       postId: data['postId'],
       parentId: data['parentId'],
@@ -77,6 +83,7 @@ class CommentModel with FirestoreMixin, ForumBase {
       'parentId': parentId,
       'content': content,
       'depth': depth,
+      'files': files,
       'uid': uid,
       'deleted': deleted,
       'timestamp': timestamp,
@@ -106,12 +113,14 @@ class CommentModel with FirestoreMixin, ForumBase {
     required String postId,
     required String parentId,
     String content = '',
+    List<String> files = const [],
   }) {
     final _ = CommentModel.empty();
     return _.commentCol.add({
       'postId': postId,
       'parentId': parentId,
       'content': content,
+      'files': files,
       'timestamp': FieldValue.serverTimestamp(),
       'uid': FirebaseAuth.instance.currentUser?.uid ?? '',
     });
@@ -119,10 +128,12 @@ class CommentModel with FirestoreMixin, ForumBase {
 
   Future<void> update({
     required String content,
+    List<String>? files,
   }) {
     if (deleted) throw ERROR_ALREADY_DELETED;
     return commentDoc(id).update({
       'content': content,
+      if (files != null) 'files': files,
       'timestamp': FieldValue.serverTimestamp(),
     });
   }
