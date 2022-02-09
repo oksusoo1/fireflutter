@@ -22,11 +22,17 @@ class MessagingService with FirestoreMixin, DatabaseMixin {
   }
 
   Future<dynamic> updateSubscription(String topic) async {
+    List<String> list = UserService.instance.user.topics;
+    if (list.contains(topic)) {
+      list.add(topic);
+    } else {
+      list.remove(topic);
+    }
+
     await UserService.instance.update(
-        field: 'topics',
-        value: FieldValue.arrayUnion([
-          {topic: true}
-        ]));
+      field: 'topics',
+      value: list,
+    );
     return FirebaseMessaging.instance.subscribeToTopic(topic);
   }
 }

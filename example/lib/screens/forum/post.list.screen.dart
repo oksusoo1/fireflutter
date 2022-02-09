@@ -27,6 +27,11 @@ class _PostListScreenState extends State<PostListScreen> with FirestoreMixin {
       appBar: AppBar(
         title: Text(category),
         actions: [
+          ForumListPushNotificationIcon(
+            category,
+            onError: error,
+            size: 28,
+          ),
           IconButton(
             onPressed: () async {
               newPostId = await app.openPostForm(category: category);
@@ -60,7 +65,9 @@ class _PostListScreenState extends State<PostListScreen> with FirestoreMixin {
               children: [
                 UserFutureDoc(
                   uid: post.uid,
-                  builder: (user) => user.exists ? Text('By: ${user.nickname} ') : Text('NO-USER '),
+                  builder: (user) => user.exists
+                      ? Text('By: ${user.nickname} ')
+                      : Text('NO-USER '),
                 ),
                 ShortDate(post.timestamp.millisecondsSinceEpoch),
               ],
@@ -136,7 +143,8 @@ class _PostListScreenState extends State<PostListScreen> with FirestoreMixin {
               );
               // form.create(postId: post.id, parentId: comment?.id ?? post.id);
               Get.back();
-              alert('Comment updated', 'You have updated the comment successfully');
+              alert('Comment updated',
+                  'You have updated the comment successfully');
             } catch (e) {
               error(e);
             }
