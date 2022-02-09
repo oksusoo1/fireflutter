@@ -1,5 +1,6 @@
 import 'package:extended/extended.dart';
 import 'package:fe/service/app.controller.dart';
+import 'package:fe/widgets/image_viewer.dart';
 import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterfire_ui/firestore.dart';
@@ -86,6 +87,7 @@ class _PostListScreenState extends State<PostListScreen> with FirestoreMixin {
                 onDelete: onDelete,
                 onLike: onLike,
                 onDislike: onDislike,
+                onImageTap: onImageTapped,
               ),
               Divider(color: Colors.red),
               Comment(
@@ -95,6 +97,7 @@ class _PostListScreenState extends State<PostListScreen> with FirestoreMixin {
                 onReport: onReport,
                 onEdit: onEdit,
                 onDelete: onDelete,
+                onImageTap: onImageTapped,
               ),
             ],
           );
@@ -111,12 +114,14 @@ class _PostListScreenState extends State<PostListScreen> with FirestoreMixin {
       builder: (_) {
         return CommentEditDialog(
           onCancel: Get.back,
+          onError: error,
           onSubmit: (Json form) async {
             try {
               await CommentModel.create(
                 postId: post.id,
                 parentId: comment?.id ?? post.id,
                 content: form['content'],
+                files: form['files'],
               );
               // form.create(postId: post.id, parentId: comment?.id ?? post.id);
               Get.back();
@@ -135,11 +140,14 @@ class _PostListScreenState extends State<PostListScreen> with FirestoreMixin {
       context: context,
       builder: (_) {
         return CommentEditDialog(
+          comment: comment,
           onCancel: Get.back,
+          onError: error,
           onSubmit: (Json form) async {
             try {
               await comment.update(
                 content: form['content'],
+                files: form['files'],
               );
               // form.create(postId: post.id, parentId: comment?.id ?? post.id);
               Get.back();
@@ -225,5 +233,9 @@ class _PostListScreenState extends State<PostListScreen> with FirestoreMixin {
     } catch (e) {
       error(e);
     }
+  }
+
+  onImageTapped(int initialIndex, List<String> files) {
+    return Get.dialog(ImageViewer(files, initialIndex: initialIndex));
   }
 }

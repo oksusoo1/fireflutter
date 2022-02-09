@@ -61,7 +61,7 @@ export 'src/forum/widgets/push_notification/forum.list.push_notification.icon.da
 
 export 'src/storage/storage.service.dart';
 export 'src/storage/widgets/file_upload.button.dart';
-export 'src/storage/widgets/file_list.dart';
-export 'src/storage/widgets/file_list.edit.dart';
-export 'src/widgets/short_date.dart';
+export 'src/storage/widgets/image_list.dart';
+export 'src/storage/widgets/image_list.edit.dart';
 export 'src/storage/widgets/uploaded_image.dart';
+export 'src/widgets/short_date.dart';

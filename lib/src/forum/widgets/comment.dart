@@ -1,8 +1,8 @@
 import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
+import '../../../fireflutter.dart';
 
 class Comment extends StatefulWidget {
   Comment({
@@ -13,6 +13,7 @@ class Comment extends StatefulWidget {
     required this.onReport,
     required this.onEdit,
     required this.onDelete,
+    required this.onImageTap,
   }) : super(key: key);
 
   final PostModel post;
@@ -24,6 +25,7 @@ class Comment extends StatefulWidget {
   final Function(CommentModel comment) onEdit;
   final Function(CommentModel comment) onReport;
   final Function(CommentModel comment) onDelete;
+  final Function(int index, List<String> fileList) onImageTap;
 
   @override
   State<Comment> createState() => _CommentState();
@@ -102,6 +104,7 @@ class _CommentState extends State<Comment> with FirestoreMixin {
               children: [
                 UserDoc(uid: comment.uid, builder: (u) => Text('Name: ${u.nickname}')),
                 Text("content: ${comment.displayContent}"),
+                ImageList(files: comment.files, onImageTap: (i) => widget.onImageTap(i, comment.files),),
                 Wrap(
                   children: [
                     ElevatedButton(

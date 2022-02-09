@@ -207,7 +207,7 @@ class _MainAppState extends State<MainApp> {
         GetPage(name: '/friend-map', page: () => const FriendMapScreen()),
         GetPage(name: '/reminder-edit', page: () => ReminderEditScreen()),
         GetPage(name: RouteNames.report, page: () => ReportScreen()),
-        GetPage(name: '/email-verify', page: () => const EmailVerificationScreen())
+        GetPage(name: '/email-verify', page: () => const EmailVerificationScreen()),
       ],
     );
   }
