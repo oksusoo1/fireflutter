@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'dart:math';
 
@@ -57,21 +58,22 @@ class StorageService {
     UploadTask uploadTask = ref.putFile(file);
 
     /// Progress listener
+    StreamSubscription? _sub;
     if (onProgress != null) {
       /// TODO: memory leak here. when it is 100, cancel the listener.
-      uploadTask.snapshotEvents.listen((event) {
+      _sub = uploadTask.snapshotEvents.listen((event) {
         double progress = event.bytesTransferred.toDouble() / event.totalBytes.toDouble();
         onProgress(progress);
       });
+
+      print('_sub ==> ${_sub.toString()}');
     }
 
     /// Wait for upload to finish.
-    await uploadTask;
+    await uploadTask.whenComplete(() => _sub?.cancel());
+    print('_sub ==> ${_sub.toString()}');
 
     return ref.getDownloadURL();
-
-    /// Return uploaded file thumbnail Url.
-    // return generatedThumbnailUrl(filename, 10);
   }
 
   /// Returns url of generated thumbnail.
