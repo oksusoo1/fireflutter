@@ -178,6 +178,18 @@ Table of contents
   - thumbnail folder: /uploads
   - thumbnail convertion type: webp
 
+- Set the storage rules like below;
+```js
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /{allPaths=**} {
+    	allow read: if request.auth!=null || resource.contentType.matches('image/.*');
+      allow write: if request.auth != null;
+    }
+  }
+}
+```
 
 ## Firestore installation
 
@@ -1079,6 +1091,7 @@ when sending push notification fails, see the error messages and remove that tok
 
 
 - Install `Image Resize` extension as described in [Firebase Storage Installation](#firebase-storage-installation).
+- Set the rules in Firebase Storage section as described in [Firebase Storage Installation](#firebase-storage-installation).
 
 
 ## FileUploadButton

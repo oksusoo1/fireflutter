@@ -51,13 +51,14 @@ class StorageService {
     // final String filename = basename.split('.').first;
 
     final dt = DateFormat('yMMddHHmmss').format(DateTime.now());
-    final ref = uploadsFolder.child("$dt$basename");
+    final ref = uploadsFolder.child("$dt-$basename");
 
     /// Upload Task
     UploadTask uploadTask = ref.putFile(file);
 
     /// Progress listener
     if (onProgress != null) {
+      /// TODO: memory leak here. when it is 100, cancel the listener.
       uploadTask.snapshotEvents.listen((event) {
         double progress = event.bytesTransferred.toDouble() / event.totalBytes.toDouble();
         onProgress(progress);
@@ -146,5 +147,19 @@ class StorageService {
     }
     if (prefix != null && prefix.isNotEmpty) t = prefix + t;
     return t;
+  }
+
+  /// Get thumbnail url.
+  ///
+  /// [url] is the original url.
+  /// Refer readme for details.
+  getThumbnailUrl(String url) {
+    String _tempUrl = url;
+    if (_tempUrl.indexOf('?') > 0) {
+      _tempUrl = _tempUrl.split('?').first;
+    }
+    final String basename = _tempUrl.split('/').last;
+    final String filename = basename.split('.').first;
+    return _tempUrl.replaceFirst(basename, '${filename}_200x200.webp') + '?alt=media';
   }
 }

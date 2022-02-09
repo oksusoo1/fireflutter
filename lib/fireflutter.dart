@@ -61,3 +61,4 @@ export 'src/storage/widgets/file_upload.button.dart';
 export 'src/storage/widgets/file_list.dart';
 export 'src/storage/widgets/file_list.edit.dart';
 export 'src/widgets/short_date.dart';
+export 'src/storage/widgets/uploaded_image.dart';
