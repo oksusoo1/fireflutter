@@ -32,6 +32,7 @@ Table of contents
   - [Firebase installation](#firebase-installation)
     - [iOS installation](#ios-installation)
   - [Firebase Realtime Database Installation](#firebase-realtime-database-installation)
+  - [Firebase Storage installation](#firebase-storage-installation)
   - [Firestore installation](#firestore-installation)
     - [Setting admin on firestore security rules](#setting-admin-on-firestore-security-rules)
 - [Sources and packages](#sources-and-packages)
@@ -95,6 +96,11 @@ Table of contents
   - [Post](#post-1)
   - [Comment](#comment)
 - [Push notification](#push-notification)
+- [Fil upload - Firebase Storage](#fil-upload---firebase-storage)
+  - [pickUpload](#pickupload)
+  - [Delete uploaded image](#delete-uploaded-image)
+  - [FileUploadButton](#fileuploadbutton)
+  - [Displaying Uploaded Image](#displaying-uploaded-image)
 
 # TODOs
 
@@ -167,6 +173,42 @@ Table of contents
 ```
 
 
+## Firebase Storage installation
+
+- Install 'Image Resize' firebase extension with the following settings;
+  - thumbnail size: 200x200
+  - delete original image after thumbnail: No
+  - thumbnail folder: /uploads
+  - thumbnail convertion type: webp
+
+- Copy the following rules and paste it into the storage rules section.
+
+```js
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /{allPaths=**} {
+    	allow read: if request.auth!=null || resource.contentType.matches('image/.*');
+      allow create: if willBeMine() && lessThan(10);
+      allow update: if isMine();
+      allow delete: if isMine();
+    }
+  }
+}
+
+function willBeMine() {
+	return request.auth != null && request.resource.metadata.uid == request.auth.uid;
+}
+
+function isMine() {
+	return request.auth != null && resource.metadata.uid == request.auth.uid;
+}
+
+function lessThan(n) {
+	return request.resource.size < n * 1024 * 1024;
+}
+```
+
 ## Firestore installation
 
 - Enable firestore.
@@ -175,6 +217,7 @@ Table of contents
   - To do this, just call `getFirestoreIndexLinks` method and it will print the link on debug console. You just need to click the links.
     - See example of `getFirestoreIndexLinks` in the [example home screen](https://github.com/thruthesky/fireflutter/blob/main/example/lib/screens/home/home.screen.dart).
   - See the [firestore indexes](https://raw.githubusercontent.com/thruthesky/fireflutter/main/firebase/firestore.indexes.json) and if you want to update it manually on your firebase project.
+
 
 
 ### Setting admin on firestore security rules
@@ -1056,6 +1099,54 @@ when user changes devices;
 	- Subscribe all the topics that the user has.
 
 when sending push notification fails, see the error messages and remove that token from the database. so, it won't waste the network bandwidth.
+
+
+
+
+
+
+# Fil upload - Firebase Storage
+
+
+- Install `Image Resize` extension as described in [Firebase Storage Installation](#firebase-storage-installation).
+- Set the rules in Firebase Storage section as described in [Firebase Storage Installation](#firebase-storage-installation).
+
+
+## pickUpload
+
+- `StorageService.instance.pickUpload` will let user to pick an image(or file) and upload it in `uploads` folder in firebase storage.
+
+```dart
+try {
+  String uploadUrl = await StorageService.instance
+      .pickUpload(source: ImageSource.gallery, onProgress: print);
+  alert('Success', 'Image uploaded successfully');
+} catch (e) {
+  error(e);
+}
+```
+
+
+- This will ask user to take a photo from camera or choose a photo from photo library and compress & adjust rotation, then uploads an image into firebase storage. It will generate thumbnail image with `_200x200.webp` suffix.
+
+
+## Delete uploaded image
+
+- `StorageService.instance.delete()` will delete uploaded image and its thumbnail image.
+
+
+## FileUploadButton
+
+- When a user presses upload button, the app will ask to choose image selection method.
+- Then, upload image using `pickUpload` method.
+
+## Displaying Uploaded Image
+
+- `UploadedImage` widget will display the uploaded image.
+  - It will first try to display thumbnail image. if it fails to display thumbnail image,
+    - then, it will try to display original image. If it fails to dsipaly original image, 
+      - then it will display the error widget.
+
 
 
 

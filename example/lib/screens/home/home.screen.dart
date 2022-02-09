@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:extended/extended.dart';
 import 'package:fe/service/app.controller.dart';
 import 'package:fe/service/config.dart';
 import 'package:fe/service/global.keys.dart';
@@ -8,6 +9,8 @@ import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -27,6 +30,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   final nickname = TextEditingController();
+  String uploadUrl = '';
 
   @override
   Widget build(BuildContext context) {
@@ -184,6 +188,53 @@ class _HomeScreenState extends State<HomeScreen> {
                   ElevatedButton(
                     onPressed: () => AppController.of.openForumList(category: 'buyandsell'),
                     child: const Text('Buy & Sell'),
+                  ),
+                ],
+              ),
+              Wrap(
+                children: [
+                  ElevatedButton(
+                    onPressed: () async {
+                      try {
+                        uploadUrl = await StorageService.instance.pickUpload(
+                          source: ImageSource.gallery,
+                          onProgress: print,
+                        );
+                        alert('Success', 'Image uploaded successfully');
+                      } catch (e) {
+                        debugPrint('Upload exception; $e');
+                        error(e);
+                      }
+                    },
+                    child: const Text('Upload Image'),
+                  ),
+                  ElevatedButton(
+                    onPressed: () async {
+                      try {
+                        await StorageService.instance
+                            .ref(uploadUrl)
+                            .updateMetadata(SettableMetadata(customMetadata: {
+                              'updated': 'yes',
+                            }));
+                        alert('Success', 'Uploaded file updated');
+                      } catch (e) {
+                        debugPrint('Update exception; $e');
+                        error(e);
+                      }
+                    },
+                    child: const Text('Update Image'),
+                  ),
+                  ElevatedButton(
+                    onPressed: () async {
+                      try {
+                        await StorageService.instance.delete(uploadUrl);
+                        alert('Success', 'Uploaded file deleted!');
+                      } catch (e) {
+                        debugPrint('Delete exception; $e');
+                        error(e);
+                      }
+                    },
+                    child: const Text('Delete Image'),
                   ),
                 ],
               ),

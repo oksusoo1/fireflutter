@@ -32,7 +32,8 @@ class ProfileScreenState extends State<ProfileScreen> {
             builder: (UserModel u) {
               return FileUploadButton(
                 child: u.photoUrl.isNotEmpty
-                    ? Image.network(u.photoUrl, height: 100, width: 100, fit: BoxFit.cover)
+                    // Image.network(u.photoUrl, height: 100, width: 100, fit: BoxFit.cover)
+                    ? UploadedImage(url: u.photoUrl)
                     : Icon(Icons.person, size: 40),
                 onUploaded: updatePhotoUrl,
                 onProgress: (progress) => setState(() => uploadProgress = progress),
@@ -57,21 +58,6 @@ class ProfileScreenState extends State<ProfileScreen> {
             ],
           ),
           spaceXl,
-          // const Text('Photo Url'),
-          // Row(
-          //   children: [
-          //     Expanded(
-          //       child: TextField(
-          //         controller: photoUrl,
-          //         decoration: const InputDecoration(
-          //           hintText: 'Input photo url',
-          //         ),
-          //         onChanged: updatePhotoUrl,
-          //       ),
-          //     ),
-          //     if (photoUrlLoader) CircularProgressIndicator.adaptive(),
-          //   ],
-          // ),
         ],
       ),
     );
@@ -85,16 +71,18 @@ class ProfileScreenState extends State<ProfileScreen> {
     });
   }
 
-  updatePhotoUrl(t) {
-    // setState(() => photoUrlLoader = true);
-    bounce('photo url', 500, (s) async {
-      final user = UserService.instance.user;
-      /// delete previous profile photo.
+  updatePhotoUrl(t) async {
+    final user = UserService.instance.user;
+    print('photoUrl ===> $t');
+    try {
       if (user.photoUrl.isNotEmpty) {
-        await FileStorageService.instance.delete(user.photoUrl);
+        await StorageService.instance.delete(user.photoUrl);
       }
       await user.updatePhotoUrl(t).catchError(error);
       setState(() => uploadProgress = 0);
-    });
+    } catch (e) {
+      debugPrint('updatePhotoUrl() => StorageService.instance.delete(${user.photoUrl})');
+      error(e);
+    }
   }
 }

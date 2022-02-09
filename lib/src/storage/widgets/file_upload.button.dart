@@ -1,4 +1,4 @@
-import 'package:fireflutter/fireflutter.dart';
+import '../../../fireflutter.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -54,7 +54,7 @@ class FileUploadButton extends StatelessWidget {
 
     try {
       if (re == null) return;
-      String uploadedFileUrl = await FileStorageService.instance.pickUpload(
+      String uploadedFileUrl = await StorageService.instance.pickUpload(
         onProgress: onProgress,
         source: re,
       );

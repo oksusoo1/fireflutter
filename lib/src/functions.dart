@@ -55,6 +55,16 @@ getFirestoreIndexLinks() {
 ///   }, seed: '3 seconds delay');
 /// })
 /// ```
+///
+/// - Example of display loader while saving.
+///
+/// ```dart
+/// setState(() => nicknameLoader = true);
+/// bounce('nickname', 500, (s) async {
+///   await UserService.instance.user.updateNickname(t).catchError(error);
+///   setState(() => nicknameLoader = false);
+/// });
+/// ```
 final Map<String, Timer> debounceTimers = {};
 bounce(
   String debounceId,
@@ -86,4 +96,5 @@ Future<int> waitUntil(bool test(),
   }
   return iterations;
 }
+
 /// EO wait until
