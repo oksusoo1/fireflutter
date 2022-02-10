@@ -24,6 +24,8 @@ class UserService with FirestoreMixin, DatabaseMixin {
 
   /// Returns currently signed in user's uid or empty string.
   String get uid => FirebaseAuth.instance.currentUser?.uid ?? '';
+  String get phoneNumber => currentUser?.phoneNumber ?? '';
+  String get email => currentUser?.email ?? '';
 
   DatabaseReference get _myDoc => FirebaseDatabase.instance.ref('users').child(uid);
 
@@ -74,6 +76,10 @@ class UserService with FirestoreMixin, DatabaseMixin {
         }
       },
     );
+  }
+
+  signOut() {
+    FirebaseAuth.instance.signOut();
   }
 
   /// Update user name of currently login user.

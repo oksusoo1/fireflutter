@@ -10,6 +10,7 @@ class UserModel {
     this.nickname = '',
     this.photoUrl = '',
     this.birthday = '',
+    this.gender = '',
     this.isAdmin = false,
     this.topics = const [],
   });
@@ -25,6 +26,7 @@ class UserModel {
   String nickname;
   String photoUrl;
   String birthday;
+  String gender;
 
   List<String> topics;
 
@@ -46,6 +48,7 @@ class UserModel {
       nickname: data['nickname'] ?? '',
       photoUrl: data['photoUrl'] ?? '',
       birthday: data['birthday'] ?? '',
+      gender: data['gender'] ?? '',
       topics: data['topics'] ?? [],
     );
   }
@@ -56,6 +59,7 @@ class UserModel {
       'nickname': nickname,
       'photoUrl': photoUrl,
       'birthday': birthday,
+      'gender': gender,
     };
   }
 
