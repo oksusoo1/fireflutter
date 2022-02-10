@@ -254,8 +254,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: const Text('User Test'),
                   ),
                   ElevatedButton(
-                    onPressed: testOnReport,
-                    child: const Text('Test on report'),
+                    onPressed: testOnSettings,
+                    child: const Text('Test Settings'),
                   ),
                   ElevatedButton(
                     onPressed: testOnForum,
@@ -335,28 +335,17 @@ class _HomeScreenState extends State<HomeScreen> {
     Get.back();
   }
 
-  testOnReport() async {
-    // final ts = TestService.instance;
-    // final rs = ReportService.instance;
+  testOnSettings() async {
+    final ts = TestService.instance;
+    final user = UserService.instance.user;
 
-    // ts.reset();
-    // await ts.expectSuccess(rs.report(
-    //   target: 'post',
-    //   targetId: '111',
-    //   reporterUid: 'aaa',
-    //   reporterDisplayName: 'User A',
-    //   reporteeUid: 'bbb',
-    //   reporteeDisplayName: 'User B',
-    // ));
+    ts.reset();
+    await ts.expectSuccess(user.updateSettings({
+      'a': 'Apple',
+      'b': 'Banana',
+    }));
 
-    // await ts.expectFailure(rs.report(
-    //   target: 'post',
-    //   targetId: '111',
-    //   reporterUid: 'aaa',
-    //   reporterDisplayName: 'User A',
-    //   reporteeUid: 'bbb',
-    //   reporteeDisplayName: 'User B',
-    // ));
+    print(await user.readSettings());
   }
 
   testOnForum() async {

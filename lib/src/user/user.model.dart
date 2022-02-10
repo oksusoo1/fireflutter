@@ -170,10 +170,10 @@ class UserModel with FirestoreMixin, DatabaseMixin {
     }
   }
 
-  Future<Json> readSettings(Json settings) async {
+  Future<Json> readSettings() async {
     final snapshot = await userSettingsDoc.get();
     if (snapshot.exists) {
-      return snapshot.value as Json;
+      return Map.from(snapshot.value as Json) as Json;
     } else {
       return {} as Json;
     }
