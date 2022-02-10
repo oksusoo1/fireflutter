@@ -30,6 +30,9 @@ class UserService with FirestoreMixin, DatabaseMixin {
   String get phoneNumber => currentUser?.phoneNumber ?? '';
   String get email => currentUser?.email ?? '';
 
+  /// To display email on screen, use this.
+  String get displayEmail => email == '' ? 'NO-EMAIL' : email;
+
   DatabaseReference get _myDoc => FirebaseDatabase.instance.ref('users').child(uid);
 
   StreamSubscription? authSubscription;
@@ -85,19 +88,8 @@ class UserService with FirestoreMixin, DatabaseMixin {
     FirebaseAuth.instance.signOut();
   }
 
-  /// Update user name of currently login user.
-  Future<void> updateNickname(String name) {
-    return update(field: 'nickname', value: name);
-  }
-
-  /// Update photoUrl of currently login user.
-  Future<void> updatePhotoUrl(String url) {
-    return update(field: 'photoUrl', value: url);
-  }
-
-  @Deprecated('Use UserMode.create()')
   Future<void> create() {
-    return _myDoc.set({'timestamp_registered': ServerValue.timestamp});
+    return user.create();
   }
 
   /// Update login user's document on `/users/{userDoc}` in realtime database.
@@ -105,9 +97,20 @@ class UserService with FirestoreMixin, DatabaseMixin {
   /// ```dart
   /// return update(field: 'nickname', value: name);
   /// ```
-  @Deprecated('Use UserMode.update()')
   Future<void> update({required String field, required dynamic value}) {
-    return _myDoc.update({field: value});
+    // return _myDoc.update({field: value});
+    return user.update(field: field, value: value);
+  }
+
+  /// Update user name of currently login user.
+  Future<void> updateNickname(String name) {
+    // return update(field: 'nickname', value: name);
+    return user.updateNickname(name);
+  }
+
+  /// Update photoUrl of currently login user.
+  Future<void> updatePhotoUrl(String url) {
+    return user.updatePhotoUrl(url);
   }
 
   @Deprecated('This is useless method.')
@@ -123,18 +126,18 @@ class UserService with FirestoreMixin, DatabaseMixin {
 
   /// Update wether if the user is an admin or not.
   /// Refer readme for details
-  @Deprecated('Use UserModel.updateAdminStatus()')
   Future<void> updateAdminStatus() async {
-    final DocumentSnapshot doc = await adminsDoc.get();
-    if (doc.exists) {
-      final data = doc.data()! as Map<String, dynamic>;
-      if (data[user.uid] == true) {
-        await update(field: 'isAdmin', value: true);
-        user.isAdmin = true;
-      } else {
-        await update(field: 'isAdmin', value: null);
-        user.isAdmin = false;
-      }
-    }
+    user.updateAdminStatus();
+    // final DocumentSnapshot doc = await adminsDoc.get();
+    // if (doc.exists) {
+    //   final data = doc.data()! as Map<String, dynamic>;
+    //   if (data[user.uid] == true) {
+    //     await update(field: 'isAdmin', value: true);
+    //     user.isAdmin = true;
+    //   } else {
+    //     await update(field: 'isAdmin', value: null);
+    //     user.isAdmin = false;
+    //   }
+    // }
   }
 }
