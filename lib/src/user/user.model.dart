@@ -46,7 +46,8 @@ class UserModel {
       nickname: data['nickname'] ?? '',
       photoUrl: data['photoUrl'] ?? '',
       birthday: data['birthday'] ?? '',
-      topics: data['topics'] ?? [],
+      topics:
+          List<String>.from((data['topics'] ?? []).map((x) => x.toString())),
     );
   }
 

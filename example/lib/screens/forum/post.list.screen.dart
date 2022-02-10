@@ -125,6 +125,9 @@ class _PostListScreenState extends State<PostListScreen> with FirestoreMixin {
               // form.create(postId: post.id, parentId: comment?.id ?? post.id);
               Get.back();
               alert('Comment created', 'Your comment has created successfully');
+
+              // @TODO send push notification on create using "comments_category" topic
+              // MessagingService.instance.sendCommentNotification();
             } catch (e) {
               error(e);
             }

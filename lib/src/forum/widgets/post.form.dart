@@ -6,6 +6,7 @@ class PostForm extends StatefulWidget {
     this.category,
     this.post,
     required this.onCreate,
+    required this.onUpdate,
     required this.onError,
     this.heightBetween = 10.0,
     Key? key,
@@ -16,6 +17,7 @@ class PostForm extends StatefulWidget {
   final double heightBetween;
 
   final Function(String) onCreate;
+  final Function(String) onUpdate;
   final Function(dynamic) onError;
   @override
   State<PostForm> createState() => _PostFormState();
@@ -84,7 +86,7 @@ class _PostFormState extends State<PostForm> {
                         content: content.text,
                         extra: {'files': files},
                       );
-                      widget.onCreate(widget.post!.id);
+                      widget.onUpdate(widget.post!.id);
                     }
                   } catch (e) {
                     widget.onError(e);

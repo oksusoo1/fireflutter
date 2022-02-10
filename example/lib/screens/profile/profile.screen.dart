@@ -13,8 +13,10 @@ class ProfileScreenState extends State<ProfileScreen> {
   bool nicknameLoader = false;
   bool photoUrlLoader = false;
 
-  final nickname = TextEditingController(text: UserService.instance.user.nickname);
-  final photoUrl = TextEditingController(text: UserService.instance.user.photoUrl);
+  final nickname =
+      TextEditingController(text: UserService.instance.user.nickname);
+  final photoUrl =
+      TextEditingController(text: UserService.instance.user.photoUrl);
 
   double uploadProgress = 0;
 
@@ -24,40 +26,48 @@ class ProfileScreenState extends State<ProfileScreen> {
       appBar: AppBar(
         title: const Text('Profile'),
       ),
-      body: PagePadding(
-        vertical: 16,
-        children: [
-          UserDoc(
-            uid: UserService.instance.user.uid,
-            builder: (UserModel u) {
-              return FileUploadButton(
-                child: u.photoUrl.isNotEmpty
-                    ? UploadedImage(url: u.photoUrl)
-                    : Icon(Icons.person, size: 40),
-                onUploaded: updatePhotoUrl,
-                onProgress: (progress) => setState(() => uploadProgress = progress),
-                onError: error,
-              );
-            },
-          ),
-          spaceSm,
-          if (uploadProgress != 0) LinearProgressIndicator(value: uploadProgress),
-          spaceXl,
-          const Text('Nickname'),
-          Row(
-            children: [
-              Expanded(
-                child: TextField(
-                  controller: nickname,
-                  decoration: const InputDecoration(hintText: 'Nickname'),
-                  onChanged: updateNickname,
+      body: SingleChildScrollView(
+        child: PagePadding(
+          vertical: 16,
+          children: [
+            UserDoc(
+              uid: UserService.instance.user.uid,
+              builder: (UserModel u) {
+                return FileUploadButton(
+                  child: u.photoUrl.isNotEmpty
+                      ? UploadedImage(url: u.photoUrl)
+                      : Icon(Icons.person, size: 40),
+                  onUploaded: updatePhotoUrl,
+                  onProgress: (progress) =>
+                      setState(() => uploadProgress = progress),
+                  onError: error,
+                );
+              },
+            ),
+            spaceSm,
+            if (uploadProgress != 0)
+              LinearProgressIndicator(value: uploadProgress),
+            spaceXl,
+            const Text('Nickname'),
+            Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: nickname,
+                    decoration: const InputDecoration(hintText: 'Nickname'),
+                    onChanged: updateNickname,
+                  ),
                 ),
-              ),
-              if (nicknameLoader) CircularProgressIndicator.adaptive(),
-            ],
-          ),
-          spaceXl,
-        ],
+                if (nicknameLoader) CircularProgressIndicator.adaptive(),
+              ],
+            ),
+            spaceSm,
+            UserSubscriptionsList(
+              onError: error,
+            ),
+            spaceXl,
+          ],
+        ),
       ),
     );
   }
@@ -80,7 +90,8 @@ class ProfileScreenState extends State<ProfileScreen> {
       await user.updatePhotoUrl(t).catchError(error);
       setState(() => uploadProgress = 0);
     } catch (e) {
-      debugPrint('updatePhotoUrl() => StorageService.instance.delete(${user.photoUrl})');
+      debugPrint(
+          'updatePhotoUrl() => StorageService.instance.delete(${user.photoUrl})');
       error(e);
     }
   }

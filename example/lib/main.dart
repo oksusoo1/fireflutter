@@ -147,6 +147,7 @@ class _MainAppState extends State<MainApp> {
       onForegroundMessage: (message) {
         // this will triggered while the app is opened
         // If the message has data, then do some extra work based on the data.
+        print(message);
         onMessageOpenedShowMessage(message);
       },
       onMessageOpenedFromTermiated: (message) {
@@ -174,7 +175,7 @@ class _MainAppState extends State<MainApp> {
     // Handle the message here
     // print(message);
     showDialog(
-      context: context,
+      context: Get.context!,
       builder: (c) => AlertDialog(
         title: Text(message.notification!.title ?? ''),
         content: Text(message.notification!.body ?? ''),
