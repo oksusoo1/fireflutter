@@ -56,10 +56,6 @@ class ProfileScreenState extends State<ProfileScreen> {
                 if (nicknameLoader) CircularProgressIndicator.adaptive(),
               ],
             ),
-            spaceSm,
-            UserSubscriptionsList(
-              onError: error,
-            ),
             spaceXl,
           ],
         ),
