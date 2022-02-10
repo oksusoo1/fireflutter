@@ -6,6 +6,9 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../fireflutter.dart';
 
+/// UserService
+///
+/// Refer readme.md for details.
 class UserService with FirestoreMixin, DatabaseMixin {
   static UserService? _instance;
   static UserService get instance {
@@ -24,6 +27,8 @@ class UserService with FirestoreMixin, DatabaseMixin {
 
   /// Returns currently signed in user's uid or empty string.
   String get uid => FirebaseAuth.instance.currentUser?.uid ?? '';
+  String get phoneNumber => currentUser?.phoneNumber ?? '';
+  String get email => currentUser?.email ?? '';
 
   DatabaseReference get _myDoc => FirebaseDatabase.instance.ref('users').child(uid);
 
@@ -76,6 +81,10 @@ class UserService with FirestoreMixin, DatabaseMixin {
     );
   }
 
+  signOut() {
+    FirebaseAuth.instance.signOut();
+  }
+
   /// Update user name of currently login user.
   Future<void> updateNickname(String name) {
     return update(field: 'nickname', value: name);
@@ -86,6 +95,7 @@ class UserService with FirestoreMixin, DatabaseMixin {
     return update(field: 'photoUrl', value: url);
   }
 
+  @Deprecated('Use UserMode.create()')
   Future<void> create() {
     return _myDoc.set({'timestamp_registered': ServerValue.timestamp});
   }
@@ -95,10 +105,12 @@ class UserService with FirestoreMixin, DatabaseMixin {
   /// ```dart
   /// return update(field: 'nickname', value: name);
   /// ```
+  @Deprecated('Use UserMode.update()')
   Future<void> update({required String field, required dynamic value}) {
     return _myDoc.update({field: value});
   }
 
+  @Deprecated('This is useless method.')
   Future<UserModel> get() async {
     final doc = await _myDoc.get();
     if (doc.exists) {
@@ -111,6 +123,7 @@ class UserService with FirestoreMixin, DatabaseMixin {
 
   /// Update wether if the user is an admin or not.
   /// Refer readme for details
+  @Deprecated('Use UserModel.updateAdminStatus()')
   Future<void> updateAdminStatus() async {
     final DocumentSnapshot doc = await adminsDoc.get();
     if (doc.exists) {
