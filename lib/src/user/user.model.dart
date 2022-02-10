@@ -7,6 +7,9 @@ import '../../fireflutter.dart';
 class UserModel {
   UserModel({
     this.uid = '',
+    this.firstName = '',
+    this.middleName = '',
+    this.lastName = '',
     this.nickname = '',
     this.photoUrl = '',
     this.birthday = '',
@@ -23,7 +26,20 @@ class UserModel {
   bool get exists => uid != '';
   bool isAdmin;
 
+  String firstName;
+  String middleName;
+  String lastName;
   String nickname;
+
+  /// Use display name to display user name.
+  String get displayName {
+    if (nickname != '') return nickname;
+    if (firstName != '') return firstName;
+    if (FirebaseAuth.instance.currentUser?.displayName != null)
+      return FirebaseAuth.instance.currentUser!.displayName!;
+    return 'NO-NAME';
+  }
+
   String photoUrl;
   String birthday;
   String gender;
@@ -42,9 +58,13 @@ class UserModel {
 
   factory UserModel.fromJson(dynamic data, String uid) {
     if (data == null) return UserModel();
+
     return UserModel(
       uid: uid,
       isAdmin: data['isAdmin'] ?? false,
+      firstName: data['firstName'] ?? '',
+      middleName: data['middleName'] ?? '',
+      lastName: data['lastName'] ?? '',
       nickname: data['nickname'] ?? '',
       photoUrl: data['photoUrl'] ?? '',
       birthday: data['birthday'] ?? '',
@@ -56,6 +76,9 @@ class UserModel {
   /// Data for updating firestore user document
   Map<String, dynamic> get data {
     return {
+      'firstName': firstName,
+      'middleName': middleName,
+      'lastName': lastName,
       'nickname': nickname,
       'photoUrl': photoUrl,
       'birthday': birthday,
