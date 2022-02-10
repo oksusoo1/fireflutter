@@ -95,6 +95,7 @@ class UserService with FirestoreMixin, DatabaseMixin {
     return update(field: 'photoUrl', value: url);
   }
 
+  @Deprecated('Use UserMode.create()')
   Future<void> create() {
     return _myDoc.set({'timestamp_registered': ServerValue.timestamp});
   }
@@ -104,10 +105,12 @@ class UserService with FirestoreMixin, DatabaseMixin {
   /// ```dart
   /// return update(field: 'nickname', value: name);
   /// ```
+  @Deprecated('Use UserMode.update()')
   Future<void> update({required String field, required dynamic value}) {
     return _myDoc.update({field: value});
   }
 
+  @Deprecated('This is useless method.')
   Future<UserModel> get() async {
     final doc = await _myDoc.get();
     if (doc.exists) {
@@ -120,6 +123,7 @@ class UserService with FirestoreMixin, DatabaseMixin {
 
   /// Update wether if the user is an admin or not.
   /// Refer readme for details
+  @Deprecated('Use UserModel.updateAdminStatus()')
   Future<void> updateAdminStatus() async {
     final DocumentSnapshot doc = await adminsDoc.get();
     if (doc.exists) {
