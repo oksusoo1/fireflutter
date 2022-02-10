@@ -13,10 +13,8 @@ class ProfileScreenState extends State<ProfileScreen> {
   bool nicknameLoader = false;
   bool photoUrlLoader = false;
 
-  final nickname =
-      TextEditingController(text: UserService.instance.user.nickname);
-  final photoUrl =
-      TextEditingController(text: UserService.instance.user.photoUrl);
+  final nickname = TextEditingController(text: UserService.instance.user.nickname);
+  final photoUrl = TextEditingController(text: UserService.instance.user.photoUrl);
 
   double uploadProgress = 0;
 
@@ -30,23 +28,20 @@ class ProfileScreenState extends State<ProfileScreen> {
         child: PagePadding(
           vertical: 16,
           children: [
-            UserDoc(
-              uid: UserService.instance.user.uid,
+            MyDoc(
               builder: (UserModel u) {
                 return FileUploadButton(
                   child: u.photoUrl.isNotEmpty
                       ? UploadedImage(url: u.photoUrl)
                       : Icon(Icons.person, size: 40),
                   onUploaded: updatePhotoUrl,
-                  onProgress: (progress) =>
-                      setState(() => uploadProgress = progress),
+                  onProgress: (progress) => setState(() => uploadProgress = progress),
                   onError: error,
                 );
               },
             ),
             spaceSm,
-            if (uploadProgress != 0)
-              LinearProgressIndicator(value: uploadProgress),
+            if (uploadProgress != 0) LinearProgressIndicator(value: uploadProgress),
             spaceXl,
             const Text('Nickname'),
             Row(
@@ -90,8 +85,7 @@ class ProfileScreenState extends State<ProfileScreen> {
       await user.updatePhotoUrl(t).catchError(error);
       setState(() => uploadProgress = 0);
     } catch (e) {
-      debugPrint(
-          'updatePhotoUrl() => StorageService.instance.delete(${user.photoUrl})');
+      debugPrint('updatePhotoUrl() => StorageService.instance.delete(${user.photoUrl})');
       error(e);
     }
   }

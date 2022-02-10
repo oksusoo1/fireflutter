@@ -8,7 +8,7 @@ export 'src/auth/phone/sms_code_input.dart';
 
 export 'src/user/user.model.dart';
 export 'src/user/user.service.dart';
-export 'src/user/auth/user.doc.dart';
+export 'src/user/auth/my.doc.dart';
 export 'src/user/auth/user.future.doc.dart';
 export 'src/user/auth/auth_state.dart';
 export 'src/user/widget/user.subscription.list.dart';

@@ -1,10 +1,9 @@
-import 'dart:async';
-
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import '../../../fireflutter.dart';
 
 /// UserDoc
-/// This does not use StreamBuilder since it flashes too much.
+///
 class UserDoc extends StatefulWidget {
   const UserDoc({required this.uid, required this.builder, Key? key}) : super(key: key);
   final String uid;
@@ -17,20 +16,34 @@ class UserDoc extends StatefulWidget {
 class _UserDocState extends State<UserDoc> with DatabaseMixin {
   UserModel? user;
 
-  // ignore: cancel_subscriptions
-  late StreamSubscription sub;
-
   @override
   void initState() {
     super.initState();
 
-    sub = UserService.instance.changes.listen((v) => setState(() => user = v));
-  }
+    UserService.instance.getOtherUserDoc(widget.uid).then((v) => user = v);
+    () async {
+      try {
+        final event = await userDoc(widget.uid).get();
 
-  @override
-  void dispose() {
-    sub.cancel();
-    super.dispose();
+        if (event.exists) {
+          user = UserModel.fromJson(event.value, event.key!);
+        } else {
+          user = UserModel();
+        }
+        setState(() {});
+      } on FirebaseException catch (e) {
+        if (e.code == 'permission-denied') {
+          // If user document does not exists, it comes here with the follow error;
+          // [firebase_database/permission-denied] Client doesn't have permission to access the desired data.
+          // debugPrint(e.toString());
+          setState(() => user = UserModel());
+        } else {
+          rethrow;
+        }
+      } catch (e) {
+        rethrow;
+      }
+    }();
   }
 
   @override

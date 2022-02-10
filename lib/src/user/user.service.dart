@@ -148,4 +148,40 @@ class UserService with FirestoreMixin, DatabaseMixin {
     //   }
     // }
   }
+
+  /// Caches other user's profile data to display.
+  ///
+  /// See readme for details.
+  Map<String, UserModel> others = {};
+  Future<UserModel> getOtherUserDoc(String uid) async {
+    if (others[uid] != null) {
+      print('--> reuse uid; $uid');
+      return others[uid]!;
+    }
+    UserModel other;
+    try {
+      final event = await userDoc(uid).get();
+
+      if (event.exists) {
+        other = UserModel.fromJson(event.value, event.key!);
+      } else {
+        other = UserModel();
+      }
+    } on FirebaseException catch (e) {
+      debugPrint('------------> getOtherUserDoc causes an Exception; $e');
+      if (e.code == 'permission-denied') {
+        // If user document does not exists, it comes here with the follow error;
+        // [firebase_database/permission-denied] Client doesn't have permission to access the desired data.
+        // debugPrint(e.toString());
+        other = UserModel();
+      } else {
+        other = UserModel();
+      }
+    } catch (e) {
+      debugPrint('------------> getOtherUserDoc causes an Exception; $e');
+      other = UserModel();
+    }
+    others[uid] = other;
+    return others[uid]!;
+  }
 }

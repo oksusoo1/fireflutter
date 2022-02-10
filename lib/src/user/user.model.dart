@@ -160,4 +160,22 @@ class UserModel with FirestoreMixin, DatabaseMixin {
       }
     }
   }
+
+  Future<void> updateSettings(Json settings) async {
+    final snapshot = await userSettingsDoc.get();
+    if (snapshot.exists) {
+      return userSettingsDoc.update(settings);
+    } else {
+      return userSettingsDoc.set(settings);
+    }
+  }
+
+  Future<Json> readSettings(Json settings) async {
+    final snapshot = await userSettingsDoc.get();
+    if (snapshot.exists) {
+      return snapshot.value as Json;
+    } else {
+      return {} as Json;
+    }
+  }
 }
