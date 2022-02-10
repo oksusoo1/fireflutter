@@ -40,6 +40,7 @@ Table of contents
 - [User](#user)
   - [User installation](#user-installation)
   - [User data](#user-data)
+  - [UserService](#userservice)
   - [Test users](#test-users)
   - [Phone number sign-in](#phone-number-sign-in)
   - [Email authentication under phone sign-in](#email-authentication-under-phone-sign-in)
@@ -269,9 +270,14 @@ function lessThan(n) {
 
 ## User data
 
-- User email and phone number are saved in firebase auth.
+- User email and phone number are saved in firebase auth. So, use `UserService.instance.email` or `UserService.instance.phoneNumber` to get email or phone number.
 - Other user properties are saved in `/users` inside realtime database.
 - User information would be displayed as extra information on posts, comments, public profiles, and so on. Realtime database costs by GB download that is cheap enough to use it as normalized.
+
+
+## UserService
+
+- The reason why we need `UserService` is to hold login user's `UserModel` and update it on user document's changes.
 
 
 ## Test users
