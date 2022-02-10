@@ -30,6 +30,7 @@ class UserService with FirestoreMixin, DatabaseMixin {
   String get phoneNumber => currentUser?.phoneNumber ?? '';
   String get email => currentUser?.email ?? '';
 
+  /// To display email on screen, use this.
   String get displayEmail => email == '' ? 'NO-EMAIL' : email;
 
   DatabaseReference get _myDoc => FirebaseDatabase.instance.ref('users').child(uid);
@@ -87,17 +88,6 @@ class UserService with FirestoreMixin, DatabaseMixin {
     FirebaseAuth.instance.signOut();
   }
 
-  /// Update user name of currently login user.
-  Future<void> updateNickname(String name) {
-    // return update(field: 'nickname', value: name);
-    return user.updateNickname(name);
-  }
-
-  /// Update photoUrl of currently login user.
-  Future<void> updatePhotoUrl(String url) {
-    return user.updatePhotoUrl(url);
-  }
-
   Future<void> create() {
     return user.create();
   }
@@ -110,6 +100,17 @@ class UserService with FirestoreMixin, DatabaseMixin {
   Future<void> update({required String field, required dynamic value}) {
     // return _myDoc.update({field: value});
     return user.update(field: field, value: value);
+  }
+
+  /// Update user name of currently login user.
+  Future<void> updateNickname(String name) {
+    // return update(field: 'nickname', value: name);
+    return user.updateNickname(name);
+  }
+
+  /// Update photoUrl of currently login user.
+  Future<void> updatePhotoUrl(String url) {
+    return user.updatePhotoUrl(url);
   }
 
   @Deprecated('This is useless method.')

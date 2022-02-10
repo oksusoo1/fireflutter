@@ -14,7 +14,7 @@ class UserModel with FirestoreMixin, DatabaseMixin {
     this.lastName = '',
     this.nickname = '',
     this.photoUrl = '',
-    this.birthday = '',
+    this.birthday = 0,
     this.gender = '',
     this.isAdmin = false,
     this.topics = const [],
@@ -43,7 +43,7 @@ class UserModel with FirestoreMixin, DatabaseMixin {
   }
 
   String photoUrl;
-  String birthday;
+  int birthday;
   String gender;
 
   List<String> topics;
@@ -72,7 +72,7 @@ class UserModel with FirestoreMixin, DatabaseMixin {
       lastName: data['lastName'] ?? '',
       nickname: data['nickname'] ?? '',
       photoUrl: data['photoUrl'] ?? '',
-      birthday: data['birthday'] ?? '',
+      birthday: data['birthday'] ?? 0,
       gender: data['gender'] ?? '',
       topics: data['topics'] ?? [],
     );
@@ -104,6 +104,20 @@ class UserModel with FirestoreMixin, DatabaseMixin {
     return '''UserModel($map)''';
   }
 
+  ///
+  Future<void> create() {
+    return _myDoc.set({'timestamp_registered': ServerValue.timestamp});
+  }
+
+  /// Update login user's document on `/users/{userDoc}` in realtime database.
+  ///
+  /// ```dart
+  /// return update(field: 'nickname', value: name);
+  /// ```
+  Future<void> update({required String field, required dynamic value}) {
+    return _myDoc.update({field: value});
+  }
+
   /// Update nickname
   ///
   /// Update nickname and update its member variable.
@@ -121,18 +135,13 @@ class UserModel with FirestoreMixin, DatabaseMixin {
     return update(field: 'photoUrl', value: url);
   }
 
-  ///
-  Future<void> create() {
-    return _myDoc.set({'timestamp_registered': ServerValue.timestamp});
+  Future<void> updateGender(String gender) {
+    assert(gender == 'M' || gender == 'F');
+    return update(field: 'gender', value: gender);
   }
 
-  /// Update login user's document on `/users/{userDoc}` in realtime database.
-  ///
-  /// ```dart
-  /// return update(field: 'nickname', value: name);
-  /// ```
-  Future<void> update({required String field, required dynamic value}) {
-    return _myDoc.update({field: value});
+  Future<void> updateBirthday(int birthday) {
+    return update(field: 'birthday', value: birthday);
   }
 
   /// Update wether if the user is an admin or not.
