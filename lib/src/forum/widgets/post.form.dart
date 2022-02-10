@@ -70,7 +70,7 @@ class _PostFormState extends State<PostForm> {
             ElevatedButton(
                 onPressed: () async {
                   try {
-                    if (widget.category != null) {
+                    if (widget.category != null && widget.category!.isNotEmpty) {
                       final ref = await PostModel().create(
                         category: widget.category!,
                         title: title.text,

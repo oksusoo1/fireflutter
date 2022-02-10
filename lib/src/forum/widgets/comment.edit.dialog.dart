@@ -63,7 +63,7 @@ class _CommentEditDialogState extends State<CommentEditDialog> {
               onPressed: widget.onCancel,
             ),
             TextButton(
-              child: const Text('CREATE COMMENT'),
+              child: const Text('SUBMIT'),
               onPressed: () {
                 widget.onSubmit({'content': content.text, 'files': files});
               },
