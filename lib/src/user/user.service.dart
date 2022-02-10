@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:rxdart/subjects.dart';
 import '../../fireflutter.dart';
 
 /// UserService
@@ -38,6 +38,10 @@ class UserService with FirestoreMixin, DatabaseMixin {
   StreamSubscription? authSubscription;
   StreamSubscription? userSubscription;
 
+  /// This event will be posted whenever user document changes.
+  // ignore: close_sinks
+  BehaviorSubject<UserModel> changes = BehaviorSubject.seeded(UserModel());
+
   /// User auth changes
   ///
   /// Warning! When user sign-out and sign-in quickly, it is expected
@@ -58,13 +62,16 @@ class UserService with FirestoreMixin, DatabaseMixin {
     authSubscription = FirebaseAuth.instance.authStateChanges().listen(
       (_user) async {
         if (_user == null) {
-          print('User signed-out');
+          debugPrint('User signed-out');
           user = UserModel();
+          changes.add(user);
         } else {
           if (_user.isAnonymous) {
             /// Note, anonymous sigin-in is not supported by fireflutter.
-            print('User sign-in as Anonymous;');
+            debugPrint(
+                'User sign-in as Anonymous; Warning! Fireflutter does not user anonymous account.');
             user = UserModel();
+            changes.add(user);
           } else {
             userSubscription?.cancel();
             final doc = userDoc(_user.uid);
@@ -74,6 +81,7 @@ class UserService with FirestoreMixin, DatabaseMixin {
                 create();
               } else {
                 user = UserModel.fromJson(event.snapshot.value, _user.uid);
+                changes.add(user);
               }
             }, onError: (e) {
               print('UserDoc listening error; $e');
@@ -139,5 +147,41 @@ class UserService with FirestoreMixin, DatabaseMixin {
     //     user.isAdmin = false;
     //   }
     // }
+  }
+
+  /// Caches other user's profile data to display.
+  ///
+  /// See readme for details.
+  Map<String, UserModel> others = {};
+  Future<UserModel> getOtherUserDoc(String uid) async {
+    if (others[uid] != null) {
+      print('--> reuse uid; $uid');
+      return others[uid]!;
+    }
+    UserModel other;
+    try {
+      final event = await userDoc(uid).get();
+
+      if (event.exists) {
+        other = UserModel.fromJson(event.value, event.key!);
+      } else {
+        other = UserModel();
+      }
+    } on FirebaseException catch (e) {
+      debugPrint('------------> getOtherUserDoc causes an Exception; $e');
+      if (e.code == 'permission-denied') {
+        // If user document does not exists, it comes here with the follow error;
+        // [firebase_database/permission-denied] Client doesn't have permission to access the desired data.
+        // debugPrint(e.toString());
+        other = UserModel();
+      } else {
+        other = UserModel();
+      }
+    } catch (e) {
+      debugPrint('------------> getOtherUserDoc causes an Exception; $e');
+      other = UserModel();
+    }
+    others[uid] = other;
+    return others[uid]!;
   }
 }

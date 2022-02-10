@@ -63,11 +63,9 @@ class _PostListScreenState extends State<PostListScreen> with FirestoreMixin {
             title: Text(post.displayTitle),
             subtitle: Row(
               children: [
-                UserFutureDoc(
+                UserDoc(
                   uid: post.uid,
-                  builder: (user) => user.exists
-                      ? Text('By: ${user.nickname} ')
-                      : Text('NO-USER '),
+                  builder: (user) => user.exists ? Text('By: ${user.nickname} ') : Text('NO-USER '),
                 ),
                 ShortDate(post.timestamp.millisecondsSinceEpoch),
               ],
@@ -153,8 +151,7 @@ class _PostListScreenState extends State<PostListScreen> with FirestoreMixin {
               );
               // form.create(postId: post.id, parentId: comment?.id ?? post.id);
               Get.back();
-              alert('Comment updated',
-                  'You have updated the comment successfully');
+              alert('Comment updated', 'You have updated the comment successfully');
             } catch (e) {
               error(e);
             }

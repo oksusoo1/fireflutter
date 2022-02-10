@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:extended/extended.dart';
 import 'package:fe/service/app.controller.dart';
@@ -56,8 +55,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           'You have logged in as ${user.email ?? user.phoneNumber}',
                         ),
                         Text('User Email: ${user.email}'),
-                        UserDoc(
-                          uid: user.uid,
+                        MyDoc(
                           builder: (UserModel u) {
                             return Wrap(
                               children: [
@@ -68,19 +66,17 @@ class _HomeScreenState extends State<HomeScreen> {
                           },
                         ),
                         Text('UID: ${FirebaseAuth.instance.currentUser?.uid}'),
-                        UserDoc(
-                            uid: FirebaseAuth.instance.currentUser?.uid ?? '',
-                            builder: (_user) {
-                              if (_user.isAdmin)
-                                return const Text(
-                                  'You are an admin',
-                                  style: TextStyle(
-                                    color: Colors.red,
-                                  ),
-                                );
-                              else
-                                return SizedBox();
-                            }),
+                        MyDoc(builder: (_user) {
+                          if (_user.isAdmin)
+                            return const Text(
+                              'You are an admin',
+                              style: TextStyle(
+                                color: Colors.red,
+                              ),
+                            );
+                          else
+                            return SizedBox();
+                        }),
                         Wrap(
                           children: [
                             const EmailButton(),
@@ -137,9 +133,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               Wrap(
                 children: [
-                  ElevatedButton(
-                      onPressed: () => Get.toNamed('/help'),
-                      child: const Text('Help')),
+                  ElevatedButton(onPressed: () => Get.toNamed('/help'), child: const Text('Help')),
                   ElevatedButton(
                     onPressed: () => Get.toNamed('/chat-rooms-screen'),
                     child: const Text('Chat Room List'),
@@ -161,8 +155,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       onPressed: () async {
                         for (int i = 0; i < 10; i++) {
                           setState(() {});
-                          await Future.delayed(
-                              const Duration(milliseconds: 500));
+                          await Future.delayed(const Duration(milliseconds: 500));
                         }
                       },
                       child: const Text('setState() 10 times')),
@@ -183,8 +176,7 @@ class _HomeScreenState extends State<HomeScreen> {
               Wrap(
                 children: [
                   ElevatedButton(
-                    onPressed: () =>
-                        AppController.of.openForumList(category: 'qna'),
+                    onPressed: () => AppController.of.openForumList(category: 'qna'),
                     child: const Text('QnA'),
                   ),
                   // if (Platform.isAndroid)
@@ -200,13 +192,11 @@ class _HomeScreenState extends State<HomeScreen> {
                   //     child: const Text('Test QnA Notification'),
                   //   ),
                   ElevatedButton(
-                    onPressed: () =>
-                        AppController.of.openForumList(category: 'discussion'),
+                    onPressed: () => AppController.of.openForumList(category: 'discussion'),
                     child: const Text('Discussion'),
                   ),
                   ElevatedButton(
-                    onPressed: () =>
-                        AppController.of.openForumList(category: 'buyandsell'),
+                    onPressed: () => AppController.of.openForumList(category: 'buyandsell'),
                     child: const Text('Buy & Sell'),
                   ),
                 ],
@@ -307,8 +297,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
     // openProfile() throws an error if user is not signed in.
     await waitUntil(() => UserService.instance.user.signedOut);
-    await ts.expectFailure(
-        AppController.of.openProfile(), "sign in before open profile screen.");
+    await ts.expectFailure(AppController.of.openProfile(), "sign in before open profile screen.");
 
     /// user signed in
     await FirebaseAuth.instance.signInWithEmailAndPassword(

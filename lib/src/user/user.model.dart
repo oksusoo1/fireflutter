@@ -34,6 +34,7 @@ class UserModel with FirestoreMixin, DatabaseMixin {
   String nickname;
 
   /// Use display name to display user name.
+  /// Don't confuse the displayName of FirebaseAuth.
   String get displayName {
     if (nickname != '') return nickname;
     if (firstName != '') return firstName;
@@ -52,8 +53,7 @@ class UserModel with FirestoreMixin, DatabaseMixin {
   bool get signedOut => signedIn == false;
 
   ///
-  DatabaseReference get _myDoc =>
-      FirebaseDatabase.instance.ref('users').child(uid);
+  DatabaseReference get _myDoc => FirebaseDatabase.instance.ref('users').child(uid);
 
   /// Returns true if the user has subscribed the topic.
   /// If user subscribed the topic, that topic name will be saved into user meta in backend
@@ -73,8 +73,7 @@ class UserModel with FirestoreMixin, DatabaseMixin {
       lastName: data['lastName'] ?? '',
       nickname: data['nickname'] ?? '',
       photoUrl: data['photoUrl'] ?? '',
-      topics:
-          List<String>.from((data['topics'] ?? []).map((x) => x.toString())),
+      topics: List<String>.from((data['topics'] ?? []).map((x) => x.toString())),
       birthday: data['birthday'] ?? 0,
       gender: data['gender'] ?? '',
     );
@@ -159,6 +158,24 @@ class UserModel with FirestoreMixin, DatabaseMixin {
         await update(field: 'isAdmin', value: null);
         isAdmin = false;
       }
+    }
+  }
+
+  Future<void> updateSettings(Json settings) async {
+    final snapshot = await userSettingsDoc.get();
+    if (snapshot.exists) {
+      return userSettingsDoc.update(settings);
+    } else {
+      return userSettingsDoc.set(settings);
+    }
+  }
+
+  Future<Json> readSettings(Json settings) async {
+    final snapshot = await userSettingsDoc.get();
+    if (snapshot.exists) {
+      return snapshot.value as Json;
+    } else {
+      return {} as Json;
     }
   }
 }

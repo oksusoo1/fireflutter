@@ -39,7 +39,7 @@ Table of contents
 - [Coding Guideline](#coding-guideline)
 - [User](#user)
   - [User installation](#user-installation)
-  - [User data](#user-data)
+  - [User data and user profile](#user-data-and-user-profile)
   - [UserService](#userservice)
   - [Test users](#test-users)
   - [Phone number sign-in](#phone-number-sign-in)
@@ -52,8 +52,9 @@ Table of contents
   - [User presence overview](#user-presence-overview)
   - [User Presence Installation](#user-presence-installation)
   - [User presence logic](#user-presence-logic)
-- [User profile](#user-profile)
   - [Displaying user profile](#displaying-user-profile)
+    - [MyDoc](#mydoc)
+    - [UserDoc](#userdoc)
   - [User Auth State](#user-auth-state)
 - [Chat](#chat-1)
   - [Chat todo;](#chat-todo)
@@ -177,10 +178,19 @@ Table of contents
 ## Firebase Storage installation
 
 - Install 'Image Resize' firebase extension with the following settings;
-  - thumbnail size: 200x200
-  - delete original image after thumbnail: No
-  - thumbnail folder: /uploads
-  - thumbnail convertion type: webp
+  - Upgrade billing plan
+  - This extension will use cloud function. It will install `generateResizedImage` function.
+  - Cloud functions location: Choose the same location as your project.
+  - Cloud Storage bucket for images: don't touch(or use it as it is).
+  - Sizes of resized images: 200x200
+  - Deletion of original file: No
+  - Cloud Storage path for resized images: leave it empty.
+  - Paths that contain images you want to resize: /uploads
+  - List of absolute paths not included for resized images: leave it empty.
+  - Cache-Control header for resized images: max-age=86400
+  - Convert image to preferred types: webp
+  Note, that you can see the configuration in firebase extensions menu and reconfigure it.
+  Note, that you can see the location in firebase cloud functions menu.
 
 - Copy the following rules and paste it into the storage rules section.
 
@@ -219,6 +229,8 @@ function lessThan(n) {
     - See example of `getFirestoreIndexLinks` in the [example home screen](https://github.com/thruthesky/fireflutter/blob/main/example/lib/screens/home/home.screen.dart).
   - See the [firestore indexes](https://raw.githubusercontent.com/thruthesky/fireflutter/main/firebase/firestore.indexes.json) and if you want to update it manually on your firebase project.
 
+- We use Firestore only for `Chat` and `Forum` features since they needs more support on query and search functionalities.
+  - All other features should go to realtime database.
 
 
 ### Setting admin on firestore security rules
@@ -268,11 +280,25 @@ function lessThan(n) {
 ```
 
 
-## User data
+## User data and user profile
 
 - User email and phone number are saved in firebase auth. So, use `UserService.instance.email` or `UserService.instance.phoneNumber` to get email or phone number.
-- Other user properties are saved in `/users` inside realtime database.
-- User information would be displayed as extra information on posts, comments, public profiles, and so on. Realtime database costs by GB download that is cheap enough to use it as normalized.
+- Other user properties (like name, photo url, birthday, etc) are saved in `/users` inside realtime database.
+
+- Many apps share user name and photo. For instance, when a user chat to the other user, they shoud know each other's name and photo. Or on post list screen, there should be author name and photo on each post or comment.
+  - User information would be displayed as extra information on chats, posts, comments, public profiles, and so on. Realtime database costs by GB download that is cheap enough to use it as normalized. But it would cost a lot how you use it.
+
+- Warning, we do not denormalize user data. That means, user name will not be copied into other documents. Instead, the app will simply read `/users/<uid>` document whenever user data is needed. In this way, data integrity is guranteed. But often, more data will be downloaded and it will cost more money.
+  - So, keep `/users/<uid>` slim. Try to keep only the following fields.
+    - `birthday`
+    - `gender`
+    - `firstName`, `middleName`, `lastName`, `nickname`
+    - `photoUrl`
+    - `timestamp_registered`
+    And think over again if it is really needed when you are trying to add another field.
+  - Don't put user's setting data in `/users/<uid>`. Use may use `UserModel.updateSettings()` and `UserModel.readSettings()` to manage user's setting.
+
+- Use `MyDoc` to display my profile data.
 
 
 ## UserService
@@ -445,26 +471,22 @@ UserPresence(
 - When app is closed, the user will be offline.
 
 
-
-# User profile
-
-- Many apps share user name and photo. For instance, when a user chat to the other user, they shoud know each other's name and photo.
-
-- User name and photo are saved in `/user/<uid>` document of Firestore.
-
 ## Displaying user profile
 
-- To display a user profile(name or photo), Use `UserDoc` widget with the user's uid and you can build a widget based on the user profile.
-  - The builder of `UserDoc` comes from a stream builder, which means when the user profile document changes, it will rebuild the builder widget to update realtime.
+### MyDoc
 
+- To display a user profile(name or photo), Use `MyDoc` widget that has builder function to build a widget based on the user profile data.
+
+- For the efficiency, `MyDoc` does not listen to the realtime database document change on every instance, since reading the document over and over again may cost a lot of money if it is used in many places.
+  - It listens `UserService.instance.changes` event which only read one time on every user document change.
+  - By doing this, `MyDoc` may be used for the replacement of state management.
 
 ```dart
-UserDoc(
-  uid: user.uid,
+MyDoc(
   builder: (UserModel u) {
     return Row(
       children: [
-        Text('name: ${u.name}'),
+        Text('name: ${u.displayName}'),
         Text(', profile: ${u.photoUrl}'),
       ],
     );
@@ -472,18 +494,23 @@ UserDoc(
 ),
 ```
 
-- Some use cases of `UserDoc`
-  - When user had signed-in Firebase, `auth changes` event happens immediately while the user's document is not available in `UserService.instance.user`
+- Some use cases of `MyDoc`
+  - When user had signed-in Firebase, `auth changes` event happens immediately while the user's document is not available in `UserService.instance`
     - For instance, when app restart, the user signs in to `Firebase Auth` very quickly, and then, `UserService` begins to work to get user document into `UserService.instance.user`. So, user document is not available at the time of user sign in.
-    - To know if the user is admin or not, user document must be downloaded from firestore.
-    - When user document had been downloaded, `UserDoc` will update its child widgets. So, `UserDoc` is a perfect solution to work based on user document.
-    - `UserDoc` will update its child widget on any changes of the user doc.
+    But it is safe to use `MyDoc` since it has default empty values until it reads the document for the first time after sign-in.
+    - To know if the user is admin or not, user document must be downloaded from database.
+    - When user document will updated on every document change, and `MyDoc` will update its child widgets. So, `MyDoc` is a perfect solution to use as state manage based on user data change.
 
-- To display a user profile, but only one time build (not automatic rebuild), use `UserFutureDoc` widget. The builder of `UserFutureDoc` is based on future builder. So, it does not rebuild even if the user profile document changes.
-  - This widget may be used for forms. Like display user profile data in input fields.
+### UserDoc
+ 
+
+- To display a other user profile, use `UserDoc` widget. `UserDoc` does not listen to the document changes. It is one time read. And it is one time read only for all the app session. That means, it is caching user document and when `UserDoc` is re-used in other places, it does not read the user data again. In this way, it can save money.
+  - For instance, when user scroll up and down on post list screen, the app has to read and download user document over again for the same post since flutter removes widget if it is invisible in list view. With `UserDoc`, you can display other user's data without worry of cost.
+
+- `UserDoc` may be used for displaying signed-in user. Especially for forms.
 
 ```dart
-UserFutureDoc(
+UserDoc(
   uid: user.uid,
   builder: (UserModel u) {
     return Row(
@@ -709,6 +736,7 @@ controller.state.setState(() {});
 - `B` opens chat room.
 - `B` click the link of lat & lon to open `Friend Map`.
 - the app navigates.
+
 
 ### FriendMap informing logic
 
@@ -1068,8 +1096,15 @@ terms;
 
 conditions;
 	- There is no more subscribing for all new posts and all new comments.
-		Users must enable or disable indivisually.
-		User can also enable all or disable all by one button touch in the setting screen.
+		Users must enable or disable each category indivisually.
+
+
+ui;
+  - User can also enable all or disable all by one button touch in the setting screen.
+  - User can enable or disable selectively in settings screen.
+  - See https://github.com/withcenter/wonderfulkorea/issues/70 for ui design;
+
+
 
 how;
 	- When a user subscribed 'comments_qna' and the user also enabled 'comment notification',

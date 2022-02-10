@@ -40,13 +40,13 @@ class ReportManagement extends StatelessWidget with FirestoreMixin {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text('Source: ' + report.target),
-              UserFutureDoc(
+              UserDoc(
                 uid: report.reporterUid,
                 builder: (user) {
                   return Text('Reporter: ' + (user.nickname != '' ? user.nickname : 'no_name'));
                 },
               ),
-              UserFutureDoc(
+              UserDoc(
                 uid: report.reporteeUid,
                 builder: (user) {
                   return Text('Reportee: ' + user.nickname);
