@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:rxdart/subjects.dart';
 import '../../fireflutter.dart';
 
 /// UserService
@@ -38,6 +38,10 @@ class UserService with FirestoreMixin, DatabaseMixin {
   StreamSubscription? authSubscription;
   StreamSubscription? userSubscription;
 
+  /// This event will be posted whenever user document changes.
+  // ignore: close_sinks
+  BehaviorSubject<UserModel> changes = BehaviorSubject.seeded(UserModel());
+
   /// User auth changes
   ///
   /// Warning! When user sign-out and sign-in quickly, it is expected
@@ -58,13 +62,16 @@ class UserService with FirestoreMixin, DatabaseMixin {
     authSubscription = FirebaseAuth.instance.authStateChanges().listen(
       (_user) async {
         if (_user == null) {
-          print('User signed-out');
+          debugPrint('User signed-out');
           user = UserModel();
+          changes.add(user);
         } else {
           if (_user.isAnonymous) {
             /// Note, anonymous sigin-in is not supported by fireflutter.
-            print('User sign-in as Anonymous;');
+            debugPrint(
+                'User sign-in as Anonymous; Warning! Fireflutter does not user anonymous account.');
             user = UserModel();
+            changes.add(user);
           } else {
             userSubscription?.cancel();
             final doc = userDoc(_user.uid);
@@ -74,6 +81,7 @@ class UserService with FirestoreMixin, DatabaseMixin {
                 create();
               } else {
                 user = UserModel.fromJson(event.snapshot.value, _user.uid);
+                changes.add(user);
               }
             }, onError: (e) {
               print('UserDoc listening error; $e');

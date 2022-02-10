@@ -52,7 +52,7 @@ Table of contents
   - [User presence overview](#user-presence-overview)
   - [User Presence Installation](#user-presence-installation)
   - [User presence logic](#user-presence-logic)
-- [User profile](#user-profile)
+- [User data and user profile](#user-data-and-user-profile)
   - [Displaying user profile](#displaying-user-profile)
   - [User Auth State](#user-auth-state)
 - [Chat](#chat-1)
@@ -177,10 +177,19 @@ Table of contents
 ## Firebase Storage installation
 
 - Install 'Image Resize' firebase extension with the following settings;
-  - thumbnail size: 200x200
-  - delete original image after thumbnail: No
-  - thumbnail folder: /uploads
-  - thumbnail convertion type: webp
+  - Upgrade billing plan
+  - This extension will use cloud function. It will install `generateResizedImage` function.
+  - Cloud functions location: Choose the same location as your project.
+  - Cloud Storage bucket for images: don't touch(or use it as it is).
+  - Sizes of resized images: 200x200
+  - Deletion of original file: No
+  - Cloud Storage path for resized images: leave it empty.
+  - Paths that contain images you want to resize: /uploads
+  - List of absolute paths not included for resized images: leave it empty.
+  - Cache-Control header for resized images: max-age=86400
+  - Convert image to preferred types: webp
+  Note, that you can see the configuration in firebase extensions menu and reconfigure it.
+  Note, that you can see the location in firebase cloud functions menu.
 
 - Copy the following rules and paste it into the storage rules section.
 
@@ -446,16 +455,28 @@ UserPresence(
 
 
 
-# User profile
+# User data and user profile
 
 - Many apps share user name and photo. For instance, when a user chat to the other user, they shoud know each other's name and photo.
 
-- User name and photo are saved in `/user/<uid>` document of Firestore.
+- User name and photo are saved in `/users/<uid>` document of Firestore.
+- Warning, we do not denormalize user data. That means, user name will not be copied into other documents. Instead, the app will simply read `/users/<uid>` document whenever user data is needed. In this way, we can easily do data integrity. But more data will be downloaded and it will cost more money.
+  - So, keep `/users/<uid>` slim. Try to keep only the following fields.
+    - `birthday`
+    - `gender`
+    - `firstName`, `middleName`, `lastName`, `nickname`
+    - `photoUrl`
+    - `timestamp_registered`
+    And think over again if it is really needed when you are trying to add another field.
 
 ## Displaying user profile
 
 - To display a user profile(name or photo), Use `UserDoc` widget with the user's uid and you can build a widget based on the user profile.
   - The builder of `UserDoc` comes from a stream builder, which means when the user profile document changes, it will rebuild the builder widget to update realtime.
+
+- For the efficiency, `UserDoc` does not listen to the realtime database document change, since reading the document over and over again may cost a lot of money if it is used in many places.
+  - It listens `UserService.instance.changes` event which only read one time on every user document change.
+  - By doing this, `UserDoc` may be used for the replacement of state management.
 
 
 ```dart
@@ -709,6 +730,7 @@ controller.state.setState(() {});
 - `B` opens chat room.
 - `B` click the link of lat & lon to open `Friend Map`.
 - the app navigates.
+
 
 ### FriendMap informing logic
 
@@ -1068,8 +1090,15 @@ terms;
 
 conditions;
 	- There is no more subscribing for all new posts and all new comments.
-		Users must enable or disable indivisually.
-		User can also enable all or disable all by one button touch in the setting screen.
+		Users must enable or disable each category indivisually.
+
+
+ui;
+  - User can also enable all or disable all by one button touch in the setting screen.
+  - User can enable or disable selectively in settings screen.
+  - See https://github.com/withcenter/wonderfulkorea/issues/70 for ui design;
+
+
 
 how;
 	- When a user subscribed 'comments_qna' and the user also enabled 'comment notification',

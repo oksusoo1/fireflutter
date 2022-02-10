@@ -18,27 +18,18 @@ class _UserDocState extends State<UserDoc> with DatabaseMixin {
   UserModel? user;
 
   // ignore: cancel_subscriptions
-  StreamSubscription? userDocSubscription;
+  late StreamSubscription sub;
 
   @override
   void initState() {
     super.initState();
 
-    userDocSubscription = userDoc(widget.uid).onValue.listen(
-      (event) {
-        if (event.snapshot.exists) {
-          user = UserModel.fromJson(event.snapshot.value, event.snapshot.key!);
-        } else {
-          user = UserModel();
-        }
-        setState(() {});
-      },
-    );
+    sub = UserService.instance.changes.listen((v) => setState(() => user = v));
   }
 
   @override
   void dispose() {
-    if (userDocSubscription != null) userDocSubscription!.cancel();
+    sub.cancel();
     super.dispose();
   }
 
