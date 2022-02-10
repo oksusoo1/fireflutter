@@ -13,10 +13,12 @@ class ForumListPushNotificationIcon extends StatefulWidget {
   final double? size;
   final Function onError;
   @override
-  _ForumListPushNotificationIconState createState() => _ForumListPushNotificationIconState();
+  _ForumListPushNotificationIconState createState() =>
+      _ForumListPushNotificationIconState();
 }
 
-class _ForumListPushNotificationIconState extends State<ForumListPushNotificationIcon> {
+class _ForumListPushNotificationIconState
+    extends State<ForumListPushNotificationIcon> {
   bool loading = false;
 
   @override
@@ -39,8 +41,10 @@ class _ForumListPushNotificationIconState extends State<ForumListPushNotificatio
   }
 
   bool hasSubscription() {
-    return UserService.instance.user.hasSubscription(NotificationOptions.post(widget.categoryId)) ||
-        UserService.instance.user.hasSubscription(NotificationOptions.comment(widget.categoryId));
+    return UserService.instance.user
+            .hasSubscription(NotificationOptions.post(widget.categoryId)) ||
+        UserService.instance.user
+            .hasSubscription(NotificationOptions.comment(widget.categoryId));
   }
 
   @override
@@ -56,8 +60,8 @@ class _ForumListPushNotificationIconState extends State<ForumListPushNotificatio
                       child: Row(
                         children: [
                           Icon(
-                            UserService.instance.user
-                                    .hasSubscription(NotificationOptions.post(widget.categoryId))
+                            UserService.instance.user.hasSubscription(
+                                    NotificationOptions.post(widget.categoryId))
                                 ? Icons.notifications_on
                                 : Icons.notifications_off,
                             color: Colors.blue,
@@ -72,7 +76,8 @@ class _ForumListPushNotificationIconState extends State<ForumListPushNotificatio
                           children: [
                             Icon(
                               UserService.instance.user.hasSubscription(
-                                      NotificationOptions.comment(widget.categoryId))
+                                      NotificationOptions.comment(
+                                          widget.categoryId))
                                   ? Icons.notifications_on
                                   : Icons.notifications_off,
                               color: Colors.blue,
@@ -83,25 +88,29 @@ class _ForumListPushNotificationIconState extends State<ForumListPushNotificatio
                         value: 'comment'),
                   ],
                   icon: Icon(
-                    hasSubscription() ? Icons.notifications : Icons.notifications_off,
+                    hasSubscription()
+                        ? Icons.notifications
+                        : Icons.notifications_off,
                     color: Colors.white,
                     size: widget.size,
                   ),
                   onSelected: onNotificationSelected,
                 ),
-                if (UserService.instance.user
-                    .hasSubscription(NotificationOptions.post(widget.categoryId)))
+                if (UserService.instance.user.hasSubscription(
+                    NotificationOptions.post(widget.categoryId)))
                   Positioned(
                     top: 15,
                     left: 5,
-                    child: Icon(Icons.comment, size: 12, color: Colors.greenAccent),
+                    child: Icon(Icons.comment,
+                        size: 12, color: Colors.greenAccent),
                   ),
-                if (UserService.instance.user
-                    .hasSubscription(NotificationOptions.comment(widget.categoryId)))
+                if (UserService.instance.user.hasSubscription(
+                    NotificationOptions.comment(widget.categoryId)))
                   Positioned(
                     top: 15,
-                    right: 5,
-                    child: Icon(Icons.comment, size: 12, color: Colors.greenAccent),
+                    right: -2,
+                    child: Icon(Icons.comment,
+                        size: 12, color: Colors.greenAccent),
                   ),
                 if (loading)
                   Positioned(
@@ -121,9 +130,12 @@ class _ForumListPushNotificationIconState extends State<ForumListPushNotificatio
 
   onNotificationSelected(dynamic selection) async {
     if (UserService.instance.user.signedOut) {
-      return AlertDialog(
-        title: Text('notifications'),
-        content: Text('login_first'),
+      return showDialog(
+        context: context,
+        builder: (c) => AlertDialog(
+          title: Text('notifications'),
+          content: Text('login_first'),
+        ),
       );
     }
 
@@ -133,10 +145,10 @@ class _ForumListPushNotificationIconState extends State<ForumListPushNotificatio
     String title = "notification";
     if (selection == 'post') {
       topic = NotificationOptions.post(widget.categoryId);
-      title = 'post_' + title;
+      title = 'post ' + title;
     } else if (selection == 'comment') {
       topic = NotificationOptions.comment(widget.categoryId);
-      title = 'comment_' + title;
+      title = 'comment ' + title;
     }
     try {
       await MessagingService.instance.updateSubscription(topic);
@@ -146,17 +158,22 @@ class _ForumListPushNotificationIconState extends State<ForumListPushNotificatio
 
     /// Hide spinner
     setState(() => loading = false);
-    String msg = UserService.instance.user.hasSubscription(topic) ? 'subscribed' : 'unsubscribed';
-    AlertDialog(
-      title: Text(title),
-      content: Text(msg),
+    String msg = UserService.instance.user.hasSubscription(topic)
+        ? 'subscribed'
+        : 'unsubscribed';
+    showDialog(
+      context: context,
+      builder: (c) => AlertDialog(
+        title: Text(title),
+        content: Text(widget.categoryId + " " + msg),
+      ),
     );
   }
 }
 
 class NotificationOptions {
-  static String notifyPost = 'notifyPost_';
-  static String notifyComment = 'notifyComment_';
+  static String notifyPost = 'posts_';
+  static String notifyComment = 'comments_';
 
   static String post(String category) {
     return notifyPost + category;
