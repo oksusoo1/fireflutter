@@ -1,4 +1,4 @@
-import 'package:fireflutter/fireflutter.dart';
+import '../../../fireflutter.dart';
 import 'package:flutter/material.dart';
 
 class UserSubscriptionsList extends StatefulWidget {
@@ -33,9 +33,7 @@ class _UserSubscriptionsListState extends State<UserSubscriptionsList> {
           ListTile(
             title: Text(n),
             trailing: IconButton(
-              icon: notifications[n] == true
-                  ? Icon(Icons.toggle_on)
-                  : Icon(Icons.toggle_off),
+              icon: notifications[n] == true ? Icon(Icons.toggle_on) : Icon(Icons.toggle_off),
               onPressed: () async {
                 // save changes
                 if (mounted)

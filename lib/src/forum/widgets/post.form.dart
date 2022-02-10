@@ -77,14 +77,14 @@ class _PostFormState extends State<PostForm> {
                         category: widget.category!,
                         title: title.text,
                         content: content.text,
-                        extra: {'files': files},
+                        files: files,
                       );
                       widget.onCreate(ref.id);
                     } else {
                       await widget.post!.update(
                         title: title.text,
                         content: content.text,
-                        extra: {'files': files},
+                        files: files,
                       );
                       widget.onUpdate(widget.post!.id);
                     }

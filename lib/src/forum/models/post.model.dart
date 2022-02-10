@@ -119,6 +119,7 @@ class PostModel with FirestoreMixin, ForumBase {
     required String category,
     required String title,
     required String content,
+    List<String>? files,
     Json extra = const {},
   }) {
     if (signedIn == false) throw ERROR_SIGN_IN;
@@ -127,7 +128,7 @@ class PostModel with FirestoreMixin, ForumBase {
       'category': category,
       'title': title,
       'content': content,
-      'files': files,
+      if (files != null) 'files': files,
       'uid': UserService.instance.user.uid,
       'timestamp': FieldValue.serverTimestamp(),
     };
@@ -137,6 +138,7 @@ class PostModel with FirestoreMixin, ForumBase {
   Future<void> update({
     required String title,
     required String content,
+    List<String>? files,
     Json extra = const {},
   }) {
     if (deleted) throw ERROR_ALREADY_DELETED;
@@ -144,6 +146,7 @@ class PostModel with FirestoreMixin, ForumBase {
       ...{
         'title': title,
         'content': content,
+        if (files != null) 'files': files,
         'timestamp': FieldValue.serverTimestamp(),
       },
       ...extra
