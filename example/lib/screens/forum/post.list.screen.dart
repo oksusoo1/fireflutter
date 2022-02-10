@@ -35,7 +35,7 @@ class _PostListScreenState extends State<PostListScreen> with FirestoreMixin {
           IconButton(
             onPressed: () async {
               newPostId = await app.openPostForm(category: category);
-              if (newPostId != null) setState(() {});
+              if (mounted) setState(() {});
             },
             icon: Icon(
               Icons.create_rounded,
@@ -44,7 +44,7 @@ class _PostListScreenState extends State<PostListScreen> with FirestoreMixin {
         ],
       ),
       body: FirestoreListView(
-        // key: ValueKey(newPostId),
+        key: ValueKey(newPostId),
         query: postCol.where('category', isEqualTo: category).orderBy(
               'timestamp',
               descending: true,
@@ -55,7 +55,7 @@ class _PostListScreenState extends State<PostListScreen> with FirestoreMixin {
             snapshot.id,
           );
 
-          // print('got new doc id; ${post.id}: ${post.title}');
+          print('got new doc id; ${post.id}: ${post.title}');
 
           return ExpansionTile(
             key: ValueKey(post.id),
