@@ -11,7 +11,6 @@ export 'src/user/user.service.dart';
 export 'src/user/auth/user.doc.dart';
 export 'src/user/auth/user.future.doc.dart';
 export 'src/user/auth/auth_state.dart';
-export 'src/user/widget/user.subscription.list.dart';
 
 export 'src/chat/chat.data.model.dart';
 export 'src/chat/chat.defines.dart';
@@ -67,3 +66,5 @@ export 'src/storage/widgets/image_list.edit.dart';
 export 'src/storage/widgets/image_viewer.dart';
 export 'src/storage/widgets/uploaded_image.dart';
 export 'src/widgets/short_date.dart';
+
+export 'src/setting/notification.setting.dart';

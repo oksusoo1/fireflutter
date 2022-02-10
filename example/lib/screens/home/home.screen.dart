@@ -5,6 +5,7 @@ import 'package:extended/extended.dart';
 import 'package:fe/service/app.controller.dart';
 import 'package:fe/service/config.dart';
 import 'package:fe/service/global.keys.dart';
+import 'package:fe/service/route.names.dart';
 import 'package:fe/widgets/test.user.dart';
 import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
@@ -207,6 +208,15 @@ class _HomeScreenState extends State<HomeScreen> {
                     onPressed: () =>
                         AppController.of.openForumList(category: 'buyandsell'),
                     child: const Text('Buy & Sell'),
+                  ),
+                ],
+              ),
+              Wrap(
+                children: [
+                  ElevatedButton(
+                    onPressed: () =>
+                        Get.toNamed(RouteNames.notificationSetting),
+                    child: const Text('Notification Setting'),
                   ),
                 ],
               ),

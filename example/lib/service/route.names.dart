@@ -7,4 +7,5 @@ class RouteNames {
   static const String category = '/category';
   static const String report = '/report';
   static const String reportForumManagement = '/reportForumManagement';
+  static const String notificationSetting = '/notification-setting';
 }

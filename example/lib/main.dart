@@ -10,6 +10,7 @@ import 'package:fe/screens/admin/report.post.management.screen.dart';
 import 'package:fe/screens/admin/report.screen.dart';
 import 'package:fe/screens/forum/post.list.screen.dart';
 import 'package:fe/screens/forum/post.form.screen.dart';
+import 'package:fe/screens/setting/notification.setting.dart';
 import 'package:fe/service/app.controller.dart';
 import 'package:fe/service/global.keys.dart';
 import 'package:fe/service/route.names.dart';
@@ -218,6 +219,9 @@ class _MainAppState extends State<MainApp> {
         GetPage(name: RouteNames.postList, page: () => PostListScreen()),
         GetPage(name: RouteNames.postForm, page: () => PostFormScreen()),
         GetPage(name: RouteNames.admin, page: () => AdminScreen()),
+        GetPage(
+            name: RouteNames.notificationSetting,
+            page: () => NotificationSettingScreen()),
         GetPage(
           name: RouteNames.reportForumManagement,
           page: () => ReportPostManagementScreen(),
