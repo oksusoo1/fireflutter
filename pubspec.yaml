@@ -57,6 +57,10 @@ dependencies:
   # date & time
   intl: ^0.17.0
 
+  # uuid
+  uuid: ^3.0.5
+  
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

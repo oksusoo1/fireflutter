@@ -1,6 +1,9 @@
-import '../fireflutter.dart';
+import 'package:path/path.dart' as p;
+import 'package:path_provider/path_provider.dart';
+import 'package:uuid/uuid.dart';
 
 import 'dart:async';
+import '../fireflutter.dart';
 
 /// splitQueryString of Uri class
 ///
@@ -98,3 +101,22 @@ Future<int> waitUntil(bool test(),
 }
 
 /// EO wait until
+
+Future<String> getAbsoluteTemporaryFilePath(String relativePath) async {
+  var directory = await getTemporaryDirectory();
+  return p.join(directory.path, relativePath);
+}
+
+/// Return UUID
+String getRandomString({int len = 16, String? prefix}) {
+  const uuid = Uuid();
+  return uuid.v4();
+
+  // const charset = 'abcdefghijklmnopqrstuvwxyz0123456789';
+  // var t = '';
+  // for (var i = 0; i < len; i++) {
+  //   t += charset[(Random().nextInt(charset.length))];
+  // }
+  // if (prefix != null && prefix.isNotEmpty) t = prefix + t;
+  // return t;
+}
