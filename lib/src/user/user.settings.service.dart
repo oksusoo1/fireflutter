@@ -52,6 +52,7 @@ class UserSettingsService with DatabaseMixin {
                 print('UserSettingsService; Got new data');
                 settings = UserSettingsModel.fromJson(event.snapshot.value);
               } else {
+                create();
                 settings = UserSettingsModel.empty();
               }
               changes.add(settings);
@@ -95,5 +96,9 @@ class UserSettingsService with DatabaseMixin {
 
   Future<void> unsubscribe(String topic) {
     return update({'topic/$topic': false});
+  }
+
+  Future<void> create() {
+    return settings.create();
   }
 }
