@@ -11,6 +11,8 @@ class CommentModel with FirestoreMixin, ForumBase {
     required this.postId,
     required this.parentId,
     this.content = '',
+    this.like = 0,
+    this.dislike = 0,
     required this.uid,
     this.deleted = false,
     required this.timestamp,
@@ -30,6 +32,9 @@ class CommentModel with FirestoreMixin, ForumBase {
   String get displayContent {
     return deleted ? 'comment-content-deleted' : content;
   }
+
+  int like;
+  int dislike;
 
   String uid;
 
@@ -55,6 +60,8 @@ class CommentModel with FirestoreMixin, ForumBase {
       parentId: data['parentId'],
       uid: data['uid'],
       deleted: data['deleted'] ?? false,
+      like: data['like'] ?? 0,
+      dislike: data['dislike'] ?? 0,
       timestamp: data['timestamp'] ?? Timestamp.now(),
       data: data,
     );
@@ -85,6 +92,8 @@ class CommentModel with FirestoreMixin, ForumBase {
       'depth': depth,
       'files': files,
       'uid': uid,
+      'like': like,
+      'dislike': dislike,
       'deleted': deleted,
       'timestamp': timestamp,
       'data': data,

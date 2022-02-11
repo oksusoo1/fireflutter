@@ -161,7 +161,7 @@ class _MainAppState extends State<MainApp> {
       },
       onTokenUpdated: (token) {
         print('##########onTokenUpdated###########');
-        print(token);
+        // print(token);
       },
     );
 
