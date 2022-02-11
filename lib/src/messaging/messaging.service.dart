@@ -132,21 +132,20 @@ class MessagingService with FirestoreMixin, DatabaseMixin {
   }
 
   /// Updates the subscriptions (subscribe or unsubscribe)
-  Future<dynamic> updateSubscription(String topic) async {
-    /// TODO: subscription
-    List<String> list = [];
-    // UserService.instance.user.topics;
-    if (list.contains(topic)) {
-      list.remove(topic);
-      FirebaseMessaging.instance.unsubscribeFromTopic(topic);
+  Future<dynamic> updateSubscription(String topic, bool subscribe) async {
+    if (subscribe) {
+      await UserSettingsService.instance.subscribe(topic);
+      await FirebaseMessaging.instance.subscribeToTopic(topic);
     } else {
-      list.add(topic);
-      FirebaseMessaging.instance.subscribeToTopic(topic);
+      await UserSettingsService.instance.unsubscribe(topic);
+      await FirebaseMessaging.instance.unsubscribeFromTopic(topic);
     }
+  }
 
-    return UserService.instance.update(
-      field: 'topics',
-      value: list,
+  toggleSubscription(String topic) {
+    return updateSubscription(
+      topic,
+      !UserSettingsService.instance.hasSubscription(topic),
     );
   }
 

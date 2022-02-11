@@ -1,14 +1,10 @@
 import 'dart:async';
 import 'dart:io';
-import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 
 import '../../fireflutter.dart';
-import 'package:path/path.dart' as p;
 import 'package:image_picker/image_picker.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 
 import 'package:firebase_storage/firebase_storage.dart';
@@ -23,7 +19,7 @@ class StorageService {
     return _instance!;
   }
 
-  /// todo change on init.
+  /// TODO: change on init.
   final String _uploadsPath = 'uploads';
   // final String _thumbnailSize = '200';
   // final String _thumbnailType = 'webp';
@@ -56,10 +52,7 @@ class StorageService {
     // final String filename = basename.split('.').first;
     final String extension = basename.split('.').last;
 
-    final dt = DateFormat('yMMddHHmmss').format(DateTime.now());
-    final uid = UserService.instance.uid;
-    final randomString = _getRandomString();
-    final filename = "$uid-$dt-$randomString.$extension";
+    final filename = "${getRandomString()}.$extension";
     print('filename; $filename');
     final ref = uploadsFolder.child(filename);
 
@@ -68,7 +61,7 @@ class StorageService {
         file,
         SettableMetadata(customMetadata: {
           'basename': basename,
-          'uid': uid,
+          'uid': UserService.instance.uid,
         }));
 
     /// Progress listener
@@ -85,14 +78,32 @@ class StorageService {
     return ref.getDownloadURL();
   }
 
+  /// Returns true if the file exists on storage. Or false.
+  Future<bool> exists(String url) async {
+    if (url.startsWith('http')) {
+      try {
+        await ref(url).getDownloadURL();
+        return true;
+      } catch (e) {
+        // debugPrint('getDownloadUrl(); $e');
+        return false;
+      }
+    } else {
+      return false;
+    }
+  }
+
   /// Delete orignal and thumbnail files from storage.
   ///
   /// [url] must be the original image url.
+  /// If [url] does exist on storage, then it will not delete.
   ///
   /// Ignore object-not-found exception.
   Future<void> delete(String url) async {
     final String thumbnailUrl = getThumbnailUrl(url);
     try {
+      final re = await exists(url);
+      if (re == false) return;
       await Future.wait(
         [
           if (url.startsWith('http')) ref(url).delete(),
@@ -100,6 +111,7 @@ class StorageService {
         ],
       );
     } on FirebaseException catch (e) {
+      debugPrint('Exception happened on file delete; $e');
       if (e.code == 'object-not-found') {
         debugPrint('object-not-found exception happened with: $url');
       } else {
@@ -118,8 +130,7 @@ class StorageService {
     /// It can compress the image and then return it as a File object.
 
     final String basename = filepath.split('/').last;
-    String localFile =
-        await _getAbsoluteTemporaryFilePath('$basename-' + _getRandomString() + '.jpeg');
+    String localFile = await getAbsoluteTemporaryFilePath(basename);
     File? file = await FlutterImageCompress.compressAndGetFile(
       filepath, // source file
       localFile, // target file. Overwrite the source with compressed.
@@ -127,21 +138,6 @@ class StorageService {
     );
 
     return file;
-  }
-
-  Future<String> _getAbsoluteTemporaryFilePath(String relativePath) async {
-    var directory = await getTemporaryDirectory();
-    return p.join(directory.path, relativePath);
-  }
-
-  String _getRandomString({int len = 16, String? prefix}) {
-    const charset = 'abcdefghijklmnopqrstuvwxyz0123456789';
-    var t = '';
-    for (var i = 0; i < len; i++) {
-      t += charset[(Random().nextInt(charset.length))];
-    }
-    if (prefix != null && prefix.isNotEmpty) t = prefix + t;
-    return t;
   }
 
   /// Get thumbnail url.

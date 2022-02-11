@@ -144,7 +144,7 @@ class _ForumListPushNotificationIconState extends State<ForumListPushNotificatio
       title = 'comment ' + title;
     }
     try {
-      await MessagingService.instance.updateSubscription(topic);
+      await MessagingService.instance.toggleSubscription(topic);
     } catch (e) {
       widget.onError(e);
     }

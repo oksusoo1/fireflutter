@@ -30,6 +30,8 @@ class UserModel with FirestoreMixin, DatabaseMixin {
     'isAdmin',
   ];
 
+  /// Note, user settings instance is connected to user model. Not user service.
+  /// Note, it is user settings **service**, Not model.
   UserSettingsService settings = UserSettingsService.instance;
 
   /// This is the user's document id which is the uid.
