@@ -13,12 +13,10 @@ class ForumListPushNotificationIcon extends StatefulWidget {
   final double? size;
   final Function onError;
   @override
-  _ForumListPushNotificationIconState createState() =>
-      _ForumListPushNotificationIconState();
+  _ForumListPushNotificationIconState createState() => _ForumListPushNotificationIconState();
 }
 
-class _ForumListPushNotificationIconState
-    extends State<ForumListPushNotificationIcon> {
+class _ForumListPushNotificationIconState extends State<ForumListPushNotificationIcon> {
   bool loading = false;
 
   @override
@@ -41,9 +39,9 @@ class _ForumListPushNotificationIconState
   }
 
   bool hasSubscription() {
-    return UserService.instance.user
+    return UserService.instance.user.settings
             .hasSubscription(NotificationOptions.post(widget.categoryId)) ||
-        UserService.instance.user
+        UserService.instance.user.settings
             .hasSubscription(NotificationOptions.comment(widget.categoryId));
   }
 
@@ -60,8 +58,8 @@ class _ForumListPushNotificationIconState
                       child: Row(
                         children: [
                           Icon(
-                            UserService.instance.user.hasSubscription(
-                                    NotificationOptions.post(widget.categoryId))
+                            UserService.instance.user.settings
+                                    .hasSubscription(NotificationOptions.post(widget.categoryId))
                                 ? Icons.notifications_on
                                 : Icons.notifications_off,
                             color: Colors.blue,
@@ -75,9 +73,8 @@ class _ForumListPushNotificationIconState
                         child: Row(
                           children: [
                             Icon(
-                              UserService.instance.user.hasSubscription(
-                                      NotificationOptions.comment(
-                                          widget.categoryId))
+                              UserService.instance.user.settings.hasSubscription(
+                                      NotificationOptions.comment(widget.categoryId))
                                   ? Icons.notifications_on
                                   : Icons.notifications_off,
                               color: Colors.blue,
@@ -88,29 +85,25 @@ class _ForumListPushNotificationIconState
                         value: 'comment'),
                   ],
                   icon: Icon(
-                    hasSubscription()
-                        ? Icons.notifications
-                        : Icons.notifications_off,
+                    hasSubscription() ? Icons.notifications : Icons.notifications_off,
                     color: Colors.white,
                     size: widget.size,
                   ),
                   onSelected: onNotificationSelected,
                 ),
-                if (UserService.instance.user.hasSubscription(
-                    NotificationOptions.post(widget.categoryId)))
+                if (UserService.instance.user.settings
+                    .hasSubscription(NotificationOptions.post(widget.categoryId)))
                   Positioned(
                     top: 15,
                     left: 5,
-                    child: Icon(Icons.comment,
-                        size: 12, color: Colors.greenAccent),
+                    child: Icon(Icons.comment, size: 12, color: Colors.greenAccent),
                   ),
-                if (UserService.instance.user.hasSubscription(
-                    NotificationOptions.comment(widget.categoryId)))
+                if (UserService.instance.user.settings
+                    .hasSubscription(NotificationOptions.comment(widget.categoryId)))
                   Positioned(
                     top: 15,
                     right: -2,
-                    child: Icon(Icons.comment,
-                        size: 12, color: Colors.greenAccent),
+                    child: Icon(Icons.comment, size: 12, color: Colors.greenAccent),
                   ),
                 if (loading)
                   Positioned(
@@ -158,9 +151,8 @@ class _ForumListPushNotificationIconState
 
     /// Hide spinner
     setState(() => loading = false);
-    String msg = UserService.instance.user.hasSubscription(topic)
-        ? 'subscribed'
-        : 'unsubscribed';
+    String msg =
+        UserService.instance.user.settings.hasSubscription(topic) ? 'subscribed' : 'unsubscribed';
     showDialog(
       context: context,
       builder: (c) => AlertDialog(

@@ -204,8 +204,7 @@ class _HomeScreenState extends State<HomeScreen> {
               Wrap(
                 children: [
                   ElevatedButton(
-                    onPressed: () =>
-                        Get.toNamed(RouteNames.notificationSetting),
+                    onPressed: () => Get.toNamed(RouteNames.notificationSetting),
                     child: const Text('Notification Setting'),
                   ),
                 ],
@@ -347,15 +346,19 @@ class _HomeScreenState extends State<HomeScreen> {
 
   testOnSettings() async {
     final ts = TestService.instance;
-    final user = UserService.instance.user;
+    final settingService = UserSettingsService.instance;
 
     ts.reset();
-    await ts.expectSuccess(user.updateSettings({
+
+    final timestamp = DateTime.now().millisecondsSinceEpoch;
+    await ts.expectSuccess(settingService.update({
       'a': 'Apple',
       'b': 'Banana',
+      'timestamp': timestamp,
     }));
 
-    print(await user.readSettings());
+    await ts.expectSuccess(settingService.read());
+    ts.test(settingService.settings.data['timestamp'] == timestamp, 'timestamp');
   }
 
   testOnForum() async {

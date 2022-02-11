@@ -68,3 +68,6 @@ export 'src/storage/widgets/uploaded_image.dart';
 export 'src/widgets/short_date.dart';
 
 export 'src/setting/notification.setting.dart';
+
+export 'src/user/user.settings.model.dart';
+export 'src/user/user.settings.service.dart';

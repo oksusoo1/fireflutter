@@ -15,8 +15,7 @@ class NotificationSetting extends StatefulWidget {
   _NotificationSettingState createState() => _NotificationSettingState();
 }
 
-class _NotificationSettingState extends State<NotificationSetting>
-    with FirestoreMixin {
+class _NotificationSettingState extends State<NotificationSetting> with FirestoreMixin {
   Map<String, bool> posts = {};
   Map<String, bool> comments = {};
 
@@ -33,15 +32,13 @@ class _NotificationSettingState extends State<NotificationSetting>
 
         for (DocumentSnapshot doc in res.docs) {
           Map<String, dynamic> c = doc.data() as Map<String, dynamic>;
-          if (UserService.instance.user
-              .hasSubscription('posts_' + c['title'])) {
+          if (UserService.instance.user.settings.hasSubscription('posts_' + c['title'])) {
             posts[c['title']] = true;
           } else {
             posts[c['title']] = false;
           }
 
-          if (UserService.instance.user
-              .hasSubscription('comments_' + c['title'])) {
+          if (UserService.instance.user.settings.hasSubscription('comments_' + c['title'])) {
             comments[c['title']] = true;
           } else {
             comments[c['title']] = false;
@@ -79,15 +76,12 @@ class _NotificationSettingState extends State<NotificationSetting>
         for (String n in posts.keys)
           ListTile(
             leading: IconButton(
-              icon: posts[n] == true
-                  ? Icon(Icons.check_box)
-                  : Icon(Icons.check_box_outline_blank),
+              icon: posts[n] == true ? Icon(Icons.check_box) : Icon(Icons.check_box_outline_blank),
               onPressed: () async {
                 // save changes
                 if (mounted)
                   try {
-                    await MessagingService.instance
-                        .updateSubscription('posts_' + n);
+                    await MessagingService.instance.updateSubscription('posts_' + n);
                     setState(() {
                       posts[n] = !posts[n]!;
                     });
@@ -102,15 +96,13 @@ class _NotificationSettingState extends State<NotificationSetting>
         for (String n in comments.keys)
           ListTile(
             leading: IconButton(
-              icon: comments[n] == true
-                  ? Icon(Icons.check_box)
-                  : Icon(Icons.check_box_outline_blank),
+              icon:
+                  comments[n] == true ? Icon(Icons.check_box) : Icon(Icons.check_box_outline_blank),
               onPressed: () async {
                 // save changes
                 if (mounted)
                   try {
-                    await MessagingService.instance
-                        .updateSubscription('comments_' + n);
+                    await MessagingService.instance.updateSubscription('comments_' + n);
                     setState(() {
                       comments[n] = !comments[n]!;
                     });

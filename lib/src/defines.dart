@@ -24,3 +24,6 @@ const ERROR_ALREADY_REPORTED = 'ERROR_ALREADY_REPORTED';
 const ERROR_ALREADY_DELETED = 'ERROR_ALREADY_DELETED';
 const ERROR_IMAGE_NOT_SELECTED = 'ERROR_IMAGE_NOT_SELECTED';
 const ERROR_IMAGE_NOT_FOUND = 'ERROR_IMAGE_NOT_FOUND';
+
+/// This happens when the app tries to save(update) a field with data on user information where the field is not supported.
+const ERROR_NOT_SUPPORTED_FIELD_ON_USER_UPDATE = 'ERROR_NOT_SUPPORTED_FIELD_ON_USER_UPDATE';

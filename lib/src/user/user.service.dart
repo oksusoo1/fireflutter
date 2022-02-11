@@ -35,7 +35,6 @@ class UserService with FirestoreMixin, DatabaseMixin {
 
   DatabaseReference get _myDoc => FirebaseDatabase.instance.ref('users').child(uid);
 
-  StreamSubscription? authSubscription;
   StreamSubscription? userSubscription;
 
   /// This event will be posted whenever user document changes.
@@ -58,8 +57,8 @@ class UserService with FirestoreMixin, DatabaseMixin {
   ///
   initAuthChanges() {
     print('UserService::initAuthChanges');
-    authSubscription?.cancel();
-    authSubscription = FirebaseAuth.instance.authStateChanges().listen(
+
+    FirebaseAuth.instance.authStateChanges().listen(
       (_user) async {
         if (_user == null) {
           debugPrint('User signed-out');
@@ -75,7 +74,7 @@ class UserService with FirestoreMixin, DatabaseMixin {
           } else {
             userSubscription?.cancel();
             final doc = userDoc(_user.uid);
-            doc.onValue.listen((event) {
+            userSubscription = doc.onValue.listen((event) {
               // if user doc does not exists, create one.
               if (event.snapshot.exists == false) {
                 create();

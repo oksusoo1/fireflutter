@@ -14,7 +14,9 @@ class TestService {
   int _countSuccess = 0;
 
   reset() {
+    debugPrint('------------ reset ${DateTime.now().toLocal()} ------------');
     _countError = 0;
+    _countSuccess = 0;
   }
 
   testError(dynamic e, String message) {
@@ -25,6 +27,13 @@ class TestService {
   testSuccess(String message) {
     _countSuccess++;
     debugPrint('👍 ---------> SUCCESS[$_countSuccess]; $message');
+  }
+
+  test(bool re, [String message = '']) {
+    if (re)
+      testSuccess(message);
+    else
+      testError('Test error', message);
   }
 
   ///

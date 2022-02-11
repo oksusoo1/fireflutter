@@ -17,8 +17,20 @@ class UserModel with FirestoreMixin, DatabaseMixin {
     this.birthday = 0,
     this.gender = '',
     this.isAdmin = false,
-    this.topics = const [],
   });
+
+  final fields = [
+    'firstName',
+    'middleName',
+    'lastName',
+    'nickname',
+    'photoUrl',
+    'birthday',
+    'gender',
+    'isAdmin',
+  ];
+
+  UserSettingsService settings = UserSettingsService.instance;
 
   /// This is the user's document id which is the uid.
   /// If it is empty, the user may not be signed-in
@@ -47,20 +59,11 @@ class UserModel with FirestoreMixin, DatabaseMixin {
   int birthday;
   String gender;
 
-  List<String> topics;
-
   bool get signedIn => FirebaseAuth.instance.currentUser != null;
   bool get signedOut => signedIn == false;
 
   ///
   DatabaseReference get _myDoc => FirebaseDatabase.instance.ref('users').child(uid);
-
-  /// Returns true if the user has subscribed the topic.
-  /// If user subscribed the topic, that topic name will be saved into user meta in backend
-  /// And when user profile is loaded, the subscriptions are saved into [subscriptions]
-  bool hasSubscription(String topic) {
-    return topics.contains(topic);
-  }
 
   factory UserModel.fromJson(dynamic data, String uid) {
     if (data == null) return UserModel();
@@ -73,7 +76,6 @@ class UserModel with FirestoreMixin, DatabaseMixin {
       lastName: data['lastName'] ?? '',
       nickname: data['nickname'] ?? '',
       photoUrl: data['photoUrl'] ?? '',
-      topics: List<String>.from((data['topics'] ?? []).map((x) => x.toString())),
       birthday: data['birthday'] ?? 0,
       gender: data['gender'] ?? '',
     );
@@ -116,6 +118,9 @@ class UserModel with FirestoreMixin, DatabaseMixin {
   /// return update(field: 'nickname', value: name);
   /// ```
   Future<void> update({required String field, required dynamic value}) {
+    if (fields.indexOf(field) == -1) {
+      throw ERROR_NOT_SUPPORTED_FIELD_ON_USER_UPDATE;
+    }
     return _myDoc.update({field: value});
   }
 
@@ -158,24 +163,6 @@ class UserModel with FirestoreMixin, DatabaseMixin {
         await update(field: 'isAdmin', value: null);
         isAdmin = false;
       }
-    }
-  }
-
-  Future<void> updateSettings(Json settings) async {
-    final snapshot = await userSettingsDoc.get();
-    if (snapshot.exists) {
-      return userSettingsDoc.update(settings);
-    } else {
-      return userSettingsDoc.set(settings);
-    }
-  }
-
-  Future<Json> readSettings() async {
-    final snapshot = await userSettingsDoc.get();
-    if (snapshot.exists) {
-      return Map.from(snapshot.value as Json) as Json;
-    } else {
-      return {} as Json;
     }
   }
 }
