@@ -1,7 +1,10 @@
+import 'package:firebase_database/firebase_database.dart';
+import 'package:fireflutter/fireflutter.dart';
+
 /// UserSettingsModel
 ///
 ///
-class UserSettingsModel {
+class UserSettingsModel with DatabaseMixin {
   UserSettingsModel({
     required this.topics,
     required this.data,
@@ -19,5 +22,9 @@ class UserSettingsModel {
 
   factory UserSettingsModel.empty() {
     return UserSettingsModel(topics: {}, data: {});
+  }
+
+  Future<void> create() {
+    return userSettingsDoc.set({'timestamp_created': ServerValue.timestamp});
   }
 }

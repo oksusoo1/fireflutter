@@ -133,7 +133,9 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               Wrap(
                 children: [
-                  ElevatedButton(onPressed: () => Get.toNamed('/help'), child: const Text('Help')),
+                  ElevatedButton(
+                      onPressed: () => Get.toNamed('/help'),
+                      child: const Text('Help')),
                   ElevatedButton(
                     onPressed: () => Get.toNamed('/chat-rooms-screen'),
                     child: const Text('Chat Room List'),
@@ -155,7 +157,8 @@ class _HomeScreenState extends State<HomeScreen> {
                       onPressed: () async {
                         for (int i = 0; i < 10; i++) {
                           setState(() {});
-                          await Future.delayed(const Duration(milliseconds: 500));
+                          await Future.delayed(
+                              const Duration(milliseconds: 500));
                         }
                       },
                       child: const Text('setState() 10 times')),
@@ -176,7 +179,8 @@ class _HomeScreenState extends State<HomeScreen> {
               Wrap(
                 children: [
                   ElevatedButton(
-                    onPressed: () => AppController.of.openForumList(category: 'qna'),
+                    onPressed: () =>
+                        AppController.of.openForumList(category: 'qna'),
                     child: const Text('QnA'),
                   ),
                   // if (Platform.isAndroid)
@@ -192,11 +196,13 @@ class _HomeScreenState extends State<HomeScreen> {
                   //     child: const Text('Test QnA Notification'),
                   //   ),
                   ElevatedButton(
-                    onPressed: () => AppController.of.openForumList(category: 'discussion'),
+                    onPressed: () =>
+                        AppController.of.openForumList(category: 'discussion'),
                     child: const Text('Discussion'),
                   ),
                   ElevatedButton(
-                    onPressed: () => AppController.of.openForumList(category: 'buyandsell'),
+                    onPressed: () =>
+                        AppController.of.openForumList(category: 'buyandsell'),
                     child: const Text('Buy & Sell'),
                   ),
                 ],
@@ -204,7 +210,8 @@ class _HomeScreenState extends State<HomeScreen> {
               Wrap(
                 children: [
                   ElevatedButton(
-                    onPressed: () => Get.toNamed(RouteNames.notificationSetting),
+                    onPressed: () =>
+                        Get.toNamed(RouteNames.notificationSetting),
                     child: const Text('Notification Setting'),
                   ),
                 ],
@@ -296,7 +303,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
     // openProfile() throws an error if user is not signed in.
     await waitUntil(() => UserService.instance.user.signedOut);
-    await ts.expectFailure(AppController.of.openProfile(), "sign in before open profile screen.");
+    await ts.expectFailure(
+        AppController.of.openProfile(), "sign in before open profile screen.");
 
     /// user signed in
     await FirebaseAuth.instance.signInWithEmailAndPassword(
@@ -365,7 +373,8 @@ class _HomeScreenState extends State<HomeScreen> {
     }));
 
     await ts.expectSuccess(settingService.read());
-    ts.test(settingService.settings.data['timestamp'] == timestamp, 'timestamp');
+    ts.test(
+        settingService.settings.data['timestamp'] == timestamp, 'timestamp');
   }
 
   testOnForum() async {
