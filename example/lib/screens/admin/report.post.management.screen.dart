@@ -9,14 +9,14 @@ class ReportPostManagementScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final String target = Get.arguments['target'];
+    final String target = getArg(context, 'target');
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('Report Post Management'),
       ),
       body: ReportPostManagement(
-        id: Get.arguments['id'],
+        id: getArg(context, 'id'),
         onError: error,
         builder: (post) {
           print(target);

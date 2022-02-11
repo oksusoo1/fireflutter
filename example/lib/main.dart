@@ -13,7 +13,6 @@ import 'package:fe/screens/forum/post.form.screen.dart';
 import 'package:fe/screens/setting/notification.setting.dart';
 import 'package:fe/service/app.service.dart';
 import 'package:fe/service/global.keys.dart';
-import 'package:fe/service/route.names.dart';
 import 'package:fe/screens/chat/chat.room.screen.dart';
 import 'package:fe/screens/chat/chat.rooms.blocked.screen.dart';
 import 'package:fe/screens/chat/chat.rooms.screen.dart';
@@ -105,7 +104,7 @@ class _MainAppState extends State<MainApp> {
         InformService.instance.init(callback: (data) {
           if (data['type'] == 'FriendMap') {
             /// If it's a freind map request, then open friend map screen.
-            Get.toNamed('/friend-map', arguments: {
+            AppService.instance.open(FriendMapScreen.routeName, arguments: {
               'latitude': data['latitude'],
               'longitude': data['longitude'],
             });
@@ -126,10 +125,11 @@ class _MainAppState extends State<MainApp> {
         /// Display the reminder using default dialog UI. You may copy the code
         /// and customize by yourself.
         ReminderService.instance.display(
-          context: navigatorKey.currentContext!,
+          context: globalNavigatorKey.currentContext!,
           data: reminder,
           onLinkPressed: (page, arguments) {
-            Get.toNamed(page, arguments: arguments);
+            /// TODO: post view 스크린을 만들고, 글을 보여주어야 겠다.
+            AppService.instance.open(page, arguments: arguments);
           },
         );
       });
@@ -174,7 +174,7 @@ class _MainAppState extends State<MainApp> {
     // Handle the message here
     // print(message);
     showDialog(
-      context: Get.context!,
+      context: globalNavigatorKey.currentContext!,
       builder: (c) => AlertDialog(
         title: Text(message.notification!.title ?? ''),
         content: Text(message.notification!.body ?? ''),
@@ -199,6 +199,7 @@ class _MainAppState extends State<MainApp> {
         routes: {
           HomeScreen.routeName: (context) => const HomeScreen(),
           SignInWidget.routeName: (context) => const SignInWidget(),
+          // '/sign-in-screen': (context) => SignInScreen(),
           PhoneSignInScreen.routeName: (context) => const PhoneSignInScreen(),
           SmsCodeScreen.routeName: (context) => const SmsCodeScreen(),
           PhoneSignInUIScreen.routeName: (context) => const PhoneSignInUIScreen(),

@@ -1,3 +1,5 @@
+import 'package:extended/extended.dart';
+import 'package:fe/service/app.service.dart';
 import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
 
@@ -30,19 +32,28 @@ class _SmsCodeUIScreenState extends State<SmsCodeUIScreen> {
             /// SMS code input widget
             SmsCodeInput(
               /// on success,
-              success: () => Get.defaultDialog(
-                  middleText: 'Phone sign-in success',
-                  textConfirm: 'Ok',
-                  onConfirm: () => Get.back()).then(
-                (value) => Get.offAllNamed('/home'),
+              success: () => alert(
+                'Phone sign-in success',
+                'You have signed-in.',
+              ).then(
+                (value) => AppService.instance.openHome(),
               ),
 
+              //  Get.defaultDialog(
+              //     middleText: 'Phone sign-in success',
+              //     textConfirm: 'Ok',
+              //     onConfirm: () => Get.back()).then(
+              //   (value) => Get.offAllNamed('/home'),
+              // ),
+
               /// on error,
-              error: (e) => Get.defaultDialog(
-                middleText: e.toString(),
-                textConfirm: 'Ok',
-                onConfirm: () => Get.back(),
-              ),
+              error: (e) => error(e),
+
+              // Get.defaultDialog(
+              //   middleText: e.toString(),
+              //   textConfirm: 'Ok',
+              //   onConfirm: () => Get.back(),
+              // ),
 
               /// sms code input box decoration
               smsCodeInputDecoration: const InputDecoration(
@@ -75,7 +86,7 @@ class _SmsCodeUIScreenState extends State<SmsCodeUIScreen> {
                         ),
                   const Spacer(),
                   TextButton(
-                    onPressed: Get.back,
+                    onPressed: AppService.instance.back,
                     child: const Text('Try again'),
                   ),
                 ],

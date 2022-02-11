@@ -1,3 +1,4 @@
+import 'package:fe/service/app.service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterfire_ui/auth.dart';
 
@@ -11,10 +12,10 @@ class SignInWidget extends StatelessWidget {
     return SignInScreen(
       actions: [
         AuthStateChangeAction<SignedIn>((context, _) {
-          Get.offAllNamed('/home');
+          AppService.instance.openHome();
         }),
         SignedOutAction((context) {
-          Get.offAllNamed('/home');
+          AppService.instance.openHome();
         }),
       ],
       providerConfigs: const [
@@ -23,7 +24,7 @@ class SignInWidget extends StatelessWidget {
       ],
       footerBuilder: (context, _) {
         return TextButton(
-          onPressed: () => Get.offAllNamed('/home'),
+          onPressed: () => AppService.instance.openHome(),
           child: const Text(
             'Back to home',
             style: TextStyle(color: Colors.grey),

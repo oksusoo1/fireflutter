@@ -68,7 +68,7 @@ class ProfileScreenState extends State<ProfileScreen> {
   updateNickname(t) {
     setState(() => nicknameLoader = true);
     bounce('nickname', 500, (s) async {
-      await UserService.instance.user.updateNickname(t).catchError(error);
+      await UserService.instance.user.updateNickname(t).catchError((e) => error(e));
       setState(() => nicknameLoader = false);
     });
   }
@@ -80,7 +80,7 @@ class ProfileScreenState extends State<ProfileScreen> {
       if (user.photoUrl.isNotEmpty) {
         await StorageService.instance.delete(user.photoUrl);
       }
-      await user.updatePhotoUrl(t).catchError(error);
+      await user.updatePhotoUrl(t).catchError((e) => error(e));
       setState(() => uploadProgress = 0);
     } catch (e) {
       debugPrint('updatePhotoUrl() => StorageService.instance.delete(${user.photoUrl})');

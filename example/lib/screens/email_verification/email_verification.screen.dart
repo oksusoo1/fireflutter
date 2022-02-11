@@ -1,8 +1,8 @@
 import 'package:extended/extended.dart';
+import 'package:fe/service/app.service.dart';
 import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:get/get.dart';
 
 typedef FutureFunction = Future Function();
 
@@ -43,7 +43,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                       'Success',
                       re ? 'Email verfied.' : 'Email had been updated and verified.',
                     );
-                    Get.toNamed('/home');
+                    AppService.instance.openHome();
                   },
                   onError: error,
                   onVerificationEmailSent: (email) => alert(
@@ -63,7 +63,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                       'Login again',
                       'Your login is no longer valid. You must sign-in again.',
                     );
-                    Get.toNamed('/home');
+                    AppService.instance.openHome();
                   },
                   onUpdateEmail: updateEmail,
                 ),
@@ -85,25 +85,49 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
         PhoneService.instance.phoneNumber = FirebaseAuth.instance.currentUser!.phoneNumber!;
         await PhoneService.instance.verifyPhoneNumber(
           /// Once verification code is send via SMS, show a dialog input for the code.
-          codeSent: (verificationId) => Get.defaultDialog(
-            title: 'Enter SMS Code to verify it\'s you.',
-            content: SmsCodeInput(
-              success: () => onReAuthenticationSuccess(email).then((value) => callback()),
-              error: error,
-              submitButton: (callback) => TextButton(
-                child: const Text('Submit'),
-                onPressed: callback,
-              ),
-            ),
-          ),
+          codeSent: (verificationId) async {
+            showDialog(
+                context: context,
+                builder: (c) {
+                  return Dialog(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Text("Enter SMS Code to verify it's you."),
+                        SmsCodeInput(
+                          success: () =>
+                              onReAuthenticationSuccess(email).then((value) => callback()),
+                          error: error,
+                          submitButton: (callback) => TextButton(
+                            child: const Text('Submit'),
+                            onPressed: callback,
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                });
+
+            //   Get.defaultDialog(
+            //   title: ,
+            //   content: SmsCodeInput(
+            //     success: () => onReAuthenticationSuccess(email).then((value) => callback()),
+            //     error: error,
+            //     submitButton: (callback) => TextButton(
+            //       child: const Text('Submit'),
+            //       onPressed: callback,
+            //     ),
+            //   ),
+            // );
+          },
           androidAutomaticVerificationSuccess: () => onReAuthenticationSuccess(email).then(
             (value) => callback(),
           ),
           error: error,
           codeAutoRetrievalTimeout: (String verificationId) {
-            Get.defaultDialog(
-              middleText: 'SMS code timeouted. Please send it again',
-              textConfirm: 'Ok',
+            alert(
+              'Timeout',
+              'SMS code timeouted. Please send it again',
             );
           },
         );
@@ -121,7 +145,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
     try {
       /// Email updated after re-login.
       await FirebaseAuth.instance.currentUser!.updateEmail(email);
-      Get.back();
+      AppService.instance.back();
     } catch (e) {
       error(e);
     }

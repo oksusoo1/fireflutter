@@ -38,28 +38,26 @@ class _AdminScreenState extends State<AdminScreen> {
               ? const Text('You are an admin')
               : const Text('You are not admin'),
           ElevatedButton(
-            onPressed: AppController.of.openCategory,
+            onPressed: AppService.instance.openCategory,
             child: const Text('Category Management'),
           ),
           Text('Report Management'),
           Wrap(
             children: [
               ElevatedButton(
-                onPressed: () {
-                  AppController.of.openReport();
-                },
+                onPressed: AppService.instance.openReport,
                 child: const Text('All'),
               ),
               ElevatedButton(
-                onPressed: () => AppController.of.openReport('post'),
+                onPressed: () => AppService.instance.openReport('post'),
                 child: const Text('Posts'),
               ),
               ElevatedButton(
-                onPressed: () => AppController.of.openReport('comment'),
+                onPressed: () => AppService.instance.openReport('comment'),
                 child: const Text('Comments'),
               ),
               ElevatedButton(
-                onPressed: () => AppController.of.openReport('user'),
+                onPressed: () => AppService.instance.openReport('user'),
                 child: const Text('Users'),
               ),
             ],

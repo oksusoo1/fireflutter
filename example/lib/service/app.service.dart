@@ -1,5 +1,14 @@
-import 'package:fe/service/route.names.dart';
+import 'package:fe/screens/admin/admin.screen.dart';
+import 'package:fe/screens/admin/category.screen.dart';
+import 'package:fe/screens/admin/report.post.management.screen.dart';
+import 'package:fe/screens/admin/report.screen.dart';
+import 'package:fe/screens/forum/post.form.screen.dart';
+import 'package:fe/screens/forum/post.list.screen.dart';
+import 'package:fe/screens/home/home.screen.dart';
+import 'package:fe/screens/profile/profile.screen.dart';
+import 'package:fe/service/global.keys.dart';
 import 'package:fireflutter/fireflutter.dart';
+import 'package:flutter/material.dart';
 
 class AppService {
   static AppService? _instance;
@@ -10,41 +19,54 @@ class AppService {
     return _instance!;
   }
 
-  Future<void> openProfile() async {
-    if (UserService.instance.user.signedOut) throw ERROR_SIGN_IN;
-    return Get.toNamed(RouteNames.profile);
+  void back([dynamic data]) {
+    Navigator.pop(globalNavigatorKey.currentContext!, data);
   }
 
+  Future<void> open(String routeName, {Map<String, dynamic>? arguments}) {
+    return Navigator.pushNamed(
+      globalNavigatorKey.currentContext!,
+      routeName,
+      arguments: arguments,
+    );
+  }
+
+  Future<void> openProfile() async {
+    if (UserService.instance.user.signedOut) throw ERROR_SIGN_IN;
+    return open(ProfileScreen.routeName);
+  }
+
+  /// TODO: remove all the routes from route stack
   Future<void> openHome() async {
-    return Get.toNamed(RouteNames.home);
+    return open(HomeScreen.routeName);
   }
 
   Future<void> openForumList({String? category}) async {
-    return Get.toNamed(RouteNames.postList, arguments: {'category': category});
+    return open(PostListScreen.routeName, arguments: {'category': category});
   }
 
   /// Returns post id of newly created post.
   Future<dynamic> openPostForm({String? category, PostModel? post}) async {
-    return Get.toNamed(RouteNames.postForm, arguments: {
+    return open(PostFormScreen.routeName, arguments: {
       'category': category,
       'post': post,
     });
   }
 
   Future<void> openAdmin() async {
-    return Get.toNamed(RouteNames.admin);
+    return open(AdminScreen.routeName);
   }
 
   Future<void> openCategory() async {
-    return Get.toNamed(RouteNames.category);
+    return open(CategoryScreen.routeName);
   }
 
   Future<void> openReport([String? target]) async {
-    return Get.toNamed(RouteNames.report, arguments: {'target': target});
+    return open(ReportScreen.routeName, arguments: {'target': target});
   }
 
   Future<void> openReportForumMangement(String target, String id) async {
-    return Get.toNamed(RouteNames.reportForumManagement, arguments: {
+    return open(ReportPostManagementScreen.routeName, arguments: {
       'target': target,
       'id': id,
     });

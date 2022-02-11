@@ -1,9 +1,9 @@
 import 'package:extended/extended.dart';
 import 'package:fe/service/app.service.dart';
+import 'package:fe/service/global.keys.dart';
 import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterfire_ui/firestore.dart';
-import 'package:get/get.dart';
 
 class PostListScreen extends StatefulWidget {
   PostListScreen({Key? key}) : super(key: key);
@@ -15,12 +15,12 @@ class PostListScreen extends StatefulWidget {
 }
 
 class _PostListScreenState extends State<PostListScreen> with FirestoreMixin {
-  final app = AppController.of;
-  final category = Get.arguments['category'];
+  late final String category;
   String? newPostId;
   @override
   void initState() {
     super.initState();
+    category = getArg(context, 'category');
   }
 
   @override
@@ -36,7 +36,7 @@ class _PostListScreenState extends State<PostListScreen> with FirestoreMixin {
           ),
           IconButton(
             onPressed: () async {
-              newPostId = await app.openPostForm(category: category);
+              newPostId = await AppService.instance.openPostForm(category: category);
               if (mounted) setState(() {});
             },
             icon: Icon(
@@ -74,7 +74,7 @@ class _PostListScreenState extends State<PostListScreen> with FirestoreMixin {
             ),
             onExpansionChanged: (value) {
               if (value) {
-                post.increaseViewCounter().catchError(error);
+                post.increaseViewCounter().catchError((e) => error(e));
               }
             },
             children: [
@@ -82,7 +82,7 @@ class _PostListScreenState extends State<PostListScreen> with FirestoreMixin {
                 post: post,
                 onReply: onReply,
                 onReport: onReport,
-                onEdit: (post) => AppController.of.openPostForm(post: post),
+                onEdit: (post) => AppService.instance.openPostForm(post: post),
                 onDelete: onDelete,
                 onLike: onLike,
                 onDislike: onDislike,
@@ -112,7 +112,7 @@ class _PostListScreenState extends State<PostListScreen> with FirestoreMixin {
       context: context,
       builder: (_) {
         return CommentEditDialog(
-          onCancel: Get.back,
+          onCancel: AppService.instance.back,
           onError: error,
           onSubmit: (Json form) async {
             try {
@@ -123,7 +123,7 @@ class _PostListScreenState extends State<PostListScreen> with FirestoreMixin {
                 files: form['files'],
               );
               // form.create(postId: post.id, parentId: comment?.id ?? post.id);
-              Get.back();
+              AppService.instance.back();
               alert('Comment created', 'Your comment has created successfully');
 
               // @TODO send push notification on create using "comments_category" topic
@@ -143,7 +143,7 @@ class _PostListScreenState extends State<PostListScreen> with FirestoreMixin {
       builder: (_) {
         return CommentEditDialog(
           comment: comment,
-          onCancel: Get.back,
+          onCancel: AppService.instance.back,
           onError: error,
           onSubmit: (Json form) async {
             try {
@@ -152,7 +152,7 @@ class _PostListScreenState extends State<PostListScreen> with FirestoreMixin {
                 files: form['files'],
               );
               // form.create(postId: post.id, parentId: comment?.id ?? post.id);
-              Get.back();
+              AppService.instance.back();
               alert('Comment updated', 'You have updated the comment successfully');
             } catch (e) {
               error(e);
@@ -196,7 +196,7 @@ class _PostListScreenState extends State<PostListScreen> with FirestoreMixin {
   onReport(dynamic postOrComment) async {
     final input = TextEditingController(text: '');
     String? re = await showDialog(
-      context: Get.context!,
+      context: globalNavigatorKey.currentContext!,
       builder: (c) => AlertDialog(
         title: Text('Report Post'),
         content: Column(
@@ -213,13 +213,13 @@ class _PostListScreenState extends State<PostListScreen> with FirestoreMixin {
         actions: [
           TextButton(
             onPressed: () {
-              Get.back();
+              AppService.instance.back();
             },
             child: Text('close'),
           ),
           TextButton(
             onPressed: () async {
-              Get.back(result: input.text);
+              AppService.instance.back(input.text);
             },
             child: Text('submit'),
           ),
@@ -237,6 +237,7 @@ class _PostListScreenState extends State<PostListScreen> with FirestoreMixin {
   }
 
   onImageTapped(int initialIndex, List<String> files) {
-    return Get.dialog(ImageViewer(files, initialIndex: initialIndex));
+    return alert('Display original image', 'TODO: display original images with a scaffold.');
+    // return Get.dialog(ImageViewer(files, initialIndex: initialIndex));
   }
 }
