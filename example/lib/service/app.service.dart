@@ -1,15 +1,13 @@
-
-
 import 'package:fe/service/route.names.dart';
 import 'package:fireflutter/fireflutter.dart';
-import 'package:get/get.dart';
 
-class AppController extends GetxController {
-  static AppController of = Get.find<AppController>();
-
-  @override
-  onInit() {
-    super.onInit();
+class AppService {
+  static AppService? _instance;
+  static AppService get instance {
+    if (_instance == null) {
+      _instance = AppService();
+    }
+    return _instance!;
   }
 
   Future<void> openProfile() async {

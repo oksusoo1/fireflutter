@@ -6,6 +6,8 @@ import 'package:get/get.dart';
 class ReminderEditScreen extends StatelessWidget {
   ReminderEditScreen({Key? key}) : super(key: key);
 
+  static const String routeName = '/reminderEdit';
+
   final controller = ReminderEditController();
 
   @override

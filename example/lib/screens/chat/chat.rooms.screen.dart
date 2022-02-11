@@ -8,6 +8,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 class ChatRoomsScreen extends StatelessWidget {
   const ChatRoomsScreen({Key? key}) : super(key: key);
 
+  static const String routeName = '/chatRooms';
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

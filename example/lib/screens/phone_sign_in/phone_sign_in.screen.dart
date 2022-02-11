@@ -1,9 +1,10 @@
 import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 
 class PhoneSignInScreen extends StatefulWidget {
   const PhoneSignInScreen({Key? key}) : super(key: key);
+
+  static const String routeName = '/phone-sign-in';
 
   @override
   _PhoneSignInScreenState createState() => _PhoneSignInScreenState();

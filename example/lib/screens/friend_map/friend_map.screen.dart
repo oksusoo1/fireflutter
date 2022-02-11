@@ -7,6 +7,8 @@ import 'package:get/get.dart';
 class FriendMapScreen extends StatelessWidget {
   const FriendMapScreen({Key? key}) : super(key: key);
 
+  static const String routeName = '/friendMap';
+
   double get latitude => Get.arguments['latitude'] is double
       ? Get.arguments['latitude']
       : double.tryParse(Get.arguments['latitude'])!;

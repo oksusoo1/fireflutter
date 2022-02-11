@@ -9,6 +9,8 @@ typedef FutureFunction = Future Function();
 class EmailVerificationScreen extends StatefulWidget {
   const EmailVerificationScreen({Key? key}) : super(key: key);
 
+  static const String routeName = '/emailVerification';
+
   @override
   State<EmailVerificationScreen> createState() => _EmailVerificationScreenState();
 }

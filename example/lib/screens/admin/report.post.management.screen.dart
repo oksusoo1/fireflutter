@@ -1,10 +1,11 @@
 import 'package:extended/extended.dart';
 import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 
 class ReportPostManagementScreen extends StatelessWidget {
   const ReportPostManagementScreen({Key? key}) : super(key: key);
+
+  static const String routeName = '/reportPostManagement';
 
   @override
   Widget build(BuildContext context) {

@@ -1,11 +1,11 @@
 import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
 import 'package:country_code_picker/country_code_picker.dart';
-import 'package:get/get.dart';
 
 class PhoneSignInUIScreen extends StatefulWidget {
   const PhoneSignInUIScreen({Key? key}) : super(key: key);
 
+  static const String routeName = '/phoneSignInUi';
   @override
   _PhoneSignInUIScreenState createState() => _PhoneSignInUIScreenState();
 }

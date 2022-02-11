@@ -5,9 +5,10 @@ import 'package:flutter/material.dart';
 class NotificationSettingScreen extends StatefulWidget {
   const NotificationSettingScreen({Key? key}) : super(key: key);
 
+  static const String routeName = '/notificationSettings';
+
   @override
-  _NotificationSettingScreenState createState() =>
-      _NotificationSettingScreenState();
+  _NotificationSettingScreenState createState() => _NotificationSettingScreenState();
 }
 
 class _NotificationSettingScreenState extends State<NotificationSettingScreen> {

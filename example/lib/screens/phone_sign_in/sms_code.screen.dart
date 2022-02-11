@@ -1,9 +1,10 @@
 import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 
 class SmsCodeScreen extends StatefulWidget {
   const SmsCodeScreen({Key? key}) : super(key: key);
+
+  static const String routeName = '/smsCode';
 
   @override
   _SmsCodeScreenState createState() => _SmsCodeScreenState();
@@ -35,17 +36,13 @@ class _SmsCodeScreenState extends State<SmsCodeScreen> {
                   },
                   error: (e) {
                     Get.defaultDialog(
-                        middleText: e.toString(),
-                        textConfirm: 'Ok',
-                        onConfirm: () => Get.back());
+                        middleText: e.toString(), textConfirm: 'Ok', onConfirm: () => Get.back());
                   },
                 );
               },
               child: const Text('Submit'),
             ),
-            TextButton(
-                onPressed: Get.back,
-                child: const Text('Try again with different number'))
+            TextButton(onPressed: Get.back, child: const Text('Try again with different number'))
           ],
         ),
       ),

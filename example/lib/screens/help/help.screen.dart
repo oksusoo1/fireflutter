@@ -4,6 +4,8 @@ import 'package:get/get.dart';
 class HelpScreen extends StatefulWidget {
   const HelpScreen({Key? key}) : super(key: key);
 
+  static const String routeName = '/help';
+
   @override
   State<HelpScreen> createState() => _HelpScreenState();
 }

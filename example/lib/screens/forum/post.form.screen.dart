@@ -6,6 +6,8 @@ import 'package:get/get.dart';
 class PostFormScreen extends StatefulWidget {
   const PostFormScreen({Key? key}) : super(key: key);
 
+  static const String routeName = '/postForm';
+
   @override
   State<PostFormScreen> createState() => _PostFormScreenState();
 }

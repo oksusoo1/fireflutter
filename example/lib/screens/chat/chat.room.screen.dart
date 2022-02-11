@@ -9,6 +9,8 @@ import 'package:url_launcher/url_launcher.dart';
 class ChatRoomScreen extends StatefulWidget {
   const ChatRoomScreen({Key? key}) : super(key: key);
 
+  static const String routeName = '/chatRoom';
+
   @override
   State<ChatRoomScreen> createState() => _ChatRoomScreenState();
 }

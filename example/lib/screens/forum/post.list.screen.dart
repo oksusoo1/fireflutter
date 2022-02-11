@@ -1,5 +1,5 @@
 import 'package:extended/extended.dart';
-import 'package:fe/service/app.controller.dart';
+import 'package:fe/service/app.service.dart';
 import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterfire_ui/firestore.dart';
@@ -7,6 +7,8 @@ import 'package:get/get.dart';
 
 class PostListScreen extends StatefulWidget {
   PostListScreen({Key? key}) : super(key: key);
+
+  static const String routeName = '/postList';
 
   @override
   State<PostListScreen> createState() => _PostListScreenState();

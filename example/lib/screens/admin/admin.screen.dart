@@ -1,10 +1,12 @@
 import 'package:extended/extended.dart';
-import 'package:fe/service/app.controller.dart';
+import 'package:fe/service/app.service.dart';
 import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
 
 class AdminScreen extends StatefulWidget {
   const AdminScreen({Key? key}) : super(key: key);
+
+  static const String routeName = '/admin';
 
   @override
   State<AdminScreen> createState() => _AdminScreenState();
