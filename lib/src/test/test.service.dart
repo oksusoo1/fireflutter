@@ -52,7 +52,7 @@ class TestService {
       await future;
       testError('Error expected', message);
     } catch (e) {
-      testSuccess(message);
+      testSuccess(message + '[$e]');
     }
   }
 }

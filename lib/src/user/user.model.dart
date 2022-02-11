@@ -119,6 +119,7 @@ class UserModel with FirestoreMixin, DatabaseMixin {
   /// ```
   Future<void> update({required String field, required dynamic value}) {
     if (fields.indexOf(field) == -1) {
+      // throw Exception(ERROR_NOT_SUPPORTED_FIELD_ON_USER_UPDATE);
       throw ERROR_NOT_SUPPORTED_FIELD_ON_USER_UPDATE;
     }
     return _myDoc.update({field: value});

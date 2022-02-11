@@ -95,8 +95,8 @@ class StorageService {
     try {
       await Future.wait(
         [
-          storage.refFromURL(url).delete(),
-          storage.refFromURL(thumbnailUrl).delete(),
+          if (url.startsWith('http')) ref(url).delete(),
+          if (thumbnailUrl.startsWith('http')) ref(thumbnailUrl).delete(),
         ],
       );
     } on FirebaseException catch (e) {

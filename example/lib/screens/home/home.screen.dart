@@ -263,8 +263,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: const Text('User Test'),
                   ),
                   ElevatedButton(
-                    onPressed: testOnSettings,
-                    child: const Text('Test Settings'),
+                    onPressed: testOnUserData,
+                    child: const Text('Test User Data'),
                   ),
                   ElevatedButton(
                     onPressed: testOnForum,
@@ -344,11 +344,18 @@ class _HomeScreenState extends State<HomeScreen> {
     Get.back();
   }
 
-  testOnSettings() async {
+  testOnUserData() async {
     final ts = TestService.instance;
     final settingService = UserSettingsService.instance;
+    final userService = UserService.instance;
 
     ts.reset();
+
+    try {
+      userService.update(field: 'abc', value: 'def');
+    } catch (e) {
+      ts.test(e == ERROR_NOT_SUPPORTED_FIELD_ON_USER_UPDATE, 'Wrong field');
+    }
 
     final timestamp = DateTime.now().millisecondsSinceEpoch;
     await ts.expectSuccess(settingService.update({
