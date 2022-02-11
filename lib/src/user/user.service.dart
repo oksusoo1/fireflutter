@@ -33,6 +33,8 @@ class UserService with FirestoreMixin, DatabaseMixin {
   /// To display email on screen, use this.
   String get displayEmail => email == '' ? 'NO-EMAIL' : email;
 
+  String get photoUrl => user.photoUrl;
+
   DatabaseReference get _myDoc => FirebaseDatabase.instance.ref('users').child(uid);
 
   StreamSubscription? userSubscription;
