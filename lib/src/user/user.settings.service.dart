@@ -52,6 +52,7 @@ class UserSettingsService with DatabaseMixin {
                 print('UserSettingsService; Got new data');
                 settings = UserSettingsModel.fromJson(event.snapshot.value);
               } else {
+                // create the document /user-settings/uid with timestamp to avoid error when saving data with doc/data
                 create();
                 settings = UserSettingsModel.empty();
               }
