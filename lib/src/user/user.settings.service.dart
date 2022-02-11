@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:rxdart/rxdart.dart';
 
 import '../../fireflutter.dart';
 
@@ -15,8 +16,14 @@ class UserSettingsService with DatabaseMixin {
     return _instance!;
   }
 
-  UserSettingsModel settings = UserSettingsModel(topic: {}, data: {});
+  UserSettingsModel settings = UserSettingsModel.empty();
   StreamSubscription? sub;
+
+  /// This event will be posted whenever user settings document changes.
+  // ignore: close_sinks
+  BehaviorSubject<UserSettingsModel> changes = BehaviorSubject.seeded(
+    UserSettingsModel.empty(),
+  );
 
   UserSettingsService() {
     debugPrint('UserSettingsService::constructor');
@@ -44,7 +51,10 @@ class UserSettingsService with DatabaseMixin {
               if (event.snapshot.exists) {
                 print('UserSettingsService; Got new data');
                 settings = UserSettingsModel.fromJson(event.snapshot.value);
+              } else {
+                settings = UserSettingsModel.empty();
               }
+              changes.add(settings);
             }, onError: (e) {
               print('UserSettingsDoc listening error; $e');
             });
@@ -76,7 +86,14 @@ class UserSettingsService with DatabaseMixin {
   /// If user subscribed the topic, that topic name will be saved into user meta in backend
   /// And when user profile is loaded, the subscriptions are saved into [subscriptions]
   bool hasSubscription(String topic) {
-    return false;
-    // return topics.contains(topic);
+    return settings.topics[topic] ?? false;
+  }
+
+  Future<void> subscribe(String topic) {
+    return update({'topic/$topic': true});
+  }
+
+  Future<void> unsubscribe(String topic) {
+    return update({'topic/$topic': false});
   }
 }

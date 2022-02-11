@@ -11,108 +11,62 @@ class NotificationSetting extends StatefulWidget {
   final Function onError;
 
   @override
-  _NotificationSettingState createState() => _NotificationSettingState();
+  State<NotificationSetting> createState() => _NotificationSettingState();
 }
 
-class _NotificationSettingState extends State<NotificationSetting> with FirestoreMixin {
-  Map<String, bool> posts = {};
-  Map<String, bool> comments = {};
-
-  bool loading = false;
-
+class _NotificationSettingState extends State<NotificationSetting> {
   @override
   void initState() {
     super.initState();
-
-    () async {
-      loading = true;
-      try {
-        final res = await categoryCol.orderBy('title').get();
-
-        for (DocumentSnapshot doc in res.docs) {
-          Map<String, dynamic> c = doc.data() as Map<String, dynamic>;
-          if (UserService.instance.user.settings.hasSubscription('posts_' + c['title'])) {
-            posts[c['title']] = true;
-          } else {
-            posts[c['title']] = false;
-          }
-
-          if (UserService.instance.user.settings.hasSubscription('comments_' + c['title'])) {
-            comments[c['title']] = true;
-          } else {
-            comments[c['title']] = false;
-          }
-        }
-        loading = false;
-        setState(() {});
-      } catch (e) {
-        widget.onError(e);
-        loading = false;
-
-        setState(() {});
-      }
-    }();
+    CategoryService.instance.getCategories().then((v) => setState(() {}));
   }
 
   @override
   Widget build(BuildContext context) {
-    if (loading) return Center(child: CircularProgressIndicator.adaptive());
-    return Column(
-      children: [
-        ElevatedButton(
-          onPressed: () {
-            print('Enable all notification');
-          },
-          child: Text('Enable all notification'),
-        ),
-        ElevatedButton(
-          onPressed: () {
-            print('Disable all notification');
-          },
-          child: Text('Disable all notification'),
-        ),
-        Text('Post notification'),
-        for (String n in posts.keys)
-          ListTile(
-            leading: IconButton(
-              icon: posts[n] == true ? Icon(Icons.check_box) : Icon(Icons.check_box_outline_blank),
-              onPressed: () async {
-                // save changes
-                if (mounted)
-                  try {
-                    await MessagingService.instance.updateSubscription('posts_' + n);
-                    setState(() {
-                      posts[n] = !posts[n]!;
-                    });
-                  } catch (e) {
-                    widget.onError(e);
-                  }
-              },
-            ),
-            title: Text(n),
-          ),
-        Text('Comment notification'),
-        for (String n in comments.keys)
-          ListTile(
-            leading: IconButton(
-              icon:
-                  comments[n] == true ? Icon(Icons.check_box) : Icon(Icons.check_box_outline_blank),
-              onPressed: () async {
-                // save changes
-                if (mounted)
-                  try {
-                    await MessagingService.instance.updateSubscription('comments_' + n);
-                    setState(() {
-                      comments[n] = !comments[n]!;
-                    });
-                  } catch (e) {
-                    widget.onError(e);
-                  }
-              },
-            ),
-            title: Text(n),
-          ),
-      ],
-    );
+    // if (loading) return Center(child: CircularProgressIndicator.adaptive());
+    return StreamBuilder(
+        stream: UserSettingsService.instance.changes.stream,
+        builder: (context, snapshot) {
+          if (snapshot.hasError) return Text('Error');
+          if (snapshot.connectionState == ConnectionState.waiting) return SizedBox.shrink();
+          if (snapshot.hasData == false) return SizedBox.shrink();
+          print(UserSettingsService.instance.settings.topics);
+          return Column(
+            children: [
+              ElevatedButton(
+                onPressed: () {
+                  print('Enable all notification');
+                },
+                child: Text('Enable all notification'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  print('Disable all notification');
+                },
+                child: Text('Disable all notification'),
+              ),
+              Text('Post notification'),
+              for (CategoryModel cat in CategoryService.instance.categories)
+                CheckboxListTile(
+                  value: UserSettingsService.instance.hasSubscription('posts_${cat.id}'),
+                  onChanged: (b) => MessagingService.instance
+                      .updateSubscription('posts_${cat.id}', b ?? false)
+                      .catchError(widget.onError),
+                  title: Text(cat.title),
+                  controlAffinity: ListTileControlAffinity.leading,
+                ),
+              Text('Comment notification'),
+              for (CategoryModel cat in CategoryService.instance.categories)
+                CheckboxListTile(
+                  value: UserSettingsService.instance.hasSubscription('comments_${cat.id}'),
+                  onChanged: (b) => MessagingService.instance
+                      .updateSubscription('comments_${cat.id}', b ?? false)
+                      .catchError(widget.onError),
+                  title: Text(cat.title),
+                  controlAffinity: ListTileControlAffinity.leading,
+                ),
+            ],
+          );
+        });
   }
 }
