@@ -6,12 +6,14 @@ class ImageList extends StatelessWidget {
     required this.files,
     this.onImageTap,
     this.noOfImagesToShow = 6,
+    this.padding = const EdgeInsets.symmetric(horizontal: 8),
     Key? key,
   }) : super(key: key);
 
   final List<String> files;
   final Function(int)? onImageTap;
   final int noOfImagesToShow;
+  final EdgeInsets padding;
 
   @override
   Widget build(BuildContext context) {
@@ -21,6 +23,7 @@ class ImageList extends StatelessWidget {
 
     return Container(
       width: double.infinity,
+      padding: padding,
       child: files.length > 1
           ? GridView.count(
               physics: NeverScrollableScrollPhysics(),
