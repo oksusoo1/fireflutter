@@ -873,10 +873,6 @@ InformService.instance.inform(widget.room.otherUid, {
 
 - Since the Firebase libraries need to run on an actual device or emulator, we developped our own unit test & UI test.
 
-- We use `Getx` for the example app development and we use it to the test.
-  - There are `example/lib/app.controller.dart` which holds memory data of example app.
-  - When test runs, the test drives screen changes and check if the data of the screen is set properly.
-
 
 ## Local test on firestore security rules
 
