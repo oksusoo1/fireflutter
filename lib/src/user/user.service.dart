@@ -158,27 +158,14 @@ class UserService with FirestoreMixin, DatabaseMixin {
       return others[uid]!;
     }
 
-    UserModel other;
-    try {
-      final event = await userDoc(uid).get();
+    UserModel other = UserModel();
 
-      if (event.exists) {
-        other = UserModel.fromJson(event.value, event.key!);
-      } else {
-        other = UserModel();
-      }
-    } on FirebaseException catch (e) {
-      debugPrint('------------> getOtherUserDoc causes an Exception; ($uid) $e');
-      // if (e.code == 'permission-denied') {
-      //   other = UserModel();
-      // } else {
-      //   other = UserModel();
-      // }
-      other = UserModel();
-    } catch (e) {
-      debugPrint('------------> getOtherUserDoc causes an Exception; $e');
-      other = UserModel();
+    final event = await userDoc(uid).get();
+
+    if (event.exists) {
+      other = UserModel.fromJson(event.value, event.key!);
     }
+
     others[uid] = other;
     return others[uid]!;
   }

@@ -1076,6 +1076,9 @@ DynamicLinksService.instance.listen((Uri? deepLink) {
 
 - When user deletes a post, the document is marked as deleted, instead of remove it from the database. And user may update the document even if the post is marked as deleted. Editing post of delete mark is banned by security rule. This is by design and is not harmful. So, there should be some code to inform user not to edit deleted post. This goes the same to comment delete.
 
+- `hasPhoto` becomes true if the post has a photo.
+  - This is a helper property for searching posts that have pohtos. Since firestore cannot have inequality expression on multiple fields, it wil help to search posts that have photos.
+
 ## Comment
 
 - Comments are saved in `/comments` so it is better to be search. If it is saved under `/posts/(postId)/comments/`, then it is not easy to search.

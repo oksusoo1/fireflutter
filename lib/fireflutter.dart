@@ -59,6 +59,7 @@ export 'src/forum/widgets/comment.dart';
 export 'src/forum/widgets/post.form.dart';
 export 'src/forum/models/category.model.dart';
 export 'src/forum/category.service.dart';
+export 'src/forum/post.service.dart';
 export 'src/forum/widgets/push_notification/forum.list.push_notification.icon.dart';
 
 export 'src/storage/storage.service.dart';
@@ -73,3 +74,5 @@ export 'src/setting/notification.setting.dart';
 
 export 'src/user/user.settings.model.dart';
 export 'src/user/user.settings.service.dart';
+
+export 'src/user/widgets/user.name.dart';
