@@ -4,22 +4,18 @@ import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
 
 class FriendMapScreen extends StatefulWidget {
-  const FriendMapScreen({Key? key}) : super(key: key);
+  const FriendMapScreen({required this.arguments, Key? key}) : super(key: key);
 
   static const String routeName = '/friendMap';
+  final Map arguments;
 
   @override
   State<FriendMapScreen> createState() => _FriendMapScreenState();
 }
 
 class _FriendMapScreenState extends State<FriendMapScreen> {
-  double get latitude => getArg(context, 'latitude') is double
-      ? getArg(context, 'latitude')
-      : double.tryParse(getArg(context, 'latitude'))!;
-
-  double get longitude => getArg(context, 'longitude') is double
-      ? getArg(context, 'longitude')
-      : double.tryParse(getArg(context, 'longitude'))!;
+  double get latitude => toDouble(widget.arguments['latitude']);
+  double get longitude => toDouble(widget.arguments['longitude']);
 
   @override
   Widget build(BuildContext context) {

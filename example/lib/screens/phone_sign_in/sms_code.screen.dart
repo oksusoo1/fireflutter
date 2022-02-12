@@ -28,8 +28,8 @@ class _SmsCodeScreenState extends State<SmsCodeScreen> {
             ElevatedButton(
               onPressed: () {
                 PhoneService.instance.verifySMSCode(
-                  success: () {
-                    alert('Phone sign-in success', 'You have signed-in.');
+                  success: () async {
+                    await alert('Phone sign-in success', 'You have signed-in.');
                     AppService.instance.openHome();
                     // Get.defaultDialog(
                     //     middleText: 'Phone sign-in success',

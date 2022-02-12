@@ -1,6 +1,12 @@
 import 'dart:async';
 
 import 'package:extended/extended.dart';
+import 'package:fe/screens/chat/chat.rooms.screen.dart';
+import 'package:fe/screens/friend_map/friend_map.screen.dart';
+import 'package:fe/screens/help/help.screen.dart';
+import 'package:fe/screens/phone_sign_in/phone_sign_in.screen.dart';
+import 'package:fe/screens/phone_sign_in_ui/phone_sign_in_ui.screen.dart';
+import 'package:fe/screens/reminder/reminder.edit.screen.dart';
 import 'package:fe/screens/setting/notification.setting.dart';
 import 'package:fe/service/app.service.dart';
 import 'package:fe/service/config.dart';
@@ -105,13 +111,13 @@ class _HomeScreenState extends State<HomeScreen> {
                         ElevatedButton(
                           child: const Text('Phone Sign-In'),
                           onPressed: () {
-                            AppService.instance.open('/phone-sign-in');
+                            AppService.instance.open(PhoneSignInScreen.routeName);
                           },
                         ),
                         ElevatedButton(
                           child: const Text('Phone Sign-In UI'),
                           onPressed: () {
-                            AppService.instance.open('/phone-sign-in-ui');
+                            AppService.instance.open(PhoneSignInUIScreen.routeName);
                           },
                         ),
                       ],
@@ -136,10 +142,15 @@ class _HomeScreenState extends State<HomeScreen> {
               Wrap(
                 children: [
                   ElevatedButton(
-                      onPressed: () => AppService.instance.open('/help'),
+                      onPressed: () => AppService.instance.open(HelpScreen.routeName, arguments: {
+                            'when': 'Now',
+                            'where': 'GimHae',
+                            'who': 'Me',
+                            'what': 'Working',
+                          }),
                       child: const Text('Help')),
                   ElevatedButton(
-                    onPressed: () => AppService.instance.open('/chat-rooms-screen'),
+                    onPressed: () => AppService.instance.open(ChatRoomsScreen.routeName),
                     child: const Text('Chat Room List'),
                   ),
                   TextButton(
@@ -152,7 +163,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ],
                     ),
                     onPressed: () {
-                      AppService.instance.open('/chat-rooms-screen');
+                      AppService.instance.open(ChatRoomsScreen.routeName);
                     },
                   ),
                   TextButton(
@@ -168,11 +179,11 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: Text('Get firestore index links'),
                   ),
                   ElevatedButton(
-                    onPressed: () => AppService.instance.open('/friend-map'),
+                    onPressed: () => AppService.instance.open(FriendMapScreen.routeName),
                     child: const Text('Friend Map'),
                   ),
                   ElevatedButton(
-                    onPressed: () => AppService.instance.open('/reminder-edit'),
+                    onPressed: () => AppService.instance.open(ReminderEditScreen.routeName),
                     child: const Text('Reminder Management Screen'),
                   ),
                 ],

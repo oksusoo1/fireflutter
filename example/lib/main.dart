@@ -34,6 +34,32 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_app_badger/flutter_app_badger.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 
+typedef RouteFunction = Widget Function(BuildContext, Map);
+final Map<String, RouteFunction> routes = {
+  HomeScreen.routeName: (context, arguments) => const HomeScreen(),
+  SignInWidget.routeName: (context, arguments) => const SignInWidget(),
+  PhoneSignInScreen.routeName: (context, arguments) => const PhoneSignInScreen(),
+  SmsCodeScreen.routeName: (context, arguments) => const SmsCodeScreen(),
+  PhoneSignInUIScreen.routeName: (context, arguments) => const PhoneSignInUIScreen(),
+  SmsCodeUIScreen.routeName: (context, arguments) => const SmsCodeUIScreen(),
+  HelpScreen.routeName: (context, arguments) => HelpScreen(arguments: arguments),
+  ProfileScreen.routeName: (context, arguments) => ProfileScreen(key: profileScreenKey),
+  PostListScreen.routeName: (context, arguments) => PostListScreen(arguments: arguments),
+  PostFormScreen.routeName: (context, arguments) => PostFormScreen(arguments: arguments),
+  AdminScreen.routeName: (context, arguments) => AdminScreen(),
+  NotificationSettingScreen.routeName: (context, arguments) => NotificationSettingScreen(),
+  ReportPostManagementScreen.routeName: (context, arguments) =>
+      ReportPostManagementScreen(arguments: arguments),
+  CategoryScreen.routeName: (context, arguments) => CategoryScreen(),
+  ChatRoomScreen.routeName: (context, arguments) => ChatRoomScreen(arguments: arguments),
+  ChatRoomsScreen.routeName: (context, arguments) => ChatRoomsScreen(),
+  ChatRoomsBlockedScreen.routeName: (context, arguments) => ChatRoomsBlockedScreen(),
+  FriendMapScreen.routeName: (context, arguments) => FriendMapScreen(arguments: arguments),
+  ReminderEditScreen.routeName: (context, arguments) => ReminderEditScreen(),
+  ReportScreen.routeName: (context, arguments) => ReportScreen(arguments: arguments),
+  EmailVerificationScreen.routeName: (context, arguments) => EmailVerificationScreen(),
+};
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
@@ -64,6 +90,8 @@ class _MainAppState extends State<MainApp> {
     PresenceService.instance.activate(
       onError: (e) => debugPrint('--> Presence error: $e'),
     );
+
+    ExtendedService.instance.navigatorKey = globalNavigatorKey;
 
     // Timer(const Duration(milliseconds: 200), () => Get.toNamed('/email-verify'));
     // Timer(const Duration(milliseconds: 200), AppController.of.openCategory);
@@ -160,14 +188,10 @@ class _MainAppState extends State<MainApp> {
         print('onNotificationPermissionNotDetermined()');
       },
       onTokenUpdated: (token) {
-        print('##########onTokenUpdated###########');
+        // print('##########onTokenUpdated###########');
         // print(token);
       },
     );
-
-    /// Make sure user settings loaded
-    debugPrint('User settings;');
-    debugPrint(UserSettingsService.instance.settings.toString());
   }
 
   onMessageOpenedShowMessage(message) {
@@ -191,77 +215,82 @@ class _MainAppState extends State<MainApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        navigatorKey: globalNavigatorKey,
-        theme: ThemeData(
-          primarySwatch: Colors.blue,
-        ),
-        initialRoute: HomeScreen.routeName,
-        routes: {
-          HomeScreen.routeName: (context) => const HomeScreen(),
-          SignInWidget.routeName: (context) => const SignInWidget(),
-          // '/sign-in-screen': (context) => SignInScreen(),
-          PhoneSignInScreen.routeName: (context) => const PhoneSignInScreen(),
-          SmsCodeScreen.routeName: (context) => const SmsCodeScreen(),
-          PhoneSignInUIScreen.routeName: (context) => const PhoneSignInUIScreen(),
-          SmsCodeUIScreen.routeName: (context) => const SmsCodeUIScreen(),
-          HelpScreen.routeName: (context) => const HelpScreen(),
-          ProfileScreen.routeName: (context) => ProfileScreen(key: profileScreenKey),
-          PostListScreen.routeName: (context) => PostListScreen(),
-          PostFormScreen.routeName: (context) => PostFormScreen(),
-          AdminScreen.routeName: (context) => AdminScreen(),
-          NotificationSettingScreen.routeName: (context) => NotificationSettingScreen(),
-          ReportPostManagementScreen.routeName: (context) => ReportPostManagementScreen(),
-          CategoryScreen.routeName: (context) => CategoryScreen(),
-          ChatRoomScreen.routeName: (context) => ChatRoomScreen(),
-          ChatRoomsScreen.routeName: (context) => ChatRoomsScreen(),
-          ChatRoomsBlockedScreen.routeName: (context) => ChatRoomsBlockedScreen(),
-          FriendMapScreen.routeName: (context) => FriendMapScreen(),
-          ReminderEditScreen.routeName: (context) => ReminderEditScreen(),
-          ReportScreen.routeName: (context) => ReportScreen(),
-          EmailVerificationScreen.routeName: (context) => EmailVerificationScreen(),
-        }
-
-        // getPages: [
-        //   GetPage(name: RouteNames.home, page: () => const HomeScreen()),
-        //   GetPage(
-        //     name: '/sign-in',
-        //     page: () => const SignInWidget(),
-        //   ),
-        //   GetPage(name: '/phone-sign-in', page: () => const PhoneSignInScreen()),
-        //   GetPage(name: '/sms-code', page: () => const SmsCodeScreen()),
-        //   GetPage(name: '/phone-sign-in-ui', page: () => const PhoneSignInUIScreen()),
-        //   GetPage(name: '/sms-code-ui', page: () => const SmsCodeUIScreen()),
-        //   GetPage(name: '/help', page: () => const HelpScreen()),
-        //   GetPage(
-        //     name: RouteNames.profile,
-        //     page: () => ProfileScreen(
-        //       key: profileScreenKey,
-        //     ),
-        //   ),
-        //   GetPage(name: RouteNames.postList, page: () => PostListScreen()),
-        //   GetPage(name: RouteNames.postForm, page: () => PostFormScreen()),
-        //   GetPage(name: RouteNames.admin, page: () => AdminScreen()),
-        //   GetPage(name: RouteNames.notificationSetting, page: () => NotificationSettingScreen()),
-        //   GetPage(
-        //     name: RouteNames.reportForumManagement,
-        //     page: () => ReportPostManagementScreen(),
-        //   ),
-        //   GetPage(name: RouteNames.category, page: () => CategoryScreen()),
-        //   GetPage(name: '/chat-room-screen', page: () => const ChatRoomScreen()),
-        //   GetPage(
-        //     name: '/chat-rooms-screen',
-        //     page: () => const ChatRoomsScreen(),
-        //   ),
-        //   GetPage(
-        //     name: '/chat-rooms-blocked-screen',
-        //     page: () => const ChatRoomsBlockedScreen(),
-        //   ),
-        //   GetPage(name: '/friend-map', page: () => const FriendMapScreen()),
-        //   GetPage(name: '/reminder-edit', page: () => ReminderEditScreen()),
-        //   GetPage(name: RouteNames.report, page: () => ReportScreen()),
-        //   GetPage(name: '/email-verify', page: () => const EmailVerificationScreen())
-        // ],
+      navigatorKey: globalNavigatorKey,
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      initialRoute: HomeScreen.routeName,
+      onGenerateRoute: (settings) {
+        return MaterialPageRoute(
+          builder: (c) => routes[settings.name]!(c, (settings.arguments ?? {}) as Map),
         );
+      },
+      // routes: {
+      //   HomeScreen.routeName: (context) => const HomeScreen(),
+      //   SignInWidget.routeName: (context) => const SignInWidget(),
+      //   // '/sign-in-screen': (context) => SignInScreen(),
+      //   PhoneSignInScreen.routeName: (context) => const PhoneSignInScreen(),
+      //   SmsCodeScreen.routeName: (context) => const SmsCodeScreen(),
+      //   PhoneSignInUIScreen.routeName: (context) => const PhoneSignInUIScreen(),
+      //   SmsCodeUIScreen.routeName: (context) => const SmsCodeUIScreen(),
+      //   HelpScreen.routeName: (context) => const HelpScreen(),
+      //   ProfileScreen.routeName: (context) => ProfileScreen(key: profileScreenKey),
+      //   PostListScreen.routeName: (context) => PostListScreen(),
+      //   PostFormScreen.routeName: (context) => PostFormScreen(),
+      //   AdminScreen.routeName: (context) => AdminScreen(),
+      //   NotificationSettingScreen.routeName: (context) => NotificationSettingScreen(),
+      //   ReportPostManagementScreen.routeName: (context) => ReportPostManagementScreen(),
+      //   CategoryScreen.routeName: (context) => CategoryScreen(),
+      //   ChatRoomScreen.routeName: (context) => ChatRoomScreen(),
+      //   ChatRoomsScreen.routeName: (context) => ChatRoomsScreen(),
+      //   ChatRoomsBlockedScreen.routeName: (context) => ChatRoomsBlockedScreen(),
+      //   FriendMapScreen.routeName: (context) => FriendMapScreen(),
+      //   ReminderEditScreen.routeName: (context) => ReminderEditScreen(),
+      //   ReportScreen.routeName: (context) => ReportScreen(),
+      //   EmailVerificationScreen.routeName: (context) => EmailVerificationScreen(),
+      // }
+
+      // getPages: [
+      //   GetPage(name: RouteNames.home, page: () => const HomeScreen()),
+      //   GetPage(
+      //     name: '/sign-in',
+      //     page: () => const SignInWidget(),
+      //   ),
+      //   GetPage(name: '/phone-sign-in', page: () => const PhoneSignInScreen()),
+      //   GetPage(name: '/sms-code', page: () => const SmsCodeScreen()),
+      //   GetPage(name: '/phone-sign-in-ui', page: () => const PhoneSignInUIScreen()),
+      //   GetPage(name: '/sms-code-ui', page: () => const SmsCodeUIScreen()),
+      //   GetPage(name: '/help', page: () => const HelpScreen()),
+      //   GetPage(
+      //     name: RouteNames.profile,
+      //     page: () => ProfileScreen(
+      //       key: profileScreenKey,
+      //     ),
+      //   ),
+      //   GetPage(name: RouteNames.postList, page: () => PostListScreen()),
+      //   GetPage(name: RouteNames.postForm, page: () => PostFormScreen()),
+      //   GetPage(name: RouteNames.admin, page: () => AdminScreen()),
+      //   GetPage(name: RouteNames.notificationSetting, page: () => NotificationSettingScreen()),
+      //   GetPage(
+      //     name: RouteNames.reportForumManagement,
+      //     page: () => ReportPostManagementScreen(),
+      //   ),
+      //   GetPage(name: RouteNames.category, page: () => CategoryScreen()),
+      //   GetPage(name: '/chat-room-screen', page: () => const ChatRoomScreen()),
+      //   GetPage(
+      //     name: '/chat-rooms-screen',
+      //     page: () => const ChatRoomsScreen(),
+      //   ),
+      //   GetPage(
+      //     name: '/chat-rooms-blocked-screen',
+      //     page: () => const ChatRoomsBlockedScreen(),
+      //   ),
+      //   GetPage(name: '/friend-map', page: () => const FriendMapScreen()),
+      //   GetPage(name: '/reminder-edit', page: () => ReminderEditScreen()),
+      //   GetPage(name: RouteNames.report, page: () => ReportScreen()),
+      //   GetPage(name: '/email-verify', page: () => const EmailVerificationScreen())
+      // ],
+    );
   }
 }
 

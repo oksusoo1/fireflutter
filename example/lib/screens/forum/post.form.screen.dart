@@ -4,9 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:fireflutter/fireflutter.dart';
 
 class PostFormScreen extends StatefulWidget {
-  const PostFormScreen({Key? key}) : super(key: key);
+  const PostFormScreen({required this.arguments, Key? key}) : super(key: key);
 
   static const String routeName = '/postForm';
+  final Map arguments;
 
   @override
   State<PostFormScreen> createState() => _PostFormScreenState();
@@ -22,8 +23,8 @@ class _PostFormScreenState extends State<PostFormScreen> with FirestoreMixin {
       body: SingleChildScrollView(
         child: PagePadding(vertical: sm, children: [
           PostForm(
-            category: getArg(context, 'category'),
-            post: getArg(context, 'post'),
+            category: widget.arguments['category'],
+            post: widget.arguments['post'],
             onCreate: (postId) {
               AppService.instance.back(postId);
               alert('Post created', 'Thank you');

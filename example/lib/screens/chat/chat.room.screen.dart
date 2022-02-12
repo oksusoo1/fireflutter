@@ -8,9 +8,10 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class ChatRoomScreen extends StatefulWidget {
-  const ChatRoomScreen({Key? key}) : super(key: key);
+  const ChatRoomScreen({required this.arguments, Key? key}) : super(key: key);
 
   static const String routeName = '/chatRoom';
+  final Map arguments;
 
   @override
   State<ChatRoomScreen> createState() => _ChatRoomScreenState();
@@ -19,11 +20,10 @@ class ChatRoomScreen extends StatefulWidget {
 class _ChatRoomScreenState extends State<ChatRoomScreen> {
   @override
   Widget build(BuildContext context) {
-    String otherUid = getArg(context, 'uid');
     return Scaffold(
       appBar: AppBar(
         title: UserDoc(
-          uid: otherUid,
+          uid: widget.arguments['uid'],
           builder: (UserModel user) {
             return Text(user.nickname);
           },
@@ -33,7 +33,7 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
           signedOut: () => const Text('login first'),
           signedIn: (u) {
             return ChatRoom(
-              otherUid: otherUid,
+              otherUid: widget.arguments['uid'],
               messageBuilder: (ChatMessageModel message) {
                 /// If it's text, then display without popup menu for other user
                 if (message.byOther && message.isText) {
@@ -159,7 +159,7 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
                 //   },
                 // );
               },
-              emptyDisplay: Text('Chat room is empty for $otherUid'),
+              emptyDisplay: Text('Chat room is empty for ${widget.arguments['uid']}'),
             );
           }),
     );

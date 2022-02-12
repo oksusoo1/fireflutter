@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../fireflutter.dart';
-import 'package:flutter/material.dart';
+// import 'package:flutter/material.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 
 class MessagingService with FirestoreMixin, DatabaseMixin {
@@ -13,7 +13,7 @@ class MessagingService with FirestoreMixin, DatabaseMixin {
   }
 
   MessagingService() {
-    debugPrint('MessagingService::constructor');
+    // debugPrint('MessagingService::constructor');
   }
 
   Function(RemoteMessage)? onForegroundMessage;
@@ -96,7 +96,7 @@ class MessagingService with FirestoreMixin, DatabaseMixin {
 
     try {
       token = (await FirebaseMessaging.instance.getToken())!;
-      print(token);
+      // print(token);
     } catch (e) {
       print('------> getToken() error $e');
     }

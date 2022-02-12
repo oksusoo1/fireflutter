@@ -23,7 +23,7 @@ class AppService {
     Navigator.pop(globalNavigatorKey.currentContext!, data);
   }
 
-  Future<void> open(String routeName, {Map<String, dynamic>? arguments}) {
+  Future<void> open(String routeName, {Map? arguments}) {
     return Navigator.pushNamed(
       globalNavigatorKey.currentContext!,
       routeName,

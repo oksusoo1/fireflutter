@@ -6,9 +6,10 @@ import 'package:flutter/material.dart';
 import 'package:flutterfire_ui/firestore.dart';
 
 class PostListScreen extends StatefulWidget {
-  PostListScreen({Key? key}) : super(key: key);
+  PostListScreen({required this.arguments, Key? key}) : super(key: key);
 
   static const String routeName = '/postList';
+  final Map arguments;
 
   @override
   State<PostListScreen> createState() => _PostListScreenState();
@@ -20,7 +21,7 @@ class _PostListScreenState extends State<PostListScreen> with FirestoreMixin {
   @override
   void initState() {
     super.initState();
-    category = getArg(context, 'category');
+    category = widget.arguments['category'] ?? '';
   }
 
   @override

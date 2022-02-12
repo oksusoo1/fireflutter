@@ -4,9 +4,10 @@ import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
 
 class ReportScreen extends StatelessWidget {
-  const ReportScreen({Key? key}) : super(key: key);
+  const ReportScreen({required this.arguments, Key? key}) : super(key: key);
 
   static const String routeName = '/report';
+  final Map arguments;
 
   @override
   Widget build(BuildContext context) {
@@ -15,7 +16,7 @@ class ReportScreen extends StatelessWidget {
         title: const Text('Report Management'),
       ),
       body: ReportManagement(
-        target: getArg(context, 'target'),
+        target: arguments['target'],
         onError: error,
         onPressed: (ReportModel report) {
           AppService.instance.openReportForumMangement(report.target, report.targetId);
