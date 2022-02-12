@@ -354,7 +354,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
     await Future.delayed(Duration(milliseconds: 300));
 
-    /// To go back to home, it must call `Get.back()`.
+    /// To go back to home, it must call `back()`.
     /// If it calls `AppService.instance.openHome();`,
     /// then `Duplicate GlobalKey detected in widget tree` error will happen
     AppService.instance.back();

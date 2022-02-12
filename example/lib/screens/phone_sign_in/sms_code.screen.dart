@@ -34,7 +34,7 @@ class _SmsCodeScreenState extends State<SmsCodeScreen> {
                     // Get.defaultDialog(
                     //     middleText: 'Phone sign-in success',
                     //     textConfirm: 'Ok',
-                    //     onConfirm: () => Get.back()).then(
+                    //     onConfirm: () => service.back()).then(
                     //   (value) => Get.offAllNamed('/home'),
                     // );
                   },
