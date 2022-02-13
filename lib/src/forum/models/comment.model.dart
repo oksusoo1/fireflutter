@@ -164,4 +164,12 @@ class CommentModel with FirestoreMixin, ForumBase {
       reason: reason,
     );
   }
+
+  Future feedLike() {
+    return feed(path, 'like');
+  }
+
+  Future feedDislike() {
+    return feed(path, 'dislike');
+  }
 }

@@ -174,4 +174,12 @@ class PostModel with FirestoreMixin, ForumBase {
   Future<void> increaseViewCounter() {
     return increaseForumViewCounter(postDoc(id));
   }
+
+  Future feedLike() {
+    return feed(path, 'like');
+  }
+
+  Future feedDislike() {
+    return feed(path, 'dislike');
+  }
 }
