@@ -1062,7 +1062,17 @@ DynamicLinksService.instance.listen((Uri? deepLink) {
 ## Category
 
 - Only admin can write the category, but readable to every one.
+  - Admin can set `backgroundColor` and `foregroundColor` that are only extra properties for UI design.
+    - There are no fixed usage of those. It's up to you where you want to use these colors. You may use them to display colors on category menu.
+  - Admin can set `order` for the priority on the listing.
+
 - If category does not exists, posting will be failed.
+
+- If admin deletes category,
+  - The existing posts are still remained.
+  - No more post can be created for the deleted category anymore.
+  - If admin create a with the same category as the deleted one, then,
+  -   User can create posts again with that category.
 
 
 ## Post

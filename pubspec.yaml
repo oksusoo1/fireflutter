@@ -58,7 +58,9 @@ dependencies:
 
   # uuid
   uuid: ^3.0.5
-  
+
+  # color picker for admin category management screen
+  flutter_colorpicker: ^1.0.3
 
 dev_dependencies:
   flutter_test:

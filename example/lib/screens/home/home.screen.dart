@@ -191,7 +191,7 @@ class _HomeScreenState extends State<HomeScreen> {
               Wrap(
                 children: [
                   ElevatedButton(
-                    onPressed: () => AppService.instance.openForumList(category: 'qna'),
+                    onPressed: () => AppService.instance.openPostList(category: 'qna'),
                     child: const Text('QnA'),
                   ),
                   // if (Platform.isAndroid)
@@ -207,11 +207,11 @@ class _HomeScreenState extends State<HomeScreen> {
                   //     child: const Text('Test QnA Notification'),
                   //   ),
                   ElevatedButton(
-                    onPressed: () => AppService.instance.openForumList(category: 'discussion'),
+                    onPressed: () => AppService.instance.openPostList(category: 'discussion'),
                     child: const Text('Discussion'),
                   ),
                   ElevatedButton(
-                    onPressed: () => AppService.instance.openForumList(category: 'buyandsell'),
+                    onPressed: () => AppService.instance.openPostList(category: 'buyandsell'),
                     child: const Text('Buy & Sell'),
                   ),
                 ],

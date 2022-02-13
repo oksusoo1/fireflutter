@@ -41,7 +41,7 @@ class AppService {
     return open(HomeScreen.routeName);
   }
 
-  Future<void> openForumList({String? category}) async {
+  Future<void> openPostList({String? category}) async {
     return open(PostListScreen.routeName, arguments: {'category': category});
   }
 

@@ -96,11 +96,11 @@ class _MainAppState extends State<MainApp> {
     // Timer(const Duration(milliseconds: 200), () => Get.toNamed('/email-verify'));
     // Timer(const Duration(milliseconds: 200), AppController.of.openCategory);
     // Timer(const Duration(milliseconds: 200),
-    //     () => AppController.of.openForumList(category: 'qna'));
+    //     () => AppController.of.openPostList(category: 'qna'));
 
     // Open qna & open first post
     // Timer(const Duration(milliseconds: 100), () async {
-    //   AppController.of.openForumList(category: 'qna');
+    //   AppController.of.openPostList(category: 'qna');
 
     //   /// wait
     //   await Future.delayed(Duration(milliseconds: 200));
