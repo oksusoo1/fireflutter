@@ -40,7 +40,7 @@ class Post extends StatelessWidget {
     final content = contentBuilder != null
         ? contentBuilder!(post.displayContent)
         : Padding(
-            padding: EdgeInsets.symmetric(horizontal: 14),
+            padding: EdgeInsets.all(8),
             child: Text(
               post.displayContent,
             ),
