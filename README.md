@@ -1072,7 +1072,16 @@ DynamicLinksService.instance.listen((Uri? deepLink) {
   - The existing posts are still remained.
   - No more post can be created for the deleted category anymore.
   - If admin create a with the same category as the deleted one, then,
-  -   User can create posts again with that category.
+    - User can create posts again with that category.
+
+
+- One thing to know is that, when category had deleted, the no of posts and no of comments properties are deleted also. And when category had re-created with same category id, the numbrers are not restored. This may lead a problem.
+  - ***@todo so, in the future, if a category has a post, it should not be deleted. And there must be a function to move all the posts from one category to another.***
+
+
+
+
+
 
 
 ## Post
