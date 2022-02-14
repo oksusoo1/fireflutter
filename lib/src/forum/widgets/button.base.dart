@@ -69,7 +69,6 @@ class ButtonBase extends StatelessWidget {
             PopupMenuItem<String>(value: 'close_menu', child: Text('Close')),
           ],
           onSelected: (String value) async {
-            /// TODO: find a way to programatically close ExpansionTile
             if (value == 'hide_post') {
               if (onHide != null) onHide!();
               return;

@@ -87,7 +87,7 @@ class _PostListScreenState extends State<PostListScreen> with FirestoreMixin {
                 onDelete: onDelete,
                 onLike: onLike,
                 onDislike: onDislike,
-                onImageTap: onImageTapped,
+                onImageTap: (i, files) => onImageTapped(context, i, files),
                 onShare: (post) {},
               ),
               Divider(color: Colors.red),
@@ -100,7 +100,7 @@ class _PostListScreenState extends State<PostListScreen> with FirestoreMixin {
                 onDelete: onDelete,
                 onLike: onLike,
                 onDislike: onDislike,
-                onImageTap: onImageTapped,
+                onImageTap: (i, files) => onImageTapped(context, i, files),
               ),
             ],
           );
@@ -240,8 +240,11 @@ class _PostListScreenState extends State<PostListScreen> with FirestoreMixin {
     }
   }
 
-  onImageTapped(int initialIndex, List<String> files) {
-    return alert('Display original image', 'TODO: display original images with a scaffold.');
-    // return Get.dialog(ImageViewer(files, initialIndex: initialIndex));
+  onImageTapped(BuildContext ctx, int initialIndex, List<String> files) {
+    // return alert('Display original image', 'TODO: display original images with a scaffold.');
+    return showDialog(
+      context: ctx,
+      builder: (context) => ImageViewer(files, initialIndex: initialIndex),
+    );
   }
 }
