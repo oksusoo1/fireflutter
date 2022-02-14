@@ -157,6 +157,7 @@ class _CommentState extends State<Comment> with FirestoreMixin {
                   ),
                   SizedBox(width: 8),
                   Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(user.displayName.isNotEmpty ? "${user.displayName}" : "No name"),
                       SizedBox(height: 8),

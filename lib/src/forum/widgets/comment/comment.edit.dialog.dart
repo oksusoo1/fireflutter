@@ -39,39 +39,42 @@ class _CommentEditDialogState extends State<CommentEditDialog> {
   Widget build(BuildContext context) {
     return AlertDialog(
       title: const Text('Comment Edit'),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          TextField(
-            controller: content,
-          ),
-          Row(children: [
-            FileUploadButton(
-              onUploaded: (url) {
-                files = [...files, url];
-                uploadProgress = 0;
-                if (mounted) setState(() {});
-              },
-              onProgress: (progress) {
-                if (mounted) setState(() => uploadProgress = progress);
-              },
-              onError: widget.onError,
+      content: Container(
+        width: double.maxFinite,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: content,
             ),
-            Spacer(),
-            TextButton(
-              child: const Text('CANCEL'),
-              onPressed: widget.onCancel,
-            ),
-            TextButton(
-              child: const Text('SUBMIT'),
-              onPressed: () {
-                widget.onSubmit({'content': content.text, 'files': files});
-              },
-            ),
-          ]),
-          if (uploadProgress > 0) LinearProgressIndicator(value: uploadProgress),
-          ImageListEdit(files: files, onError: widget.onError),
-        ],
+            Row(children: [
+              FileUploadButton(
+                onUploaded: (url) {
+                  files = [...files, url];
+                  uploadProgress = 0;
+                  if (mounted) setState(() {});
+                },
+                onProgress: (progress) {
+                  if (mounted) setState(() => uploadProgress = progress);
+                },
+                onError: widget.onError,
+              ),
+              Spacer(),
+              TextButton(
+                child: const Text('CANCEL'),
+                onPressed: widget.onCancel,
+              ),
+              TextButton(
+                child: const Text('SUBMIT'),
+                onPressed: () {
+                  widget.onSubmit({'content': content.text, 'files': files});
+                },
+              ),
+            ]),
+            if (uploadProgress > 0) LinearProgressIndicator(value: uploadProgress),
+            ImageListEdit(files: files, onError: widget.onError),
+          ],
+        ),
       ),
     );
   }
