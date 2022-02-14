@@ -88,6 +88,7 @@ class _PostListScreenState extends State<PostListScreen> with FirestoreMixin {
                 onLike: onLike,
                 onDislike: onDislike,
                 onImageTap: onImageTapped,
+                onShare: (post) {},
               ),
               Divider(color: Colors.red),
               Comment(
