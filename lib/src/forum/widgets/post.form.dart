@@ -9,6 +9,9 @@ class PostForm extends StatefulWidget {
     required this.onUpdate,
     required this.onError,
     this.heightBetween = 10.0,
+    this.titleFieldBuilder,
+    this.contentFieldBuilder,
+    this.submitButtonBuilder,
     Key? key,
   }) : super(key: key);
 
@@ -19,6 +22,10 @@ class PostForm extends StatefulWidget {
   final Function(String) onCreate;
   final Function(String) onUpdate;
   final Function(dynamic) onError;
+
+  final Widget Function(TextEditingController)? titleFieldBuilder;
+  final Widget Function(TextEditingController)? contentFieldBuilder;
+  final Widget Function(Function())? submitButtonBuilder;
   @override
   State<PostForm> createState() => _PostFormState();
 }
@@ -43,18 +50,25 @@ class _PostFormState extends State<PostForm> {
 
   @override
   Widget build(BuildContext context) {
+    final titleField = widget.titleFieldBuilder != null
+        ? widget.titleFieldBuilder!(title)
+        : TextField(controller: title);
+    final contentField = widget.contentFieldBuilder != null
+        ? widget.contentFieldBuilder!(content)
+        : TextField(controller: content);
+
+    final submitButton = widget.submitButtonBuilder != null
+        ? widget.submitButtonBuilder!(onSubmit)
+        : ElevatedButton(onPressed: () => onSubmit(), child: const Text('SUBMIT'));
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Text('Title'),
-        TextField(
-          controller: title,
-        ),
+        titleField,
         SizedBox(height: widget.heightBetween),
         const Text('Content'),
-        TextField(
-          controller: content,
-        ),
+        contentField,
         SizedBox(height: widget.heightBetween),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -69,34 +83,34 @@ class _PostFormState extends State<PostForm> {
               },
               onError: widget.onError,
             ),
-            ElevatedButton(
-                onPressed: () async {
-                  try {
-                    if (widget.category != null && widget.category!.isNotEmpty) {
-                      final ref = await PostModel().create(
-                        category: widget.category!,
-                        title: title.text,
-                        content: content.text,
-                        files: files,
-                      );
-                      widget.onCreate(ref.id);
-                    } else {
-                      await widget.post!.update(
-                        title: title.text,
-                        content: content.text,
-                        files: files,
-                      );
-                      widget.onUpdate(widget.post!.id);
-                    }
-                  } catch (e) {
-                    widget.onError(e);
-                  }
-                },
-                child: const Text('SUBMIT')),
+            submitButton
           ],
         ),
         ImageListEdit(files: files, onError: widget.onError),
       ],
     );
+  }
+
+  Future<void> onSubmit() async {
+    try {
+      if (widget.category != null && widget.category!.isNotEmpty) {
+        final ref = await PostModel().create(
+          category: widget.category!,
+          title: title.text,
+          content: content.text,
+          files: files,
+        );
+        widget.onCreate(ref.id);
+      } else {
+        await widget.post!.update(
+          title: title.text,
+          content: content.text,
+          files: files,
+        );
+        widget.onUpdate(widget.post!.id);
+      }
+    } catch (e) {
+      widget.onError(e);
+    }
   }
 }
