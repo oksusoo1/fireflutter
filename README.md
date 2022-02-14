@@ -35,6 +35,7 @@ Table of contents
   - [Firebase Storage installation](#firebase-storage-installation)
   - [Firestore installation](#firestore-installation)
     - [Setting admin on firestore security rules](#setting-admin-on-firestore-security-rules)
+  - [Cloud functions installation](#cloud-functions-installation)
 - [Sources and packages](#sources-and-packages)
 - [Coding Guideline](#coding-guideline)
 - [User](#user)
@@ -257,6 +258,17 @@ function lessThan(n) {
   - For instance, `{ "UID_AAA": true, "UID_BBB": true }`, then users whose uid is UID_AAA and UID_BBB are the admins.
 
 ![Security Rules Admin](https://raw.githubusercontent.com/thruthesky/fireflutter/main/readme/images/security-rules-admin.jpg?raw=true)
+
+
+## Cloud functions installation
+
+- We only use functions for the work that cannot be done by client end like sending push notifications.
+  - We don't use cloud functions simply because we want to avoid multiple read and write on documents and to the logic simple in the client end.
+
+- To install,
+  - `cd firebase/functions`
+  - `npm i`
+  - `firebase deploy --only functiosn`
 
 
 # Sources and packages
