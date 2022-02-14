@@ -34,6 +34,7 @@ Table of contents
   - [Firebase Storage installation](#firebase-storage-installation)
   - [Firestore installation](#firestore-installation)
     - [Setting admin on firestore security rules](#setting-admin-on-firestore-security-rules)
+  - [Cloud functions installation](#cloud-functions-installation)
 - [Sources and packages](#sources-and-packages)
 - [Coding Guideline](#coding-guideline)
 - [User](#user)
@@ -250,9 +251,24 @@ function lessThan(n) {
 
 ![Security Rules Admin](https://raw.githubusercontent.com/thruthesky/fireflutter/main/readme/images/security-rules-admin.jpg?raw=true)
 
+# <<<<<<< HEAD
+
+## Cloud functions installation
+
+- We only use functions for the work that cannot be done by client end like sending push notifications.
+
+  - We don't use cloud functions simply because we want to avoid multiple read and write on documents and to the logic simple in the client end.
+
+- To install,
+  - `cd firebase/functions`
+  - `npm i`
+  - `firebase deploy --only functiosn`
+
+> > > > > > > b5679dd69c9d0fd320c68697ade374cdae31dd84
+
 # Sources and packages
 
-- Fireflutter uses [intl](https://pub.dev/packages/intl) package for date and time computation
+- [Jiffy](https://github.com/jama5262/jiffy/tree/master/doc) is used for date and time.
 
 # Coding Guideline
 
@@ -1003,10 +1019,14 @@ DynamicLinksService.instance.listen((Uri? deepLink) {
 - If category does not exists, posting will be failed.
 
 - If admin deletes category,
+
   - The existing posts are still remained.
   - No more post can be created for the deleted category anymore.
   - If admin create a with the same category as the deleted one, then,
   - User can create posts again with that category.
+
+  - One thing to know is that, when category had deleted, the no of posts and no of comments properties are deleted also. And when category had re-created with same category id, the numbrers are not restored. This may lead a problem.
+  - **_@todo so, in the future, if a category has a post, it should not be deleted. And there must be a function to move all the posts from one category to another._**
 
 ## Post
 
@@ -1020,7 +1040,28 @@ DynamicLinksService.instance.listen((Uri? deepLink) {
 - When user deletes a post, the document is marked as deleted, instead of remove it from the database. And user may update the document even if the post is marked as deleted. Editing post of delete mark is banned by security rule. This is by design and is not harmful. So, there should be some code to inform user not to edit deleted post. This goes the same to comment delete.
 
 - `hasPhoto` becomes true if the post has a photo.
+
   - This is a helper property for searching posts that have pohtos. Since firestore cannot have inequality expression on multiple fields, it wil help to search posts that have photos.
+
+- Date
+
+  - When you want to get 5 posts that have most noOfComments within 7 days,
+    how you would search?
+    The answer is `not so simple`.
+    You may want to keep a separate collection that holds posts that are created within 7 days. And it's not simple work.
+
+    So, there we added some date information for a better search.
+
+    You may do `get 5 posts that have most noOfComments in last week`. But not `within 7 days`.
+
+  - Post document has date information like below
+    - `year` - the year
+    - `month` - the month of a year (1-12)
+    - `day` - the day of a month (1-31)
+    - `dayOfYear` - the day of a year (1-366)
+    - `weekOfYear` - the week of a year
+    - `quarter` - the quarter of a year (1-4)
+    - `timestamp` - database's server time stamp.
 
 ## Comment
 

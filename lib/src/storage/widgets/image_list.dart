@@ -55,19 +55,23 @@ class ImageList extends StatelessWidget {
     ///  - If `index` is equal than the desired `noOfImagesToShow` (minus 1, since it `index` is based 0);
     ///  - and, length of files exceeds the desired `noOfImagesToShow`.
     if (index == (noOfImagesToShow - 1) && files.length > noOfImagesToShow) {
-      _widget = Stack(
-        children: [
-          Container(width: double.infinity, child: _widget),
-          Container(
-            color: Colors.black38,
-            child: Center(
-              child: Text(
-                '${files.length - (index + 1)}+ image',
-                style: TextStyle(color: Colors.white, fontSize: 20),
+      _widget = GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: () => onImageTap != null ? onImageTap!(index) : {},
+        child: Stack(
+          children: [
+            Container(width: double.infinity, child: _widget),
+            Container(
+              color: Colors.black38,
+              child: Center(
+                child: Text(
+                  '${files.length - (index + 1)}+ image',
+                  style: TextStyle(color: Colors.white, fontSize: 20),
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       );
     }
 
