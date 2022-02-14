@@ -141,12 +141,13 @@ class MessagingService with FirestoreMixin, DatabaseMixin {
     if (onTokenUpdated != null) this.onTokenUpdated!(token);
   }
 
+  // subcribe to topic only when token is created or refresh
   subscribeToDefaultTopic() async {
     // subscribe device to default topic once.
     final prefs = await SharedPreferences.getInstance();
     if (prefs.getString('isSubscribeToDefaultTopic') != this.token) {
       FirebaseMessaging.instance.subscribeToTopic(defaultTopic);
-      prefs.setString('isUserLoggedIn', this.token);
+      prefs.setString('isSubscribeToDefaultTopic', this.token);
     }
   }
 

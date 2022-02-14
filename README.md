@@ -1131,16 +1131,16 @@ when sending push notification fails, see the error messages and remove that tok
 
 ## Testing Push notification via terminal
 
-- Prepare the data information and replace the value of `to`. Either token or topic ex. `/topics/posts_qna`
+- Prepare the data information and replace the value of `to`. Either `token` or `topic` ex. `/topics/posts_qna`
 
 ```
-DATA='{"notification": {"body": "this is a body","title": "this is a title"}, "priority": "high", "data": {"click_action": "FLUTTER_NOTIFICATION_CLICK", "id": "1", "status": "done"}, "to": "<FCM TOKEN/TOPIC>"}'
+DATA='{"notification": {"body": "this is a body","title": "this is a title"}, "priority": "high", "data": {"click_action": "FLUTTER_NOTIFICATION_CLICK", "id": "1", "status": "done"}, "to": "/topics/posts_qna"}'
 ```
 
 - use curl to google api to send push notification attaching the data above. make sure to replace the `FCM SERVER KEY` with the google console `Cloud Messaging Server Key` can be found in google console project setting > cloud messaging > server key
 
 ```
-curl https://fcm.googleapis.com/fcm/send -H "Content-Type:application/json" -X POST -d "$DATA" -H "Authorization: key=<FCM SERVER KEY>"
+curl https://fcm.googleapis.com/fcm/send -H "Content-Type:application/json" -X POST -d "$DATA" -H "Authorization: key=2hU:AP8FpX2kNKZqqzmBdUg_BWuluihF6n............t3ykfXvzks83HWSpA.....oVjaCFN7S"
 ```
 
 # Fil upload - Firebase Storage

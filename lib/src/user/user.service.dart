@@ -67,6 +67,7 @@ class UserService with FirestoreMixin, DatabaseMixin {
         if (_user == null) {
           debugPrint('User signed-out');
           changes.add(user);
+          signedOut();
         } else {
           if (_user.isAnonymous) {
             /// Note, anonymous sigin-in is not supported by fireflutter.
@@ -93,17 +94,28 @@ class UserService with FirestoreMixin, DatabaseMixin {
     );
   }
 
-  signOut() async {
-    FirebaseAuth.instance.signOut();
+  /// when user Sign-in, the app need to unsubscribe previous subscription
+  /// then new user topics need to subscribe
+  /// `isUserLoggedIn` is set true when the user signed-in.
+  /// this can be use to check if the user is already loggedIn even the app was closed and reopen.
+  /// so it will not reset every time the app is relaunch.
+  ///
+  resetTopicSubscription() async {
     final prefs = await SharedPreferences.getInstance();
+    if (prefs.getBool('isUserLoggedIn') != null) return;
+    prefs.setBool('isUserLoggedIn', true);
+    await UserSettingsService.instance.unsubscribeAllTopic();
+    await UserSettingsService.instance.subscribeToUserTopics();
+  }
 
+  signedOut() async {
     /// remove `isUserLoggedIn` on logout. this is use to check if user has sign-in in the device.
     await SharedPreferences.getInstance()
       ..remove('isUserLoggedIn');
+  }
 
-    // final prefs = await SharedPreferences.getInstance();
-    // prefs.remove('isUserLoggedIn');
-    print(prefs);
+  signOut() async {
+    FirebaseAuth.instance.signOut();
   }
 
   Future<void> create() {
@@ -180,19 +192,5 @@ class UserService with FirestoreMixin, DatabaseMixin {
 
     others[uid] = other;
     return others[uid]!;
-  }
-
-  /// when user Sign-in, the app need to unsubscribe previous subscription
-  /// then new user topics need to subscribe
-  /// `isUserLoggedIn` is set true when the user signed-in.
-  /// this can be use to check if the user is already loggedIn even the app was closed and reopen.
-  /// so it will not reset every time the app is relaunch.
-  ///
-  resetTopicSubscription() async {
-    final prefs = await SharedPreferences.getInstance();
-    if (prefs.getBool('isUserLoggedIn') != null) return;
-    await UserSettingsService.instance.unsubscribeAllTopic();
-    await UserSettingsService.instance.subscribeToUserTopics();
-    prefs.setBool('isUserLoggedIn', true);
   }
 }
