@@ -7,23 +7,17 @@ export const sendMessageOnPostCreate = functions
     .region("asia-northeast3")
     .firestore
     .document("/posts/{postId}")
-    .onCreate((snapshot) => {
-      const category = snapshot.data().category;
-      const payload = {
-        notification: {
-          title: snapshot.data().title,
-          body: snapshot.data().content,
-        },
-      };
-      const topic = "posts_" + category;
-      console.info("topic; ", topic);
-      return admin.messaging().sendToTopic(topic, payload)
-          .then(() => {
-            return "SUCCESS";
-          })
-          .catch(() => {
-            return "ERROR";
-          });
+    .onCreate(async (snapshot) => {
+        const category = snapshot.data().category;
+        const payload = {
+            notification: {
+                title: 'title: ' + snapshot.data().title,
+                body: snapshot.data().content,
+            },
+        };
+        const topic = "posts_" + category;
+        console.info("topic; ", topic);
+        return admin.messaging().sendToTopic(topic, payload);
     });
 
 
