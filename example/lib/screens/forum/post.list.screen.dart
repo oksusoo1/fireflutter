@@ -61,6 +61,8 @@ class _PostListScreenState extends State<PostListScreen> with FirestoreMixin {
           print('got new doc id; ${post.id}: ${post.title}');
 
           return ExpansionTile(
+            maintainState: true,
+            
             key: ValueKey(post.id),
             initiallyExpanded: false,
             title: Text(post.displayTitle),
@@ -83,11 +85,13 @@ class _PostListScreenState extends State<PostListScreen> with FirestoreMixin {
                 post: post,
                 onReply: onReply,
                 onReport: onReport,
+                onImageTap: (i, files) => onImageTapped(context, i, files),
                 onEdit: (post) => AppService.instance.openPostForm(post: post),
                 onDelete: onDelete,
                 onLike: onLike,
                 onDislike: onDislike,
-                onImageTap: (i, files) => onImageTapped(context, i, files),
+                onHide: () {},
+                onChat: (post) {},
                 onShare: (post) {},
               ),
               Divider(color: Colors.red),

@@ -11,6 +11,7 @@ class ButtonBase extends StatelessWidget {
     required this.onDelete,
     required this.onLike,
     required this.onDislike,
+    this.onChat,
     this.onShare,
     this.onHide,
     this.likeCount = 0,
@@ -27,6 +28,7 @@ class ButtonBase extends StatelessWidget {
   final Function() onDelete;
   final Function() onLike;
   final Function() onDislike;
+  final Function()? onChat;
   final Function()? onShare;
   final Function()? onHide;
   final Widget Function(Function()?)? buttonBuilder;
@@ -44,7 +46,7 @@ class ButtonBase extends StatelessWidget {
         _button('Report', onReport),
         _button('Like ${likeCount > 0 ? likeCount : ""}', onLike),
         _button('Dislike ${dislikeCount > 0 ? dislikeCount : ""}', onDislike),
-        if (isPost) _button('Share', onShare),
+        if (isPost && onChat != null) _button('Chat', onChat),
         Spacer(),
         PopupMenuButton<String>(
           child: Padding(
@@ -61,16 +63,24 @@ class ButtonBase extends StatelessWidget {
               ),
               PopupMenuDivider(),
             ],
+            if (isPost && onShare != null)
+              PopupMenuItem<String>(value: 'share', child: Text('Share')),
             PopupMenuItem<String>(
               value: 'report',
               child: Text('Report', style: TextStyle(color: Colors.red)),
             ),
-            if (isPost) PopupMenuItem<String>(value: 'hide_post', child: Text('Hide Post')),
+            if (isPost && onHide != null)
+              PopupMenuItem<String>(value: 'hide_post', child: Text('Hide Post')),
             PopupMenuItem<String>(value: 'close_menu', child: Text('Close')),
           ],
           onSelected: (String value) async {
             if (value == 'hide_post') {
-              if (onHide != null) onHide!();
+              onHide!();
+              return;
+            }
+
+            if (value == 'share') {
+              onShare!();
               return;
             }
 

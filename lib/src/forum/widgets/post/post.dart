@@ -13,6 +13,7 @@ class Post extends StatelessWidget {
     required this.onDelete,
     required this.onLike,
     required this.onDislike,
+    required this.onChat,
     required this.onShare,
     required this.onImageTap,
     this.onHide,
@@ -27,6 +28,7 @@ class Post extends StatelessWidget {
   final Function(PostModel post) onDelete;
   final Function(PostModel post) onLike;
   final Function(PostModel post) onDislike;
+  final Function(PostModel post) onChat;
   final Function(PostModel post) onShare;
   final Function()? onHide;
   final Function(int index, List<String> fileList) onImageTap;
@@ -62,6 +64,8 @@ class Post extends StatelessWidget {
           onLike: () => onLike(post),
           onDislike: () => onDislike(post),
           onShare: () => onShare(post),
+          onChat: () => onChat(post),
+          onHide: onHide,
           buttonBuilder: buttonBuilder,
           likeCount: post.like,
           dislikeCount: post.dislike,
