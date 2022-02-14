@@ -98,6 +98,8 @@ class _PostListScreenState extends State<PostListScreen> with FirestoreMixin {
                 onReport: onReport,
                 onEdit: onEdit,
                 onDelete: onDelete,
+                onLike: onLike,
+                onDislike: onDislike,
                 onImageTap: onImageTapped,
               ),
             ],

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../fireflutter.dart';
+import '../../../../fireflutter.dart';
 
 class CommentEditDialog extends StatefulWidget {
   CommentEditDialog({
