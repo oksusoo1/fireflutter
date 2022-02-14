@@ -37,8 +37,11 @@ class Post extends StatelessWidget {
   Widget build(BuildContext context) {
     final content = contentBuilder != null
         ? contentBuilder!(post.displayContent)
-        : Text(
-            post.displayContent,
+        : Padding(
+            padding: EdgeInsets.symmetric(horizontal: 14),
+            child: Text(
+              post.displayContent,
+            ),
           );
 
     return Column(
