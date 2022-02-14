@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:uuid/uuid.dart';
@@ -72,7 +73,7 @@ final Map<String, Timer> debounceTimers = {};
 bounce(
   String debounceId,
   int milliseconds,
-  Function action, {
+  Function(dynamic) action, {
   dynamic seed,
 }) {
   debounceTimers[debounceId]?.cancel();
@@ -119,4 +120,35 @@ String getRandomString({int len = 16, String? prefix}) {
   // }
   // if (prefix != null && prefix.isNotEmpty) t = prefix + t;
   // return t;
+}
+
+/// Returns a Color from hex string.
+///
+/// It takes a 6 (no alpha channel) or 8 (with alpha channel) character string,
+/// with or without the # prefix.
+///
+/// [defaultColor] is the color that will be returned if [hexColor] is malformed.
+///
+/// If it can't parse hex string, it returns [defaultColor].
+///
+/// ```dart
+/// getColorFromHex('123456');
+/// getColorFromHex('#123456');
+/// getColorFromHex('12345678');
+/// getColorFromHex('#12345678');
+/// getColorFromHex(''); // error. Returns [defaultColor] color.
+/// ```
+Color getColorFromHex(
+  String hexColor, [
+  Color defaultColor = const Color(0xFFFFFFFF),
+]) {
+  hexColor = hexColor.replaceAll("#", "");
+  if (hexColor.length == 6) {
+    hexColor = "FF" + hexColor;
+    return Color(int.parse("0x$hexColor"));
+  } else if (hexColor.length == 8) {
+    return Color(int.parse("0x$hexColor"));
+  } else {
+    return defaultColor;
+  }
 }

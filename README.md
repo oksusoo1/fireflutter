@@ -873,10 +873,6 @@ InformService.instance.inform(widget.room.otherUid, {
 
 - Since the Firebase libraries need to run on an actual device or emulator, we developped our own unit test & UI test.
 
-- We use `Getx` for the example app development and we use it to the test.
-  - There are `example/lib/app.controller.dart` which holds memory data of example app.
-  - When test runs, the test drives screen changes and check if the data of the screen is set properly.
-
 
 ## Local test on firestore security rules
 
@@ -1066,7 +1062,17 @@ DynamicLinksService.instance.listen((Uri? deepLink) {
 ## Category
 
 - Only admin can write the category, but readable to every one.
+  - Admin can set `backgroundColor` and `foregroundColor` that are only extra properties for UI design.
+    - There are no fixed usage of those. It's up to you where you want to use these colors. You may use them to display colors on category menu.
+  - Admin can set `order` for the priority on the listing.
+
 - If category does not exists, posting will be failed.
+
+- If admin deletes category,
+  - The existing posts are still remained.
+  - No more post can be created for the deleted category anymore.
+  - If admin create a with the same category as the deleted one, then,
+  -   User can create posts again with that category.
 
 
 ## Post
@@ -1079,6 +1085,9 @@ DynamicLinksService.instance.listen((Uri? deepLink) {
 - `PostModel` has methods like create, update, delete, like, dislike, and so on.
 
 - When user deletes a post, the document is marked as deleted, instead of remove it from the database. And user may update the document even if the post is marked as deleted. Editing post of delete mark is banned by security rule. This is by design and is not harmful. So, there should be some code to inform user not to edit deleted post. This goes the same to comment delete.
+
+- `hasPhoto` becomes true if the post has a photo.
+  - This is a helper property for searching posts that have pohtos. Since firestore cannot have inequality expression on multiple fields, it wil help to search posts that have photos.
 
 ## Comment
 

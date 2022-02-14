@@ -1,12 +1,15 @@
+import 'package:fe/screens/chat/chat.room.screen.dart';
 import 'package:fe/screens/chat/widgets/chat.rooms.empty.dart';
+import 'package:fe/service/app.service.dart';
 import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
 import 'package:extended/extended.dart';
-import 'package:get/get.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class ChatRoomsBlockedScreen extends StatelessWidget {
   const ChatRoomsBlockedScreen({Key? key}) : super(key: key);
+
+  static const String routeName = '/chatRoomsBlockeed';
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +24,7 @@ class ChatRoomsBlockedScreen extends StatelessWidget {
             Row(children: [
               TextButton(
                   onPressed: () {
-                    Get.toNamed('/chat-rooms-screen');
+                    AppService.instance.open(ChatRoomScreen.routeName);
                   },
                   child: const Text('Room list')),
             ]),
@@ -59,7 +62,10 @@ class _ChatRoomsBlockUserState extends State<ChatRoomsBlockUser> {
       uid: otherUid,
       builder: (UserModel user) {
         return GestureDetector(
-          onTap: () => Get.toNamed('/chat-room-screen', arguments: {'uid': otherUid}),
+          onTap: () => AppService.instance.open(
+            ChatRoomScreen.routeName,
+            arguments: {'uid': otherUid},
+          ),
           child: Container(
             margin: const EdgeInsets.all(xs),
             padding: const EdgeInsets.all(xs),

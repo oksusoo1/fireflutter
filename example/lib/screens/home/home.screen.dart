@@ -1,20 +1,28 @@
 import 'dart:async';
 
 import 'package:extended/extended.dart';
-import 'package:fe/service/app.controller.dart';
+import 'package:fe/screens/chat/chat.rooms.screen.dart';
+import 'package:fe/screens/friend_map/friend_map.screen.dart';
+import 'package:fe/screens/help/help.screen.dart';
+import 'package:fe/screens/phone_sign_in/phone_sign_in.screen.dart';
+import 'package:fe/screens/phone_sign_in_ui/phone_sign_in_ui.screen.dart';
+import 'package:fe/screens/reminder/reminder.edit.screen.dart';
+import 'package:fe/screens/setting/notification.setting.dart';
+import 'package:fe/service/app.service.dart';
 import 'package:fe/service/config.dart';
 import 'package:fe/service/global.keys.dart';
-import 'package:fe/service/route.names.dart';
+import 'package:fe/widgets/sign_in.widget.dart';
 import 'package:fe/widgets/test.user.dart';
 import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
+
+  static const String routeName = '/';
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -81,7 +89,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           children: [
                             const EmailButton(),
                             ElevatedButton(
-                                onPressed: AppController.of.openProfile,
+                                onPressed: AppService.instance.openProfile,
                                 child: const Text('Profile')),
                             ElevatedButton(
                               onPressed: () => FirebaseAuth.instance.signOut(),
@@ -97,19 +105,19 @@ class _HomeScreenState extends State<HomeScreen> {
                         ElevatedButton(
                           child: const Text('Sign-In'),
                           onPressed: () {
-                            Get.toNamed('/sign-in');
+                            AppService.instance.open(SignInWidget.routeName);
                           },
                         ),
                         ElevatedButton(
                           child: const Text('Phone Sign-In'),
                           onPressed: () {
-                            Get.toNamed('/phone-sign-in');
+                            AppService.instance.open(PhoneSignInScreen.routeName);
                           },
                         ),
                         ElevatedButton(
                           child: const Text('Phone Sign-In UI'),
                           onPressed: () {
-                            Get.toNamed('/phone-sign-in-ui');
+                            AppService.instance.open(PhoneSignInUIScreen.routeName);
                           },
                         ),
                       ],
@@ -134,10 +142,15 @@ class _HomeScreenState extends State<HomeScreen> {
               Wrap(
                 children: [
                   ElevatedButton(
-                      onPressed: () => Get.toNamed('/help'),
+                      onPressed: () => AppService.instance.open(HelpScreen.routeName, arguments: {
+                            'when': 'Now',
+                            'where': 'GimHae',
+                            'who': 'Me',
+                            'what': 'Working',
+                          }),
                       child: const Text('Help')),
                   ElevatedButton(
-                    onPressed: () => Get.toNamed('/chat-rooms-screen'),
+                    onPressed: () => AppService.instance.open(ChatRoomsScreen.routeName),
                     child: const Text('Chat Room List'),
                   ),
                   TextButton(
@@ -150,15 +163,14 @@ class _HomeScreenState extends State<HomeScreen> {
                       ],
                     ),
                     onPressed: () {
-                      Get.toNamed('/chat-rooms-screen');
+                      AppService.instance.open(ChatRoomsScreen.routeName);
                     },
                   ),
                   TextButton(
                       onPressed: () async {
                         for (int i = 0; i < 10; i++) {
                           setState(() {});
-                          await Future.delayed(
-                              const Duration(milliseconds: 500));
+                          await Future.delayed(const Duration(milliseconds: 500));
                         }
                       },
                       child: const Text('setState() 10 times')),
@@ -167,11 +179,11 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: Text('Get firestore index links'),
                   ),
                   ElevatedButton(
-                    onPressed: () => Get.toNamed('/friend-map'),
+                    onPressed: () => AppService.instance.open(FriendMapScreen.routeName),
                     child: const Text('Friend Map'),
                   ),
                   ElevatedButton(
-                    onPressed: () => Get.toNamed('/reminder-edit'),
+                    onPressed: () => AppService.instance.open(ReminderEditScreen.routeName),
                     child: const Text('Reminder Management Screen'),
                   ),
                 ],
@@ -179,8 +191,7 @@ class _HomeScreenState extends State<HomeScreen> {
               Wrap(
                 children: [
                   ElevatedButton(
-                    onPressed: () =>
-                        AppController.of.openForumList(category: 'qna'),
+                    onPressed: () => AppService.instance.openPostList(category: 'qna'),
                     child: const Text('QnA'),
                   ),
                   // if (Platform.isAndroid)
@@ -196,13 +207,11 @@ class _HomeScreenState extends State<HomeScreen> {
                   //     child: const Text('Test QnA Notification'),
                   //   ),
                   ElevatedButton(
-                    onPressed: () =>
-                        AppController.of.openForumList(category: 'discussion'),
+                    onPressed: () => AppService.instance.openPostList(category: 'discussion'),
                     child: const Text('Discussion'),
                   ),
                   ElevatedButton(
-                    onPressed: () =>
-                        AppController.of.openForumList(category: 'buyandsell'),
+                    onPressed: () => AppService.instance.openPostList(category: 'buyandsell'),
                     child: const Text('Buy & Sell'),
                   ),
                 ],
@@ -210,8 +219,7 @@ class _HomeScreenState extends State<HomeScreen> {
               Wrap(
                 children: [
                   ElevatedButton(
-                    onPressed: () =>
-                        Get.toNamed(RouteNames.notificationSetting),
+                    onPressed: () => AppService.instance.open(NotificationSettingScreen.routeName),
                     child: const Text('Notification Setting'),
                   ),
                 ],
@@ -304,7 +312,7 @@ class _HomeScreenState extends State<HomeScreen> {
     // openProfile() throws an error if user is not signed in.
     await waitUntil(() => UserService.instance.user.signedOut);
     await ts.expectFailure(
-        AppController.of.openProfile(), "sign in before open profile screen.");
+        AppService.instance.openProfile(), "sign in before open profile screen.");
 
     /// user signed in
     await FirebaseAuth.instance.signInWithEmailAndPassword(
@@ -314,7 +322,7 @@ class _HomeScreenState extends State<HomeScreen> {
     await waitUntil(() => UserService.instance.user.signedIn);
 
     /// Open profile screen
-    AppController.of.openProfile();
+    AppService.instance.openProfile();
 
     /// wait
     await Future.delayed(Duration(milliseconds: 200));
@@ -346,10 +354,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
     await Future.delayed(Duration(milliseconds: 300));
 
-    /// To go back to home, it must call `Get.back()`.
-    /// If it calls `AppController.of.openHome();`,
+    /// To go back to home, it must call `back()`.
+    /// If it calls `AppService.instance.openHome();`,
     /// then `Duplicate GlobalKey detected in widget tree` error will happen
-    Get.back();
+    AppService.instance.back();
   }
 
   testOnUserData() async {
@@ -373,8 +381,7 @@ class _HomeScreenState extends State<HomeScreen> {
     }));
 
     await ts.expectSuccess(settingService.read());
-    ts.test(
-        settingService.settings.data['timestamp'] == timestamp, 'timestamp');
+    ts.test(settingService.settings.data['timestamp'] == timestamp, 'timestamp');
   }
 
   testOnForum() async {
@@ -425,7 +432,7 @@ class AdminButton extends StatelessWidget {
       },
       onLongPress: () {
         if (count['count']! > 3) {
-          AppController.of.openAdmin();
+          AppService.instance.openAdmin();
         }
       },
       child: const Text('Admin Screen - 3 tap & long press'),
@@ -460,7 +467,7 @@ class _EmailButtonState extends State<EmailButton> {
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
-      onPressed: () => Get.toNamed('/email-verify'),
+      onPressed: () => AppService.instance.open('/email-verify'),
       child: Text(
         '${verified ? 'Update' : 'Verify'} Email',
       ),

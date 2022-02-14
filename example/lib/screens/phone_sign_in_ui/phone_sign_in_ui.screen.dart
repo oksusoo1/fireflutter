@@ -1,11 +1,14 @@
+import 'package:extended/extended.dart';
+import 'package:fe/screens/phone_sign_in_ui/sms_code_ui.screen.dart';
+import 'package:fe/service/app.service.dart';
 import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
 import 'package:country_code_picker/country_code_picker.dart';
-import 'package:get/get.dart';
 
 class PhoneSignInUIScreen extends StatefulWidget {
   const PhoneSignInUIScreen({Key? key}) : super(key: key);
 
+  static const String routeName = '/phoneSignInUi';
   @override
   _PhoneSignInUIScreenState createState() => _PhoneSignInUIScreenState();
 }
@@ -142,32 +145,46 @@ class _PhoneSignInUIScreenState extends State<PhoneSignInUIScreen> {
 
               /// [codeSent] handler will be invoked on sms verification code had
               /// been sent. You may redirect the user to sms code input screen.
-              codeSent: (id) => Get.toNamed('/sms-code-ui'),
+              codeSent: (id) => AppService.instance.open(SmsCodeUIScreen.routeName),
 
               /// [success] handler will be invoked only on Android devices that
               /// support automatic SMS code resolution.
-              success: () => Get.defaultDialog(
-                middleText: 'Phone Sign In Success',
-                textConfirm: 'Ok',
-                onConfirm: Get.back,
+              success: () => alert(
+                'Phone Sign-in Success',
+                'You have signed in',
               ).then(
-                (value) => Get.offAllNamed('/home'),
+                (value) => AppService.instance.openHome(),
               ),
+              // Get.defaultDialog(
+              //   middleText: 'Phone Sign In Success',
+              //   textConfirm: 'Ok',
+              //   onConfirm: Get.back,
+              // ).then(
+              //   (value) => Get.offAllNamed('/home'),
+              // ),
 
               /// error handler
-              error: (e) => Get.defaultDialog(
-                middleText: e.toString(),
-                textConfirm: 'Ok',
-                onConfirm: Get.back,
-              ),
+              error: (e) => error(e), //.then((value) => AppService.instance.back()),
+              // Get.defaultDialog(
+              //   middleText: e.toString(),
+              //   textConfirm: 'Ok',
+              //   onConfirm: Get.back,
+              // ),
 
               /// [codeAutoRetrievalTimeout] handler will be invoked when code
               /// auto retreival time is over.
-              codeAutoRetrievalTimeout: (x) => Get.defaultDialog(
-                middleText: 'Failed on sending SMS code. Please retry.',
-                textConfirm: 'Ok',
-                onConfirm: Get.back,
+              codeAutoRetrievalTimeout: (x) => alert(
+                'Timeout',
+                'Failed on sending SMS code. Please retry.',
+              ).then(
+                (value) => AppService.instance.back(),
               ),
+
+              //  Get.defaultDialog(
+              //   middleText: 'Failed on sending SMS code. Please retry.',
+              //   textConfirm: 'Ok',
+              //   onConfirm: Get.back,
+              // ),
 
               /// [progress] is the widget to show while verification is in progress.
               progress: const CircularProgressIndicator.adaptive(),

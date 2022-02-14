@@ -1,19 +1,21 @@
+import 'package:fe/service/app.service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterfire_ui/auth.dart';
-import 'package:get/get.dart';
 
 class SignInWidget extends StatelessWidget {
   const SignInWidget({Key? key}) : super(key: key);
+
+  static const String routeName = '/sign-in';
 
   @override
   Widget build(BuildContext context) {
     return SignInScreen(
       actions: [
         AuthStateChangeAction<SignedIn>((context, _) {
-          Get.offAllNamed('/home');
+          AppService.instance.openHome();
         }),
         SignedOutAction((context) {
-          Get.offAllNamed('/home');
+          AppService.instance.openHome();
         }),
       ],
       providerConfigs: const [
@@ -22,7 +24,7 @@ class SignInWidget extends StatelessWidget {
       ],
       footerBuilder: (context, _) {
         return TextButton(
-          onPressed: () => Get.offAllNamed('/home'),
+          onPressed: () => AppService.instance.openHome(),
           child: const Text(
             'Back to home',
             style: TextStyle(color: Colors.grey),

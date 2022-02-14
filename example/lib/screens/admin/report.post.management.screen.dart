@@ -1,21 +1,24 @@
 import 'package:extended/extended.dart';
 import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 
 class ReportPostManagementScreen extends StatelessWidget {
-  const ReportPostManagementScreen({Key? key}) : super(key: key);
+  const ReportPostManagementScreen({required this.arguments, Key? key}) : super(key: key);
+
+  static const String routeName = '/reportPostManagement';
+
+  final Map arguments;
+  String get target => arguments['target'];
+  String get id => arguments['id'];
 
   @override
   Widget build(BuildContext context) {
-    final String target = Get.arguments['target'];
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('Report Post Management'),
       ),
       body: ReportPostManagement(
-        id: Get.arguments['id'],
+        id: id,
         onError: error,
         builder: (post) {
           print(target);

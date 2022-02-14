@@ -1,9 +1,13 @@
+import 'package:extended/extended.dart';
+import 'package:fe/screens/phone_sign_in/sms_code.screen.dart';
+import 'package:fe/service/app.service.dart';
 import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 
 class PhoneSignInScreen extends StatefulWidget {
   const PhoneSignInScreen({Key? key}) : super(key: key);
+
+  static const String routeName = '/phone-sign-in';
 
   @override
   _PhoneSignInScreenState createState() => _PhoneSignInScreenState();
@@ -27,25 +31,19 @@ class _PhoneSignInScreenState extends State<PhoneSignInScreen> {
             ElevatedButton(
               onPressed: () {
                 PhoneService.instance.verifyPhoneNumber(
-                  codeSent: (verificationId) => Get.toNamed('/sms-code'),
+                  codeSent: (verificationId) => AppService.instance.open(SmsCodeScreen.routeName),
                   androidAutomaticVerificationSuccess: () {
-                    Get.defaultDialog(
-                      middleText: 'Phone sign-in success',
-                      textConfirm: 'Ok',
-                    ).then((value) => Get.offAllNamed('/home'));
+                    alert('Phone sign-in success', 'You have signed-in.');
+                    AppService.instance.openHome();
+
+                    // Get.defaultDialog(
+                    //   middleText: 'Phone sign-in success',
+                    //   textConfirm: 'Ok',
+                    // ).then((value) => Get.offAllNamed('/home'));
                   },
-                  error: (e) {
-                    Get.defaultDialog(
-                      title: 'Phone sign-in error',
-                      middleText: e.toString(),
-                      textConfirm: 'Ok',
-                    );
-                  },
+                  error: (e) => error(e),
                   codeAutoRetrievalTimeout: (String verificationId) {
-                    Get.defaultDialog(
-                      middleText: 'SMS code timeouted. Please send it again',
-                      textConfirm: 'Ok',
-                    );
+                    alert('Timeout', 'SMS code timeouted. Please send it again');
                   },
                 );
               },

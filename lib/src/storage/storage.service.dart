@@ -140,10 +140,14 @@ class StorageService {
     return file;
   }
 
-  /// Get thumbnail url.
+  /// Returns thumbnail url.
   ///
   /// [url] is the original url.
   /// Refer readme for details.
+  ///
+  /// ```dart
+  /// Image.network(StorageService.instance.getThumbnailUrl(photo!.files[0]))
+  /// ```
   getThumbnailUrl(String url) {
     String _tempUrl = url;
     if (_tempUrl.indexOf('?') > 0) {

@@ -1,7 +1,8 @@
 import 'package:extended/extended.dart';
+import 'package:fe/screens/chat/chat.room.screen.dart';
+import 'package:fe/service/app.service.dart';
 import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class TestUser extends StatelessWidget {
@@ -17,7 +18,8 @@ class TestUser extends StatelessWidget {
       child: Column(
         children: [
           ElevatedButton(
-            onPressed: () => Get.toNamed('/chat-room-screen', arguments: {'uid': uid}),
+            onPressed: () =>
+                AppService.instance.open(ChatRoomScreen.routeName, arguments: {'uid': uid}),
             child: Text(name),
           ),
           UserPresence(
@@ -39,10 +41,12 @@ class TestUser extends StatelessWidget {
               FirebaseAuth.instance.signOut().then((x) {
                 FirebaseAuth.instance
                     .signInWithEmailAndPassword(
-                      email: email,
-                      password: '12345a',
-                    )
-                    .catchError(error);
+                  email: email,
+                  password: '12345a',
+                )
+                    .catchError((e) {
+                  error(e);
+                });
               });
             },
             child: const Text('Sign-In'),

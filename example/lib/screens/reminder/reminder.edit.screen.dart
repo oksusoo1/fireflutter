@@ -1,10 +1,12 @@
 import 'package:extended/extended.dart';
+import 'package:fe/service/app.service.dart';
 import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 
 class ReminderEditScreen extends StatelessWidget {
   ReminderEditScreen({Key? key}) : super(key: key);
+
+  static const String routeName = '/reminderEdit';
 
   final controller = ReminderEditController();
 
@@ -24,7 +26,7 @@ class ReminderEditScreen extends StatelessWidget {
                 bool? re = await ReminderService.instance.display(
                   context: context,
                   onLinkPressed: (String page, dynamic arguments) =>
-                      Get.toNamed(page, arguments: arguments),
+                      AppService.instance.open(page, arguments: arguments),
                   data: data,
                 );
 

@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
 
 import '../../fireflutter.dart';
@@ -26,7 +25,7 @@ class UserSettingsService with DatabaseMixin {
   );
 
   UserSettingsService() {
-    debugPrint('UserSettingsService::constructor');
+    // debugPrint('UserSettingsService::constructor');
 
     initAuthChanges();
   }
@@ -36,16 +35,17 @@ class UserSettingsService with DatabaseMixin {
   /// When auth changes, listen to newly signed-in user's setting.
   ///
   initAuthChanges() {
-    print('UserSettingsService::initAuthChanges');
     FirebaseAuth.instance.authStateChanges().listen(
       (_user) async {
+        sub?.cancel();
+        settings = UserSettingsModel.empty();
         if (_user == null) {
           ///
         } else {
           if (_user.isAnonymous) {
             /// Note, anonymous sigin-in is not supported by fireflutter.
           } else {
-            sub?.cancel();
+            // print('path; ${userSettingsDoc.path}');
             sub = userSettingsDoc.onValue.listen((event) {
               // if settings doc does not exists, just use default empty setting.
               if (event.snapshot.exists) {
@@ -54,11 +54,10 @@ class UserSettingsService with DatabaseMixin {
               } else {
                 // create the document /user-settings/uid with timestamp to avoid error when saving data with doc/data
                 create();
-                settings = UserSettingsModel.empty();
               }
               changes.add(settings);
             }, onError: (e) {
-              print('UserSettingsDoc listening error; $e');
+              print('====> UserSettingsDoc listening error; $e');
             });
           }
         }

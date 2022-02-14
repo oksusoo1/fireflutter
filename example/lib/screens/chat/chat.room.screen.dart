@@ -1,27 +1,29 @@
 import 'package:extended/extended.dart';
 import 'package:fe/screens/chat/widgets/chat_room.message.dart';
 import 'package:fe/screens/chat/widgets/chat_room.message_box.dart';
+import 'package:fe/screens/friend_map/friend_map.screen.dart';
+import 'package:fe/service/app.service.dart';
 import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class ChatRoomScreen extends StatefulWidget {
-  const ChatRoomScreen({Key? key}) : super(key: key);
+  const ChatRoomScreen({required this.arguments, Key? key}) : super(key: key);
+
+  static const String routeName = '/chatRoom';
+  final Map arguments;
 
   @override
   State<ChatRoomScreen> createState() => _ChatRoomScreenState();
 }
 
 class _ChatRoomScreenState extends State<ChatRoomScreen> {
-  String otherUid = Get.arguments['uid'];
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: UserDoc(
-          uid: otherUid,
+          uid: widget.arguments['uid'],
           builder: (UserModel user) {
             return Text(user.nickname);
           },
@@ -31,7 +33,7 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
           signedOut: () => const Text('login first'),
           signedIn: (u) {
             return ChatRoom(
-              otherUid: otherUid,
+              otherUid: widget.arguments['uid'],
               messageBuilder: (ChatMessageModel message) {
                 /// If it's text, then display without popup menu for other user
                 if (message.byOther && message.isText) {
@@ -41,7 +43,7 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
                       if (message.isProtocol) {
                         if (message.text.contains('friendMap')) {
                           final arr = message.text.split(':').last.split(',');
-                          Get.toNamed('/friend-map', arguments: {
+                          AppService.instance.open(FriendMapScreen.routeName, arguments: {
                             'latitude': arr.first.trim(),
                             'longitude': arr.last.trim(),
                           });
@@ -59,7 +61,7 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
                       final re =
                           await confirm('Message delete', 'Do you want to delete this message?');
                       if (re == false) return;
-                      message.delete().catchError(error);
+                      message.delete().catchError((e) => error(e));
                     } else if (result == 'edit') {
                       final input = TextEditingController(text: message.text);
                       showDialog(
@@ -77,17 +79,15 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
                           ),
                           actions: [
                             TextButton(
-                              onPressed: () {
-                                Get.back();
-                              },
+                              onPressed: AppService.instance.back,
                               child: const Text('Close'),
                             ),
                             TextButton(
                               onPressed: () {
                                 message
                                     .update(input.text)
-                                    .then((x) => Get.back())
-                                    .catchError(error);
+                                    .then((x) => AppService.instance.back())
+                                    .catchError((e) => error(e));
                               },
                               child: const Text('Update'),
                             ),
@@ -159,7 +159,7 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
                 //   },
                 // );
               },
-              emptyDisplay: Text('Chat room is empty for $otherUid'),
+              emptyDisplay: Text('Chat room is empty for ${widget.arguments['uid']}'),
             );
           }),
     );

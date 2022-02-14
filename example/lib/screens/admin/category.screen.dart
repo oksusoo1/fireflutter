@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 class CategoryScreen extends StatelessWidget {
   const CategoryScreen({Key? key}) : super(key: key);
 
+  static const String routeName = '/category';
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -12,8 +14,7 @@ class CategoryScreen extends StatelessWidget {
         title: const Text('Category Management'),
       ),
       body: CategoryManagement(
-        onCreate: (data) =>
-            alert('Category Create', '"${data['title']}" had been created'),
+        onCreate: () => alert('Category Create', 'Category had been created'),
         onError: error,
       ),
     );

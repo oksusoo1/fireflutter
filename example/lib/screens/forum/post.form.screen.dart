@@ -1,10 +1,13 @@
 import 'package:extended/extended.dart';
+import 'package:fe/service/app.service.dart';
 import 'package:flutter/material.dart';
 import 'package:fireflutter/fireflutter.dart';
-import 'package:get/get.dart';
 
 class PostFormScreen extends StatefulWidget {
-  const PostFormScreen({Key? key}) : super(key: key);
+  const PostFormScreen({required this.arguments, Key? key}) : super(key: key);
+
+  static const String routeName = '/postForm';
+  final Map arguments;
 
   @override
   State<PostFormScreen> createState() => _PostFormScreenState();
@@ -20,16 +23,16 @@ class _PostFormScreenState extends State<PostFormScreen> with FirestoreMixin {
       body: SingleChildScrollView(
         child: PagePadding(vertical: sm, children: [
           PostForm(
-            category: Get.arguments['category'],
-            post: Get.arguments['post'],
+            category: widget.arguments['category'],
+            post: widget.arguments['post'],
             onCreate: (postId) {
-              Get.back(result: postId);
+              AppService.instance.back(postId);
               alert('Post created', 'Thank you');
               // @todo send push notification after create using "posts_category"
               // MessagingService.instance.sendPostsNotification();
             },
             onUpdate: (postId) {
-              Get.back(result: postId);
+              AppService.instance.back(postId);
             },
             onError: error,
           ),

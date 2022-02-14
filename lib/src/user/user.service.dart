@@ -17,7 +17,7 @@ class UserService with FirestoreMixin, DatabaseMixin {
   }
 
   UserService() {
-    debugPrint('UserService::constructor');
+    // debugPrint('UserService::constructor');
 
     initAuthChanges();
   }
@@ -58,23 +58,20 @@ class UserService with FirestoreMixin, DatabaseMixin {
   /// So? Don't race on sign-out and sign-in.
   ///
   initAuthChanges() {
-    print('UserService::initAuthChanges');
-
     FirebaseAuth.instance.authStateChanges().listen(
       (_user) async {
+        userSubscription?.cancel();
+        user = UserModel();
         if (_user == null) {
           debugPrint('User signed-out');
-          user = UserModel();
           changes.add(user);
         } else {
           if (_user.isAnonymous) {
             /// Note, anonymous sigin-in is not supported by fireflutter.
             debugPrint(
                 'User sign-in as Anonymous; Warning! Fireflutter does not user anonymous account.');
-            user = UserModel();
             changes.add(user);
           } else {
-            userSubscription?.cancel();
             final doc = userDoc(_user.uid);
             userSubscription = doc.onValue.listen((event) {
               // if user doc does not exists, create one.
@@ -155,33 +152,20 @@ class UserService with FirestoreMixin, DatabaseMixin {
   /// See readme for details.
   Map<String, UserModel> others = {};
   Future<UserModel> getOtherUserDoc(String uid) async {
+    if (uid == '') return UserModel();
     if (others[uid] != null) {
       print('--> reuse uid; $uid');
       return others[uid]!;
     }
-    UserModel other;
-    try {
-      final event = await userDoc(uid).get();
 
-      if (event.exists) {
-        other = UserModel.fromJson(event.value, event.key!);
-      } else {
-        other = UserModel();
-      }
-    } on FirebaseException catch (e) {
-      debugPrint('------------> getOtherUserDoc causes an Exception; $e');
-      if (e.code == 'permission-denied') {
-        // If user document does not exists, it comes here with the follow error;
-        // [firebase_database/permission-denied] Client doesn't have permission to access the desired data.
-        // debugPrint(e.toString());
-        other = UserModel();
-      } else {
-        other = UserModel();
-      }
-    } catch (e) {
-      debugPrint('------------> getOtherUserDoc causes an Exception; $e');
-      other = UserModel();
+    UserModel other = UserModel();
+
+    final event = await userDoc(uid).get();
+
+    if (event.exists) {
+      other = UserModel.fromJson(event.value, event.key!);
     }
+
     others[uid] = other;
     return others[uid]!;
   }

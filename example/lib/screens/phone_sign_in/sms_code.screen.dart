@@ -1,9 +1,12 @@
+import 'package:extended/extended.dart';
+import 'package:fe/service/app.service.dart';
 import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 
 class SmsCodeScreen extends StatefulWidget {
   const SmsCodeScreen({Key? key}) : super(key: key);
+
+  static const String routeName = '/smsCode';
 
   @override
   _SmsCodeScreenState createState() => _SmsCodeScreenState();
@@ -25,27 +28,29 @@ class _SmsCodeScreenState extends State<SmsCodeScreen> {
             ElevatedButton(
               onPressed: () {
                 PhoneService.instance.verifySMSCode(
-                  success: () {
-                    Get.defaultDialog(
-                        middleText: 'Phone sign-in success',
-                        textConfirm: 'Ok',
-                        onConfirm: () => Get.back()).then(
-                      (value) => Get.offAllNamed('/home'),
-                    );
+                  success: () async {
+                    await alert('Phone sign-in success', 'You have signed-in.');
+                    AppService.instance.openHome();
+                    // Get.defaultDialog(
+                    //     middleText: 'Phone sign-in success',
+                    //     textConfirm: 'Ok',
+                    //     onConfirm: () => service.back()).then(
+                    //   (value) => Get.offAllNamed('/home'),
+                    // );
                   },
-                  error: (e) {
-                    Get.defaultDialog(
-                        middleText: e.toString(),
-                        textConfirm: 'Ok',
-                        onConfirm: () => Get.back());
-                  },
+                  error: (e) => error(e),
+                  //  {
+                  //   Get.defaultDialog(
+                  //       middleText: e.toString(), textConfirm: 'Ok', onConfirm: () => Get.back());
+                  // },
                 );
               },
               child: const Text('Submit'),
             ),
             TextButton(
-                onPressed: Get.back,
-                child: const Text('Try again with different number'))
+              onPressed: AppService.instance.back,
+              child: const Text('Try again with different number'),
+            )
           ],
         ),
       ),

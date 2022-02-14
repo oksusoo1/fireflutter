@@ -12,6 +12,7 @@ class PostModel with FirestoreMixin, ForumBase {
     this.title = '',
     this.content = '',
     this.uid = '',
+    this.hasPhoto = false,
     this.files = const [],
     this.like = 0,
     this.dislike = 0,
@@ -48,6 +49,7 @@ class PostModel with FirestoreMixin, ForumBase {
 
   bool get isMine => UserService.instance.uid == uid;
 
+  bool hasPhoto;
   List<String> files;
 
   int like;
@@ -65,6 +67,7 @@ class PostModel with FirestoreMixin, ForumBase {
       category: data['category'] ?? '',
       title: data['title'] ?? '',
       content: data['content'] ?? '',
+      hasPhoto: data['hasPhoto'] ?? false,
       files: _files,
       deleted: data['deleted'] ?? false,
       uid: data['uid'] ?? '',
@@ -81,6 +84,7 @@ class PostModel with FirestoreMixin, ForumBase {
       'category': category,
       'title': title,
       'content': content,
+      'hasPhoto': hasPhoto,
       'files': files,
       'deleted': deleted,
       'uid': uid,
@@ -115,6 +119,8 @@ class PostModel with FirestoreMixin, ForumBase {
   /// ).create(extra: {'yo': 'hey'});
   /// print('post created; ${ref.id}');
   /// ```
+  ///
+  /// Read readme for [hasPhoto]
   Future<DocumentReference<Object?>> create({
     required String category,
     required String title,
@@ -130,6 +136,7 @@ class PostModel with FirestoreMixin, ForumBase {
       'content': content,
       if (files != null) 'files': files,
       'uid': UserService.instance.user.uid,
+      'hasPhoto': (files == null || files.length == 0) ? false : true,
       'timestamp': FieldValue.serverTimestamp(),
     };
     return postCol.add({...createData, ...extra});
@@ -147,6 +154,7 @@ class PostModel with FirestoreMixin, ForumBase {
         'title': title,
         'content': content,
         if (files != null) 'files': files,
+        'hasPhoto': (files == null || files.length == 0) ? false : true,
         'timestamp': FieldValue.serverTimestamp(),
       },
       ...extra
@@ -165,5 +173,13 @@ class PostModel with FirestoreMixin, ForumBase {
 
   Future<void> increaseViewCounter() {
     return increaseForumViewCounter(postDoc(id));
+  }
+
+  Future feedLike() {
+    return feed(path, 'like');
+  }
+
+  Future feedDislike() {
+    return feed(path, 'dislike');
   }
 }
