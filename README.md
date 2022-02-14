@@ -273,7 +273,8 @@ function lessThan(n) {
 
 # Sources and packages
 
-- Fireflutter uses [intl](https://pub.dev/packages/intl) package for date and time computation
+- [Jiffy](https://github.com/jama5262/jiffy/tree/master/doc) is used for date and time.
+  
 
 
 # Coding Guideline
@@ -1109,6 +1110,26 @@ DynamicLinksService.instance.listen((Uri? deepLink) {
 
 - `hasPhoto` becomes true if the post has a photo.
   - This is a helper property for searching posts that have pohtos. Since firestore cannot have inequality expression on multiple fields, it wil help to search posts that have photos.
+
+
+- Date
+  - When you want to get 5 posts that have most noOfComments within 7 days,
+    how you would search?
+    The answer is `not so simple`.
+    You may want to keep a separate collection that holds posts that are created within 7 days. And it's not simple work.
+
+    So, there we added some date information for a better search.
+
+    You may do `get 5 posts that have most noOfComments in last week`. But not `within 7 days`.
+     
+  - Post document has date information like below
+    - `year` - the year
+    - `month` - the month of a year (1-12)
+    - `day` - the day of a month (1-31)
+    - `dayOfYear` - the day of a year (1-366)
+    - `weekOfYear` - the week of a year
+    - `quarter` - the quarter of a year (1-4)
+    - `timestamp` - database's server time stamp.
 
 ## Comment
 

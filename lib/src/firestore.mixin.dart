@@ -42,6 +42,11 @@ mixin FirestoreMixin {
     return postCol.doc(id);
   }
 
+  // Use this for static.
+  static DocumentReference postDocument(String id) {
+    return FirebaseFirestore.instance.collection('posts').doc(id);
+  }
+
   DocumentReference voteDoc(String id) {
     return postCol.doc(id).collection('votes').doc(_user.uid);
   }

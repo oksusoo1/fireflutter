@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:jiffy/jiffy.dart';
 import '../../../fireflutter.dart';
 
 /// PostModel
@@ -12,6 +13,7 @@ class PostModel with FirestoreMixin, ForumBase {
     this.title = '',
     this.content = '',
     this.uid = '',
+    this.noOfComments = 0,
     this.hasPhoto = false,
     this.files = const [],
     this.like = 0,
@@ -49,6 +51,8 @@ class PostModel with FirestoreMixin, ForumBase {
 
   bool get isMine => UserService.instance.uid == uid;
 
+  int noOfComments;
+
   bool hasPhoto;
   List<String> files;
 
@@ -67,6 +71,7 @@ class PostModel with FirestoreMixin, ForumBase {
       category: data['category'] ?? '',
       title: data['title'] ?? '',
       content: data['content'] ?? '',
+      noOfComments: data['noOfComments'] ?? 0,
       hasPhoto: data['hasPhoto'] ?? false,
       files: _files,
       deleted: data['deleted'] ?? false,
@@ -84,6 +89,7 @@ class PostModel with FirestoreMixin, ForumBase {
       'category': category,
       'title': title,
       'content': content,
+      'noOfComments': noOfComments,
       'hasPhoto': hasPhoto,
       'files': files,
       'deleted': deleted,
@@ -130,6 +136,8 @@ class PostModel with FirestoreMixin, ForumBase {
   }) {
     if (signedIn == false) throw ERROR_SIGN_IN;
     if (UserService.instance.user.exists == false) throw ERROR_USER_DOCUMENT_NOT_EXISTS;
+
+    final j = Jiffy();
     final createData = {
       'category': category,
       'title': title,
@@ -137,6 +145,13 @@ class PostModel with FirestoreMixin, ForumBase {
       if (files != null) 'files': files,
       'uid': UserService.instance.user.uid,
       'hasPhoto': (files == null || files.length == 0) ? false : true,
+      'noOfComments': 0,
+      'year': j.year,
+      'month': j.month,
+      'day': j.date,
+      'dayOfYear': j.dayOfYear,
+      'weekOfYear': j.week,
+      'quarter': j.quarter,
       'timestamp': FieldValue.serverTimestamp(),
     };
     return postCol.add({...createData, ...extra});
@@ -161,6 +176,11 @@ class PostModel with FirestoreMixin, ForumBase {
     });
   }
 
+  Future<PostModel> get(String postId) async {
+    final snapshot = await postDoc(postId).get();
+    return PostModel.fromJson(snapshot.data() as Json, snapshot.id);
+  }
+
   Future<void> delete() {
     if (deleted) throw ERROR_ALREADY_DELETED;
     return postDoc(id).update({
@@ -175,10 +195,23 @@ class PostModel with FirestoreMixin, ForumBase {
     return increaseForumViewCounter(postDoc(id));
   }
 
+  /// Increase no of comments
+  ///
+  /// Note that, this is a static method.
+  ///
+  /// ```dart
+  /// PostModel.increaseNoOfComments(postId);
+  /// ```
+  static Future<void> increaseNoOfComments(postId) {
+    return FirestoreMixin.postDocument(postId).update({'noOfComments': FieldValue.increment(1)});
+  }
+
+  ///
   Future feedLike() {
     return feed(path, 'like');
   }
 
+  ///
   Future feedDislike() {
     return feed(path, 'dislike');
   }

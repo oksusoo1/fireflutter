@@ -52,8 +52,9 @@ dependencies:
   # reminder service,
   shared_preferences: ^2.0.12
 
-  # date & time
-  intl: ^0.17.0
+  # date and time
+  jiffy: ^5.0.0
+  
 
   # uuid
   uuid: ^3.0.5

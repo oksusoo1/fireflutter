@@ -123,9 +123,9 @@ class CommentModel with FirestoreMixin, ForumBase {
     required String parentId,
     String content = '',
     List<String> files = const [],
-  }) {
+  }) async {
     final _ = CommentModel.empty();
-    return _.commentCol.add({
+    final ref = await _.commentCol.add({
       'postId': postId,
       'parentId': parentId,
       'content': content,
@@ -133,6 +133,13 @@ class CommentModel with FirestoreMixin, ForumBase {
       'timestamp': FieldValue.serverTimestamp(),
       'uid': FirebaseAuth.instance.currentUser?.uid ?? '',
     });
+
+    // final post = await PostModel().get(postId);
+    // await post.increaseNoOfComments();
+
+    PostModel.increaseNoOfComments(postId);
+
+    return ref;
   }
 
   Future<void> update({
