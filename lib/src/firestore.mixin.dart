@@ -88,9 +88,18 @@ mixin FirestoreMixin {
     });
   }
 
+  /// Like, dislike
+  ///
+  /// Don't put it in cloud functions since;
+  /// - the logic is a bit complicated and it's easir to make it work on client
+  ///   side.
+  /// - It is not a critical work. It is okay that there might be an unexpted
+  ///   behaviour.
+  ///
   /// [targetDocPath] is the path of target document. The document could be one
   /// post, comment, or user.
   /// [likeOrDisliek] can be one of 'like' or 'dislike'.
+  ///
   Future<void> feed(String targetDocPath, String likeOrDislike) async {
     if (notSignIn) throw ERROR_SIGN_IN;
 

@@ -40,7 +40,6 @@ dependencies:
   # Chat room pagination. firestore pagination ui helper.
   paginate_firestore: ^1.0.3
 
-
   # chat badge
   badges: ^2.0.2
 
