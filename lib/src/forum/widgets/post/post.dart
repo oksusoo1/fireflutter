@@ -19,7 +19,7 @@ class Post extends StatelessWidget {
     this.onHide,
   }) : super(key: key);
 
-  final Function(String)? contentBuilder;
+  final Function(PostModel)? contentBuilder;
   final Widget Function(String, Function())? buttonBuilder;
   final PostModel post;
   final Function(PostModel post) onReport;
@@ -36,7 +36,7 @@ class Post extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final content = contentBuilder != null
-        ? contentBuilder!(post.displayContent)
+        ? contentBuilder!(post)
         : Padding(
             padding: EdgeInsets.all(8),
             child: Text(
