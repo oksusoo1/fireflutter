@@ -31,7 +31,7 @@ class ButtonBase extends StatelessWidget {
   final Function()? onChat;
   final Function()? onShare;
   final Function()? onHide;
-  final Widget Function(Function()?)? buttonBuilder;
+  final Widget Function(String, Function())? buttonBuilder;
 
   bool get isMine => UserService.instance.currentUser?.uid == uid;
 
@@ -46,7 +46,7 @@ class ButtonBase extends StatelessWidget {
         _button('Report', onReport),
         _button('Like ${likeCount > 0 ? likeCount : ""}', onLike),
         _button('Dislike ${dislikeCount > 0 ? dislikeCount : ""}', onDislike),
-        if (isPost && onChat != null) _button('Chat', onChat),
+        if (isPost && onChat != null) _button('Chat', onChat!),
         Spacer(),
         PopupMenuButton<String>(
           child: Padding(
@@ -102,9 +102,9 @@ class ButtonBase extends StatelessWidget {
     );
   }
 
-  Widget _button(String label, Function()? callback) {
+  Widget _button(String label, Function() callback) {
     return buttonBuilder != null
-        ? buttonBuilder!(callback)
+        ? buttonBuilder!(label, callback)
         : TextButton(
             onPressed: callback,
             child: Text(

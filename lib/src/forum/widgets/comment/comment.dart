@@ -34,9 +34,9 @@ class Comment extends StatefulWidget {
   final Function(CommentModel comment) onDislike;
   final Function(int index, List<String> fileList) onImageTap;
 
-  final Widget Function(Function()?)? buttonBuilder;
-  final Widget Function()? headerBuilder;
-  final Widget Function()? contentBuilder;
+  final Widget Function(String, Function())? buttonBuilder;
+  final Widget Function(CommentModel)? headerBuilder;
+  final Widget Function(CommentModel)? contentBuilder;
 
   @override
   State<Comment> createState() => _CommentState();
@@ -143,7 +143,7 @@ class _CommentState extends State<Comment> with FirestoreMixin {
 
   Widget _commentHeader(CommentModel comment) {
     return widget.headerBuilder != null
-        ? widget.headerBuilder!()
+        ? widget.headerBuilder!(comment)
         : Padding(
             padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
             child: UserDoc(
@@ -172,7 +172,7 @@ class _CommentState extends State<Comment> with FirestoreMixin {
 
   Widget _contentBuilder(CommentModel comment) {
     return widget.contentBuilder != null
-        ? widget.contentBuilder!()
+        ? widget.contentBuilder!(comment)
         : Container(
             width: double.infinity,
             padding: EdgeInsets.all(12),

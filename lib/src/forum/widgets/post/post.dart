@@ -20,7 +20,7 @@ class Post extends StatelessWidget {
   }) : super(key: key);
 
   final Function(String)? contentBuilder;
-  final Widget Function(Function()?)? buttonBuilder;
+  final Widget Function(String, Function())? buttonBuilder;
   final PostModel post;
   final Function(PostModel post) onReport;
   final Function(PostModel post) onReply;
