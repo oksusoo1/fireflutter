@@ -33,8 +33,6 @@ class Post extends StatelessWidget {
   final Function()? onHide;
   final Function(int index, List<String> fileList) onImageTap;
 
-  bool get isMine => UserService.instance.currentUser?.uid == post.uid;
-
   @override
   Widget build(BuildContext context) {
     final content = contentBuilder != null
