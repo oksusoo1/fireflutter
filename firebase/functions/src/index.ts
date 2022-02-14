@@ -4,19 +4,26 @@ import * as admin from "firebase-admin";
 admin.initializeApp();
 
 export const sendMessageOnPostCreate = functions
-    .region('asia-northeast3')
+    .region("asia-northeast3")
     .firestore
     .document("/posts/{postId}")
-    .onCreate((snapshot, context) => {
-        const category = snapshot.data().category;
-        const payload = {
-            notification: {
-                title: 'You have a new post!',
-                body: `... is now following you.`
-            }
-        };
-
-        return admin.messaging().sendToTopic('posts_' + category, payload);
+    .onCreate((snapshot) => {
+      const category = snapshot.data().category;
+      const payload = {
+        notification: {
+          title: snapshot.data().title,
+          body: snapshot.data().content,
+        },
+      };
+      const topic = "posts_" + category;
+      console.info("topic; ", topic);
+      return admin.messaging().sendToTopic(topic, payload)
+          .then(() => {
+            return "SUCCESS";
+          })
+          .catch(() => {
+            return "ERROR";
+          });
     });
 
 

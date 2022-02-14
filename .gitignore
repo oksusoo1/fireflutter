@@ -1,3 +1,4 @@
+*.adminKey.json
 
 # Miscellaneous
 *.class
