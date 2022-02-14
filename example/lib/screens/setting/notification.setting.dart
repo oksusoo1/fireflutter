@@ -17,8 +17,10 @@ class _NotificationSettingScreenState extends State<NotificationSettingScreen> {
       appBar: AppBar(
         title: const Text('Notification Settings'),
       ),
-      body: NotificationSetting(
-        onError: error,
+      body: SingleChildScrollView(
+        child: NotificationSetting(
+          onError: error,
+        ),
       ),
     );
   }
