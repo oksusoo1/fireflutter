@@ -22,49 +22,51 @@ class _NotificationSettingState extends State<NotificationSetting> {
   @override
   Widget build(BuildContext context) {
     // if (loading) return Center(child: CircularProgressIndicator.adaptive());
-    return StreamBuilder(
-      stream: UserSettingsService.instance.changes.stream,
-      builder: (context, snapshot) {
-        if (snapshot.hasError) return Text('Error');
-        if (snapshot.connectionState == ConnectionState.waiting)
-          return SizedBox.shrink();
-        if (snapshot.hasData == false) return SizedBox.shrink();
-        print(UserSettingsService.instance.settings.topics);
-        return Column(
-          children: [
-            ElevatedButton(
-              onPressed: () => enableOrDisableAllNotification(true),
-              child: Text('Enable all notification'),
-            ),
-            ElevatedButton(
-              onPressed: () => enableOrDisableAllNotification(false),
-              child: Text('Disable all notification'),
-            ),
-            Text('Post notification'),
-            for (CategoryModel cat in CategoryService.instance.categories)
-              CheckboxListTile(
-                value: UserSettingsService.instance
-                    .hasSubscription('posts_${cat.id}'),
-                onChanged: (b) => MessagingService.instance
-                    .updateSubscription('posts_${cat.id}', b ?? false)
-                    .catchError(widget.onError),
-                title: Text(cat.title),
-                controlAffinity: ListTileControlAffinity.leading,
+    return SingleChildScrollView(
+      child: StreamBuilder(
+        stream: UserSettingsService.instance.changes.stream,
+        builder: (context, snapshot) {
+          if (snapshot.hasError) return Text('Error');
+          if (snapshot.connectionState == ConnectionState.waiting)
+            return SizedBox.shrink();
+          if (snapshot.hasData == false) return SizedBox.shrink();
+          print(UserSettingsService.instance.settings.topics);
+          return Column(
+            children: [
+              ElevatedButton(
+                onPressed: () => enableOrDisableAllNotification(true),
+                child: Text('Enable all notification'),
               ),
-            Text('Comment notification'),
-            for (CategoryModel cat in CategoryService.instance.categories)
-              CheckboxListTile(
-                value: UserSettingsService.instance
-                    .hasSubscription('comments_${cat.id}'),
-                onChanged: (b) => MessagingService.instance
-                    .updateSubscription('comments_${cat.id}', b ?? false)
-                    .catchError(widget.onError),
-                title: Text(cat.title),
-                controlAffinity: ListTileControlAffinity.leading,
+              ElevatedButton(
+                onPressed: () => enableOrDisableAllNotification(false),
+                child: Text('Disable all notification'),
               ),
-          ],
-        );
-      },
+              Text('Post notification'),
+              for (CategoryModel cat in CategoryService.instance.categories)
+                CheckboxListTile(
+                  value: UserSettingsService.instance
+                      .hasSubscription('posts_${cat.id}'),
+                  onChanged: (b) => MessagingService.instance
+                      .updateSubscription('posts_${cat.id}', b ?? false)
+                      .catchError(widget.onError),
+                  title: Text(cat.title),
+                  controlAffinity: ListTileControlAffinity.leading,
+                ),
+              Text('Comment notification'),
+              for (CategoryModel cat in CategoryService.instance.categories)
+                CheckboxListTile(
+                  value: UserSettingsService.instance
+                      .hasSubscription('comments_${cat.id}'),
+                  onChanged: (b) => MessagingService.instance
+                      .updateSubscription('comments_${cat.id}', b ?? false)
+                      .catchError(widget.onError),
+                  title: Text(cat.title),
+                  controlAffinity: ListTileControlAffinity.leading,
+                ),
+            ],
+          );
+        },
+      ),
     );
   }
 

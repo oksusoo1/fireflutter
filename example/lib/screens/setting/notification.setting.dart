@@ -8,7 +8,8 @@ class NotificationSettingScreen extends StatefulWidget {
   static const String routeName = '/notificationSettings';
 
   @override
-  _NotificationSettingScreenState createState() => _NotificationSettingScreenState();
+  _NotificationSettingScreenState createState() =>
+      _NotificationSettingScreenState();
 }
 
 class _NotificationSettingScreenState extends State<NotificationSettingScreen> {
@@ -18,10 +19,8 @@ class _NotificationSettingScreenState extends State<NotificationSettingScreen> {
       appBar: AppBar(
         title: const Text('Notification Settings'),
       ),
-      body: SingleChildScrollView(
-        child: NotificationSetting(
-          onError: error,
-        ),
+      body: NotificationSetting(
+        onError: error,
       ),
     );
   }
