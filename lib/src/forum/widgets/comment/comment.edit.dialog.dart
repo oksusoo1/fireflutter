@@ -46,6 +46,8 @@ class _CommentEditDialogState extends State<CommentEditDialog> {
           children: [
             TextField(
               controller: content,
+              minLines: 1,
+              maxLines: 5,
             ),
             Row(children: [
               FileUploadButton(

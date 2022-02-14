@@ -55,7 +55,7 @@ class _PostFormState extends State<PostForm> {
         : TextField(controller: title);
     final contentField = widget.contentFieldBuilder != null
         ? widget.contentFieldBuilder!(content)
-        : TextField(controller: content);
+        : TextField(controller: content, minLines: 3, maxLines: 10);
 
     final submitButton = widget.submitButtonBuilder != null
         ? widget.submitButtonBuilder!(onSubmit)
