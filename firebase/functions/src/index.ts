@@ -3,6 +3,22 @@ import * as admin from "firebase-admin";
 
 admin.initializeApp();
 
+export const sendMessageOnPostCreate = functions
+    .region('asia-northeast3')
+    .firestore
+    .document("/posts/{postId}")
+    .onCreate((snapshot, context) => {
+        const category = snapshot.data().category;
+        const payload = {
+            notification: {
+                title: 'You have a new post!',
+                body: `... is now following you.`
+            }
+        };
+
+        return admin.messaging().sendToTopic('posts_' + category, payload);
+    });
+
 
 // // Update noOfPosts in category setting
 // export const incrementNoOfPost = functions
