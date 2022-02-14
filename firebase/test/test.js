@@ -452,6 +452,15 @@ describe('Firestore security test', () => {
     });
 
 
+    /// no of comments when a comment is created.
+    it('Post - increase noOfComments', async () => {
+        await createCategoryPost('cat', 'docId', A, 'title');
+        await firebase.assertSucceeds(db().collection('posts').doc('docId').update({
+            noOfComments: 1
+        }));
+    });
+
+
 
     it('Comment - failure test', async () => {
 
@@ -708,11 +717,11 @@ describe('Firestore security test', () => {
         const doc = db().collection("message-tokens").doc("tokenA");
 
         // fail - field required is wrong must be uid only
-        await firebase.assertFails(doc.set({ id: 'Apple'} , {merge:true}));
+        await firebase.assertFails(doc.set({ id: 'Apple' }, { merge: true }));
 
         // succes - field required is wrong must be uid only
-        await firebase.assertSucceeds(doc.set({ uid: 'Apple'} , {merge:true}));
-        
+        await firebase.assertSucceeds(doc.set({ uid: 'Apple' }, { merge: true }));
+
         // succes - data exist
         await firebase.assertSucceeds(doc.get());
     });
@@ -722,11 +731,11 @@ describe('Firestore security test', () => {
         const doc = db().collection("message-tokens").doc("tokenA");
 
         // fail - field required is wrong must be uid only
-        await firebase.assertFails(doc.set({ id: 'Apple'} , {merge:true}));
+        await firebase.assertFails(doc.set({ id: 'Apple' }, { merge: true }));
 
         // succes - field required is wrong must be uid only
-        await firebase.assertSucceeds(doc.set({ uid: 'Apple'} , {merge:true}));
-        
+        await firebase.assertSucceeds(doc.set({ uid: 'Apple' }, { merge: true }));
+
         // succes - data exist
         await firebase.assertSucceeds(doc.get());
     });

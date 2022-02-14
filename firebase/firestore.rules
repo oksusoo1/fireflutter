@@ -58,7 +58,7 @@ service cloud.firestore {
       allow update: if
         (isMyPost() && willBeMyPost() && mustUpdating(['timestamp']))
         ||
-        onlyUpdating(['viewCounter', 'like', 'dislike'])
+        onlyUpdating(['viewCounter', 'like', 'dislike', 'noOfComments'])
       ;
       // Post deletion is not allowed.
       allow delete: if false;
