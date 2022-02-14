@@ -34,6 +34,7 @@ class _ImageViewerState extends State<ImageViewer> {
       body: Stack(
         children: [
           Container(
+            width: double.maxFinite,
             child: PhotoViewGallery.builder(
               backgroundDecoration: BoxDecoration(color: Colors.transparent),
               itemCount: widget.files.length,

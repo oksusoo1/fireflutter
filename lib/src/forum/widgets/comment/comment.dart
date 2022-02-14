@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import '../../../fireflutter.dart';
+import '../../../../fireflutter.dart';
 
 class Comment extends StatefulWidget {
   Comment({
@@ -14,6 +14,11 @@ class Comment extends StatefulWidget {
     required this.onEdit,
     required this.onDelete,
     required this.onImageTap,
+    required this.onLike,
+    required this.onDislike,
+    this.buttonBuilder,
+    this.headerBuilder,
+    this.contentBuilder,
   }) : super(key: key);
 
   final PostModel post;
@@ -25,7 +30,13 @@ class Comment extends StatefulWidget {
   final Function(CommentModel comment) onEdit;
   final Function(CommentModel comment) onReport;
   final Function(CommentModel comment) onDelete;
+  final Function(CommentModel comment) onLike;
+  final Function(CommentModel comment) onDislike;
   final Function(int index, List<String> fileList) onImageTap;
+
+  final Widget Function(String, Function())? buttonBuilder;
+  final Widget Function(CommentModel)? headerBuilder;
+  final Widget Function(CommentModel)? contentBuilder;
 
   @override
   State<Comment> createState() => _CommentState();
@@ -96,43 +107,77 @@ class _CommentState extends State<Comment> with FirestoreMixin {
       children: [
         for (final CommentModel comment in comments)
           Container(
-            margin: EdgeInsets.only(left: comment.depth * 16),
-            padding: const EdgeInsets.all(24),
-            color: Colors.teal[100],
+            margin: EdgeInsets.only(left: comment.depth * 16, bottom: 16),
+            decoration: BoxDecoration(
+              color: Colors.grey[200],
+              borderRadius: BorderRadius.circular(8),
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                UserDoc(uid: comment.uid, builder: (u) => Text('Name: ${u.nickname}')),
-                Text("content: ${comment.displayContent}"),
+                _commentHeader(comment),
+                _contentBuilder(comment),
                 ImageList(
                   files: comment.files,
                   onImageTap: (i) => widget.onImageTap(i, comment.files),
                 ),
-                Wrap(
-                  children: [
-                    ElevatedButton(
-                      onPressed: () => widget.onReply(widget.post, comment),
-                      child: const Text('Reply'),
-                    ),
-                    ElevatedButton(
-                      onPressed: () => widget.onReport(comment),
-                      child: const Text('Report'),
-                    ),
-                    ElevatedButton(
-                      onPressed: () => widget.onEdit(comment),
-                      child: const Text('Edit'),
-                    ),
-                    ElevatedButton(
-                      onPressed: () => widget.onDelete(comment),
-                      child: const Text('Delete'),
-                    ),
-                  ],
+                ButtonBase(
+                  uid: comment.uid,
+                  isPost: false,
+                  onReply: () => widget.onReply(widget.post, comment),
+                  onReport: () => widget.onReport(comment),
+                  onEdit: () => widget.onEdit(comment),
+                  onDelete: () => widget.onDelete(comment),
+                  onLike: () => widget.onLike(comment),
+                  onDislike: () => widget.onDislike(comment),
+                  buttonBuilder: widget.buttonBuilder,
+                  likeCount: comment.like,
+                  dislikeCount: comment.dislike,
                 ),
-                Divider(color: Colors.black),
               ],
             ),
           ),
       ],
     );
+  }
+
+  Widget _commentHeader(CommentModel comment) {
+    return widget.headerBuilder != null
+        ? widget.headerBuilder!(comment)
+        : Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
+            child: UserDoc(
+              uid: comment.uid,
+              builder: (user) => Row(
+                children: [
+                  ClipOval(
+                    child: user.photoUrl != ''
+                        ? UploadedImage(url: user.photoUrl)
+                        : Icon(Icons.person, color: Colors.black, size: 30),
+                  ),
+                  SizedBox(width: 8),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(user.displayName.isNotEmpty ? "${user.displayName}" : "No name"),
+                      SizedBox(height: 8),
+                      ShortDate(comment.timestamp.millisecondsSinceEpoch),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          );
+  }
+
+  Widget _contentBuilder(CommentModel comment) {
+    return widget.contentBuilder != null
+        ? widget.contentBuilder!(comment)
+        : Container(
+            width: double.infinity,
+            padding: EdgeInsets.all(12),
+            color: Colors.grey[300],
+            child: Text("${comment.displayContent}"),
+          );
   }
 }
