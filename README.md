@@ -1,4 +1,3 @@
-
 ![FireFlutter](https://raw.githubusercontent.com/thruthesky/fireflutter/main/readme/images/logo2.png?raw=true)
 
 # Fire Flutter
@@ -36,6 +35,7 @@ Table of contents
   - [Firestore installation](#firestore-installation)
     - [Setting admin on firestore security rules](#setting-admin-on-firestore-security-rules)
   - [Cloud functions installation](#cloud-functions-installation)
+    - [Run cloud function using shell](#run-cloud-function-using-shell)
 - [Sources and packages](#sources-and-packages)
 - [Coding Guideline](#coding-guideline)
 - [User](#user)
@@ -99,6 +99,10 @@ Table of contents
   - [Post](#post-1)
   - [Comment](#comment)
 - [Push notification](#push-notification)
+  - [terms](#terms)
+  - [How push notification wokr.](#how-push-notification-wokr)
+  - [push notification logic](#push-notification-logic)
+  - [Testing Push notification via terminal](#testing-push-notification-via-terminal)
 - [Fil upload - Firebase Storage](#fil-upload---firebase-storage)
   - [pickUpload](#pickupload)
   - [Delete uploaded image](#delete-uploaded-image)
@@ -107,10 +111,10 @@ Table of contents
 
 # TODOs
 
-
 ## Bug on security rule
 
 - User can list all the reports which must be shown to admin only.
+
 ## Admin
 
 - Since email & phone no are saved in firebase auth service, admin needs a special function to know what is the email and phone no of users.
@@ -123,19 +127,12 @@ Table of contents
 
 - Do not increase view counter on same post. Save data on local storage. It's not a critical feature. It would be okay even if the view counter increases more than once.
 
-
-
-
-
 # Installation
-
 
 ## Running the example
 
 - Do the [Firebase installation](#firebase-installation).
 - Git fork the [fireflutter](https://github.com/thruthesky/fireflutter).
-
-
 
 ## Creating a new project
 
@@ -143,8 +140,8 @@ Table of contents
 - Edit platform version to `platform :ios, '10.0'` in Podfile.
 
 ## Firebase installation
-- Refer the instructions of [FlutterFire Overview](https://firebase.flutter.dev/docs/overview)
 
+- Refer the instructions of [FlutterFire Overview](https://firebase.flutter.dev/docs/overview)
 
 ### iOS installation
 
@@ -157,8 +154,8 @@ Table of contents
 - To install Firebase Realtime Database, enable it on Firebase console and put the security rules.
 
 - Note, if you enable `Firebase Realtime Database`, you have to re-download and update the `GoogleService-Info.plist`.
-  - You may need to update the `GoogleService-Info.plist` after enabling other features of the Firebase.
 
+  - You may need to update the `GoogleService-Info.plist` after enabling other features of the Firebase.
 
 - Add the following security rules on firebase realtime database
 
@@ -193,10 +190,10 @@ Table of contents
 }
 ```
 
-
 ## Firebase Storage installation
 
 - Install 'Image Resize' firebase extension with the following settings;
+
   - Upgrade billing plan
   - This extension will use cloud function. It will install `generateResizedImage` function.
   - Cloud functions location: Choose the same location as your project.
@@ -208,8 +205,8 @@ Table of contents
   - List of absolute paths not included for resized images: leave it empty.
   - Cache-Control header for resized images: max-age=86400
   - Convert image to preferred types: webp
-  Note, that you can see the configuration in firebase extensions menu and reconfigure it.
-  Note, that you can see the location in firebase cloud functions menu.
+    Note, that you can see the configuration in firebase extensions menu and reconfigure it.
+    Note, that you can see the location in firebase cloud functions menu.
 
 - Copy the following rules and paste it into the storage rules section.
 
@@ -244,13 +241,13 @@ function lessThan(n) {
 - Enable firestore.
 - Copy the [firestore securiy rules](https://raw.githubusercontent.com/thruthesky/fireflutter/main/firebase/firestore.rules) and update it on your firebase project.
 - To install the firestore indexes, it is recommended to run the query and click the link of it to generate the indexes.
+
   - To do this, just call `getFirestoreIndexLinks` method and it will print the link on debug console. You just need to click the links.
     - See example of `getFirestoreIndexLinks` in the [example home screen](https://github.com/thruthesky/fireflutter/blob/main/example/lib/screens/home/home.screen.dart).
   - See the [firestore indexes](https://raw.githubusercontent.com/thruthesky/fireflutter/main/firebase/firestore.indexes.json) and if you want to update it manually on your firebase project.
 
 - We use Firestore only for `Chat` and `Forum` features since they needs more support on query and search functionalities.
   - All other features should go to realtime database.
-
 
 ### Setting admin on firestore security rules
 
@@ -260,9 +257,12 @@ function lessThan(n) {
 ![Security Rules Admin](https://raw.githubusercontent.com/thruthesky/fireflutter/main/readme/images/security-rules-admin.jpg?raw=true)
 
 
+
+
 ## Cloud functions installation
 
 - We only use functions for the work that cannot be done by client end like sending push notifications.
+
   - We don't use cloud functions simply because we want to avoid multiple read and write on documents and to the logic simple in the client end.
 
 - To install,
@@ -271,11 +271,20 @@ function lessThan(n) {
   - `firebase deploy --only functiosn`
 
 
+
+### Run cloud function using shell
+
+```sh
+$ cd firebase/functions
+$ cd npm i
+$ npm i -g firebase-tools
+$ export GOOGLE_APPLICATION_CREDENTIALS=../withcenter-test-project.adminKey.json
+$ npm run shell
+```
+
 # Sources and packages
 
 - [Jiffy](https://github.com/jama5262/jiffy/tree/master/doc) is used for date and time.
-  
-
 
 # Coding Guideline
 
@@ -284,7 +293,6 @@ function lessThan(n) {
   - Note, that `.data` must contain only the data to be saved in firestore.
 - All model should have `.map` property(getter) to export its model data to a map. while `.data` only contains for saving firestore, `.map` may contain other values.
 
-
 # User
 
 ## User installation
@@ -292,6 +300,7 @@ function lessThan(n) {
 - Do [Firebase installation](#firebase-installation)
 - Enable Email/Password Sign-In method to login with email and password.
 - Enable Google Sign-In method and add the following in `Info.plist` to login with Google account
+
 ```xml
 <!-- Google Sign-in Section -->
 <key>CFBundleURLTypes</key>
@@ -310,45 +319,44 @@ function lessThan(n) {
 <!-- End of the Google Sign-in Section -->
 ```
 
-
 ## User data and user profile
 
 - User email and phone number are saved in firebase auth. So, use `UserService.instance.email` or `UserService.instance.phoneNumber` to get email or phone number.
 - Other user properties (like name, photo url, birthday, etc) are saved in `/users` inside realtime database.
 
 - Many apps share user name and photo. For instance, when a user chat to the other user, they shoud know each other's name and photo. Or on post list screen, there should be author name and photo on each post or comment.
+
   - User information would be displayed as extra information on chats, posts, comments, public profiles, and so on. Realtime database costs by GB download that is cheap enough to use it as normalized. But it would cost a lot how you use it.
 
 - Warning, we do not denormalize user data. That means, user name will not be copied into other documents. Instead, the app will simply read `/users/<uid>` document whenever user data is needed. In this way, data integrity is guranteed. But often, more data will be downloaded and it will cost more money.
+
   - So, keep `/users/<uid>` slim. Try to keep only the following fields.
     - `birthday`
     - `gender`
     - `firstName`, `middleName`, `lastName`, `nickname`
     - `photoUrl`
     - `timestamp_registered`
-    And think over again if it is really needed when you are trying to add another field.
+      And think over again if it is really needed when you are trying to add another field.
   - Don't put user's setting data in `/users/<uid>`. Use may use `UserModel.updateSettings()` and `UserModel.readSettings()` to manage user's setting.
 
 - Use `MyDoc` to display my profile data.
-
 
 ## UserService
 
 - The reason why we need `UserService` is to hold login user's `UserModel` and update it on user document's changes.
 
-
 ## Test users
 
 - Create the following four test user accounts with password of `12345a` using email & password sign-in.
+
   - `apple@test.com`, `banana@test.com`, `cherry@test.com`, `durian@test.com`
 
 - Create an admin with `admin@test.com` as its email and `12345a` as its password.
   - And set the uid as admin. Read [Setting admin on firestore security rules](#setting-admin-on-firestore-security-rules) to know how to set admin.
+
 ## Phone number sign-in
 
-
 ![Phone Sign In UI](https://raw.githubusercontent.com/thruthesky/fireflutter/main/readme/images/phone-sign-in-ui.jpg?raw=true)
-
 
 - In most cases, you want to use `Firebase Flutter UI` for `Firebase Sign-In` and that's very fine.
   But with the `Phone Sign-In` built in UI, it's not easy to handle errors. So, fireflutter provides simple service for phone sign in.
@@ -356,6 +364,7 @@ function lessThan(n) {
 - To use phone sign-in, enable it. (and add some test phone numbers if you wish to test with test phone numbers.)
 
 - `PhoneService` has the service code of phone sign-in.
+
   - See [example/lib/phone_sign_in](https://github.com/thruthesky/fireflutter/tree/main/example/lib/screens/phone_sign_in) folder for sample code. You can copy paste it in your projects.
 
 - Fireflutter also provides UI widgets to make it easy to use in your app.
@@ -398,7 +407,6 @@ PhoneService.instance.verifyPhoneNumber(
 
 - This `email authentication under phone sign-in` feature is only the case that the user logged in with `phone sign-in`. It may be used in other cases. But we consider the `email authentication` with `phone sign-in` only since we have `phone sign-in` service.
 
-
 ### Email authentication under phone sign-in logic
 
 #### When user has an email already
@@ -406,9 +414,10 @@ PhoneService.instance.verifyPhoneNumber(
 - User can update email or verify without updating email.
 
 - Before email verification screen,
+
   - Show `verify email` button when user has email but not verified.
   - Show `update email` button when user has
-    - no email or 
+    - no email or
     - has verified email.
 
 - When button is pressed, move to email verification screen
@@ -426,18 +435,18 @@ PhoneService.instance.verifyPhoneNumber(
       - Then, listen if email is verified.
       - If verified, alert and go home.
 
-
 # Admin
 
 ## Admin status check & update
 
 `UserService.instance.updateAdminStatus()` updates wether the user is an admin or not.
+
 - Why; when user logs in, to know if the user is admin or not, the app must do an extra read on firestore document. And it costs money.
 - How; this method will update `isAdmin` to true if he is admin or false if not.
 - ide effect; there may be cases that `isAdmin` is set to true when the user is no longer an admin. In that case, UI may show admin buttons but the actions will fail based on the security rules.
 - Usage; call this method when user enters admin page or on any demand.
 - Recommendation; Put a secret(fake) widget like 'app version' that displays app version. And when user do 3 taps and long press, redirect the user to admin screen and call `updateAdminStatus()` on entering admin screen.
-- after calling `updateAdminStatus()`, the user's document will have `isAdmin: true` if the user is admin. 
+- after calling `updateAdminStatus()`, the user's document will have `isAdmin: true` if the user is admin.
 
 # User presence
 
@@ -450,6 +459,7 @@ PhoneService.instance.verifyPhoneNumber(
 ## User Presence Installation
 
 - To make it work, install
+
   - [Firebase Installation](#firebase-installation)
   - [Firebase Realtime Database Installation](#firebase-realtime-database-installation)
 
@@ -473,6 +483,7 @@ class _MainAppState extends State<MainApp> {
   }
 }
 ```
+
 - To know if a user is online, offline or away, use `UserPresence` widget.
 
 ```dart
@@ -501,7 +512,6 @@ UserPresence(
 - `/presense/$uid` document will be written only when user logs in and out.
 - When app is closed, the user will be offline.
 
-
 ## Displaying user profile
 
 ### MyDoc
@@ -528,14 +538,14 @@ MyDoc(
 - Some use cases of `MyDoc`
   - When user had signed-in Firebase, `auth changes` event happens immediately while the user's document is not available in `UserService.instance`
     - For instance, when app restart, the user signs in to `Firebase Auth` very quickly, and then, `UserService` begins to work to get user document into `UserService.instance.user`. So, user document is not available at the time of user sign in.
-    But it is safe to use `MyDoc` since it has default empty values until it reads the document for the first time after sign-in.
+      But it is safe to use `MyDoc` since it has default empty values until it reads the document for the first time after sign-in.
     - To know if the user is admin or not, user document must be downloaded from database.
     - When user document will updated on every document change, and `MyDoc` will update its child widgets. So, `MyDoc` is a perfect solution to use as state manage based on user data change.
 
 ### UserDoc
- 
 
 - To display a other user profile, use `UserDoc` widget. `UserDoc` does not listen to the document changes. It is one time read. And it is one time read only for all the app session. That means, it is caching user document and when `UserDoc` is re-used in other places, it does not read the user data again. In this way, it can save money.
+
   - For instance, when user scroll up and down on post list screen, the app has to read and download user document over again for the same post since flutter removes widget if it is invisible in list view. With `UserDoc`, you can display other user's data without worry of cost.
 
 - `UserDoc` may be used for displaying signed-in user. Especially for forms.
@@ -554,9 +564,7 @@ UserDoc(
 ),
 ```
 
-
 - Note, to display if the user is online or offline, see user presence.
-
 
 ## User Auth State
 
@@ -570,9 +578,7 @@ UserDoc(
  ),
 ```
 
-
 # Chat
-
 
 ## Chat todo;
 
@@ -588,13 +594,13 @@ UserDoc(
   - `/chat/rooms/<uid>/<uid>` is the document of a chat room. This document has the room information. (This is called `room info doc`.) For instance,
     - `/chat/room/A/B`
     - `/chat/room/A/C`
-    Then, the user `A` have had chat with user B and C.
-    Note that, `room info doc` is also handled by the `ChatMessageModel`.
-
+      Then, the user `A` have had chat with user B and C.
+      Note that, `room info doc` is also handled by the `ChatMessageModel`.
 
 ## Chat logic
 
 - If it needs a speed to work, then just rely on the security rules without check permission before action.
+
   - For instance, when A sends a message to B, it needs a speed. So, don't check if A is allowed to send message to B before it fails.
     - Once it fails to send the message, then check what causes the problem.
 
@@ -604,38 +610,30 @@ UserDoc(
 ### Chat logic - block
 
 - Setting `blocked` properties in room info doc - `/chat/rooms/<uid>/<uid>.blocked: true` is not working deu to the `inequality` feature of Firestore.
+
   - You can order by `timestamp` where `blocked == true`. It's against `inequality` rule.
 
 - To solve this,
+
   - remove blocked user's room info from `/chat/rooms/<my>/<other>`
   - save user uid at `/chat/blocked/<my>/<other>.timestamp`.
 
 - When A blocked to B, both cannot send message to each other.
 
-
-
-
-
 # Reminder
-
-
 
 ![Reminder](https://raw.githubusercontent.com/thruthesky/fireflutter/main/readme/images/reminder.jpg?raw=true)
 
-
-
 - `ReminderService` is to remind some to users with custom UI.
-  - When the app has some to remind its users, push notification may be one option.
-      - But push notification does not deliver reminders to the users who registered after sending notifications.
-      - And it does not have an option like 'remind me later`.
-  - `ReminderService` can do this.
 
+  - When the app has some to remind its users, push notification may be one option.
+    - But push notification does not deliver reminders to the users who registered after sending notifications.
+    - And it does not have an option like 'remind me later`.
+  - `ReminderService` can do this.
 
 - It uses `/settings/reminder` document.
   - It is not recommended to edit the docuement directly insdie firebase console.
-  
 - `ReminderEdit` widget is a sample code for updating the document. you can customize by copy & paste.
-  
 - And `ReminderService.instance.display()` is the default UI to display reminder on app screen. You can also customize the UI by copy & paste.
 
 ## Reminder code sample
@@ -680,7 +678,6 @@ Timer(const Duration(seconds: 3), () {
 
 - For updating, reminder, see the sample come of [ReminderEditScreen](https://github.com/thruthesky/fireflutter/blob/main/example/lib/screens/reminder/reminder.edit.screen.dart).
 
-
 - You may use `controller` to update `imageUrl` outside of `ReminderEdit` widget.
 
 ```dart
@@ -695,34 +692,36 @@ controller.state.imageUrl.text = file.url;
 controller.state.setState(() {});
 ```
 
-
 ## Reminder logic
 
 - There are `title, content, imageUrl, link` fields on the form.
 - One of `title, content, imageUrl` must have value or dialog will not appear.
 - `link` has the information to which screen the app should move once user pressed on `more info` button. It must not be an empty string.
+
   - When `more info` button is pressed, `ReminderService` saves the link on local storage and calls the callback, then app can move the screen.
     - And when the app start again, it will not get the reminder document again from firestore since the link has already opened.
   - When user pressed on `don't show again` button, the link will be saved on local storage and when the app starts again, it will not get the reminder document again from firestore.
-  - When `remind me later` button clicked,  the app simply closes the dialog and when the app starts again, the app will fetch the reminder doc from firestore and display the reminder dialog again on screen.
+  - When `remind me later` button clicked, the app simply closes the dialog and when the app starts again, the app will fetch the reminder doc from firestore and display the reminder dialog again on screen.
   - When backdrop had touched, the app works the same as `remind me later` button pressed.
   - `link` can have in URL format. For instance, `/post-view?postId=123&option=a`. And when callback is being called `/post-view` parts goes to first parameter, and `{'postId': 123, 'option': a}` goes to next parameter.
     - If `link` changes, the `ReminderService` considers as a new link had been activated.
     - So, if you want to display a reminder dialog again with same url, then you may simply change the parameter a little like `/post-view?postId=123&option=b`.
   - Once `link` is saved on local storage, `ReminderService` does not get the same document of `link` again from firestore.
 
-
 - The default dialog UI has three buttons.
+
   - `more info`, `don't show again`, and `remind me later`.
   - User can press on backdrop and it work just as `reminde me later` button.
 
 - There are three buttons on `ReminderEdit` widget. You can update the `/settings/reminder` document with it.
+
   - When you press `preview` button, you can see the look of the default dialog UI with the reminder data.
+
     - When you press `don't show again` button on `preview` UI dialog, it saves the link on local storage.
     - When you press `more info` button button on `preview` UI dialog, it saves the link on local storage and calls the callback where the app can move to the intended screen.
     - Since the link saved, when the app restarts the reminder dialog would not appear.
-    - One fitfall is that, when app starts, `ReminderService` will listen to the `/settings/reminder` with the link saved previously. and  `don't show again` or `more info` button is pressed on `preview mode`. Then, new link had been saved on local storage. the but new link is not the same link that app is listening to.
-    So, when `save` button pressed, the reminder dialog would popup.
+    - One fitfall is that, when app starts, `ReminderService` will listen to the `/settings/reminder` with the link saved previously. and `don't show again` or `more info` button is pressed on `preview mode`. Then, new link had been saved on local storage. the but new link is not the same link that app is listening to.
+      So, when `save` button pressed, the reminder dialog would popup.
 
   - When you edit and preview, you may add a version (test) value to see the changes.
     - For instance, `/post-view?postId=123&version=456`.
@@ -732,15 +731,9 @@ controller.state.setState(() {});
 
 - Only admin whose UID is set in `/settings/admin` can edit the reminder documents.
 
-
 - There is no fixed size of the image of `imageUrl`. The recommended size would be maximum of 512px width and the ratio of the width 3 and height 2.
 
 - If admin updates the reminder with changes of `link` very quickly like 2 times in a minute, then two popup may appear on user's screen. This won't be happening in production mode and won't be a big trouble.
-
-
-
-
-
 
 # FriendMap
 
@@ -750,14 +743,13 @@ controller.state.setState(() {});
 
 ## FriendMap installation
 
-
 - Follow the installation instructions in [google_maps_flutter](https://pub.dev/packages/google_maps_flutter) package.
+
   - `Hybrid Composition` could be an option.
 
 - Follow the installation instructions in [geocoding](https://pub.dev/packages/geocoding) package.
 
 - Follow the installation in [geolocator](https://pub.dev/packages/geolocator) package.
-
 
 ## FriendMap logic
 
@@ -768,23 +760,14 @@ controller.state.setState(() {});
 - `B` click the link of lat & lon to open `Friend Map`.
 - the app navigates.
 
-
 ### FriendMap informing logic
 
 - Use `Inform` feature to inform friend request to the other user.
-
-
-
-
-
-
-
 
 ## FriendMap testing
 
 - Simply update `/location/<A's-uid>/` and `/location/<B's-uid>` manully.
   - To make it easy, update the location programatically.
-
 
 # Inform
 
@@ -797,11 +780,13 @@ controller.state.setState(() {});
 Let's say the app needs to deliver friend request from A to B.
 
 - When User `A` request FriendMap to user `B`, it's not easy to open FriendMap by clicking the chat message. what if user `B` has lots of users and having difficulty to open the chat room `A`?.
+
   - The solution would be; when `A` request FriendMap to `B`, the app on `B` side will open `FriendMap` screen automatically.
   - When `B` is offline and got a push message of `FriendMap` request, the device of `B` will automatically run `WonderfulKorea` app and open `FriendMap` screen automatically.
   - Later; it may be an option to open `FriendMap` automatically or not.
 
 - To make it work
+
   - All user must listen to `/inform/<uid>` when app starts.
   - When `A` request FriendMap to `B`, save lat & long in `/inform/<uid>`.
   - So, the app of `B` can open `FriendMap` with the data.
@@ -811,17 +796,16 @@ Let's say the app needs to deliver friend request from A to B.
   - the app of `B` listens `/inform/<uid>`
     - If there is data, then delete the doc, and open FriendMap.
 
-
 ## Inform data
 
 - `type` has the data type.
   - `FriendMap` - it's a data for FriendMap and `latitude` and `longitude` properties are found.
   - `type` can be customizable and can have any value and addition properties.
 
-
 ## Use of inform
 
 - To start listening the `inform data`, call `InformService.instance.init(callback: (data) {})`.
+
 ```dart
 FirebaseAuth.instance.authStateChanges().listen((user) {
   if (user != null) {
@@ -840,7 +824,6 @@ FirebaseAuth.instance.authStateChanges().listen((user) {
   }
 });
 ```
-
 
 - When the app needs to inform to other user, call `InformService.instance.inform(<uid>, {...data....})`.
 
@@ -870,15 +853,13 @@ InformService.instance.inform(widget.room.otherUid, {
 
 ## Updating fireflutter while building your app
 
-
-  - If you are going to use fireflutter, then simply add it on pubspec dependency.
-  - If you want to build fireflutter while you are building your app, then
-    - fork fireflutter
-    - add it as submodule in your project
-    - add it as pubspec dependency with local path
-    - when ever you want to update fireflutter, simple run `<submodule-folder>/example/main.dart`
-    - after updating fireflutter, come back to your app and run your app.
-
+- If you are going to use fireflutter, then simply add it on pubspec dependency.
+- If you want to build fireflutter while you are building your app, then
+  - fork fireflutter
+  - add it as submodule in your project
+  - add it as pubspec dependency with local path
+  - when ever you want to update fireflutter, simple run `<submodule-folder>/example/main.dart`
+  - after updating fireflutter, come back to your app and run your app.
 
 # Test
 
@@ -886,11 +867,11 @@ InformService.instance.inform(widget.room.otherUid, {
 
 - Since the Firebase libraries need to run on an actual device or emulator, we developped our own unit test & UI test.
 
-
 ## Local test on firestore security rules
 
 - We have local unit test for firestore security rules at `<root>/firebase/test` folder.
 - To run the test,
+
   - open `<root>/firebase/test/test.js` and update `TEST_PROJECT_ID` to your firebase project id.
   - run `$ firebase emulators:start` under `<root>/firebase` folder.
   - run `$ npm test` under `<root>/firebase/test` folder.
@@ -899,17 +880,10 @@ InformService.instance.inform(widget.room.otherUid, {
   - open `<root>/firebase/.firebaserc` and update `projects.default` to your firebase project id.
   - run `$ firebase deploy --only firestore`
 
-
-
-
-
-
 # Issues
 
 - These are the common issues you may encount working this package.
 - If you have any issues, please create an git issue.
-
-
 
 ## firebase_database/permission-denied
 
@@ -917,13 +891,9 @@ InformService.instance.inform(widget.room.otherUid, {
 
 - If you see this error, it means you didn't set the firebase database security rules properly. Refer [Firebsae Realtime Database Installation](#firebase-realtime-database-installation)
 
-
-
 ## Firebase realtime database is not working
 
 - Open `GoogleService-Info.plist` under `ios/Runner` and see if the key `DATABASE_URL` is present. If not, enable firebase realtime database and download the `GoogleService-Info.plist` again. Remember to update related settings once you download it again.
-
-
 
 ## firebase_auth/internal-error
 
@@ -932,12 +902,9 @@ If you see this error message while working with Firebase Auth, check the follow
 - Check if REVERSE_CLIENT_ID is set on iOS.
 - Check if GCP credential is properly set iOS.
 
-
-
 # Dyanmic Links Service
 
 - The implementaion of `Dynamic Links` are based on https://firebase.flutter.dev/docs/dynamic-links/overview
-
 
 ## Installation
 
@@ -949,12 +916,9 @@ If you see this error message while working with Firebase Auth, check the follow
 
 - https://firebase.flutter.dev/docs/dynamic-links/apple-integration
 
-
 ## Dynamic Links - Coding guide lines
 
 - There are two senarios to handle incoming dynamic link events.
-
-
 
 ### Terminated app
 
@@ -999,7 +963,6 @@ class _MainAppState extends State<MainApp> {
 
 - One thing to note on the code above is that, If you do things like (alert, or navigation) too early before the app is rendered, the action may work strange (by racing). So, it would be better to take action after the app is rendered. You may use `Timer` instead of `WidgetsBinding.instance.addPostFrameCallback()`.
 
-
 ### For background(or foreground) apps
 
 - Simply listen to the link event.
@@ -1011,19 +974,10 @@ DynamicLinksService.instance.listen((Uri? deepLink) {
 });
 ```
 
-
-
-
-
-
-
 ## Test Dynamic Links
 
 - To test your dynamic link on iOS, you will need to use a real device as it will not work on a simulator. You will also have to run the app in release mode (i.e. flutter run --release) as iOS will block you from opening the app in debug mode from a dynamic link.
 - On Android, you may test with emulator.
-
-
-
 
 # Reports
 
@@ -1050,22 +1004,20 @@ DynamicLinksService.instance.listen((Uri? deepLink) {
 ```
 
 - The report document key format is `target-targetId-reporterUid`. This is to easily secure by the security rules.
-  - For instance, `post-L8HDc07IYLGWd6puaVrT-1h0pWRlRkEOgQedJL5HriYMxqTw2`.
 
+  - For instance, `post-L8HDc07IYLGWd6puaVrT-1h0pWRlRkEOgQedJL5HriYMxqTw2`.
 
 - A user cannot report same target & targetId.
   - To implement this, simple check if previous report exists.
     - This won't cost a lot since reporting does happens often.
 
-
-
 # Forum
 
 - Forum functionality uses firestore to provide maximum flexibility for customzation.
+
   - You may extend forum functionality for shopping app.
     - To build shopping app, you may need to manage products as a post model and reviews as comment model.
       - You may add extra properties for products(product name, price, etc) and its reviews(rating, etc). And to search the properties, firestore would be better fit than realtime database.
-
 
 - Security
   - We want to avoid complicated security rules and cloud functions.
@@ -1075,6 +1027,7 @@ DynamicLinksService.instance.listen((Uri? deepLink) {
 ## Category
 
 - Only admin can write the category, but readable to every one.
+
   - Admin can set `backgroundColor` and `foregroundColor` that are only extra properties for UI design.
     - There are no fixed usage of those. It's up to you where you want to use these colors. You may use them to display colors on category menu.
   - Admin can set `order` for the priority on the listing.
@@ -1082,20 +1035,14 @@ DynamicLinksService.instance.listen((Uri? deepLink) {
 - If category does not exists, posting will be failed.
 
 - If admin deletes category,
+
   - The existing posts are still remained.
   - No more post can be created for the deleted category anymore.
   - If admin create a with the same category as the deleted one, then,
-    - User can create posts again with that category.
+  - User can create posts again with that category.
 
-
-- One thing to know is that, when category had deleted, the no of posts and no of comments properties are deleted also. And when category had re-created with same category id, the numbrers are not restored. This may lead a problem.
-  - ***@todo so, in the future, if a category has a post, it should not be deleted. And there must be a function to move all the posts from one category to another.***
-
-
-
-
-
-
+  - One thing to know is that, when category had deleted, the no of posts and no of comments properties are deleted also. And when category had re-created with same category id, the numbrers are not restored. This may lead a problem.
+  - **_@todo so, in the future, if a category has a post, it should not be deleted. And there must be a function to move all the posts from one category to another._**
 
 ## Post
 
@@ -1109,10 +1056,11 @@ DynamicLinksService.instance.listen((Uri? deepLink) {
 - When user deletes a post, the document is marked as deleted, instead of remove it from the database. And user may update the document even if the post is marked as deleted. Editing post of delete mark is banned by security rule. This is by design and is not harmful. So, there should be some code to inform user not to edit deleted post. This goes the same to comment delete.
 
 - `hasPhoto` becomes true if the post has a photo.
+
   - This is a helper property for searching posts that have pohtos. Since firestore cannot have inequality expression on multiple fields, it wil help to search posts that have photos.
 
-
 - Date
+
   - When you want to get 5 posts that have most noOfComments within 7 days,
     how you would search?
     The answer is `not so simple`.
@@ -1121,7 +1069,7 @@ DynamicLinksService.instance.listen((Uri? deepLink) {
     So, there we added some date information for a better search.
 
     You may do `get 5 posts that have most noOfComments in last week`. But not `within 7 days`.
-     
+
   - Post document has date information like below
     - `year` - the year
     - `month` - the month of a year (1-12)
@@ -1135,92 +1083,100 @@ DynamicLinksService.instance.listen((Uri? deepLink) {
 
 - Comments are saved in `/comments` so it is better to be search. If it is saved under `/posts/(postId)/comments/`, then it is not easy to search.
 
-
 - Properties
   - `postId` has the post id of that the comment belongs to.
   - `parentId` is the post id if the comment is the immediate child coment of the post.Or parent comment id.
   - `uid` is the author id.
   - `timestamp` is the server time.
 
-
-
-
 # Push notification
 
 - User tokens are saved under `/message-tokens/(tokenId)`
+
   - properties;
     - `uid` - user id or empty string if user didn't logged in.
 
 - user topic are saved under `/users/(uid)`.
   - `{ topics: ['posts_qna', 'posts_discussion', 'comments_qna', ...] }`
 
+## terms
+
+- `new comment topic` is an option to get notification whenever a new comment had posted under his post or comment.
 
 
+## How push notification wokr.
+
+- When a post created, the app sends a message to the posts_category topic. That's all it needs.
+- When a comment is created,
+  - the app sends a message to the comments_category topic,
+  - And the app sends a message to authors of the parent(post) of the comments who didn't subscribed the 'comments_category' topic, but subscribed for 'new comments topic'.
+
+## push notification logic
 
 new logic)
 terms;
 
-	- 'comment notification' - Send me notification for new comments under my posts or comments.
+    - 'comment notification' - Send me notification for new comments under my posts or comments.
 
+    - new sign-in user must unsubscribe to all topics before subscribing to user topics
 
-conditions;
-	- There is no more subscribing for all new posts and all new comments.
-		Users must enable or disable each category indivisually.
-
+conditions; - There is no more subscribing for all new posts and all new comments.
+Users must enable or disable each category indivisually.
 
 ui;
-  - User can also enable all or disable all by one button touch in the setting screen.
-  - User can enable or disable selectively in settings screen.
-  - See https://github.com/withcenter/wonderfulkorea/issues/70 for ui design;
+
+- User can also enable all or disable all by one button touch in the setting screen.
+- User can enable or disable selectively in settings screen.
+- See https://github.com/withcenter/wonderfulkorea/issues/70 for ui design;
+
+how; - When a user subscribed 'comments_qna' and the user also enabled 'comment notification',
+and if the user create a post under qna forum, and somebody commented on it.
+Then, 'comment notification' will be ignored.
+
+    - for posts,
+    	A - subscribed 'posts_qna'.
+    	B wrote a post under 'qna'. then send push notification to 'posts_qna'.
+    	then A gets a push notification.
 
 
+    - for comments
+    	R - didn't subscribe both of comments_job and "comment notification".
+    	A - subscribed "comments_job" only.
+    	B - subscribed "comment notification" only.
 
-how;
-	- When a user subscribed 'comments_qna' and the user also enabled 'comment notification',
-		and if the user create a post under qna forum, and somebody commented on it.
-		Then, 'comment notification' will be ignored.
+    	R wrote a post(postJob) under job cateogry.
+    	A wrote a comment A-1 under postJob.
+    	B wrote a comment B-1 under A-1.
+    	C wrote a comemnt C-1 under B-1.
+    	Then, send push notifications to topic 'comment notification'.
+    	Then, the app needs to find the authors of ancesters. that are R, A and B.
+    	And, see if they subscribed 'comment notification'.
+    		B subscribed 'comment notification', so he got push notification already.
+    		A didn't subscribe 'comment notification', so need to check if he subscribed 'comments_job' and yes, he subscribed to it. so, send a push notification.
+    		R didn't subscribe 'comment notification', so check if he subscribed to 'comments_job' and no, he didn't. so, he gets no push notification.
 
-
-	- for posts,
-		A - subscribed 'posts_qna'.
-		B wrote a post under 'qna'. then send push notification to 'posts_qna'.
-		then A gets a push notification.
-
-
-	- for comments
-		R - didn't subscribe both of comments_job and "comment notification".
-		A - subscribed "comments_job" only.
-		B - subscribed "comment notification" only.
-
-		R wrote a post(postJob) under job cateogry.
-		A wrote a comment A-1 under postJob.
-		B wrote a comment B-1 under A-1.
-		C wrote a comemnt C-1 under B-1.
-		Then, send push notifications to topic 'comment notification'.
-		Then, the app needs to find the authors of ancesters. that are R, A and B.
-		And, see if they subscribed 'comment notification'.
-			B subscribed 'comment notification', so he got push notification already.
-			A didn't subscribe 'comment notification', so need to check if he subscribed 'comments_job' and yes, he subscribed to it. so, send a push notification.
-			R didn't subscribe 'comment notification', so check if he subscribed to 'comments_job' and no, he didn't. so, he gets no push notification.
-
-
-when user changes devices;
-	- The app knows when the device has a token that are not saved in firestore, it is considered as new device.
-	- Subscribe all the topics that the user has.
+when user changes devices; - The app knows when the device has a token that are not saved in firestore, it is considered as new device. - Subscribe all the topics that the user has.
 
 when sending push notification fails, see the error messages and remove that token from the database. so, it won't waste the network bandwidth.
 
+## Testing Push notification via terminal
 
+- Prepare the data information and replace the value of `to`. Either `token` or `topic` ex. `/topics/posts_qna`
 
+```
+DATA='{"notification": {"body": "this is a body","title": "this is a title"}, "priority": "high", "data": {"click_action": "FLUTTER_NOTIFICATION_CLICK", "id": "1", "status": "done"}, "to": "/topics/posts_qna"}'
+```
 
+- use curl to google api to send push notification attaching the data above. make sure to replace the `FCM SERVER KEY` with the google console `Cloud Messaging Server Key` can be found in google console project setting > cloud messaging > server key
 
+```
+curl https://fcm.googleapis.com/fcm/send -H "Content-Type:application/json" -X POST -d "$DATA" -H "Authorization: key=2hU:AP8FpX2kNKZqqzmBdUg_BWuluihF6n............t3ykfXvzks83HWSpA.....oVjaCFN7S"
+```
 
 # Fil upload - Firebase Storage
 
-
 - Install `Image Resize` extension as described in [Firebase Storage Installation](#firebase-storage-installation).
 - Set the rules in Firebase Storage section as described in [Firebase Storage Installation](#firebase-storage-installation).
-
 
 ## pickUpload
 
@@ -1236,14 +1192,11 @@ try {
 }
 ```
 
-
 - This will ask user to take a photo from camera or choose a photo from photo library and compress & adjust rotation, then uploads an image into firebase storage. It will generate thumbnail image with `_200x200.webp` suffix.
-
 
 ## Delete uploaded image
 
 - `StorageService.instance.delete()` will delete uploaded image and its thumbnail image.
-
 
 ## FileUploadButton
 
@@ -1254,9 +1207,5 @@ try {
 
 - `UploadedImage` widget will display the uploaded image.
   - It will first try to display thumbnail image. if it fails to display thumbnail image,
-    - then, it will try to display original image. If it fails to dsipaly original image, 
+    - then, it will try to display original image. If it fails to dsipaly original image,
       - then it will display the error widget.
-
-
-
-

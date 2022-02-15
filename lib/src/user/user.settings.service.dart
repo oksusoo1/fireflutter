@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:rxdart/rxdart.dart';
 
 import '../../fireflutter.dart';
@@ -101,4 +102,23 @@ class UserSettingsService with DatabaseMixin {
   Future<void> create() {
     return settings.create();
   }
+
+  Future<void> unsubscribeAllTopic() async {
+    for (CategoryModel cat in CategoryService.instance.categories) {
+      await FirebaseMessaging.instance.unsubscribeFromTopic('posts_${cat.id}');
+      await FirebaseMessaging.instance
+          .unsubscribeFromTopic('comments_${cat.id}');
+    }
+  }
+
+  
+  Future<void> subscribeToUserTopics() async {
+    for (String topic in settings.topics.keys) {
+      if (settings.topics[topic] == true) {
+        await FirebaseMessaging.instance.subscribeToTopic(topic);
+      }
+    }
+  }
+
+
 }

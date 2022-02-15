@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:rxdart/subjects.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../fireflutter.dart';
 
 /// UserService
@@ -35,7 +36,8 @@ class UserService with FirestoreMixin, DatabaseMixin {
 
   String get photoUrl => user.photoUrl;
 
-  DatabaseReference get _myDoc => FirebaseDatabase.instance.ref('users').child(uid);
+  DatabaseReference get _myDoc =>
+      FirebaseDatabase.instance.ref('users').child(uid);
 
   StreamSubscription? userSubscription;
 
@@ -65,6 +67,7 @@ class UserService with FirestoreMixin, DatabaseMixin {
         if (_user == null) {
           debugPrint('User signed-out');
           changes.add(user);
+          onSignedOut();
         } else {
           if (_user.isAnonymous) {
             /// Note, anonymous sigin-in is not supported by fireflutter.
@@ -80,6 +83,7 @@ class UserService with FirestoreMixin, DatabaseMixin {
               } else {
                 user = UserModel.fromJson(event.snapshot.value, _user.uid);
                 changes.add(user);
+                resetTopicSubscription();
               }
             }, onError: (e) {
               print('UserDoc listening error; $e');
@@ -90,7 +94,29 @@ class UserService with FirestoreMixin, DatabaseMixin {
     );
   }
 
-  signOut() {
+  /// when user Sign-in, the app need to unsubscribe previous subscription
+  /// then new user topics need to subscribe
+  /// `isUserLoggedIn` is set true when the user signed-in.
+  /// this can be use to check if the user is already loggedIn even the app was closed and reopen.
+  /// so it will not reset every time the app is relaunch.
+  ///
+  resetTopicSubscription() async {
+    final prefs = await SharedPreferences.getInstance();
+    if (prefs.getBool('isUserLoggedIn') != null) return;
+    prefs.setBool('isUserLoggedIn', true);
+    await UserSettingsService.instance.unsubscribeAllTopic();
+    await UserSettingsService.instance.subscribeToUserTopics();
+  }
+
+  /// when user state change to null this will called and remove the isUserLoggedIn from the SharedPreferences instance.
+  /// remove `isUserLoggedIn` on logout. this is use to check if user has sign-in in the device.
+  ///
+  onSignedOut() async {
+    await SharedPreferences.getInstance()
+      ..remove('isUserLoggedIn');
+  }
+
+  signOut() async {
     FirebaseAuth.instance.signOut();
   }
 

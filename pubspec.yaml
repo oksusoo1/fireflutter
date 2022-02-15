@@ -30,7 +30,7 @@ dependencies:
   image_picker: ^0.8.4+6
   flutter_image_compress: ^1.1.0
   photo_view: ^0.13.0
-  
+
   # Caching uploaded image
   cached_network_image: ^3.2.0
 
@@ -52,9 +52,9 @@ dependencies:
   # reminder service,
   shared_preferences: ^2.0.12
 
+
   # date and time
   jiffy: ^5.0.0
-  
 
   # uuid
   uuid: ^3.0.5

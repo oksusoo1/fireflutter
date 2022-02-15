@@ -8,7 +8,8 @@ class NotificationSettingScreen extends StatefulWidget {
   static const String routeName = '/notificationSettings';
 
   @override
-  _NotificationSettingScreenState createState() => _NotificationSettingScreenState();
+  _NotificationSettingScreenState createState() =>
+      _NotificationSettingScreenState();
 }
 
 class _NotificationSettingScreenState extends State<NotificationSettingScreen> {

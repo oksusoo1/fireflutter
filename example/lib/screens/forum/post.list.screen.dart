@@ -62,7 +62,6 @@ class _PostListScreenState extends State<PostListScreen> with FirestoreMixin {
 
           return ExpansionTile(
             maintainState: true,
-            
             key: ValueKey(post.id),
             initiallyExpanded: false,
             title: Text(post.displayTitle),
@@ -77,7 +76,7 @@ class _PostListScreenState extends State<PostListScreen> with FirestoreMixin {
             ),
             onExpansionChanged: (value) {
               if (value) {
-                post.increaseViewCounter().catchError((e) => error(e));
+                // post.increaseViewCounter().catchError((e) => error(e));
               }
             },
             children: [
@@ -92,7 +91,7 @@ class _PostListScreenState extends State<PostListScreen> with FirestoreMixin {
                 onDislike: onDislike,
                 onHide: () {},
                 onChat: (post) {},
-                onShare: (post) {},
+                // onShare: (post) {},
               ),
               Divider(color: Colors.red),
               Comment(
@@ -134,8 +133,8 @@ class _PostListScreenState extends State<PostListScreen> with FirestoreMixin {
               AppService.instance.back();
               alert('Comment created', 'Your comment has created successfully');
 
-              // @TODO send push notification on create using "comments_category" topic
-              // MessagingService.instance.sendCommentNotification();
+              /// TODO: send push notification on create using "comments_category" topic
+              /// MessagingService.instance.sendCommentNotification();
             } catch (e) {
               error(e);
             }

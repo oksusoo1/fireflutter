@@ -25,6 +25,6 @@ class UserSettingsModel with DatabaseMixin {
   }
 
   Future<void> create() {
-    return userSettingsDoc.set({'timestamp_created': ServerValue.timestamp});
+    return userSettingsDoc.set({'timestamp': ServerValue.timestamp});
   }
 }
