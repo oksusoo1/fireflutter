@@ -12,11 +12,12 @@ class ButtonBase extends StatelessWidget {
     required this.onLike,
     required this.onDislike,
     this.onChat,
-    this.onShare,
+    
     this.onHide,
     this.likeCount = 0,
     this.dislikeCount = 0,
     required this.buttonBuilder,
+    this.shareButton,
     Key? key,
   }) : super(key: key);
 
@@ -29,8 +30,8 @@ class ButtonBase extends StatelessWidget {
   final Function() onLike;
   final Function() onDislike;
   final Function()? onChat;
-  final Function()? onShare;
   final Function()? onHide;
+  final Widget? shareButton;
   final Widget Function(String, Function())? buttonBuilder;
 
   bool get isMine => UserService.instance.currentUser?.uid == uid;
@@ -47,6 +48,7 @@ class ButtonBase extends StatelessWidget {
         _button('Like ${likeCount > 0 ? likeCount : ""}', onLike),
         _button('Dislike ${dislikeCount > 0 ? dislikeCount : ""}', onDislike),
         if (isPost && onChat != null) _button('Chat', onChat!),
+        if (shareButton != null) shareButton!,
         Spacer(),
         PopupMenuButton<String>(
           child: Padding(
@@ -63,8 +65,6 @@ class ButtonBase extends StatelessWidget {
               ),
               PopupMenuDivider(),
             ],
-            if (isPost && onShare != null)
-              PopupMenuItem<String>(value: 'share', child: Text('Share')),
             PopupMenuItem<String>(
               value: 'report',
               child: Text('Report', style: TextStyle(color: Colors.red)),
@@ -76,11 +76,6 @@ class ButtonBase extends StatelessWidget {
           onSelected: (String value) async {
             if (value == 'hide_post') {
               onHide!();
-              return;
-            }
-
-            if (value == 'share') {
-              onShare!();
               return;
             }
 
