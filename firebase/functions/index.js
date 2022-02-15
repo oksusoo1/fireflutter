@@ -52,7 +52,7 @@ exports.sendMessageOnCommentCreate = functions
       const payload = {
           notification: {
               title: "New Comment: " + post.data().title,
-              body: post.data().title,
+              body: post.data().content,
           },
       };
       const topic = "comment_" + post.data().category;
