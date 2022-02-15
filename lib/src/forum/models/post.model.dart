@@ -191,6 +191,15 @@ class PostModel with FirestoreMixin, ForumBase {
     });
   }
 
+  /// Increases no of the post read.
+  ///
+  /// Note that, this is not a recommended way of counting post view.
+  /// When you do this on post view action, the document will be updated every
+  /// time the user opens the document. and if the app is listening document's
+  /// change, or if a cloud function is listing on `post update event`, the cost
+  /// will be increased.
+  ///
+  /// Be careful using this.
   Future<void> increaseViewCounter() {
     return increaseForumViewCounter(postDoc(id));
   }

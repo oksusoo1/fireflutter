@@ -37,8 +37,7 @@ class _PostListScreenState extends State<PostListScreen> with FirestoreMixin {
           ),
           IconButton(
             onPressed: () async {
-              newPostId =
-                  await AppService.instance.openPostForm(category: category);
+              newPostId = await AppService.instance.openPostForm(category: category);
               if (mounted) setState(() {});
             },
             icon: Icon(
@@ -70,16 +69,14 @@ class _PostListScreenState extends State<PostListScreen> with FirestoreMixin {
               children: [
                 UserDoc(
                   uid: post.uid,
-                  builder: (user) => user.exists
-                      ? Text('By: ${user.nickname} ')
-                      : Text('NO-USER '),
+                  builder: (user) => user.exists ? Text('By: ${user.nickname} ') : Text('NO-USER '),
                 ),
                 ShortDate(post.timestamp.millisecondsSinceEpoch),
               ],
             ),
             onExpansionChanged: (value) {
               if (value) {
-                post.increaseViewCounter().catchError((e) => error(e));
+                // post.increaseViewCounter().catchError((e) => error(e));
               }
             },
             children: [
@@ -163,8 +160,7 @@ class _PostListScreenState extends State<PostListScreen> with FirestoreMixin {
               );
               // form.create(postId: post.id, parentId: comment?.id ?? post.id);
               AppService.instance.back();
-              alert('Comment updated',
-                  'You have updated the comment successfully');
+              alert('Comment updated', 'You have updated the comment successfully');
             } catch (e) {
               error(e);
             }
@@ -251,8 +247,7 @@ class _PostListScreenState extends State<PostListScreen> with FirestoreMixin {
     // return alert('Display original image', 'TODO: display original images with a scaffold.');
     return showDialog(
       context: ctx,
-      builder: (context) =>
-          Dialog(child: ImageViewer(files, initialIndex: initialIndex)),
+      builder: (context) => Dialog(child: ImageViewer(files, initialIndex: initialIndex)),
     );
   }
 }

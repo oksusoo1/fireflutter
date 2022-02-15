@@ -275,6 +275,9 @@ function lessThan(n) {
 ### Run cloud function using shell
 
 ```sh
+$ cd firebase/functions
+$ cd npm i
+$ npm i -g firebase-tools
 $ export GOOGLE_APPLICATION_CREDENTIALS=../withcenter-test-project.adminKey.json
 $ npm run shell
 ```
