@@ -67,7 +67,7 @@ class UserService with FirestoreMixin, DatabaseMixin {
         if (_user == null) {
           debugPrint('User signed-out');
           changes.add(user);
-          signedOut();
+          onSignedOut();
         } else {
           if (_user.isAnonymous) {
             /// Note, anonymous sigin-in is not supported by fireflutter.
@@ -108,8 +108,10 @@ class UserService with FirestoreMixin, DatabaseMixin {
     await UserSettingsService.instance.subscribeToUserTopics();
   }
 
-  signedOut() async {
-    /// remove `isUserLoggedIn` on logout. this is use to check if user has sign-in in the device.
+  /// when user state change to null this will called and remove the isUserLoggedIn from the SharedPreferences instance.
+  /// remove `isUserLoggedIn` on logout. this is use to check if user has sign-in in the device.
+  ///
+  onSignedOut() async {
     await SharedPreferences.getInstance()
       ..remove('isUserLoggedIn');
   }
