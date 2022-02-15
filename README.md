@@ -35,6 +35,7 @@ Table of contents
   - [Firestore installation](#firestore-installation)
     - [Setting admin on firestore security rules](#setting-admin-on-firestore-security-rules)
   - [Cloud functions installation](#cloud-functions-installation)
+    - [Run cloud function using shell](#run-cloud-function-using-shell)
 - [Sources and packages](#sources-and-packages)
 - [Coding Guideline](#coding-guideline)
 - [User](#user)
@@ -98,6 +99,10 @@ Table of contents
   - [Post](#post-1)
   - [Comment](#comment)
 - [Push notification](#push-notification)
+  - [terms](#terms)
+  - [How push notification wokr.](#how-push-notification-wokr)
+  - [push notification logic](#push-notification-logic)
+  - [Testing Push notification via terminal](#testing-push-notification-via-terminal)
 - [Fil upload - Firebase Storage](#fil-upload---firebase-storage)
   - [pickUpload](#pickupload)
   - [Delete uploaded image](#delete-uploaded-image)
@@ -251,7 +256,8 @@ function lessThan(n) {
 
 ![Security Rules Admin](https://raw.githubusercontent.com/thruthesky/fireflutter/main/readme/images/security-rules-admin.jpg?raw=true)
 
-# <<<<<<< HEAD
+
+
 
 ## Cloud functions installation
 
@@ -264,7 +270,14 @@ function lessThan(n) {
   - `npm i`
   - `firebase deploy --only functiosn`
 
-> > > > > > > b5679dd69c9d0fd320c68697ade374cdae31dd84
+
+
+### Run cloud function using shell
+
+```sh
+$ export GOOGLE_APPLICATION_CREDENTIALS=../withcenter-test-project.adminKey.json
+$ npm run shell
+```
 
 # Sources and packages
 
@@ -1082,6 +1095,20 @@ DynamicLinksService.instance.listen((Uri? deepLink) {
 
 - user topic are saved under `/users/(uid)`.
   - `{ topics: ['posts_qna', 'posts_discussion', 'comments_qna', ...] }`
+
+## terms
+
+- `new comment topic` is an option to get notification whenever a new comment had posted under his post or comment.
+
+
+## How push notification wokr.
+
+- When a post created, the app sends a message to the posts_category topic. That's all it needs.
+- When a comment is created,
+  - the app sends a message to the comments_category topic,
+  - And the app sends a message to authors of the parent(post) of the comments who didn't subscribed the 'comments_category' topic, but subscribed for 'new comments topic'.
+
+## push notification logic
 
 new logic)
 terms;
