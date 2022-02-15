@@ -41,6 +41,10 @@ class _AdminScreenState extends State<AdminScreen> {
             onPressed: AppService.instance.openCategory,
             child: const Text('Category Management'),
           ),
+          Divider(),
+          ElevatedButton(
+              onPressed: AppService.instance.openTranslations, child: Text('Update Translations')),
+          Divider(),
           Text('Report Management'),
           Wrap(
             children: [
