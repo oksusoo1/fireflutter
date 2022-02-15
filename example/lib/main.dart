@@ -10,6 +10,8 @@ import 'package:fe/screens/admin/report.post.management.screen.dart';
 import 'package:fe/screens/admin/report.screen.dart';
 import 'package:fe/screens/forum/post.list.screen.dart';
 import 'package:fe/screens/forum/post.form.screen.dart';
+import 'package:fe/screens/search/search.screen.dart';
+import 'package:fe/screens/search/search.service.dart';
 import 'package:fe/screens/setting/notification.setting.dart';
 import 'package:fe/service/app.service.dart';
 import 'package:fe/service/global.keys.dart';
@@ -58,6 +60,7 @@ final Map<String, RouteFunction> routes = {
   ReminderEditScreen.routeName: (context, arguments) => ReminderEditScreen(),
   ReportScreen.routeName: (context, arguments) => ReportScreen(arguments: arguments),
   EmailVerificationScreen.routeName: (context, arguments) => EmailVerificationScreen(),
+  SearchScreen.routeName: (context, arguments) => SearchScreen(),
 };
 
 void main() async {
@@ -92,6 +95,8 @@ class _MainAppState extends State<MainApp> {
     );
 
     ExtendedService.instance.navigatorKey = globalNavigatorKey;
+
+    SearchService.instance.init(serverUrl: 'http://wonderfulkorea.kr:7700');
 
     // Timer(const Duration(milliseconds: 200), () => Get.toNamed('/email-verify'));
     // Timer(const Duration(milliseconds: 200), AppController.of.openCategory);

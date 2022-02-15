@@ -4,6 +4,7 @@ const functions = require("firebase-functions");
 const admin = require("firebase-admin");
 const Axios = require("axios");
 const { now } = require("lodash");
+const { topic } = require("firebase-functions/v1/pubsub");
 
 
 admin.initializeApp();
@@ -36,6 +37,42 @@ exports.sendMessageOnPostCreate = functions
         console.info("topic; ", topic);
         return admin.messaging().sendToTopic(topic, payload);
     });
+
+// sendMessageOnCommentCreate({postId: 'zvVFkgE4p7cWgXd07yvf'})
+exports.sendMessageOnCommentCreate = functions
+  .region("asia-northeast3")
+  .firestore
+  .document("/comments/{commentId}")
+  .onCreate(async (snapshot) => {
+      console.log('snapshot.data().postId', snapshot.data().postId);
+    
+      const post = await admin.firestore().collection('posts').doc(snapshot.data().postId).get();
+      console.info(post.data());
+      
+      const payload = {
+          notification: {
+              title: "New Comment: " + post.data().title,
+              body: post.data().content,
+          },
+      };
+      const topic = "comment_" + post.data().category;
+      console.info("topic; ", topic);
+      const res = await admin.messaging().sendToTopic(topic, payload);
+       console.log(res);
+       return res
+  });
+
+
+
+
+// message-token onCreate it will subscribe to `defaultTopic`.    
+// exports.subscribeToMainTopicOnTokenCreate = functions
+//     .region("asia-northeast3")
+//     .firestore
+//     .document("/message-tokens/{token}")
+//     .onCreate((snapshot) => {
+//         return admin.messaging().subscribeToTopic('defaultTopic', snapshot.data().id);
+//     });
 
 
 function indexPost(id, data) {
