@@ -1,5 +1,7 @@
 import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
+import * as axios from "axios";
+
 
 admin.initializeApp();
 
@@ -21,18 +23,22 @@ export const sendMessageOnPostCreate = functions
     });
 
 
-// // Update noOfPosts in category setting
-// export const incrementNoOfPost = functions
-//     .region("asia-northeast3").firestore
-//     .document("/posts/{postId}")
-//     .onCreate((snap) => {
-//       const ref = admin.firestore()
-//           .collection("categories")
-//           .doc(snap.data().category);
-//       return ref.update({
-//         noOfPosts: admin.firestore.FieldValue.increment(1),
-//       });
-//     });
+//
+export const meilisearchIndexPost = functions
+    .region("asia-northeast3").firestore
+    .document("/posts/{postId}")
+    .onCreate((snap, context) => {
+        const data = {
+            id: context.params.postId,
+            title: snap.data().title,
+            content: snap.data().content
+        };
+        return axios.default.post(
+            `http://wonderfulkorea.kr:7700/indexes/users/documents`,
+            data,
+            { headers: { "X-Meili-API-Key": 'mmk' } }
+        )
+    });
 
 
 // // Update noOfComments in the post.
