@@ -11,18 +11,28 @@ class TranslationsScreen extends StatefulWidget {
 }
 
 class _TranslationsScreenState extends State<TranslationsScreen> {
-
+  Map<String, Map<String, String>>? texts;
 
   @override
   void initState() {
     super.initState();
-    Translations
+    TranslationService.instance.get();
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text('Translations')),
-      body: Container(),
+      body: Column(
+        children: [
+          const Text('Code:'),
+          TextField(),
+          const Text('en:'),
+          TextField(),
+          const Text('ko:'),
+          TextField(),
+        ],
+      ),
     );
   }
 }

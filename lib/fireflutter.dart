@@ -77,3 +77,6 @@ export 'src/user/user.settings.model.dart';
 export 'src/user/user.settings.service.dart';
 
 export 'src/user/widgets/user.name.dart';
+
+export 'src/translation/tr.dart';
+export 'src/translation/translation.service.dart';
