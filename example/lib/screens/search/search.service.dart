@@ -1,6 +1,7 @@
 import 'package:fireflutter/fireflutter.dart';
 import 'package:meilisearch/meilisearch.dart';
 
+
 class SearchService {
   static SearchService? _instance;
   static SearchService get instance {

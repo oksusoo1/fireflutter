@@ -49,6 +49,7 @@ Table of contents
       - [When user has an email already](#when-user-has-an-email-already)
 - [Admin](#admin-1)
   - [Admin status check & update](#admin-status-check--update)
+- [Translation](#translation)
 - [User presence](#user-presence)
   - [User presence overview](#user-presence-overview)
   - [User Presence Installation](#user-presence-installation)
@@ -184,6 +185,12 @@ Table of contents
       "$uid": {
         ".read": "$uid === auth.uid",
         ".write": "$uid === auth.uid"
+      }
+    },
+    "settings": {
+      "$docId": {
+        ".read": true,
+        ".write": true
       }
     }
   }
@@ -447,6 +454,20 @@ PhoneService.instance.verifyPhoneNumber(
 - Usage; call this method when user enters admin page or on any demand.
 - Recommendation; Put a secret(fake) widget like 'app version' that displays app version. And when user do 3 taps and long press, redirect the user to admin screen and call `updateAdminStatus()` on entering admin screen.
 - after calling `updateAdminStatus()`, the user's document will have `isAdmin: true` if the user is admin.
+
+
+# Translation
+
+- Translation texts are saved in `/settings/translations` on realtime database.
+  - The format of text field is like below. 
+    - `{ name: { en: 'Name', ko: '이름' }, ... }`
+
+- You can use `Tr` widget to display the translated text.
+  - `Tr` widget support all the text properties.
+
+```dart
+Tr('name', style: ...);
+```
 
 # User presence
 

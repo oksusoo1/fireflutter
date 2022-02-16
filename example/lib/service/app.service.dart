@@ -2,6 +2,7 @@ import 'package:fe/screens/admin/admin.screen.dart';
 import 'package:fe/screens/admin/category.screen.dart';
 import 'package:fe/screens/admin/report.post.management.screen.dart';
 import 'package:fe/screens/admin/report.screen.dart';
+import 'package:fe/screens/admin/translatoins.screen.dart';
 import 'package:fe/screens/forum/post.form.screen.dart';
 import 'package:fe/screens/forum/post.list.screen.dart';
 import 'package:fe/screens/home/home.screen.dart';
@@ -39,6 +40,10 @@ class AppService {
   /// TODO: remove all the routes from route stack
   Future<void> openHome() async {
     return open(HomeScreen.routeName);
+  }
+
+  Future<void> openTranslations() {
+    return open(TranslationsScreen.routeName);
   }
 
   Future<void> openPostList({String? category}) async {
