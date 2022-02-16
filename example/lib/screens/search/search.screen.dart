@@ -1,5 +1,6 @@
 import 'package:extended/extended.dart';
 import 'package:fe/screens/search/search.service.dart';
+import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
 
 class SearchScreen extends StatefulWidget {
@@ -12,7 +13,7 @@ class SearchScreen extends StatefulWidget {
 }
 
 class _SearchScreenState extends State<SearchScreen> {
-  List<Map<String, dynamic>> posts = [];
+  List<PostModel> posts = [];
 
   search(value) async {
     try {
@@ -31,7 +32,6 @@ class _SearchScreenState extends State<SearchScreen> {
         child: Container(
           padding: EdgeInsets.all(16),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               TextField(
                 onChanged: search,
@@ -42,7 +42,14 @@ class _SearchScreenState extends State<SearchScreen> {
               for (final post in posts)
                 Container(
                   margin: EdgeInsets.only(bottom: 16),
-                  child: Text(post.toString()),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Text("ID: ${post.id}"),
+                      Text("Title: ${post.title}"),
+                      Text("Content: ${post.displayContent}"),
+                    ],
+                  ),
                 )
             ],
           ),

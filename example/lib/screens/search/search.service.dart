@@ -1,3 +1,4 @@
+import 'package:fireflutter/fireflutter.dart';
 import 'package:meilisearch/meilisearch.dart';
 
 class SearchService {
@@ -19,18 +20,40 @@ class SearchService {
     _apiKey = apiKey;
   }
 
-  Future<SearchResult> search(String index, String searchKey) async {
-    return client.index(index).search(searchKey);
+  Future<SearchResult> search(
+    String index,
+    String searchKey, {
+    int? limit = 20,
+    int? offset,
+    List<String>? sort,
+  }) async {
+    return client.index(index).search(
+          searchKey,
+          limit: limit,
+          offset: offset,
+          sort: sort,
+        );
   }
 
-  Future<List<Map<String, dynamic>>> searchPosts(String key) async {
-    final result = await search('posts', key);
+  Future<List<PostModel>> searchPosts(
+    String key, {
+    int? limit,
+    int? offset,
+    List<String>? sort,
+  }) async {
+    final result = await search('posts', key, limit: limit, offset: offset, sort: sort);
     if (result.hits == null) return [];
+    return result.hits!.map((e) => PostModel.fromJson(e, e['id'])).toList();
+  }
 
-    /// 20 by default
-    print('Search limit ===> ${result.limit}');
-    print('No of items ===> ${result.nbHits}');
-    print('Skipped items ===> ${result.offset}');
+  Future<List<Map<String, dynamic>>> searchComments(
+    String key, {
+    int? limit,
+    int? offset,
+    List<String>? sort,
+  }) async {
+    final result = await search('comments', key, limit: limit, offset: offset, sort: sort);
+    if (result.hits == null) return [];
     return result.hits!;
   }
 }
