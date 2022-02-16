@@ -82,7 +82,9 @@ function indexPost(id, data) {
 
     const _data = {
         id: id,
+        uid: data.uid,
         title: data.title,
+        category: category,
         content: data.content,
     };
 
