@@ -41,6 +41,23 @@ class _NotificationSettingState extends State<NotificationSetting> {
                 onPressed: () => enableOrDisableAllNotification(false),
                 child: Text('Disable all notification'),
               ),
+              CheckboxListTile(
+                value: UserSettingsService.instance
+                    .hasSubscription('newCommentUnderMyPostOrCOmment'),
+                onChanged: (b) {
+                  if (b == true) {
+                    UserSettingsService.instance
+                        .subscribe('newCommentUnderMyPostOrCOmment')
+                        .catchError(widget.onError);
+                  } else {
+                    UserSettingsService.instance
+                        .unsubscribe('newCommentUnderMyPostOrCOmment')
+                        .catchError(widget.onError);
+                  }
+                },
+                title: Text('Receive notification under my Post/Comment'),
+                controlAffinity: ListTileControlAffinity.leading,
+              ),
               Text('Post notification'),
               for (CategoryModel cat in CategoryService.instance.categories)
                 CheckboxListTile(
