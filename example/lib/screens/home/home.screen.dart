@@ -1,13 +1,13 @@
 import 'dart:async';
 
 import 'package:extended/extended.dart';
+import 'package:fe/screens/admin/admin.search_settings.screen.dart';
 import 'package:fe/screens/chat/chat.rooms.screen.dart';
 import 'package:fe/screens/friend_map/friend_map.screen.dart';
 import 'package:fe/screens/help/help.screen.dart';
 import 'package:fe/screens/phone_sign_in/phone_sign_in.screen.dart';
 import 'package:fe/screens/phone_sign_in_ui/phone_sign_in_ui.screen.dart';
 import 'package:fe/screens/reminder/reminder.edit.screen.dart';
-import 'package:fe/screens/search/search.screen.dart';
 import 'package:fe/screens/setting/notification.setting.dart';
 import 'package:fe/service/app.service.dart';
 import 'package:fe/service/config.dart';
@@ -188,10 +188,6 @@ class _HomeScreenState extends State<HomeScreen> {
                     onPressed: () => AppService.instance.open(ReminderEditScreen.routeName),
                     child: const Text('Reminder Management Screen'),
                   ),
-                  ElevatedButton(
-                    onPressed: () => AppService.instance.open(SearchScreen.routeName),
-                    child: const Text('Search Screen'),
-                  ),
                 ],
               ),
               Wrap(
@@ -219,6 +215,32 @@ class _HomeScreenState extends State<HomeScreen> {
                   ElevatedButton(
                     onPressed: () => AppService.instance.openPostList(category: 'buyandsell'),
                     child: const Text('Buy & Sell'),
+                  ),
+                ],
+              ),
+              SizedBox(height: 10),
+              Text('V2 post list using meilisearch'),
+              Wrap(
+                children: [
+                  ElevatedButton(
+                    onPressed: () => AppService.instance.openPostListV2(category: 'qna'),
+                    child: const Text('QnA'),
+                  ),
+                  ElevatedButton(
+                    onPressed: () => AppService.instance.openPostListV2(category: 'discussion'),
+                    child: const Text('Discussion'),
+                  ),
+                  ElevatedButton(
+                    onPressed: () => AppService.instance.openPostListV2(category: 'buyandsell'),
+                    child: const Text('Buy & Sell'),
+                  ),
+                  ElevatedButton(
+                    onPressed: () => AppService.instance.openPostListV2(),
+                    child: const Text('Post List V2'),
+                  ),
+                  ElevatedButton(
+                    onPressed: () => AppService.instance.open(AdminSearchSettingsScreen.routeName),
+                    child: const Text('Search Settings'),
                   ),
                 ],
               ),

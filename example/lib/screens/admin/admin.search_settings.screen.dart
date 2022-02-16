@@ -1,0 +1,159 @@
+import 'package:extended/extended.dart';
+import 'package:fe/service/search.service.dart';
+import 'package:flutter/material.dart';
+import 'package:meilisearch/meilisearch.dart';
+
+class AdminSearchSettingsScreen extends StatefulWidget {
+  const AdminSearchSettingsScreen({Key? key}) : super(key: key);
+
+  static const String routeName = '/searchSettings';
+
+  @override
+  _AdminSearchSettingsScreenState createState() => _AdminSearchSettingsScreenState();
+}
+
+class _AdminSearchSettingsScreenState extends State<AdminSearchSettingsScreen> {
+  List<MeiliSearchIndex> indexes = [];
+
+  @override
+  void initState() {
+    super.initState();
+
+    initIndexes();
+  }
+
+  initIndexes() async {
+    try {
+      indexes = await SearchService.instance.client.getIndexes();
+      if (mounted) setState(() {});
+    } catch (e) {
+      error(e);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text('Search Settings')),
+      body: SingleChildScrollView(
+        child: Container(
+          padding: EdgeInsets.all(16),
+          child: Column(
+            children: [
+              for (MeiliSearchIndex index in indexes)
+                IndexSettingForm(
+                  indexUid: index.uid,
+                  onDeleted: () {
+                    indexes = indexes.skipWhile((idx) => idx.uid == index.uid).toList();
+                    if (mounted) setState(() {});
+                  },
+                ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class IndexSettingForm extends StatefulWidget {
+  IndexSettingForm({required this.indexUid, this.onDeleted, Key? key}) : super(key: key);
+
+  final String indexUid;
+  final Function()? onDeleted;
+
+  @override
+  State<IndexSettingForm> createState() => _IndexSettingFormState();
+}
+
+class _IndexSettingFormState extends State<IndexSettingForm> {
+  final searchablesController = TextEditingController();
+  final filtersController = TextEditingController();
+  final sortersController = TextEditingController();
+
+  late IndexSettings settings;
+
+  @override
+  void initState() {
+    super.initState();
+
+    initIndexSettings();
+  }
+
+  initIndexSettings() async {
+    try {
+      settings = await SearchService.instance.client.index(widget.indexUid).getSettings();
+      if (settings.searchableAttributes != null) {
+        searchablesController.text = settings.searchableAttributes!.join(', ');
+      }
+      if (settings.filterableAttributes != null) {
+        filtersController.text = settings.filterableAttributes!.join(', ');
+      }
+      if (settings.sortableAttributes != null) {
+        sortersController.text = settings.searchableAttributes!.join(', ');
+      }
+      if (mounted) setState(() {});
+    } catch (e) {
+      error(e);
+    }
+  }
+
+  updateIndexSettings() async {
+    try {
+      await SearchService.instance.client.index(widget.indexUid).updateSettings(IndexSettings(
+            searchableAttributes: searchablesController.text.split(', '),
+            sortableAttributes: sortersController.text.split((', ')),
+            filterableAttributes: filtersController.text.split((', ')),
+            // rankingRules: [],
+            // distinctAttribute: '', default to index
+            // displayedAttributes: ['*'], // default to '*' (all)
+            // stopWords: [],
+            // synonyms: { 'word': ['other', 'logan'] },
+          ));
+      alert('Success!', 'Index settings updated!');
+    } catch (e) {
+      error(e);
+    }
+  }
+
+  deleteIndex() async {
+    try {
+      final conf = await confirm('Confirm', 'Delete ${widget.indexUid}?');
+      if (!conf) return;
+
+      await SearchService.instance.client.index(widget.indexUid).delete();
+      alert('Success!', 'Index deleted!');
+
+      if (widget.onDeleted != null) widget.onDeleted!();
+    } catch (e) {
+      error(e);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: EdgeInsets.only(bottom: 24),
+      padding: EdgeInsets.all(4),
+      color: Colors.grey[200],
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(widget.indexUid + ' Settings', style: TextStyle(fontSize: 20)),
+          Divider(),
+          Text('searchable attributes'),
+          TextFormField(controller: searchablesController),
+          SizedBox(height: 10),
+          Text('filterable attributes'),
+          TextFormField(controller: filtersController),
+          SizedBox(height: 10),
+          Text('Sortable attributes'),
+          TextFormField(controller: sortersController),
+          SizedBox(height: 10),
+          ElevatedButton(onPressed: updateIndexSettings, child: Text('UPDATE')),
+          ElevatedButton(onPressed: deleteIndex, child: Text('DELETE')),
+        ],
+      ),
+    );
+  }
+}

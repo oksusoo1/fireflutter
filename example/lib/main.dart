@@ -5,14 +5,15 @@ import 'dart:async';
 
 import 'package:extended/extended.dart';
 import 'package:fe/screens/admin/admin.screen.dart';
+import 'package:fe/screens/admin/admin.search_settings.screen.dart';
 import 'package:fe/screens/admin/category.screen.dart';
 import 'package:fe/screens/admin/report.post.management.screen.dart';
 import 'package:fe/screens/admin/report.screen.dart';
 import 'package:fe/screens/admin/translatoins.screen.dart';
 import 'package:fe/screens/forum/post.list.screen.dart';
 import 'package:fe/screens/forum/post.form.screen.dart';
-import 'package:fe/screens/search/search.screen.dart';
-import 'package:fe/screens/search/search.service.dart';
+import 'package:fe/screens/forum/post.list_v2.screen.dart';
+import 'package:fe/service/search.service.dart';
 import 'package:fe/screens/setting/notification.setting.dart';
 import 'package:fe/service/app.service.dart';
 import 'package:fe/service/global.keys.dart';
@@ -62,7 +63,8 @@ final Map<String, RouteFunction> routes = {
   ReportScreen.routeName: (context, arguments) => ReportScreen(arguments: arguments),
   EmailVerificationScreen.routeName: (context, arguments) => EmailVerificationScreen(),
   TranslationsScreen.routeName: (context, arguments) => TranslationsScreen(),
-  SearchScreen.routeName: (context, arguments) => SearchScreen(),
+  PostListScreenV2.routeName: (context, arguments) => PostListScreenV2(arguments: arguments),
+  AdminSearchSettingsScreen.routeName: (context, arguments) => AdminSearchSettingsScreen(),
 };
 
 
