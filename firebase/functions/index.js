@@ -84,7 +84,7 @@ function indexPost(id, data) {
         id: id,
         uid: data.uid,
         title: data.title,
-        category: category,
+        category: data.category,
         content: data.content,
     };
 

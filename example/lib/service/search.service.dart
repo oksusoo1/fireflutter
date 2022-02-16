@@ -26,7 +26,7 @@ class SearchService {
   /// [offset] is the number of documents to skip.
   /// If [sort] is not null, it will sort search results by an attribute's value.
   /// If [filter] is not null, it will filter search results by an attribute's value.
-  /// 
+  ///
   Future<SearchResult> search(
     String index,
     String searchKey, {
@@ -48,25 +48,37 @@ class SearchService {
         );
   }
 
-  Future<List<PostModel>> searchPosts(
-    String key, {
+  Future<List<PostModel>> searchPosts({
+    String? searchKey,
     String? uid,
+    String? category,
     int? limit,
     int? offset,
     List<String>? sort,
-    List<dynamic> filter = const [],
+    List<dynamic> extrafilters = const [],
   }) async {
+    List _filters = [];
     if (uid != null && uid.isNotEmpty) {
-      filter = [...filter, 'uid = $uid'];
+      _filters.add('uid = $uid');
     }
+    if (category != null && category.isNotEmpty) {
+      _filters.add('category = $category');
+    }
+
+    if (extrafilters.isNotEmpty) _filters.addAll(extrafilters);
+
+    print('search filter ---> $_filters');
+
+    /// TODO: sort by date.
+    ///
 
     final result = await search(
       'posts',
-      key,
+      searchKey ?? '',
       limit: limit,
       offset: offset,
       sort: sort,
-      filter: filter,
+      filter: _filters,
     );
     if (result.hits == null) return [];
     return result.hits!.map((data) => PostModel.fromJson(data, data['id'])).toList();
@@ -78,14 +90,47 @@ class SearchService {
     int? limit,
     int? offset,
     List<String>? sort,
-    List<dynamic> filter = const [],
   }) async {
+    List _filters = [];
     if (uid != null && uid.isNotEmpty) {
-      filter = [...filter, 'uid = $uid'];
+      _filters.add('uid = $uid');
     }
 
-    final result = await search('comments', key, limit: limit, offset: offset, sort: sort);
+    final result = await search(
+      'comments',
+      key,
+      limit: limit,
+      offset: offset,
+      sort: sort,
+      filter: _filters,
+    );
     if (result.hits == null) return [];
     return result.hits!.map((data) => CommentModel.fromJson(data, id: data['id'])).toList();
+  }
+
+  ///
+  /// ADMIN FUNCTIONS
+  ///
+
+  /// Updates filterable attributes for an index.
+  ///
+  Future updateFilterableAttributes({
+    required String index,
+    required List<String> attributes,
+  }) async {
+    if (!UserService.instance.user.isAdmin) throw 'YOU_ARE_NOT_ADMIN';
+
+    await client.index(index).updateFilterableAttributes(attributes);
+  }
+
+  /// Updates sortable attributes for an index.
+  ///
+  Future updateSortableAttributes({
+    required String index,
+    required List<String> attributes,
+  }) async {
+    if (!UserService.instance.user.isAdmin) throw 'YOU_ARE_NOT_ADMIN';
+
+    await client.index(index).updateFilterableAttributes(attributes);
   }
 }
