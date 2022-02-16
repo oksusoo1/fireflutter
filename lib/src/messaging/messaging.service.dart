@@ -122,6 +122,10 @@ class MessagingService with FirestoreMixin, DatabaseMixin {
     // });
   }
 
+  updateSaveToken() {
+    _updateToken(this.token);
+  }
+
   /// Create or update token info
   ///
   /// User may not signed in. That is why we cannot put this code in user model.

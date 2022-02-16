@@ -31,6 +31,8 @@ class UserSettingsService with DatabaseMixin {
     initAuthChanges();
   }
 
+  List<String> topicsDontNeedSubscription = ['newCommentUnderMyPostOrCOmment'];
+
   /// User auth changes
   ///
   /// When auth changes, listen to newly signed-in user's setting.
@@ -111,14 +113,12 @@ class UserSettingsService with DatabaseMixin {
     }
   }
 
-  
   Future<void> subscribeToUserTopics() async {
     for (String topic in settings.topics.keys) {
+      if (topicsDontNeedSubscription.contains(topic)) continue;
       if (settings.topics[topic] == true) {
         await FirebaseMessaging.instance.subscribeToTopic(topic);
       }
     }
   }
-
-
 }

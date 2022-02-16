@@ -38,29 +38,107 @@ exports.sendMessageOnPostCreate = functions
         return admin.messaging().sendToTopic(topic, payload);
     });
 
-// sendMessageOnCommentCreate({postId: 'zvVFkgE4p7cWgXd07yvf'})
+// sendMessageOnCommentCreate({content: 'new items for sale', postId: '5xMgi3d3vYNabM0JbrSQ', parentId: 'A6tMQIhWWKQhbWkyoJf1'
+//, uid: '1h0pWRlRkEOgQedJL5HriYMxqTw2'},{params:{commentId:'eIpYHUmYGKUf921B9fRj'}})
 exports.sendMessageOnCommentCreate = functions
   .region("asia-northeast3")
   .firestore
   .document("/comments/{commentId}")
-  .onCreate(async (snapshot) => {
-      console.log('snapshot.data().postId', snapshot.data().postId);
-    
+  .onCreate(async (snapshot, context) => {
+      // get root post
       const post = await admin.firestore().collection('posts').doc(snapshot.data().postId).get();
-      console.info(post.data());
-      
+
+      // prepare notification
       const payload = {
           notification: {
               title: "New Comment: " + post.data().title,
               body: post.data().content,
           },
       };
-      const topic = "comment_" + post.data().category;
-      console.info("topic; ", topic);
-      const res = await admin.messaging().sendToTopic(topic, payload);
-       console.log(res);
-       return res
+      // comment topic
+      const topic = "comments_" + post.data().category;
+      // send push notification to topics
+      // const res = await admin.messaging().sendToTopic(topic, payload);
+      const ancestors_uid = await getCommentAncestors(context.params.commentId, snapshot.data().uid);
+
+      const subscriber_uid = await removeCommentSubscriber(ancestors_uid, topic);
+
+      const tokens = await getTokensFromUid(subscriber_uid);
+
+      if(tokens.length == 0) return [];
+
+      // Send notifications to all tokens.
+      const response = await admin.messaging().sendToDevice(tokens, payload);
+      // For each message check if there was an error.
+      const tokensToRemove = [];
+      response.results.forEach((result, index) => {
+        const error = result.error;
+        if (error) {
+          functions.logger.error(
+            'Failure sending notification to',
+            tokens[index],
+            error
+          );
+          // Cleanup the tokens who are not registered anymore.
+          if (error.code === 'messaging/invalid-registration-token' ||
+              error.code === 'messaging/registration-token-not-registered') {
+            tokensToRemove.push(admin.firestore().collection('message-tokens').child(tokens[index]).remove());
+          }
+        }
+      });
+      return Promise.all(tokensToRemove);
   });
+
+  async function getCommentAncestors(id, authorUid) {
+    let comment = await admin.firestore().collection('comments').doc(id).get();
+    const uids = [];
+    while(true) {
+      if (comment.data().postId == comment.data().parentId ) break;
+      comment = await admin.firestore().collection('comments').doc(comment.data().parentId).get();
+      if(comment.exists == false) continue;
+      if(comment.data().uid == authorUid) continue; //get author uid.
+      uids.push(comment.data().uid);
+    }
+    return uids.filter((v, i, a) => a.indexOf(v) === i);  // remove duplicate
+  }
+
+
+  async function removeCommentSubscriber(uids, topic) {
+    const _uids = [];
+    // const users = await admin.database().ref('user-settings').child('topic').orderByChild(topic).equalTo(true).get();
+    // console.log(users);
+
+    const getTopicsPromise = [];
+    for(let uid of uids ) {
+        getTopicsPromise.push( admin.database().ref('user-settings').child(uid).child('topic').get());
+        // getTopicsPromise.push( admin.database().ref('user-settings').child(uid).child('topic').once('value'));
+    } 
+    const result = await Promise.all(getTopicsPromise);
+    for(let i in result) { 
+      const v = result[i].val();
+      if(v['newCommentUnderMyPostOrCOmment'] != null && v['newCommentUnderMyPostOrCOmment'] == true && (v[topic] == null || v[topic] == false)) {
+        _uids.push(uids[i]);
+      }
+    }  
+    return _uids;
+  }
+
+  async function getTokensFromUid(uids) {
+    const _tokens = [];
+    const getTokensPromise = [];
+    for(let u of uids) {
+      getTokensPromise.push(admin.firestore().collection('message-tokens').where('uid', '==', u).get());
+    }
+
+    const result = await Promise.all(getTokensPromise);
+    for(let tokens of result) { 
+      if(tokens.size == 0) continue;
+      for( let doc of tokens.docs) {
+        _tokens.push(doc.id);
+      }
+    }   
+    return _tokens;
+  }
 
 
 

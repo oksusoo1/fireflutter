@@ -106,6 +106,7 @@ class UserService with FirestoreMixin, DatabaseMixin {
     prefs.setBool('isUserLoggedIn', true);
     await UserSettingsService.instance.unsubscribeAllTopic();
     await UserSettingsService.instance.subscribeToUserTopics();
+    await MessagingService.instance.updateSaveToken();
   }
 
   /// when user state change to null this will called and remove the isUserLoggedIn from the SharedPreferences instance.
