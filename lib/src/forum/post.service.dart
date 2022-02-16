@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:jiffy/jiffy.dart';
 import '../../fireflutter.dart';
 
 class PostService with FirestoreMixin {
@@ -22,10 +23,15 @@ class PostService with FirestoreMixin {
   /// If [hasPhoto] is set to false, then it will get posts that has not photo.
   /// If [hasPhoto] is set to null, then it will get posts wether it has photo or not.
   ///
+  /// If [uid] is set, then it will search for the posts with that uid only.
+  ///
+  /// If [within] is set, then it will search for the posts within the [within] days only.
   Future<List<PostModel>> get({
     String? category,
+    String? uid,
     int limit = 10,
     bool? hasPhoto,
+    int? within,
     String? cacheId,
   }) async {
     if (cacheId != null && cacheContainer[cacheId] != null) {
@@ -34,10 +40,18 @@ class PostService with FirestoreMixin {
     }
     Query q = postCol;
     if (category != null) q = q.where('category', isEqualTo: category);
+    if (uid != null) q = q.where('uid', isEqualTo: uid);
     if (hasPhoto != null) q = q.where('hasPhoto', isEqualTo: hasPhoto);
+
+    /// TODO: check if it's working.
+    if (within != null) {
+      q = q.where('timestamp',
+          isGreaterThanOrEqualTo: Jiffy().subtract(days: within).format("yyyy-MM-dd"));
+    }
     q = q.limit(limit);
 
     q = q.orderBy('timestamp', descending: true);
+
     QuerySnapshot snapshot = await q.get();
 
     List<PostModel> posts = [];
