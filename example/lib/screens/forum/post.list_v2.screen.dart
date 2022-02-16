@@ -71,9 +71,10 @@ class _PostListScreenV2State extends State<PostListScreenV2> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Text('Current Search Params'),
-              Text('UID: $uid'),
-              Text('Category: $currentCategory'),
-              Text('Search Key: $searchKey'),
+              SizedBox(height: 8),
+              Text('  UID: $uid'),
+              Text('  Category: $currentCategory'),
+              Text('  Search Key: $searchKey'),
               Divider(),
               Wrap(
                 children: [
