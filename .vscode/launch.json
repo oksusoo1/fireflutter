@@ -1,0 +1,80 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Simulator - iPhone 12 Pro Max",
+            "cwd": "example",
+            "program": "lib/main.dart",
+            "request": "launch",
+            "type": "dart",
+            "deviceId": "73CCDB85-2F31-4121-A76C-4280504F5651"
+        },
+        {
+            "name": "Simulator - iPhone 13 - A",
+            "cwd": "example",
+            "program": "lib/main.dart",
+            "request": "launch",
+            "type": "dart",
+            "deviceId": "962B61B8-7067-4256-9CBF-047E4EA352AC"
+        },
+        {
+            "name": "Simulator - iPhone 13",
+            "cwd": "example",
+            "program": "lib/main.dart",
+            "request": "launch",
+            "type": "dart",
+            "deviceId": "BD760457-7721-4D25-97CB-D7F6965E28F1"
+        },
+        {
+            "name": "iPhone11MaxPro",
+            "cwd": "example",
+            "program": "lib/main.dart",
+            "request": "launch",
+            "type": "dart",
+            "deviceId": "00008030-000904C80290802E"
+        },
+        {
+            "name": "Emulator-5554 - Pixel 3a",
+            "cwd": "example",
+            "program": "lib/main.dart",
+            "request": "launch",
+            "type": "dart",
+            "deviceId": "emulator-5554"
+        },
+        {
+            "name": "SM J737S - Wide3",
+            "cwd": "example",
+            "program": "lib/main.dart",
+            "request": "launch",
+            "type": "dart",
+            "deviceId": "5200960c4e1e5577"
+        },
+        {
+            "name": "fireflutter",
+            "request": "launch",
+            "type": "dart"
+        },
+        {
+            "name": "fireflutter (profile mode)",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "profile"
+        },
+        {
+            "name": "example",
+            "cwd": "example",
+            "request": "launch",
+            "type": "dart"
+        },
+        {
+            "name": "example (profile mode)",
+            "cwd": "example",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "profile"
+        }
+    ]
+}
