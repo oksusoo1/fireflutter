@@ -5,7 +5,7 @@ import 'package:fe/screens/admin/report.screen.dart';
 import 'package:fe/screens/admin/translatoins.screen.dart';
 import 'package:fe/screens/forum/post.form.screen.dart';
 import 'package:fe/screens/forum/post.list.screen.dart';
-import 'package:fe/screens/forum/post.list_v2.screen.dart';
+import 'package:fe/screens/search/search.screen.dart';
 import 'package:fe/screens/home/home.screen.dart';
 import 'package:fe/screens/profile/profile.screen.dart';
 import 'package:fe/service/global.keys.dart';
@@ -51,8 +51,10 @@ class AppService {
     return open(PostListScreen.routeName, arguments: {'category': category});
   }
 
-  Future<void> openPostListV2({String? category, String? uid, String? searchKey}) async {
+  Future<void> openSearchScreen(
+      {required String index, String? category, String? uid, String? searchKey}) async {
     return open(PostListScreenV2.routeName, arguments: {
+      'index': index,
       'category': category,
       'uid': uid,
       'searchKey': searchKey,

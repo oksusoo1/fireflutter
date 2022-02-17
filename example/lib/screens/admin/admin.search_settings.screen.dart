@@ -1,5 +1,5 @@
 import 'package:extended/extended.dart';
-import 'package:fe/service/search.service.dart';
+import 'package:fireflutter/src/search/search.service.dart';
 import 'package:flutter/material.dart';
 import 'package:meilisearch/meilisearch.dart';
 
@@ -90,7 +90,7 @@ class _IndexSettingFormState extends State<IndexSettingForm> {
         filtersController.text = settings.filterableAttributes!.join(', ');
       }
       if (settings.sortableAttributes != null) {
-        sortersController.text = settings.searchableAttributes!.join(', ');
+        sortersController.text = settings.sortableAttributes!.join(', ');
       }
       if (mounted) setState(() {});
     } catch (e) {
@@ -100,16 +100,17 @@ class _IndexSettingFormState extends State<IndexSettingForm> {
 
   updateIndexSettings() async {
     try {
-      await SearchService.instance.client.index(widget.indexUid).updateSettings(IndexSettings(
-            searchableAttributes: searchablesController.text.split(', '),
-            sortableAttributes: sortersController.text.split((', ')),
-            filterableAttributes: filtersController.text.split((', ')),
-            // rankingRules: [],
-            // distinctAttribute: '', default to index
-            // displayedAttributes: ['*'], // default to '*' (all)
-            // stopWords: [],
-            // synonyms: { 'word': ['other', 'logan'] },
-          ));
+      await SearchService.instance.updateIndexSearchSettings(
+        index: widget.indexUid,
+        searchables: searchablesController.text.split(', '),
+        sortables: sortersController.text.split((', ')),
+        filterables: filtersController.text.split((', ')),
+        // rankingRules: [],
+        // distinctAttribute: '', default to index
+        // displayedAttributes: ['*'], // default to '*' (all)
+        // stopWords: [],
+        // synonyms: { 'word': ['other', 'logan'] },
+      );
       alert('Success!', 'Index settings updated!');
     } catch (e) {
       error(e);
@@ -118,7 +119,7 @@ class _IndexSettingFormState extends State<IndexSettingForm> {
 
   deleteIndex() async {
     try {
-      final conf = await confirm('Confirm', 'Delete ${widget.indexUid}?');
+      final conf = await confirm('Confirm', 'Delete ${widget.indexUid} index?');
       if (!conf) return;
 
       await SearchService.instance.client.index(widget.indexUid).delete();
@@ -151,7 +152,7 @@ class _IndexSettingFormState extends State<IndexSettingForm> {
           TextFormField(controller: sortersController),
           SizedBox(height: 10),
           ElevatedButton(onPressed: updateIndexSettings, child: Text('UPDATE')),
-          ElevatedButton(onPressed: deleteIndex, child: Text('DELETE')),
+          ElevatedButton(onPressed: deleteIndex, child: Text('DELETE INDEX')),
         ],
       ),
     );
