@@ -164,6 +164,7 @@ function indexPost(id, data) {
         title: data.title,
         category: data.category,
         content: data.content,
+        timestamp: data.timestamp ?? Date.now(),
     };
 
     return Axios.post(
@@ -173,6 +174,8 @@ function indexPost(id, data) {
 }
 
 // Index when a post is created
+//
+// meilisearchCreatePostIndex({ category: 'discussion', uid: 'user_ccc', title: 'I post on discussion', content: 'Discussion', timestamp: '12 February 2022 at 17:44:19 UTC+8' })
 exports.meilisearchCreatePostIndex = functions
     .region("asia-northeast3").firestore
     .document("/posts/{postId}")
