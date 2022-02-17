@@ -154,7 +154,6 @@ exports.sendMessageOnCommentCreate = functions
 
 
 function indexPost(id, data) {
-    console.log('--> post data; ', data);
     const _data = {
         id: id,
         uid: data.uid,
@@ -164,6 +163,7 @@ function indexPost(id, data) {
         timestamp: data.timestamp ?? Date.now(),
     };
 
+    console.log('--> post _data; ', _data);
     return Axios.post(
         "http://wonderfulkorea.kr:7700/indexes/posts/documents",
         _data
@@ -190,41 +190,35 @@ function indexComment(id, data) {
 
 // Index when a post is created
 //
-// meilisearchCreatePostIndex({ category: 'discussion', uid: 'user_ccc', title: 'I post on discussion', content: 'Discussion' })
+// meilisearchCreatePostIndex({ uid: 'user_ccc', category: 'discussion', title: 'I post on discussion', content: 'Discussion' })
 exports.meilisearchCreatePostIndex = functions
     .region("asia-northeast3").firestore
     .document("/posts/{postId}")
     .onCreate((snap, context) => {
-        return indexPost(context.params.postId, snap.data());
+      return indexPost(context.params.postId, snap.data());
     });
 
 // Update the index when a post is updated or deleted.
 //
 // Test call:
-//  meilisearchUpdatePostIndex({ before: {category: 'qna', uid: 'user_ccc'}, after: {category: 'discussion', uid: 'user_ccc', content: 'updated content 6', title: 'updated title 2'}}, { postId: 'postId1' })
+//  meilisearchUpdatePostIndex({ before: {}, after: { uid: 'user_ccc', category: 'discussion', title: 'I post on discussion (update)', content: 'Discussion 2'}}, { params: { postId: 'postId2' }})
 exports.meilisearchUpdatePostIndex = functions
     .region("asia-northeast3").firestore
     .document("/posts/{postId}")
     .onUpdate((change, context) => {
-      const oldValue = change.before.data();
-      const newValue = change.after.data();
-      console.log('--> oldValue; ', oldValue);
-      console.log('--> newValue; ', newValue);
-      console.log('--> context; ', context);
-      
-      return indexPost(context.params.postId, newValue);
+      return indexPost(context.params.postId, change.after.data());
     });
 
 exports.meilisearchCreateCommentIndex = functions
     .region("asia-northeast3").firestore
     .document("/comments/{commentId}")
     .onCreate((snap, context) => {
-        return indexComment(context.params.commentId, snap.data());
+      return indexComment(context.params.commentId, snap.data());
     });
 
 exports.meilisearchUpdateCommentIndex = functions
     .region("asia-northeast3").firestore
     .document("/comments/{commentId}")
     .onUpdate((change, context) => {
-        return indexComment(context.params.commentId, change.after.data());
+      return indexComment(context.params.commentId, change.after.data());
     });
