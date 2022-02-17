@@ -219,24 +219,24 @@ class _HomeScreenState extends State<HomeScreen> {
                 ],
               ),
               SizedBox(height: 10),
-              Text('V2 post list using meilisearch'),
+              Text('meilisearch listing'),
               Wrap(
                 children: [
                   ElevatedButton(
-                    onPressed: () => AppService.instance.openPostListV2(category: 'qna'),
+                    onPressed: () => AppService.instance.openSearchScreen(index: 'posts', category: 'qna'),
                     child: const Text('QnA'),
                   ),
                   ElevatedButton(
-                    onPressed: () => AppService.instance.openPostListV2(category: 'discussion'),
+                    onPressed: () => AppService.instance.openSearchScreen(index: 'posts', category: 'discussion'),
                     child: const Text('Discussion'),
                   ),
                   ElevatedButton(
-                    onPressed: () => AppService.instance.openPostListV2(category: 'buyandsell'),
+                    onPressed: () => AppService.instance.openSearchScreen(index: 'posts', category: 'buyandsell'),
                     child: const Text('Buy & Sell'),
                   ),
                   ElevatedButton(
-                    onPressed: () => AppService.instance.openPostListV2(),
-                    child: const Text('Post List V2'),
+                    onPressed: () => AppService.instance.openSearchScreen(index: 'posts'),
+                    child: const Text('Search Screen'),
                   ),
                   ElevatedButton(
                     onPressed: () => AppService.instance.open(AdminSearchSettingsScreen.routeName),

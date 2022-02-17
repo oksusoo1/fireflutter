@@ -80,3 +80,5 @@ export 'src/user/widgets/user.name.dart';
 
 export 'src/translation/tr.dart';
 export 'src/translation/translation.service.dart';
+
+export 'src/search/search.service.dart';

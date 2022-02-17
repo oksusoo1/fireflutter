@@ -582,7 +582,7 @@ packages:
     source: hosted
     version: "0.1.3"
   meilisearch:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: meilisearch
       url: "https://pub.dartlang.org"

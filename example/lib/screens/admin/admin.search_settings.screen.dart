@@ -1,5 +1,5 @@
 import 'package:extended/extended.dart';
-import 'package:fe/service/search.service.dart';
+import 'package:fireflutter/src/search/search.service.dart';
 import 'package:flutter/material.dart';
 import 'package:meilisearch/meilisearch.dart';
 
