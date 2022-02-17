@@ -55,13 +55,8 @@ class SearchService {
     List<dynamic> extrafilters = const [],
   }) async {
     List _filters = [];
-    if (uid != null && uid.isNotEmpty) {
-      _filters.add('uid = $uid');
-    }
-    if (category != null && category.isNotEmpty) {
-      _filters.add('category = $category');
-    }
-
+    if (uid != null && uid.isNotEmpty) _filters.add('uid = $uid');
+    if (category != null && category.isNotEmpty) _filters.add('category = $category');
     if (extrafilters.isNotEmpty) _filters.addAll(extrafilters);
 
     final result = await search(
@@ -75,30 +70,6 @@ class SearchService {
     if (result.hits == null) return [];
     return result.hits!.map((data) => PostModel.fromJson(data, data['id'])).toList();
   }
-
-  // Future<List<CommentModel>> searchComments(
-  //   String key, {
-  //   String? uid,
-  //   int? limit,
-  //   int? offset,
-  //   List<String> sort = const [],
-  // }) async {
-  //   List _filters = [];
-  //   if (uid != null && uid.isNotEmpty) {
-  //     _filters.add('uid = $uid');
-  //   }
-
-  //   final result = await search(
-  //     'comments',
-  //     key,
-  //     limit: limit,
-  //     offset: offset,
-  //     sort: sort,
-  //     filter: _filters,
-  //   );
-  //   if (result.hits == null) return [];
-  //   return result.hits!.map((data) => CommentModel.fromJson(data, id: data['id'])).toList();
-  // }
 
   ///
   /// ADMIN FUNCTIONS

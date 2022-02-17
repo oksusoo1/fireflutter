@@ -154,10 +154,7 @@ exports.sendMessageOnCommentCreate = functions
 
 
 function indexPost(id, data) {
-
-
     console.log('--> data; ', data);
-
     const _data = {
         id: id,
         uid: data.uid,
