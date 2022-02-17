@@ -154,7 +154,7 @@ exports.sendMessageOnCommentCreate = functions
 
 
 function indexPost(id, data) {
-    console.log('--> data; ', data);
+    console.log('--> post data; ', data);
     const _data = {
         id: id,
         uid: data.uid,
@@ -168,6 +168,24 @@ function indexPost(id, data) {
         "http://wonderfulkorea.kr:7700/indexes/posts/documents",
         _data
     );
+}
+
+function indexComment(id, data) {
+  console.log('--> comment data; ', data);
+  /// id, uid, parentId, content, timestamp
+
+  const _data = {
+      id: id,
+      uid: data.uid,
+      postId: data.postId,
+      content: data.content,
+      timestamp: data.timestamp ?? Date.now(),
+  };
+  return Axios.post(
+      "http://wonderfulkorea.kr:7700/indexes/comments/documents",
+      _data
+  );
+
 }
 
 // Index when a post is created
@@ -191,3 +209,19 @@ exports.meilisearchUpdatePostIndex = functions
         console.log('--> newValue; ', newValue);
         return indexPost(context.params.postId, newValue);
     });
+
+exports.meilisearchCreateCommentIndex = functions
+    .region("asia-northeast3").firestore
+    .document("/comments/{commentId}")
+    .onCreate((snap, context) => {
+        return indexComment(context.params.postId, snap.data());
+    });
+
+exports.meilisearchUpdatePostIndex = functions
+  .region("asia-northeast3").firestore
+  .document("/comments/{commentId}")
+  .onUpdate((change, context) => {
+      // const oldValue = change.before.data();
+      const newValue = change.after.data();
+      return indexComment(context.params.postId, newValue);
+  });
