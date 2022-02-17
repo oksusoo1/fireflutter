@@ -13,6 +13,14 @@
             "deviceId": "73CCDB85-2F31-4121-A76C-4280504F5651"
         },
         {
+            "name": "Simulator - iPhone 13 - A",
+            "cwd": "example",
+            "program": "lib/main.dart",
+            "request": "launch",
+            "type": "dart",
+            "deviceId": "962B61B8-7067-4256-9CBF-047E4EA352AC"
+        },
+        {
             "name": "Simulator - iPhone 13",
             "cwd": "example",
             "program": "lib/main.dart",
