@@ -138,6 +138,7 @@ class _PostListScreenV2State extends State<PostListScreenV2> {
                       Text("Category: ${post.category}"),
                       Text("Title: ${post.title}"),
                       Text("Content: ${post.displayContent}"),
+                      ShortDate(post.timestamp.millisecondsSinceEpoch),
                     ],
                   ),
                 ),

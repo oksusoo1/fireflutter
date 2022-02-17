@@ -33,12 +33,9 @@ class SearchService {
     String? uid,
     int? limit = 20,
     int? offset,
-    List<String>? sort,
+    List<String> sort = const [],
     List<dynamic> filter = const [],
   }) async {
-    if (uid != null && uid.isNotEmpty) {
-      filter = [...filter, 'uid = $uid'];
-    }
     return client.index(index).search(
           searchKey,
           limit: limit,
@@ -54,7 +51,7 @@ class SearchService {
     String? category,
     int? limit,
     int? offset,
-    List<String>? sort,
+    List<String> sort = const ['timestamp:desc'],
     List<dynamic> extrafilters = const [],
   }) async {
     List _filters = [];
@@ -66,11 +63,6 @@ class SearchService {
     }
 
     if (extrafilters.isNotEmpty) _filters.addAll(extrafilters);
-
-    print('search filter ---> $_filters');
-
-    /// TODO: sort by date.
-    ///
 
     final result = await search(
       'posts',
@@ -84,29 +76,29 @@ class SearchService {
     return result.hits!.map((data) => PostModel.fromJson(data, data['id'])).toList();
   }
 
-  Future<List<CommentModel>> searchComments(
-    String key, {
-    String? uid,
-    int? limit,
-    int? offset,
-    List<String>? sort,
-  }) async {
-    List _filters = [];
-    if (uid != null && uid.isNotEmpty) {
-      _filters.add('uid = $uid');
-    }
+  // Future<List<CommentModel>> searchComments(
+  //   String key, {
+  //   String? uid,
+  //   int? limit,
+  //   int? offset,
+  //   List<String> sort = const [],
+  // }) async {
+  //   List _filters = [];
+  //   if (uid != null && uid.isNotEmpty) {
+  //     _filters.add('uid = $uid');
+  //   }
 
-    final result = await search(
-      'comments',
-      key,
-      limit: limit,
-      offset: offset,
-      sort: sort,
-      filter: _filters,
-    );
-    if (result.hits == null) return [];
-    return result.hits!.map((data) => CommentModel.fromJson(data, id: data['id'])).toList();
-  }
+  //   final result = await search(
+  //     'comments',
+  //     key,
+  //     limit: limit,
+  //     offset: offset,
+  //     sort: sort,
+  //     filter: _filters,
+  //   );
+  //   if (result.hits == null) return [];
+  //   return result.hits!.map((data) => CommentModel.fromJson(data, id: data['id'])).toList();
+  // }
 
   ///
   /// ADMIN FUNCTIONS
@@ -114,23 +106,25 @@ class SearchService {
 
   /// Updates filterable attributes for an index.
   ///
-  Future updateFilterableAttributes({
+  Future updateIndexSearchSettings({
     required String index,
-    required List<String> attributes,
+    List<String>? searchables,
+    List<String>? sortables,
+    List<String>? filterables,
   }) async {
     if (!UserService.instance.user.isAdmin) throw 'YOU_ARE_NOT_ADMIN';
 
-    await client.index(index).updateFilterableAttributes(attributes);
-  }
-
-  /// Updates sortable attributes for an index.
-  ///
-  Future updateSortableAttributes({
-    required String index,
-    required List<String> attributes,
-  }) async {
-    if (!UserService.instance.user.isAdmin) throw 'YOU_ARE_NOT_ADMIN';
-
-    await client.index(index).updateFilterableAttributes(attributes);
+    return SearchService.instance.client.index(index).updateSettings(
+          IndexSettings(
+            searchableAttributes: searchables,
+            sortableAttributes: sortables,
+            filterableAttributes: filterables,
+            // rankingRules: [],
+            // distinctAttribute: '', default to index
+            // displayedAttributes: ['*'], // default to '*' (all)
+            // stopWords: [],
+            // synonyms: { 'word': ['other', 'logan'] },
+          ),
+        );
   }
 }

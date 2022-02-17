@@ -66,6 +66,9 @@ class PostModel with FirestoreMixin, ForumBase {
   factory PostModel.fromJson(Json data, String id) {
     List<String> _files = data['files'] != null ? new List<String>.from(data['files']) : <String>[];
 
+    var _timestamp = data['timestamp'] ?? Timestamp.now();
+    if (_timestamp is int) _timestamp = Timestamp.fromMillisecondsSinceEpoch(_timestamp);
+
     return PostModel(
       id: id,
       category: data['category'] ?? '',
@@ -78,7 +81,7 @@ class PostModel with FirestoreMixin, ForumBase {
       uid: data['uid'] ?? '',
       like: data['like'] ?? 0,
       dislike: data['dislike'] ?? 0,
-      timestamp_: data['timestamp'] ?? Timestamp.now(),
+      timestamp_: _timestamp,
       data_: data,
     );
   }
