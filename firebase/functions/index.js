@@ -9,7 +9,6 @@ const { topic } = require("firebase-functions/v1/pubsub");
 
 admin.initializeApp();
 
-
 /**
  * Run from functions shell
  * ```
@@ -92,7 +91,6 @@ exports.sendMessageOnCommentCreate = functions
 
       if(tokens.length == 0) return [];
 
-
       // chuck token to 1000 https://firebase.google.com/docs/cloud-messaging/send-message#send-to-individual-devices
       // You can send messages to up to 1000 devices in a single request. 
       // If you provide an array with over 1000 registration tokens, 
@@ -129,20 +127,7 @@ exports.sendMessageOnCommentCreate = functions
       return Promise.all(tokensToRemove);
   });
 
-  // get comment ancestor by getting parent comment until it reach the root comment
-  // return the uids of the author
-  async function getCommentAncestors(id, authorUid) {
-    let comment = await admin.firestore().collection('comments').doc(id).get();
-    const uids = [];
-    while(true) {
-      if (comment.data().postId == comment.data().parentId ) break;
-      comment = await admin.firestore().collection('comments').doc(comment.data().parentId).get();
-      if(comment.exists == false) continue;
-      if(comment.data().uid == authorUid) continue; //get author uid.
-      uids.push(comment.data().uid);
-    }
-    return uids.filter((v, i, a) => a.indexOf(v) === i);  // remove duplicate
-  }
+
 
   // check the uids if they are subscribe to topic and also want to get notification under their post/comment
   async function removeUserWithTopicAndNewCommentUnderMyPostOrCommentSubscriber(uids, topic) {
@@ -188,50 +173,6 @@ exports.sendMessageOnCommentCreate = functions
   }
 
 
-// message-token onCreate it will subscribe to `defaultTopic`.    
-// exports.subscribeToMainTopicOnTokenCreate = functions
-//     .region("asia-northeast3")
-//     .firestore
-//     .document("/message-tokens/{token}")
-//     .onCreate((snapshot) => {
-//         return admin.messaging().subscribeToTopic('defaultTopic', snapshot.data().id);
-//     });
-
-
-function indexPost(id, data) {
-    const _data = {
-        id: id,
-        uid: data.uid,
-        title: data.title,
-        category: data.category,
-        content: data.content,
-        timestamp: data.timestamp ?? Date.now(),
-    };
-
-    console.log('--> post _data; ', _data);
-    return Axios.post(
-        "http://wonderfulkorea.kr:7700/indexes/posts/documents",
-        _data
-    );
-}
-
-function indexComment(id, data) {
-  console.log('--> comment data; ', data);
-  /// id, uid, parentId, content, timestamp
-
-  const _data = {
-      id: id,
-      uid: data.uid,
-      postId: data.postId,
-      content: data.content,
-      timestamp: data.timestamp ?? Date.now(),
-  };
-  return Axios.post(
-      "http://wonderfulkorea.kr:7700/indexes/comments/documents",
-      _data
-  );
-
-}
 
 // Index when a post is created
 //
