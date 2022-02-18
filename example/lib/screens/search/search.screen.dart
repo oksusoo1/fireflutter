@@ -49,7 +49,7 @@ class _PostListScreenV2State extends State<PostListScreenV2> {
   @override
   void dispose() {
     searchService.resetFilters();
-    searchService.resetListAndPagination();
+    searchService.resetListAndPagination(limit: 4);
     scrollController.dispose();
     super.dispose();
   }
@@ -87,7 +87,7 @@ class _PostListScreenV2State extends State<PostListScreenV2> {
 
   resetAndSearch() {
     noMorePosts = false;
-    searchService.resetListAndPagination();
+    searchService.resetListAndPagination(limit: 4);
     search();
   }
 
