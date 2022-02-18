@@ -29,8 +29,8 @@ exports.sendMessageOnPostCreate = functions
         const category = snapshot.data().category;
         const payload = {
             notification: {
-                title: snapshot.data().title ?? '',
-                body: snapshot.data().content ?? '',
+                title: snapshot.data().title ? snapshot.data().title : '',
+                body: snapshot.data().content ? snapshot.data().content : '',
                 clickAction: 'FLUTTER_NOTIFICATION_CLICK'
             },
             data:{
@@ -83,11 +83,11 @@ exports.sendMessageOnCommentCreate = functions
       }
 
       // remove subcriber uid but want to get notification under their post/comment
-      const user_uids = await removeUserWithTopicAndNewCommentUnderMyPostOrCommentSubscriber(ancestors_uid, topic);
+      const user_uids = await lib.removeTopicAndForumAncestorsSubscriber(ancestors_uid, topic);
 
 
       // get users tokens
-      const tokens = await getTokensFromUid(user_uids);
+      const tokens = await lib.getTokensFromUid(user_uids);
 
       if(tokens.length == 0) return [];
 
@@ -95,7 +95,7 @@ exports.sendMessageOnCommentCreate = functions
       // You can send messages to up to 1000 devices in a single request. 
       // If you provide an array with over 1000 registration tokens, 
       // the request will fail with a messaging/invalid-recipient error.
-      const chunks = chunk(tokens, 1000);
+      const chunks = lib.chunk(tokens, 1000);
 
       const sendToDevicePromise = [];
       for(let c of chunks) {
@@ -128,49 +128,6 @@ exports.sendMessageOnCommentCreate = functions
   });
 
 
-
-  // check the uids if they are subscribe to topic and also want to get notification under their post/comment
-  async function removeUserWithTopicAndNewCommentUnderMyPostOrCommentSubscriber(uids, topic) {
-    const _uids = [];
-    const getTopicsPromise = [];
-    for(let uid of uids ) {
-        getTopicsPromise.push( admin.database().ref('user-settings').child(uid).child('topic').get());
-        // getTopicsPromise.push( admin.database().ref('user-settings').child(uid).child('topic').once('value'));  // same result above
-    } 
-    const result = await Promise.all(getTopicsPromise);
-    for(let i in result) { 
-      const v = result[i].val();
-      if(v['newCommentUnderMyPostOrCOmment'] != null && v['newCommentUnderMyPostOrCOmment'] == true && (v[topic] == null || v[topic] == false)) {
-        _uids.push(uids[i]);
-      }
-    }  
-    return _uids;
-  }
-
-  async function getTokensFromUid(uids) {
-    const _tokens = [];
-    const getTokensPromise = [];
-    for(let u of uids) {
-      getTokensPromise.push(admin.firestore().collection('message-tokens').where('uid', '==', u).get());
-    }
-
-    const result = await Promise.all(getTokensPromise);
-    for(let tokens of result) { 
-      if(tokens.size == 0) continue;
-      for( let doc of tokens.docs) {
-        _tokens.push(doc.id);
-      }
-    }   
-    return _tokens;
-  }
-
-  function chunk(arr, chunkSize) {
-    if (chunkSize <= 0) throw "Invalid chunk size";
-    var R = [];
-    for (var i=0,len=arr.length; i<len; i+=chunkSize)
-      R.push(arr.slice(i,i+chunkSize));
-    return R;
-  }
 
 
 
