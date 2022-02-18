@@ -9,7 +9,7 @@
     "deploy": "firebase deploy --only functions",
     "logs": "firebase functions:log",
     "test:test": "mocha --timeout 5000 --watch tests/test.js",
-    "test:messaging": "mocha --timeout 5000 --watch tests/messaging.test.js",
+    "test:messaging": "mocha --timeout 50000 --watch tests/messaging.test.js",
     "test:meilisearch": "mocha --timeout 5000 --watch tests/meilisearch.test.js"
   },
   "engines": {
