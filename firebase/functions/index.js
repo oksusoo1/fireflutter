@@ -175,6 +175,7 @@ exports.sendMessageOnCommentCreate = functions
 
 
 // Index when a post is created
+// todo - create 'posts-and-comments' index.
 //
 // meilisearchCreatePostIndex({ uid: 'user_ccc', category: 'discussion', title: 'I post on discussion', content: 'Discussion' })
 exports.meilisearchCreatePostIndex = functions
@@ -185,7 +186,6 @@ exports.meilisearchCreatePostIndex = functions
     });
 
 // Update the index when a post is updated or deleted.
-// todo - create 'posts-and-comments' index.
 //
 // Test call:
 //  meilisearchUpdatePostIndex({ before: {}, after: { uid: 'user_ccc', category: 'discussion', title: 'I post on discussion (update)', content: 'Discussion 2'}}, { params: { postId: 'postId2' }})

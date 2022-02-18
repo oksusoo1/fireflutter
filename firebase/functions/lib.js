@@ -141,7 +141,7 @@ async function createComment(data) {
 
 
 
-function indexPost(id, data) {
+async function indexPost(id, data) {
   const _data = {
       id: id,
       uid: data.uid,
@@ -151,13 +151,14 @@ function indexPost(id, data) {
       timestamp: data.timestamp ?? Date.now(),
   };
 
-  return Axios.post(
+  await Axios.post(
       "http://wonderfulkorea.kr:7700/indexes/posts/documents",
       _data
   );
+  return indexForumData(_data);
 }
 
-function indexComment(id, data) {
+async function indexComment(id, data) {
   const _data = {
       id: id,
       uid: data.uid,
@@ -165,9 +166,17 @@ function indexComment(id, data) {
       content: data.content,
       timestamp: data.timestamp ?? Date.now(),
   };
-  return Axios.post(
+  await Axios.post(
       "http://wonderfulkorea.kr:7700/indexes/comments/documents",
       _data
+  );
+  return indexForumData(_data);
+}
+
+function indexForumData(data) {
+  return Axios.post(
+    "http://wonderfulkorea.kr:7700/indexes/posts-and-comments/documents",
+    data
   );
 }
 
