@@ -462,6 +462,9 @@ PhoneService.instance.verifyPhoneNumber(
   - The format of text field is like below. 
     - `{ name: { en: 'Name', ko: '이름' }, ... }`
 
+
+## Tr
+
 - You can use `Tr` widget to display the translated text.
   - `Tr` widget support all the text properties.
 
