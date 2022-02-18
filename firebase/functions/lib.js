@@ -107,6 +107,56 @@ async function createComment(data) {
   }
 }
 
+
+
+function indexPost(id, data) {
+  const _data = {
+      id: id,
+      uid: data.uid,
+      title: data.title,
+      category: data.category,
+      content: data.content,
+      timestamp: data.timestamp ?? Date.now(),
+  };
+
+  return Axios.post(
+      "http://wonderfulkorea.kr:7700/indexes/posts/documents",
+      _data
+  );
+}
+
+function indexComment(id, data) {
+  const _data = {
+      id: id,
+      uid: data.uid,
+      postId: data.postId,
+      content: data.content,
+      timestamp: data.timestamp ?? Date.now(),
+  };
+  return Axios.post(
+      "http://wonderfulkorea.kr:7700/indexes/comments/documents",
+      _data
+  );
+
+}
+
+
+// get comment ancestor by getting parent comment until it reach the root comment
+// return the uids of the author
+async function getCommentAncestors(id, authorUid) {
+  let comment = await commentDoc(id).get();
+  const uids = [];
+  while(true) {
+    if (comment.data().postId == comment.data().parentId ) break;
+    comment = await commentDoc(comment.data().parentId).get();
+    if(comment.exists == false) continue;
+    if(comment.data().uid == authorUid) continue; // skip the author's uid.
+    uids.push(comment.data().uid);
+  }
+  return uids.filter((v, i, a) => a.indexOf(v) === i);  // remove duplicate
+}
+
+
 exports.getSizeOfCategories = getSizeOfCategories;
 exports.getCategories = getCategories;
 exports.createCategory = createCategory;
@@ -114,19 +164,7 @@ exports.createPost = createPost;
 exports.createComment = createComment;
 
 
+exports.indexComment = indexComment;
+exports.indexPost = indexPost;
 
-
-// get comment ancestor by getting parent comment until it reach the root comment
-// return the uids of the author
- exports.getCommentAncestors = async function (id, authorUid) {
-    let comment = await commentDoc(id).get();
-    const uids = [];
-    while(true) {
-      if (comment.data().postId == comment.data().parentId ) break;
-      comment = await commentDoc(comment.data().parentId).get();
-      if(comment.exists == false) continue;
-      if(comment.data().uid == authorUid) continue; // skip the author's uid.
-      uids.push(comment.data().uid);
-    }
-    return uids.filter((v, i, a) => a.indexOf(v) === i);  // remove duplicate
-  }
+exports.getCommentAncestors = getCommentAncestors;

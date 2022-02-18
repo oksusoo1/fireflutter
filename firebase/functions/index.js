@@ -9,7 +9,6 @@ const { topic } = require("firebase-functions/v1/pubsub");
 
 admin.initializeApp();
 
-
 /**
  * Run from functions shell
  * ```
@@ -91,7 +90,6 @@ exports.sendMessageOnCommentCreate = functions
       const tokens = await getTokensFromUid(user_uids);
 
       if(tokens.length == 0) return [];
-
 
       // chuck token to 1000 https://firebase.google.com/docs/cloud-messaging/send-message#send-to-individual-devices
       // You can send messages to up to 1000 devices in a single request. 
@@ -175,50 +173,6 @@ exports.sendMessageOnCommentCreate = functions
   }
 
 
-// message-token onCreate it will subscribe to `defaultTopic`.    
-// exports.subscribeToMainTopicOnTokenCreate = functions
-//     .region("asia-northeast3")
-//     .firestore
-//     .document("/message-tokens/{token}")
-//     .onCreate((snapshot) => {
-//         return admin.messaging().subscribeToTopic('defaultTopic', snapshot.data().id);
-//     });
-
-
-function indexPost(id, data) {
-    const _data = {
-        id: id,
-        uid: data.uid,
-        title: data.title,
-        category: data.category,
-        content: data.content,
-        timestamp: data.timestamp ?? Date.now(),
-    };
-
-    console.log('--> post _data; ', _data);
-    return Axios.post(
-        "http://wonderfulkorea.kr:7700/indexes/posts/documents",
-        _data
-    );
-}
-
-function indexComment(id, data) {
-  console.log('--> comment data; ', data);
-  /// id, uid, parentId, content, timestamp
-
-  const _data = {
-      id: id,
-      uid: data.uid,
-      postId: data.postId,
-      content: data.content,
-      timestamp: data.timestamp ?? Date.now(),
-  };
-  return Axios.post(
-      "http://wonderfulkorea.kr:7700/indexes/comments/documents",
-      _data
-  );
-
-}
 
 // Index when a post is created
 //
