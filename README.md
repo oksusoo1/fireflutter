@@ -463,6 +463,10 @@ PhoneService.instance.verifyPhoneNumber(
   - The format of text field is like below. 
     - `{ name: { en: 'Name', ko: '이름' }, ... }`
 
+- The translation texts are loaded on translation service init.
+  - And translataion texts are updated immedialy when the `/settings/translations` is changed. And this leads `Tr` widget to re-render.
+    - So, when `/settings/translation` changes, it will instantly update the text of `Tr` widget.
+
 ## Tr
 
 - You can use `Tr` widget to display the translated text.
