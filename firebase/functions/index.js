@@ -200,12 +200,12 @@ exports.meilisearchCreateCommentIndex = functions
     .region("asia-northeast3").firestore
     .document("/comments/{commentId}")
     .onCreate((snap, context) => {
-      return indexComment(context.params.commentId, snap.data());
+      return lib.indexComment(context.params.commentId, snap.data());
     });
 
 exports.meilisearchUpdateCommentIndex = functions
     .region("asia-northeast3").firestore
     .document("/comments/{commentId}")
     .onUpdate((change, context) => {
-      return indexComment(context.params.commentId, change.after.data());
+      return lib.indexComment(context.params.commentId, change.after.data());
     });

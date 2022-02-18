@@ -169,7 +169,6 @@ function indexComment(id, data) {
       "http://wonderfulkorea.kr:7700/indexes/comments/documents",
       _data
   );
-
 }
 
 
