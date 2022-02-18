@@ -185,7 +185,8 @@ class _PostListScreenV2State extends State<PostListScreenV2> {
                 },
               ),
             ),
-            if (searchService.resultList.isEmpty) Center(child: Text('NO POSTS FOUND.'))
+            if (searchService.resultList.isEmpty && !loading) Center(child: Text('NO POSTS FOUND.')),
+            if (loading) Center(child: CircularProgressIndicator())
           ],
         ),
       ),
