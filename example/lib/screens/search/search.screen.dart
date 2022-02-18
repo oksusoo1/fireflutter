@@ -102,6 +102,7 @@ class _PostListScreenV2State extends State<PostListScreenV2> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            Text('Current Index: ${searchService.index}'),
             Text('Current Search Params'),
             SizedBox(height: 8),
             Text('  UID: ${searchService.uid}'),
@@ -164,21 +165,12 @@ class _PostListScreenV2State extends State<PostListScreenV2> {
                 itemCount: searchService.resultList.length,
                 controller: scrollController,
                 itemBuilder: (c, i) {
-                  final PostModel post = PostModel.fromJson(
-                    searchService.resultList[i],
-                    searchService.resultList[i]['id'],
-                  );
                   return Container(
                     margin: EdgeInsets.only(bottom: 16),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        Text("ID: ${post.id}"),
-                        Text("UID: ${post.uid}"),
-                        Text("Category: ${post.category}"),
-                        Text("Title: ${post.title}"),
-                        Text("Content: ${post.displayContent}"),
-                        ShortDate(post.timestamp.millisecondsSinceEpoch),
+                        Text("ID: ${searchService.resultList[i].toString()}"),
                       ],
                     ),
                   );
