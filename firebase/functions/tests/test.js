@@ -102,4 +102,19 @@ describe("Categories", () => {
         assert.ok( res.length == 2 && res[0] == 'D' && res[1] == 'B' );
 
     });
+
+
+    it('Meilisearch', async () => {
+        await lib.createPost({
+            category: {
+                id: 'search-test'
+            },
+            post: {
+                id: 'Spid-1',
+                title: 'search-test-title',
+            }
+        });
+    });
 });
+
+

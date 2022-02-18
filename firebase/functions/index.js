@@ -6,8 +6,8 @@ const Axios = require("axios");
 const { now } = require("lodash");
 const { topic } = require("firebase-functions/v1/pubsub");
 
-
 admin.initializeApp();
+
 
 /**
  * Run from functions shell
@@ -181,7 +181,7 @@ exports.meilisearchCreatePostIndex = functions
     .region("asia-northeast3").firestore
     .document("/posts/{postId}")
     .onCreate((snap, context) => {
-      return indexPost(context.params.postId, snap.data());
+      return lib.indexPost(context.params.postId, snap.data());
     });
 
 // Update the index when a post is updated or deleted.
