@@ -275,7 +275,7 @@ function lessThan(n) {
 - To install,
   - `cd firebase/functions`
   - `npm i`
-  - `firebase deploy --only functiosn`
+  - `firebase deploy --only functions`
 
 
 
@@ -471,6 +471,7 @@ PhoneService.instance.verifyPhoneNumber(
 ```dart
 Tr('name', style: ...);
 ```
+
 
 # User presence
 

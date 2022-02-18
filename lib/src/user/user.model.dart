@@ -156,6 +156,7 @@ class UserModel with FirestoreMixin, DatabaseMixin {
   /// Update wether if the user is an admin or not.
   /// Refer readme for details
   Future<void> updateAdminStatus() async {
+    if ( signedOut ) return;
     final DocumentSnapshot doc = await adminsDoc.get();
     if (doc.exists) {
       final data = doc.data()! as Map<String, dynamic>;

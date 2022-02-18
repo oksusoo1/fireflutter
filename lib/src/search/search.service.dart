@@ -1,4 +1,3 @@
-
 import 'package:meilisearch/meilisearch.dart';
 
 class SearchService {
@@ -105,8 +104,8 @@ class SearchService {
     sort = ['timestamp:desc'];
   }
 
-  resetListAndPagination() {
-    limit = 20;
+  resetListAndPagination({int limit = 20}) {
+    limit = limit;
     offset = 0;
     page = 1;
 

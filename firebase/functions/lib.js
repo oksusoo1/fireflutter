@@ -2,11 +2,26 @@
 
 const functions = require("firebase-functions");
 const admin = require("firebase-admin");
+const Axios = require("axios");
+
+const { MeiliSearch } = require('meilisearch')
 
 
 // get firestore
 const db = admin.firestore();
 
+// get real time database
+const rdb = admin.database();
+
+const delay = time => new Promise(res=>setTimeout(res,time));
+
+
+function categoryDoc(id) {
+  return db.collection('categories').doc(id);
+}
+function postDoc(id) {
+  return db.collection('posts').doc(id);
+}
 function commentDoc(id) {
   return db.collection('comments').doc(id);
 }
@@ -21,10 +36,17 @@ async function getSizeOfCategories() {
   return snapshot.size;
 }
 
+/**
+ * 
+ * @param {*} data 
+ * @returns reference of the cateogry
+ */
 async function createCategory(data) {
-  return db.collection('categories').doc(
-    data.category ? data.category : 'test',
-  ).set({title: 'create category'});
+  const id = data.id;
+  // delete data.id; // call-by-reference. it will causes error after this method.
+  data.timestamp = (new Date).getTime();
+  const writeResult = await categoryDoc(id).set(data, { merge: true });
+  return categoryDoc(id);
 }
 
 /**
@@ -32,17 +54,27 @@ async function createCategory(data) {
  * @returns reference
  */
 async function createPost(data) {
-  const postData = {
-    category: data.category ? data.category : 'test',
-    title: data.title ? data.title : 'create_post',
-    uid: data.uid ? data.uid : 'uid',
-  };
-  if ( data.post.id ) {
-    await db.collection('posts').doc(data.post.id).set(postData);
-    return db.collection('posts').doc(data.post.id);
+
+  // if data.category.id comes in, then it will prepare the category to be exist.
+  if ( data.category && data.category.id ) {
+    const catDoc = await createCategory(data.category);
+    // console.log((await catDoc.get()).data());
+    // console.log('category id; ', catDoc.id);
   }
-  return db.collection('posts').add(postData);
+  
+  const postData = {
+    category: data.category && data.category.id ? data.category.id : 'test',
+    title: data.post && data.post.title ? data.post.title : 'create_post',
+    uid: data.post && data.post.uid ? data.post.uid : 'uid',
+  };
+  if ( data.post && data.post.id ) {
+    await postDoc(data.post.id).set(postData), {merge: true};
+    return postDoc(data.post.id);
+  } else {
+    return db.collection('posts').add(postData);
+  }
 }
+
 
 /**
  * 
@@ -79,16 +111,19 @@ async function createPost(data) {
   });
  */
 async function createComment(data) {
-  if ( data.category) await createCategory(data);
-  
+  if ( data.category && data.category.id ) {
+    await createCategory(data.category);
+  }
+
   let commentData;
   // If there is no postId in data, then create one.
-  if ( data.post && !data.post.postId ) {
+  if ( data.post ) {
     const ref = await createPost(data);
+
     commentData = {
       postId: ref.id,
       parentId: ref.id,
-      content: 'create comment',
+      content: data.comment.content,
       uid: data.comment.uid ? data.comment.uid : 'uid',
     };
   } else {
@@ -107,9 +142,18 @@ async function createComment(data) {
   }
 }
 
+async function createTestUser(uid) {
+  const timestamp = (new Date).getTime();
+  const res = await rdb.ref('users').child(uid).set({
+    nickname: 'testUser' + timestamp,
+    timestamp_registered: timestamp,
+  })
+  return rdb.ref('users').child(uid);
+}
 
 
-function indexPost(id, data) {
+
+async function indexPost(id, data) {
   const _data = {
       id: id,
       uid: data.uid,
@@ -119,13 +163,14 @@ function indexPost(id, data) {
       timestamp: data.timestamp ?? Date.now(),
   };
 
-  return Axios.post(
+  await Axios.post(
       "http://wonderfulkorea.kr:7700/indexes/posts/documents",
       _data
   );
+  return indexForumData(_data);
 }
 
-function indexComment(id, data) {
+async function indexComment(id, data) {
   const _data = {
       id: id,
       uid: data.uid,
@@ -133,11 +178,18 @@ function indexComment(id, data) {
       content: data.content,
       timestamp: data.timestamp ?? Date.now(),
   };
-  return Axios.post(
+  await Axios.post(
       "http://wonderfulkorea.kr:7700/indexes/comments/documents",
       _data
   );
+  return indexForumData(_data);
+}
 
+function indexForumData(data) {
+  return Axios.post(
+    "http://wonderfulkorea.kr:7700/indexes/posts-and-comments/documents",
+    data
+  );
 }
 
 
@@ -157,6 +209,52 @@ async function getCommentAncestors(id, authorUid) {
 }
 
 
+// check the uids if they are subscribe to topic and also want to get notification under their post/comment
+async function removeTopicAndForumAncestorsSubscriber(uids, topic) {
+  const _uids = [];
+  const getTopicsPromise = [];
+  for(let uid of uids ) {
+      getTopicsPromise.push( rdb.ref('user-settings').child(uid).child('topic').get());
+      // getTopicsPromise.push( admin.database().ref('user-settings').child(uid).child('topic').once('value'));  // same result above
+  } 
+  const result = await Promise.all(getTopicsPromise);
+  for(let i in result) { 
+    const v = result[i].val();
+    if(v['newCommentUnderMyPostOrCOmment'] != null && v['newCommentUnderMyPostOrCOmment'] == true && (v[topic] == null || v[topic] == false)) {
+      _uids.push(uids[i]);
+    }
+  }  
+  return _uids;
+}
+
+async function getTokensFromUid(uids) {
+  const _tokens = [];
+  const getTokensPromise = [];
+  for(let u of uids) {
+    getTokensPromise.push(admin.firestore().collection('message-tokens').where('uid', '==', u).get());
+  }
+
+  const result = await Promise.all(getTokensPromise);
+  for(let tokens of result) { 
+    if(tokens.size == 0) continue;
+    for( let doc of tokens.docs) {
+      _tokens.push(doc.id);
+    }
+  }   
+  return _tokens;
+}
+
+function chunk(arr, chunkSize) {
+  if (chunkSize <= 0) throw "Invalid chunk size";
+  var R = [];
+  for (var i=0,len=arr.length; i<len; i+=chunkSize)
+    R.push(arr.slice(i,i+chunkSize));
+  return R;
+}
+
+
+
+exports.delay = delay;
 exports.getSizeOfCategories = getSizeOfCategories;
 exports.getCategories = getCategories;
 exports.createCategory = createCategory;
@@ -164,7 +262,13 @@ exports.createPost = createPost;
 exports.createComment = createComment;
 
 
+exports.createTestUser = createTestUser;
+
+
 exports.indexComment = indexComment;
 exports.indexPost = indexPost;
 
 exports.getCommentAncestors = getCommentAncestors;
+exports.removeTopicAndForumAncestorsSubscriber = removeTopicAndForumAncestorsSubscriber;
+exports.getTokensFromUid = getTokensFromUid;
+exports.chunk = chunk;

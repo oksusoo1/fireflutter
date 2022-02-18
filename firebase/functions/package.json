@@ -8,7 +8,9 @@
     "start": "npm run shell",
     "deploy": "firebase deploy --only functions",
     "logs": "firebase functions:log",
-    "test:test": "mocha --watch tests/test.js"
+    "test:test": "mocha --timeout 5000 --watch tests/test.js",
+    "test:messaging": "mocha --timeout 50000 --watch tests/messaging.test.js",
+    "test:meilisearch": "mocha --timeout 5000 --watch tests/meilisearch.test.js"
   },
   "engines": {
     "node": "16"
@@ -17,7 +19,8 @@
   "dependencies": {
     "axios": "^0.26.0",
     "firebase-admin": "^9.8.0",
-    "firebase-functions": "^3.14.1"
+    "firebase-functions": "^3.14.1",
+    "meilisearch": "^0.24.0"
   },
   "devDependencies": {
     "eslint": "^7.6.0",

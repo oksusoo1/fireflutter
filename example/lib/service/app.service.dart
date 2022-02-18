@@ -51,8 +51,12 @@ class AppService {
     return open(PostListScreen.routeName, arguments: {'category': category});
   }
 
-  Future<void> openSearchScreen(
-      {required String index, String? category, String? uid, String? searchKey}) async {
+  Future<void> openSearchScreen({
+    String? index,
+    String? category,
+    String? uid,
+    String? searchKey,
+  }) async {
     return open(PostListScreenV2.routeName, arguments: {
       'index': index,
       'category': category,

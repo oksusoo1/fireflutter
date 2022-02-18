@@ -2,12 +2,12 @@
 
 const functions = require("firebase-functions");
 const admin = require("firebase-admin");
-const Axios = require("axios");
 const { now } = require("lodash");
 const { topic } = require("firebase-functions/v1/pubsub");
 
-
 admin.initializeApp();
+
+const lib = require("./lib");
 
 /**
  * Run from functions shell
@@ -29,8 +29,8 @@ exports.sendMessageOnPostCreate = functions
         const category = snapshot.data().category;
         const payload = {
             notification: {
-                title: snapshot.data().title ?? '',
-                body: snapshot.data().content ?? '',
+                title: snapshot.data().title ? snapshot.data().title : '',
+                body: snapshot.data().content ? snapshot.data().content : '',
                 clickAction: 'FLUTTER_NOTIFICATION_CLICK'
             },
             data:{
@@ -75,7 +75,7 @@ exports.sendMessageOnCommentCreate = functions
       const res = await admin.messaging().sendToTopic(topic, payload);
 
       // get comment ancestors 
-      const ancestors_uid = await getCommentAncestors(context.params.commentId, snapshot.data().uid);
+      const ancestors_uid = await lib.getCommentAncestors(context.params.commentId, snapshot.data().uid);
       
       // add the post uid if the comment author is not the post author
       if(post.data().uid != snapshot.data().uid && !ancestors_uid.includes(post.data().uid)) {
@@ -83,11 +83,11 @@ exports.sendMessageOnCommentCreate = functions
       }
 
       // remove subcriber uid but want to get notification under their post/comment
-      const user_uids = await removeUserWithTopicAndNewCommentUnderMyPostOrCommentSubscriber(ancestors_uid, topic);
+      const user_uids = await lib.removeTopicAndForumAncestorsSubscriber(ancestors_uid, topic);
 
 
       // get users tokens
-      const tokens = await getTokensFromUid(user_uids);
+      const tokens = await lib.getTokensFromUid(user_uids);
 
       if(tokens.length == 0) return [];
 
@@ -95,7 +95,7 @@ exports.sendMessageOnCommentCreate = functions
       // You can send messages to up to 1000 devices in a single request. 
       // If you provide an array with over 1000 registration tokens, 
       // the request will fail with a messaging/invalid-recipient error.
-      const chunks = chunk(tokens, 1000);
+      const chunks = lib.chunk(tokens, 1000);
 
       const sendToDevicePromise = [];
       for(let c of chunks) {
@@ -129,59 +129,17 @@ exports.sendMessageOnCommentCreate = functions
 
 
 
-  // check the uids if they are subscribe to topic and also want to get notification under their post/comment
-  async function removeUserWithTopicAndNewCommentUnderMyPostOrCommentSubscriber(uids, topic) {
-    const _uids = [];
-    const getTopicsPromise = [];
-    for(let uid of uids ) {
-        getTopicsPromise.push( admin.database().ref('user-settings').child(uid).child('topic').get());
-        // getTopicsPromise.push( admin.database().ref('user-settings').child(uid).child('topic').once('value'));  // same result above
-    } 
-    const result = await Promise.all(getTopicsPromise);
-    for(let i in result) { 
-      const v = result[i].val();
-      if(v['newCommentUnderMyPostOrCOmment'] != null && v['newCommentUnderMyPostOrCOmment'] == true && (v[topic] == null || v[topic] == false)) {
-        _uids.push(uids[i]);
-      }
-    }  
-    return _uids;
-  }
-
-  async function getTokensFromUid(uids) {
-    const _tokens = [];
-    const getTokensPromise = [];
-    for(let u of uids) {
-      getTokensPromise.push(admin.firestore().collection('message-tokens').where('uid', '==', u).get());
-    }
-
-    const result = await Promise.all(getTokensPromise);
-    for(let tokens of result) { 
-      if(tokens.size == 0) continue;
-      for( let doc of tokens.docs) {
-        _tokens.push(doc.id);
-      }
-    }   
-    return _tokens;
-  }
-
-  function chunk(arr, chunkSize) {
-    if (chunkSize <= 0) throw "Invalid chunk size";
-    var R = [];
-    for (var i=0,len=arr.length; i<len; i+=chunkSize)
-      R.push(arr.slice(i,i+chunkSize));
-    return R;
-  }
-
 
 
 // Index when a post is created
+// todo - create 'posts-and-comments' index.
 //
 // meilisearchCreatePostIndex({ uid: 'user_ccc', category: 'discussion', title: 'I post on discussion', content: 'Discussion' })
 exports.meilisearchCreatePostIndex = functions
     .region("asia-northeast3").firestore
     .document("/posts/{postId}")
     .onCreate((snap, context) => {
-      return indexPost(context.params.postId, snap.data());
+      return lib.indexPost(context.params.postId, snap.data());
     });
 
 // Update the index when a post is updated or deleted.
@@ -192,19 +150,19 @@ exports.meilisearchUpdatePostIndex = functions
     .region("asia-northeast3").firestore
     .document("/posts/{postId}")
     .onUpdate((change, context) => {
-      return indexPost(context.params.postId, change.after.data());
+      return lib.indexPost(context.params.postId, change.after.data());
     });
 
 exports.meilisearchCreateCommentIndex = functions
     .region("asia-northeast3").firestore
     .document("/comments/{commentId}")
     .onCreate((snap, context) => {
-      return indexComment(context.params.commentId, snap.data());
+      return lib.indexComment(context.params.commentId, snap.data());
     });
 
 exports.meilisearchUpdateCommentIndex = functions
     .region("asia-northeast3").firestore
     .document("/comments/{commentId}")
     .onUpdate((change, context) => {
-      return indexComment(context.params.commentId, change.after.data());
+      return lib.indexComment(context.params.commentId, change.after.data());
     });

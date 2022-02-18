@@ -53,6 +53,14 @@
             "deviceId": "5200960c4e1e5577"
         },
         {
+            "name": "ASUS X00TDB J8AXB761J32888A",
+            "cwd": "example",
+            "program": "lib/main.dart",
+            "request": "launch",
+            "type": "dart",
+            "deviceId": "J8AXB761J32888A"
+        },
+        {
             "name": "fireflutter",
             "request": "launch",
             "type": "dart"
