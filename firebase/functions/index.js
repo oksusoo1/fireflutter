@@ -2,12 +2,12 @@
 
 const functions = require("firebase-functions");
 const admin = require("firebase-admin");
-const Axios = require("axios");
 const { now } = require("lodash");
 const { topic } = require("firebase-functions/v1/pubsub");
 
 admin.initializeApp();
 
+const lib = require("./lib");
 
 /**
  * Run from functions shell
@@ -75,7 +75,7 @@ exports.sendMessageOnCommentCreate = functions
       const res = await admin.messaging().sendToTopic(topic, payload);
 
       // get comment ancestors 
-      const ancestors_uid = await getCommentAncestors(context.params.commentId, snapshot.data().uid);
+      const ancestors_uid = await lib.getCommentAncestors(context.params.commentId, snapshot.data().uid);
       
       // add the post uid if the comment author is not the post author
       if(post.data().uid != snapshot.data().uid && !ancestors_uid.includes(post.data().uid)) {
@@ -185,6 +185,7 @@ exports.meilisearchCreatePostIndex = functions
     });
 
 // Update the index when a post is updated or deleted.
+// todo - create 'posts-and-comments' index.
 //
 // Test call:
 //  meilisearchUpdatePostIndex({ before: {}, after: { uid: 'user_ccc', category: 'discussion', title: 'I post on discussion (update)', content: 'Discussion 2'}}, { params: { postId: 'postId2' }})
@@ -192,7 +193,7 @@ exports.meilisearchUpdatePostIndex = functions
     .region("asia-northeast3").firestore
     .document("/posts/{postId}")
     .onUpdate((change, context) => {
-      return indexPost(context.params.postId, change.after.data());
+      return lib.indexPost(context.params.postId, change.after.data());
     });
 
 exports.meilisearchCreateCommentIndex = functions
