@@ -50,6 +50,7 @@ Table of contents
 - [Admin](#admin-1)
   - [Admin status check & update](#admin-status-check--update)
 - [Translation](#translation)
+  - [Tr](#tr)
 - [User presence](#user-presence)
   - [User presence overview](#user-presence-overview)
   - [User Presence Installation](#user-presence-installation)
@@ -461,6 +462,8 @@ PhoneService.instance.verifyPhoneNumber(
 - Translation texts are saved in `/settings/translations` on realtime database.
   - The format of text field is like below. 
     - `{ name: { en: 'Name', ko: '이름' }, ... }`
+
+## Tr
 
 - You can use `Tr` widget to display the translated text.
   - `Tr` widget support all the text properties.
