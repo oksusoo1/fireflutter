@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 class PostListScreenV2 extends StatefulWidget {
   PostListScreenV2({required this.arguments, Key? key}) : super(key: key);
 
-  static const String routeName = '/postListV2';
+  static const String routeName = '/search';
   final Map arguments;
 
   @override
@@ -31,12 +31,12 @@ class _PostListScreenV2State extends State<PostListScreenV2> {
     super.initState();
 
     searchService.uid = widget.arguments['uid'] ?? '';
-    searchService.index = widget.arguments['index'] ?? 'posts';
+    searchService.index = widget.arguments['index'] ?? 'posts-and-comments';
     searchService.category = widget.arguments['category'] ?? '';
     searchService.searchKey = widget.arguments['searchKey'] ?? '';
     searchEditController.text = searchService.searchKey;
 
-    searchService.limit = 4;
+    searchService.limit = 10;
     search();
 
     scrollController.addListener(() {
@@ -95,13 +95,14 @@ class _PostListScreenV2State extends State<PostListScreenV2> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Post listing with meilisearch'),
+        title: Text('Search Screen'),
       ),
       body: Container(
         padding: EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            Text('Current Index: ${searchService.index}'),
             Text('Current Search Params'),
             SizedBox(height: 8),
             Text('  UID: ${searchService.uid}'),
@@ -136,6 +137,11 @@ class _PostListScreenV2State extends State<PostListScreenV2> {
                 ),
                 SizedBox(width: 10),
                 ElevatedButton(
+                  onPressed: () => searchCategoryPosts('update-test'),
+                  child: Text('Update Test'),
+                ),
+                SizedBox(width: 10),
+                ElevatedButton(
                   onPressed: () => searchCategoryPosts('qna'),
                   child: Text('QnA'),
                 ),
@@ -164,21 +170,12 @@ class _PostListScreenV2State extends State<PostListScreenV2> {
                 itemCount: searchService.resultList.length,
                 controller: scrollController,
                 itemBuilder: (c, i) {
-                  final PostModel post = PostModel.fromJson(
-                    searchService.resultList[i],
-                    searchService.resultList[i]['id'],
-                  );
                   return Container(
                     margin: EdgeInsets.only(bottom: 16),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        Text("ID: ${post.id}"),
-                        Text("UID: ${post.uid}"),
-                        Text("Category: ${post.category}"),
-                        Text("Title: ${post.title}"),
-                        Text("Content: ${post.displayContent}"),
-                        ShortDate(post.timestamp.millisecondsSinceEpoch),
+                        Text("ID: ${searchService.resultList[i].toString()}"),
                       ],
                     ),
                   );
