@@ -2,10 +2,7 @@
 
 
 const assert = require("assert");
-
-const functions = require("firebase-functions");
 const admin = require("firebase-admin");
-
 
 const {MeiliSearch} = require("meilisearch");
 
@@ -20,32 +17,61 @@ if (!admin.apps.length) {
 const lib = require("../lib");
 
 
-// get firestore
-const db = admin.firestore();
-
-
 describe("Meilisearch test", () => {
+
   const timestamp = (new Date).getTime();
   console.log("timestamp; ", timestamp);
-  it("indexing test", async () => {
-    await lib.createPost({
-      category: {
-        id: "search-test",
-      },
-      post: {
-        id: "search-test-id-1",
-        title: "search-test-title " + timestamp,
-      },
-    });
+
+  const client = new MeiliSearch({
+    host: "http://wonderfulkorea.kr:7700",
+  });
+
+//   it("indexing test", async () => {
+//     await lib.createPost({
+//       category: {
+//         id: "search-test",
+//       },
+//       post: {
+//         id: "search-test-id-1",
+//         title: "search-test-title " + timestamp,
+//       },
+//     });
+//     await lib.delay(2000);
+
+//     const search = await client.index("posts").search("search-test-title");
+//     // console.log(search);
+//     assert.ok( search.hits.length > 0 );
+//   });
+
+  it("update index test", async () => {
+
+    const postData = {
+        id: "index-update" + timestamp,
+        title: "index-update Original",
+    };
+
+    /// Create post
+    const res = await lib.createPost({
+        category: {
+          id: "update-test",
+        },
+        post: postData,
+      });
     await lib.delay(2000);
-
-    const client = new MeiliSearch({
-      host: "http://wonderfulkorea.kr:7700",
+    console.log("created post =>>>", res);
+    
+    /// Update post
+    postData.title = "index-update Updated",
+    res = await lib.createPost({
+        category: {
+            id: "update-test",
+        },
+        post: postData,
     });
-
-
-    const search = await client.index("posts").search("search-test-title");
-    console.log(search);
+    console.log("updated post =>>>", res);
+    
+    const search = await client.index("posts").search(postData.title);
+    console.log("search result ===> ", search);
     assert.ok( search.hits.length > 0 );
   });
 });
