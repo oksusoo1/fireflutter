@@ -10,6 +10,9 @@ const { MeiliSearch } = require('meilisearch')
 // get firestore
 const db = admin.firestore();
 
+// get real time database
+const rdb = admin.database();
+
 const delay = time => new Promise(res=>setTimeout(res,time));
 
 
@@ -139,6 +142,15 @@ async function createComment(data) {
   }
 }
 
+async function createTestUser() {
+  const timestamp = (new Date).getTime();
+  const res = await rdb.ref('users').set({
+    nickname: 'testUser' + timestamp,
+    timestamp_registered: timestamp,
+  })
+  return res;
+}
+
 
 
 function indexPost(id, data) {
@@ -189,6 +201,51 @@ async function getCommentAncestors(id, authorUid) {
 }
 
 
+// check the uids if they are subscribe to topic and also want to get notification under their post/comment
+async function removeTopicAndForumAncestorsSubscriber(uids, topic) {
+  const _uids = [];
+  const getTopicsPromise = [];
+  for(let uid of uids ) {
+      getTopicsPromise.push( rdb.ref('user-settings').child(uid).child('topic').get());
+      // getTopicsPromise.push( admin.database().ref('user-settings').child(uid).child('topic').once('value'));  // same result above
+  } 
+  const result = await Promise.all(getTopicsPromise);
+  for(let i in result) { 
+    const v = result[i].val();
+    if(v['newCommentUnderMyPostOrCOmment'] != null && v['newCommentUnderMyPostOrCOmment'] == true && (v[topic] == null || v[topic] == false)) {
+      _uids.push(uids[i]);
+    }
+  }  
+  return _uids;
+}
+
+async function getTokensFromUid(uids) {
+  const _tokens = [];
+  const getTokensPromise = [];
+  for(let u of uids) {
+    getTokensPromise.push(admin.firestore().collection('message-tokens').where('uid', '==', u).get());
+  }
+
+  const result = await Promise.all(getTokensPromise);
+  for(let tokens of result) { 
+    if(tokens.size == 0) continue;
+    for( let doc of tokens.docs) {
+      _tokens.push(doc.id);
+    }
+  }   
+  return _tokens;
+}
+
+function chunk(arr, chunkSize) {
+  if (chunkSize <= 0) throw "Invalid chunk size";
+  var R = [];
+  for (var i=0,len=arr.length; i<len; i+=chunkSize)
+    R.push(arr.slice(i,i+chunkSize));
+  return R;
+}
+
+
+
 exports.delay = delay;
 exports.getSizeOfCategories = getSizeOfCategories;
 exports.getCategories = getCategories;
@@ -197,7 +254,13 @@ exports.createPost = createPost;
 exports.createComment = createComment;
 
 
+exports.createTestUser = createTestUser;
+
+
 exports.indexComment = indexComment;
 exports.indexPost = indexPost;
 
 exports.getCommentAncestors = getCommentAncestors;
+exports.removeTopicAndForumAncestorsSubscriber = removeTopicAndForumAncestorsSubscriber;
+exports.getTokensFromUid = getTokensFromUid;
+exports.chunk = chunk;
