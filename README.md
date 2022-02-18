@@ -469,6 +469,7 @@ PhoneService.instance.verifyPhoneNumber(
 Tr('name', style: ...);
 ```
 
+
 # User presence
 
 ## User presence overview
