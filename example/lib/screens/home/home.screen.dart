@@ -235,7 +235,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: const Text('Buy & Sell'),
                   ),
                   ElevatedButton(
-                    onPressed: () => AppService.instance.openSearchScreen(index: 'posts'),
+                    onPressed: () => AppService.instance.openSearchScreen(),
                     child: const Text('Search Screen'),
                   ),
                   ElevatedButton(

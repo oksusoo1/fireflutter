@@ -56,18 +56,18 @@ async function createCategory(data) {
 async function createPost(data) {
 
   // if data.category.id comes in, then it will prepare the category to be exist.
-  if ( data.category.id ) {
+  if ( data.category && data.category.id ) {
     const catDoc = await createCategory(data.category);
     // console.log((await catDoc.get()).data());
     // console.log('category id; ', catDoc.id);
   }
   
   const postData = {
-    category: data.category.id ? data.category.id : 'test',
-    title: data.post.title ? data.post.title : 'create_post',
-    uid: data.post.uid ? data.post.uid : 'uid',
+    category: data.category && data.category.id ? data.category.id : 'test',
+    title: data.post && data.post.title ? data.post.title : 'create_post',
+    uid: data.post && data.post.uid ? data.post.uid : 'uid',
   };
-  if ( data.post.id ) {
+  if ( data.post && data.post.id ) {
     await postDoc(data.post.id).set(postData), {merge: true};
     return postDoc(data.post.id);
   } else {
@@ -123,7 +123,7 @@ async function createComment(data) {
     commentData = {
       postId: ref.id,
       parentId: ref.id,
-      content: 'create comment',
+      content: data.comment.content,
       uid: data.comment.uid ? data.comment.uid : 'uid',
     };
   } else {
@@ -153,7 +153,7 @@ async function createTestUser(uid) {
 
 
 
-function indexPost(id, data) {
+async function indexPost(id, data) {
   const _data = {
       id: id,
       uid: data.uid,
@@ -163,13 +163,14 @@ function indexPost(id, data) {
       timestamp: data.timestamp ?? Date.now(),
   };
 
-  return Axios.post(
+  await Axios.post(
       "http://wonderfulkorea.kr:7700/indexes/posts/documents",
       _data
   );
+  return indexForumData(_data);
 }
 
-function indexComment(id, data) {
+async function indexComment(id, data) {
   const _data = {
       id: id,
       uid: data.uid,
@@ -177,11 +178,18 @@ function indexComment(id, data) {
       content: data.content,
       timestamp: data.timestamp ?? Date.now(),
   };
-  return Axios.post(
+  await Axios.post(
       "http://wonderfulkorea.kr:7700/indexes/comments/documents",
       _data
   );
+  return indexForumData(_data);
+}
 
+function indexForumData(data) {
+  return Axios.post(
+    "http://wonderfulkorea.kr:7700/indexes/posts-and-comments/documents",
+    data
+  );
 }
 
 

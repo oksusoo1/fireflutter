@@ -2,7 +2,7 @@
 
 
 const assert = require("assert");
- 
+
 const functions = require("firebase-functions");
 const admin = require("firebase-admin");
 
@@ -258,9 +258,9 @@ describe("Messaging ~~~~~~~~~~~~~~~~", () => {
         assert.ok( res.length == 3, 'userA and userD must get notified and userC this time');
         assert.ok( res.includes(userA) && res.includes(userD) && res.includes(userC));
 
-
     });
 
-});
+
+  });
 
 
