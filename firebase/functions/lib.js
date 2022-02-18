@@ -2,11 +2,23 @@
 
 const functions = require("firebase-functions");
 const admin = require("firebase-admin");
+const Axios = require("axios");
+
+const { MeiliSearch } = require('meilisearch')
 
 
 // get firestore
 const db = admin.firestore();
 
+const delay = time => new Promise(res=>setTimeout(res,time));
+
+
+function categoryDoc(id) {
+  return db.collection('categories').doc(id);
+}
+function postDoc(id) {
+  return db.collection('posts').doc(id);
+}
 function commentDoc(id) {
   return db.collection('comments').doc(id);
 }
@@ -21,10 +33,17 @@ async function getSizeOfCategories() {
   return snapshot.size;
 }
 
+/**
+ * 
+ * @param {*} data 
+ * @returns reference of the cateogry
+ */
 async function createCategory(data) {
-  return db.collection('categories').doc(
-    data.category ? data.category : 'test',
-  ).set({title: 'create category'});
+  const id = data.id;
+  // delete data.id; // call-by-reference. it will causes error after this method.
+  data.timestamp = (new Date).getTime();
+  const writeResult = await categoryDoc(id).set(data, { merge: true });
+  return categoryDoc(id);
 }
 
 /**
@@ -32,17 +51,27 @@ async function createCategory(data) {
  * @returns reference
  */
 async function createPost(data) {
+
+  // if data.category.id comes in, then it will prepare the category to be exist.
+  if ( data.category.id ) {
+    const catDoc = await createCategory(data.category);
+    // console.log((await catDoc.get()).data());
+    // console.log('category id; ', catDoc.id);
+  }
+  
   const postData = {
-    category: data.category ? data.category : 'test',
-    title: data.title ? data.title : 'create_post',
-    uid: data.uid ? data.uid : 'uid',
+    category: data.category.id ? data.category.id : 'test',
+    title: data.post.title ? data.post.title : 'create_post',
+    uid: data.post.uid ? data.post.uid : 'uid',
   };
   if ( data.post.id ) {
-    await db.collection('posts').doc(data.post.id).set(postData);
-    return db.collection('posts').doc(data.post.id);
+    await postDoc(data.post.id).set(postData), {merge: true};
+    return postDoc(data.post.id);
+  } else {
+    return db.collection('posts').add(postData);
   }
-  return db.collection('posts').add(postData);
 }
+
 
 /**
  * 
@@ -79,12 +108,15 @@ async function createPost(data) {
   });
  */
 async function createComment(data) {
-  if ( data.category) await createCategory(data);
-  
+  if ( data.category && data.category.id ) {
+    await createCategory(data.category);
+  }
+
   let commentData;
   // If there is no postId in data, then create one.
-  if ( data.post && !data.post.postId ) {
+  if ( data.post ) {
     const ref = await createPost(data);
+
     commentData = {
       postId: ref.id,
       parentId: ref.id,
@@ -157,6 +189,7 @@ async function getCommentAncestors(id, authorUid) {
 }
 
 
+exports.delay = delay;
 exports.getSizeOfCategories = getSizeOfCategories;
 exports.getCategories = getCategories;
 exports.createCategory = createCategory;

@@ -7,7 +7,7 @@ const functions = require("firebase-functions");
 const admin = require("firebase-admin");
 
 
-const { MeiliSearch } = require('meilisearch')
+
 
 // initialize the firebase
 if (!admin.apps.length) {
@@ -33,7 +33,9 @@ describe("Categories", () => {
 
     it("get comment anscestor uid", async() => {
         const parent = await lib.createComment({
-            category: 'test',
+            category: {
+                id: 'test'
+            },
             post: {
                 id: 'Pid-1',
                 title: 'post_title',
@@ -107,28 +109,31 @@ describe("Categories", () => {
     });
 
 
-    const timestamp = (new Date).getTime();
-    it('Meilisearch', async () => {
+    it("Sending messages of 1001 tokens", async() => {
+        // create user A
+        const tokens = [ ' .... correct tokens .... '];
+        const tokenUpdates = [];
+        for( i = 0; i < 1000; i ++ ) {
+            tokenUpdates.push( db.collection('message-tokens').doc('wrong-token-' + i).set({uid: 'uid of user A'}));
+        }
+        tokenUpdates.push(' ... another correct tokens ... ');
+        await Promise.all(tokenUpdates);
+
         await lib.createPost({
-            category: {
-                id: 'search-test'
-            },
+            category: { id: 'test' },
             post: {
-                id: 'Spid-1',
-                title: 'search-test-title ' + timestamp,
+                title: 'messaging test title',
+                content: 'yo',
             }
         });
-        await lib.delay(2000);
 
-        const client = new MeiliSearch({
-            host: 'http://wonderfulkorea.kr:7700',
-        });
+        await lib.delay(9000);
 
-        // 
-        const search = await client.index('posts').search('search-test-title')
-        console.log(search);
+        const snapshot = await db.collection('message-tokens').where('uid', '=', 'uid of user A').get();
 
+        assert.ok( snapshot.size == 2);
     });
+
 });
 
 
