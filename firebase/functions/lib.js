@@ -56,18 +56,18 @@ async function createCategory(data) {
 async function createPost(data) {
 
   // if data.category.id comes in, then it will prepare the category to be exist.
-  if ( data.category.id ) {
+  if ( data.category && data.category.id ) {
     const catDoc = await createCategory(data.category);
     // console.log((await catDoc.get()).data());
     // console.log('category id; ', catDoc.id);
   }
   
   const postData = {
-    category: data.category.id ? data.category.id : 'test',
-    title: data.post.title ? data.post.title : 'create_post',
-    uid: data.post.uid ? data.post.uid : 'uid',
+    category: data.category && data.category.id ? data.category.id : 'test',
+    title: data.post && data.post.title ? data.post.title : 'create_post',
+    uid: data.post && data.post.uid ? data.post.uid : 'uid',
   };
-  if ( data.post.id ) {
+  if ( data.post && data.post.id ) {
     await postDoc(data.post.id).set(postData), {merge: true};
     return postDoc(data.post.id);
   } else {
@@ -123,7 +123,7 @@ async function createComment(data) {
     commentData = {
       postId: ref.id,
       parentId: ref.id,
-      content: 'create comment',
+      content: data.comment.content,
       uid: data.comment.uid ? data.comment.uid : 'uid',
     };
   } else {
