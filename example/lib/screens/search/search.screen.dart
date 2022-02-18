@@ -36,7 +36,7 @@ class _PostListScreenV2State extends State<PostListScreenV2> {
     searchService.searchKey = widget.arguments['searchKey'] ?? '';
     searchEditController.text = searchService.searchKey;
 
-    searchService.limit = 4;
+    searchService.limit = 10;
     search();
 
     scrollController.addListener(() {
@@ -134,6 +134,11 @@ class _PostListScreenV2State extends State<PostListScreenV2> {
                 ElevatedButton(
                   onPressed: () => searchCategoryPosts(''),
                   child: Text('All Category'),
+                ),
+                SizedBox(width: 10),
+                ElevatedButton(
+                  onPressed: () => searchCategoryPosts('update-test'),
+                  child: Text('Update Test'),
                 ),
                 SizedBox(width: 10),
                 ElevatedButton(
