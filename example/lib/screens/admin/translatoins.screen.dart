@@ -31,10 +31,7 @@ class _TranslationsScreenState extends State<TranslationsScreen> {
           ),
         ],
       ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [],
-      ),
+      body: TranslationList(),
     );
   }
 }

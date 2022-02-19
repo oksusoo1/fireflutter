@@ -28,7 +28,7 @@ class TranslationService with DatabaseMixin {
     });
   }
 
-  get() async {
+  Future get() async {
     final snapshot = await translationDoc.get();
     if (snapshot.exists) {
       return convertData(snapshot.value);
@@ -51,10 +51,10 @@ class TranslationService with DatabaseMixin {
   /// @TODO: 여기서부터... 생성과 수정은 타이틀바와, 각 라인에 표시.
   /// @TODO: 저장 할 때, 모든 code 와 en, ko 를 하나의 문서에 업데이트한다.
   /// @TODO: 보여 줄 때, 하나의 문서를 읽어, 모두에 보여준다.
-  showForm(BuildContext context) {
-    final code = TextEditingController();
-    final en = TextEditingController();
-    final ko = TextEditingController();
+  showForm(BuildContext context, [String? updateCode]) {
+    final code = TextEditingController(text: updateCode ?? '');
+    final en = TextEditingController(text: texts[updateCode]?['en'] ?? '');
+    final ko = TextEditingController(text: texts[updateCode]?['ko'] ?? '');
 
     showDialog(
       context: context,
@@ -65,17 +65,13 @@ class TranslationService with DatabaseMixin {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text('code:'),
-            TextField(
-              controller: code,
-            ),
+            TextField(controller: code),
+            SizedBox(height: 16),
             const Text('en:'),
-            TextField(
-              controller: en,
-            ),
+            TextField(controller: en),
+            SizedBox(height: 16),
             const Text('ko:'),
-            TextField(
-              controller: ko,
-            ),
+            TextField(controller: ko),
           ],
         ),
         actions: [
@@ -88,6 +84,11 @@ class TranslationService with DatabaseMixin {
               try {
                 final snapshot = await translationDoc.get();
                 if (snapshot.exists) {
+                  if (updateCode != null) {
+                    translationDoc.update({
+                      updateCode: null,
+                    });
+                  }
                   translationDoc.update({
                     code.text: {
                       'en': en.text,
@@ -95,13 +96,14 @@ class TranslationService with DatabaseMixin {
                     },
                   });
                 } else {
-                  translationDoc.update({
+                  translationDoc.set({
                     code.text: {
                       'en': en.text,
                       'ko': ko.text,
                     },
                   });
                 }
+                Navigator.pop(context);
               } catch (e) {
                 debugPrint('====> error on updating translation; $e');
               }
