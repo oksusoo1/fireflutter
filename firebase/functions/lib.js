@@ -37,6 +37,7 @@ async function getSizeOfCategories() {
 }
 
 /**
+ * Create a category for test
  * 
  * @param {*} data 
  * @returns reference of the cateogry
@@ -50,6 +51,7 @@ async function createCategory(data) {
 }
 
 /**
+ * Create a post for test
  * 
  * @returns reference
  */
@@ -77,6 +79,7 @@ async function createPost(data) {
 
 
 /**
+ * Create a comment for a test
  * 
  * @returns reference
  * 
@@ -142,6 +145,12 @@ async function createComment(data) {
   }
 }
 
+/**
+ * Create a user for test
+ *  
+ * @param {*} uid 
+ * @returns 
+ */
 async function createTestUser(uid) {
   const timestamp = (new Date).getTime();
   const res = await rdb.ref('users').child(uid).set({
@@ -162,7 +171,10 @@ async function indexPost(id, data) {
       content: data.content,
       timestamp: data.timestamp ?? Date.now(),
   };
-
+  await Axios.post(
+    "http://local.wonderfulkorea.kr/index.php?action=api/posts/record",
+    _data
+  );
   await Axios.post(
       "http://wonderfulkorea.kr:7700/indexes/posts/documents",
       _data

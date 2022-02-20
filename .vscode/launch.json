@@ -21,6 +21,14 @@
             "deviceId": "962B61B8-7067-4256-9CBF-047E4EA352AC"
         },
         {
+            "name": "Simulator - iPhone 13 Pro Max - A",
+            "cwd": "example",
+            "program": "lib/main.dart",
+            "request": "launch",
+            "type": "dart",
+            "deviceId": "1341AB5D-0C8D-4A66-A08B-07712DF2E780"
+        },
+        {
             "name": "Simulator - iPhone 13",
             "cwd": "example",
             "program": "lib/main.dart",
