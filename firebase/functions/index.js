@@ -180,3 +180,10 @@ exports.meilisearchUpdateCommentIndex = functions
         return lib.indexComment(context.params.commentId, data);
       }
     });
+
+
+exports.sendPushNotification = functions.https.onCall((data, context) => {
+
+  return ["Apple", "Banana", "Cherry", "Date", "Fig", "Grapes"]
+  
+});
