@@ -185,6 +185,13 @@ exports.meilisearchUpdateCommentIndex = functions
     });
 
 
-exports.sendPushNotification = functions.https.onCall((data, context) => {
+exports.AdminSendPushNotification = functions.https.onCall((data, context) => {
+
+  const uid = context.auth.uid;
+  const res = admin.database().ref('users').child(uid).get();
+  if(!res.exists()) return lib.error('login_first', 'user must login first');
+  const user = res.val()
+  if(user['isAdmin'] == null || user['isAdmin'] == false ) return lib.error('your_not_admin', 'user must be admin');
+
   return ["Apple", "Banana", "Cherry", "Date", "Fig", "Grapes"];
 });
