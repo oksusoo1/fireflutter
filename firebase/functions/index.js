@@ -44,7 +44,10 @@ exports.sendMessageOnPostCreate = functions
       return admin.messaging().sendToTopic(topic, payload);
     });
 
-// sendMessageOnCommentCreate({content: 'new items for sale', postId: '5xMgi3d3vYNabM0JbrSQ', parentId: 'A6tMQIhWWKQhbWkyoJf1'
+// sendMessageOnCommentCreate({
+// content: 'new items for sale',
+// postId: '5xMgi3d3vYNabM0JbrSQ',
+// parentId: 'A6tMQIhWWKQhbWkyoJf1'
 // , uid: '1h0pWRlRkEOgQedJL5HriYMxqTw2'},{params:{commentId:'eIpYHUmYGKUf921B9fRj'}})
 exports.sendMessageOnCommentCreate = functions
     .region("asia-northeast3")
