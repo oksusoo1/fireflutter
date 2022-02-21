@@ -32,7 +32,7 @@ describe("Meilisearch test", () => {
     const originalPostTitle = "post-" + timestamp;
     const newPostTitle = originalPostTitle + " ...(2)";
     const postData = {
-        id: "index-search-" + timestamp,
+        id: "index-post-" + timestamp,
         title: originalPostTitle,
     };
 
@@ -66,7 +66,6 @@ describe("Meilisearch test", () => {
     });
 
     it("tests post update indexing", async () => {
-        // Update post
         postData.title = newPostTitle;
         await lib.createPost({
             category: categoryData,
@@ -83,8 +82,20 @@ describe("Meilisearch test", () => {
         assert.ok( originalPostTitleIndex == -1 );
     });
 
+    it("tests post delete indexing", async () => {
+        postData.title = '';
+        postData.deleted = true;
+        await lib.createPost({
+            category: categoryData,
+            post: postData,
+        });
+
+        await lib.delay(3000);
+        const search = await client.index("posts").search('"' + originalPostTitle + '"');
+        assert.ok( search.hits.length == 0 );
+    });
+
     it("tests comment create indexing", async () => {
-        /// create comment
         await lib.createComment({
             comment: commentData
         });
@@ -101,7 +112,6 @@ describe("Meilisearch test", () => {
     })
 
     it("tests comment update indexing", async () => {
-        /// Update comment content
         commentData.content = newCommentContent;
         await lib.createComment({
             comment: commentData
@@ -121,6 +131,18 @@ describe("Meilisearch test", () => {
         const originalCommentContentIndex = search.hits.findIndex((item) => item['content'] === originalCommentContent);
         assert.ok( newCommentContentIndex != -1 );
         assert.ok( originalCommentContentIndex == -1 );
+    })
+
+    it("tests comment delete indexing", async () => {
+        commentData.content = '';
+        commentData.deleted = true;
+        await lib.createComment({
+            comment: commentData
+        });
+
+        await lib.delay(3000);
+        var search = await client.index("comments").search('"' + originalCommentContent + '"');
+        assert.ok( search.hits.length == 0 );
     })
 });
 

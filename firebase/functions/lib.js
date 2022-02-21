@@ -67,9 +67,14 @@ async function createPost(data) {
   const postData = {
     category: data.category && data.category.id ? data.category.id : 'test',
     title: data.post && data.post.title ? data.post.title : 'create_post',
-    uid: data.post && data.post.uid ? data.post.uid : 'uid',
+    uid: data.post && data.post.uid ? data.post.uid : 'uid'
   };
+
   if ( data.post && data.post.id ) {
+    if (data.post.deleted && data.post.deleted === true) {
+      postData.deleted = true;
+    }
+    
     await postDoc(data.post.id).set(postData), {merge: true};
     return postDoc(data.post.id);
   } else {
@@ -138,8 +143,13 @@ async function createComment(data) {
     };
   }
   // if no comment id, then create one
-  if ( ! data.comment.id ) return db.collection('comments').add(commentData);
-  else {
+  if ( ! data.comment.id ) {
+    return db.collection('comments').add(commentData);
+  } else {
+    if (data.comment.deleted && data.comment.deleted === true) {
+      commentData.deleted = true;
+    }
+
     await commentDoc(data.comment.id).set(commentData);
     return commentDoc(data.comment.id);
   }
@@ -161,8 +171,7 @@ async function createTestUser(uid) {
 }
 
 
-
-async function indexPost(id, data) {
+async function indexPostDocument(id, data) {
   const _data = {
       id: id,
       uid: data.uid,
@@ -184,7 +193,7 @@ async function indexPost(id, data) {
       _data
   ));
 
-  promises.push(indexForumData(_data));
+  promises.push(indexForumDocument(_data));
 
   return Promise.all(promises);
 }
@@ -192,7 +201,7 @@ async function indexPost(id, data) {
 
 
 
-async function indexComment(id, data) {
+async function indexCommentDocument(id, data) {
   const _data = {
       id: id,
       uid: data.uid,
@@ -204,16 +213,29 @@ async function indexComment(id, data) {
       "http://wonderfulkorea.kr:7700/indexes/comments/documents",
       _data
   );
-  return indexForumData(_data);
+  return indexForumDocument(_data);
 }
 
-function indexForumData(data) {
+function indexForumDocument(data) {
   return Axios.post(
     "http://wonderfulkorea.kr:7700/indexes/posts-and-comments/documents",
     data
   );
 }
 
+async function deleteIndexedPostDocument(id) {
+  await Axios.delete("http://wonderfulkorea.kr:7700/indexes/posts/documents/" + id);
+  return deleteIndexedForumDocument(id);
+}
+
+async function deleteIndexedCommentDocument(id) {
+  await Axios.delete("http://wonderfulkorea.kr:7700/indexes/comments/documents/" + id);
+  return deleteIndexedForumDocument(id);
+}
+
+async function deleteIndexedForumDocument(id) {
+  return Axios.delete("http://wonderfulkorea.kr:7700/indexes/posts-and-comments/documents/" + id);
+}
 
 // get comment ancestor by getting parent comment until it reach the root comment
 // return the uids of the author
@@ -287,8 +309,11 @@ exports.createComment = createComment;
 exports.createTestUser = createTestUser;
 
 
-exports.indexComment = indexComment;
-exports.indexPost = indexPost;
+exports.indexComment = indexCommentDocument;
+exports.indexPost = indexPostDocument;
+
+exports.deleteIndexedPost = deleteIndexedPostDocument;
+exports.deleteIndexedComment = deleteIndexedCommentDocument;
 
 exports.getCommentAncestors = getCommentAncestors;
 exports.removeTopicAndForumAncestorsSubscriber = removeTopicAndForumAncestorsSubscriber;
