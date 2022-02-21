@@ -47,15 +47,20 @@ exports.sendMessageOnPostCreate = functions
 // sendMessageOnCommentCreate({
 // content: 'new items for sale',
 // postId: '5xMgi3d3vYNabM0JbrSQ',
-// parentId: 'A6tMQIhWWKQhbWkyoJf1'
-// , uid: '1h0pWRlRkEOgQedJL5HriYMxqTw2'},{params:{commentId:'eIpYHUmYGKUf921B9fRj'}})
+// parentId: 'A6tMQIhWWKQhbWkyoJf1',
+// uid: '1h0pWRlRkEOgQedJL5HriYMxqTw2'},
+// {params:{commentId:'eIpYHUmYGKUf921B9fRj'}})
 exports.sendMessageOnCommentCreate = functions
     .region("asia-northeast3")
     .firestore
     .document("/comments/{commentId}")
     .onCreate(async (snapshot, context) => {
       // get root post
-      const post = await admin.firestore().collection("posts").doc(snapshot.data().postId).get();
+      const post = await admin
+          .firestore()
+          .collection("posts")
+          .doc(snapshot.data().postId)
+          .get();
 
       // prepare notification
       const payload = {
