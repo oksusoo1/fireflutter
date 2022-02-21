@@ -122,8 +122,7 @@ class _IndexSettingFormState extends State<IndexSettingForm> {
       final conf = await confirm('Confirm', 'Delete ${widget.indexUid} index?');
       if (!conf) return;
 
-      await SearchService.instance.client.index(widget.indexUid).delete();
-      alert('Success!', 'Index deleted!');
+      await SearchService.instance.deleteSearchIndex(widget.indexUid);
 
       if (widget.onDeleted != null) widget.onDeleted!();
     } catch (e) {

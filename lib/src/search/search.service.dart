@@ -39,9 +39,9 @@ class SearchService {
   /// Searches for indexed documents in the given `_serverUrl`.
   ///
   Future<List<Map<String, dynamic>>> search() async {
-    print('limit ---> $limit');
-    print('offset ---> $offset');
-    print('page ---> $page');
+    // print('limit ---> $limit');
+    // print('offset ---> $offset');
+    // print('page ---> $page');
 
     List filters = [];
     if (uid.isNotEmpty) filters.add('uid = $uid');
@@ -88,12 +88,19 @@ class SearchService {
             sortableAttributes: sortables,
             filterableAttributes: filterables,
             // rankingRules: [],
-            // distinctAttribute: '', default to index
+            // distinctAttribute: '', // default to index
             // displayedAttributes: ['*'], // default to '*' (all)
             // stopWords: [],
             // synonyms: { 'word': ['other', 'logan'] },
           ),
         );
+  }
+
+  /// Updates filterable attributes for an index.
+  ///
+  Future deleteSearchIndex(String uid) async {
+    /// if (!UserService.instance.user.isAdmin) throw 'YOU_ARE_NOT_ADMIN';
+    return client.index(uid).delete();
   }
 
   resetFilters() {
