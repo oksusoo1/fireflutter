@@ -1,5 +1,7 @@
 "use strict";
-
+const mocha = require("mocha");
+const describe = mocha.describe;
+const it = mocha.it;
 
 const assert = require("assert");
 const admin = require("firebase-admin");
@@ -18,7 +20,7 @@ if (!admin.apps.length) {
 const lib = require("../lib");
 
 // get firestore
-const db = admin.firestore();
+// const db = admin.firestore();
 
 
 describe("Categories", () => {
@@ -29,7 +31,7 @@ describe("Categories", () => {
 
 
   it("get comment anscestor uid", async () => {
-    const parent = await lib.createComment({
+    await lib.createComment({
       category: "test",
       post: {
         id: "Pid-1",
@@ -75,7 +77,8 @@ describe("Categories", () => {
 
 
     // expect ok. res.length == 1.
-    // Add a comment with different author, but still result is 1 since the current
+    // Add a comment with different author,
+    // but still result is 1 since the current
     // comment is excluded.
     await lib.createComment({
       comment: {

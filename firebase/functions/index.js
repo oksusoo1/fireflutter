@@ -2,8 +2,8 @@
 
 const functions = require("firebase-functions");
 const admin = require("firebase-admin");
-const {now} = require("lodash");
-const {topic} = require("firebase-functions/v1/pubsub");
+// const {now} = require("lodash");
+// const {topic} = require("firebase-functions/v1/pubsub");
 
 admin.initializeApp();
 
@@ -25,7 +25,7 @@ exports.sendMessageOnPostCreate = functions
     .region("asia-northeast3")
     .firestore
     .document("/posts/{postId}")
-    .onCreate((snapshot) => {
+    .onCreate((snapshot, context) => {
       const category = snapshot.data().category;
       const payload = {
         notification: {
@@ -44,7 +44,10 @@ exports.sendMessageOnPostCreate = functions
       return admin.messaging().sendToTopic(topic, payload);
     });
 
-// sendMessageOnCommentCreate({content: 'new items for sale', postId: '5xMgi3d3vYNabM0JbrSQ', parentId: 'A6tMQIhWWKQhbWkyoJf1'
+// sendMessageOnCommentCreate({
+// content: 'new items for sale',
+// postId: '5xMgi3d3vYNabM0JbrSQ',
+// parentId: 'A6tMQIhWWKQhbWkyoJf1'
 // , uid: '1h0pWRlRkEOgQedJL5HriYMxqTw2'},{params:{commentId:'eIpYHUmYGKUf921B9fRj'}})
 exports.sendMessageOnCommentCreate = functions
     .region("asia-northeast3")
