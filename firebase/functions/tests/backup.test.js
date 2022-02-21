@@ -1,11 +1,13 @@
 "use strict";
+const mocha = require("mocha");
+const describe = mocha.describe;
+const it = mocha.it;
 
-
-const Axios = require("axios");
-const assert = require("assert");
+// const Axios = require("axios");
+// const assert = require("assert");
 const admin = require("firebase-admin");
 
-const {MeiliSearch} = require("meilisearch");
+// const {MeiliSearch} = require("meilisearch");
 
 // initialize the firebase
 if (!admin.apps.length) {
@@ -17,7 +19,7 @@ if (!admin.apps.length) {
 }
 
 // get firestore
-const db = admin.firestore();
+// const db = admin.firestore();
 
 // This must come after initlization
 const lib = require("../lib");
