@@ -152,20 +152,6 @@ async function createTestUser(uid) {
 }
 
 
-async function deleteIndexedPostDocument(id) {
-  await Axios.delete("http://wonderfulkorea.kr:7700/indexes/posts/documents/" + id);
-  return deleteIndexedForumDocument(id);
-}
-
-async function deleteIndexedCommentDocument(id) {
-  await Axios.delete("http://wonderfulkorea.kr:7700/indexes/comments/documents/" + id);
-  return deleteIndexedForumDocument(id);
-}
-
-async function deleteIndexedForumDocument(id) {
-  return Axios.delete("http://wonderfulkorea.kr:7700/indexes/posts-and-comments/documents/" + id);
-}
-
 async function indexPostDocument(id, data) {
   const _data = {
       id: id,
@@ -205,6 +191,19 @@ function indexForumDocument(data) {
   );
 }
 
+async function deleteIndexedPostDocument(id) {
+  await Axios.delete("http://wonderfulkorea.kr:7700/indexes/posts/documents/" + id);
+  return deleteIndexedForumDocument(id);
+}
+
+async function deleteIndexedCommentDocument(id) {
+  await Axios.delete("http://wonderfulkorea.kr:7700/indexes/comments/documents/" + id);
+  return deleteIndexedForumDocument(id);
+}
+
+async function deleteIndexedForumDocument(id) {
+  return Axios.delete("http://wonderfulkorea.kr:7700/indexes/posts-and-comments/documents/" + id);
+}
 
 // get comment ancestor by getting parent comment until it reach the root comment
 // return the uids of the author
