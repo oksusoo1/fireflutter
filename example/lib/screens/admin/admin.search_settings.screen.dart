@@ -1,6 +1,6 @@
 import 'package:extended/extended.dart';
-import 'package:fireflutter/src/search/search.service.dart';
 import 'package:flutter/material.dart';
+import 'package:fireflutter/fireflutter.dart';
 import 'package:meilisearch/meilisearch.dart';
 
 class AdminSearchSettingsScreen extends StatefulWidget {
