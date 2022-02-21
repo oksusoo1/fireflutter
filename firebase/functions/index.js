@@ -2,8 +2,8 @@
 
 const functions = require("firebase-functions");
 const admin = require("firebase-admin");
-const { now } = require("lodash");
-const { topic } = require("firebase-functions/v1/pubsub");
+const {now} = require("lodash");
+const {topic} = require("firebase-functions/v1/pubsub");
 
 admin.initializeApp();
 
@@ -26,46 +26,46 @@ exports.sendMessageOnPostCreate = functions
     .firestore
     .document("/posts/{postId}")
     .onCreate((snapshot) => {
-        const category = snapshot.data().category;
-        const payload = {
-            notification: {
-                title: snapshot.data().title ? snapshot.data().title : '',
-                body: snapshot.data().content ? snapshot.data().content : '',
-                clickAction: 'FLUTTER_NOTIFICATION_CLICK'
-            },
-            data:{
-                id: context.params.postId,
-                type: 'post',
-                sender_uid: snapshot.data().uid
-            }
-        };
-        const topic = "posts_" + category;
-        console.info("topic; ", topic);
-        return admin.messaging().sendToTopic(topic, payload);
+      const category = snapshot.data().category;
+      const payload = {
+        notification: {
+          title: snapshot.data().title ? snapshot.data().title : "",
+          body: snapshot.data().content ? snapshot.data().content : "",
+          clickAction: "FLUTTER_NOTIFICATION_CLICK",
+        },
+        data: {
+          id: context.params.postId,
+          type: "post",
+          sender_uid: snapshot.data().uid,
+        },
+      };
+      const topic = "posts_" + category;
+      console.info("topic; ", topic);
+      return admin.messaging().sendToTopic(topic, payload);
     });
 
 // sendMessageOnCommentCreate({content: 'new items for sale', postId: '5xMgi3d3vYNabM0JbrSQ', parentId: 'A6tMQIhWWKQhbWkyoJf1'
-//, uid: '1h0pWRlRkEOgQedJL5HriYMxqTw2'},{params:{commentId:'eIpYHUmYGKUf921B9fRj'}})
+// , uid: '1h0pWRlRkEOgQedJL5HriYMxqTw2'},{params:{commentId:'eIpYHUmYGKUf921B9fRj'}})
 exports.sendMessageOnCommentCreate = functions
-  .region("asia-northeast3")
-  .firestore
-  .document("/comments/{commentId}")
-  .onCreate(async (snapshot, context) => {
+    .region("asia-northeast3")
+    .firestore
+    .document("/comments/{commentId}")
+    .onCreate(async (snapshot, context) => {
       // get root post
-      const post = await admin.firestore().collection('posts').doc(snapshot.data().postId).get();
+      const post = await admin.firestore().collection("posts").doc(snapshot.data().postId).get();
 
       // prepare notification
       const payload = {
-          notification: {
-              title: "New Comment: " + post.data().title ? post.data().title : '',
-              body: snapshot.data().content,
-              clickAction: 'FLUTTER_NOTIFICATION_CLICK'
-          },
-          data:{
-              id: snapshot.data().postId,
-              type: 'post',
-              sender_uid: snapshot.data().uid
-          }
+        notification: {
+          title: "New Comment: " + post.data().title ? post.data().title : "",
+          body: snapshot.data().content,
+          clickAction: "FLUTTER_NOTIFICATION_CLICK",
+        },
+        data: {
+          id: snapshot.data().postId,
+          type: "post",
+          sender_uid: snapshot.data().uid,
+        },
       };
 
       // comment topic
@@ -74,11 +74,11 @@ exports.sendMessageOnCommentCreate = functions
       // send push notification to topics
       const res = await admin.messaging().sendToTopic(topic, payload);
 
-      // get comment ancestors 
+      // get comment ancestors
       const ancestors_uid = await lib.getCommentAncestors(context.params.commentId, snapshot.data().uid);
-      
+
       // add the post uid if the comment author is not the post author
-      if(post.data().uid != snapshot.data().uid && !ancestors_uid.includes(post.data().uid)) {
+      if (post.data().uid != snapshot.data().uid && !ancestors_uid.includes(post.data().uid)) {
         ancestors_uid.push(post.data().uid);
       }
 
@@ -89,43 +89,43 @@ exports.sendMessageOnCommentCreate = functions
       // get users tokens
       const tokens = await lib.getTokensFromUid(user_uids);
 
-      if(tokens.length == 0) return [];
+      if (tokens.length == 0) return [];
 
       // chuck token to 1000 https://firebase.google.com/docs/cloud-messaging/send-message#send-to-individual-devices
-      // You can send messages to up to 1000 devices in a single request. 
-      // If you provide an array with over 1000 registration tokens, 
+      // You can send messages to up to 1000 devices in a single request.
+      // If you provide an array with over 1000 registration tokens,
       // the request will fail with a messaging/invalid-recipient error.
       const chunks = lib.chunk(tokens, 1000);
 
       const sendToDevicePromise = [];
-      for(let c of chunks) {
+      for (const c of chunks) {
         // Send notifications to all tokens.
         sendToDevicePromise.push(admin.messaging().sendToDevice(c, payload));
       }
       const sendDevice = await Promise.all(sendToDevicePromise);
 
       const tokensToRemove = [];
-      sendDevice.forEach((response, i) => { 
+      sendDevice.forEach((response, i) => {
         // For each message check if there was an error.
         response.results.forEach((result, index) => {
-            const error = result.error;
-            if (error) {
-              console.log(
-                'Failure sending notification to',
+          const error = result.error;
+          if (error) {
+            console.log(
+                "Failure sending notification to",
                 chunks[i][index],
-                error
-              );
-              // Cleanup the tokens who are not registered anymore.
-              if (error.code === 'messaging/invalid-registration-token' ||
-                  error.code === 'messaging/registration-token-not-registered') {
-                tokensToRemove.push(admin.firestore().collection('message-tokens').doc(chunks[i][index]).delete());
-              }
+                error,
+            );
+            // Cleanup the tokens who are not registered anymore.
+            if (error.code === "messaging/invalid-registration-token" ||
+                  error.code === "messaging/registration-token-not-registered") {
+              tokensToRemove.push(admin.firestore().collection("message-tokens").doc(chunks[i][index]).delete());
             }
-          });
-        }
+          }
+        });
+      },
       );
       return Promise.all(tokensToRemove);
-  });
+    });
 
 
 // Indexes a post document when it is created.
@@ -147,7 +147,7 @@ exports.meilisearchUpdatePostIndex = functions
     .document("/posts/{postId}")
     .onUpdate((change, context) => {
       const data = change.after.data();
-      if (data['deleted']) {
+      if (data["deleted"]) {
         return lib.deleteIndexedPost(context.params.postId);
       } else {
         return lib.indexPost(context.params.postId, data);
@@ -174,7 +174,7 @@ exports.meilisearchUpdateCommentIndex = functions
     .document("/comments/{commentId}")
     .onUpdate((change, context) => {
       const data = change.after.data();
-      if (data['deleted']) {
+      if (data["deleted"]) {
         return lib.deleteIndexedComment(context.params.commentId);
       } else {
         return lib.indexComment(context.params.commentId, data);
@@ -183,7 +183,5 @@ exports.meilisearchUpdateCommentIndex = functions
 
 
 exports.sendPushNotification = functions.https.onCall((data, context) => {
-
-  return ["Apple", "Banana", "Cherry", "Date", "Fig", "Grapes"]
-  
+  return ["Apple", "Banana", "Cherry", "Date", "Fig", "Grapes"];
 });
