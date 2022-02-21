@@ -15,6 +15,9 @@ const rdb = admin.database();
 
 const delay = time => new Promise(res=>setTimeout(res,time));
 
+function timestamp() {
+  return Math.round( (new Date).getTime() / 1000 );
+}
 
 function categoryDoc(id) {
   return db.collection('categories').doc(id);
@@ -45,7 +48,7 @@ async function getSizeOfCategories() {
 async function createCategory(data) {
   const id = data.id;
   // delete data.id; // call-by-reference. it will causes error after this method.
-  data.timestamp = (new Date).getTime();
+  data.timestamp = timestamp();
   const writeResult = await categoryDoc(id).set(data, { merge: true });
   return categoryDoc(id);
 }
@@ -178,7 +181,7 @@ async function indexPostDocument(id, data) {
       title: data.title,
       category: data.category,
       content: data.content,
-      timestamp: data.timestamp ?? ((new Date).getTime() / 1000),
+      timestamp: timestamp(),
   };
   
 
@@ -207,7 +210,7 @@ async function indexCommentDocument(id, data) {
       uid: data.uid,
       postId: data.postId,
       content: data.content,
-      timestamp: data.timestamp ?? Date.now(),
+      timestamp: timestamp(),
   };
   await Axios.post(
       "http://wonderfulkorea.kr:7700/indexes/comments/documents",
