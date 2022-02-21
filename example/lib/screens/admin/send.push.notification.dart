@@ -1,3 +1,4 @@
+import 'package:extended/extended.dart';
 import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
 
@@ -12,7 +13,9 @@ class PushNotificationScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Push Notification'),
       ),
-      body: SendPushNotification(),
+      body: SendPushNotification(
+        onError: error,
+      ),
     );
   }
 }
