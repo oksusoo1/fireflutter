@@ -63,7 +63,6 @@ describe("Meilisearch test", () => {
     });
 
     it("tests post update indexing", async () => {
-        // Update post
         postData.title = newPostTitle;
         await lib.createPost({
             category: categoryData,
@@ -81,7 +80,6 @@ describe("Meilisearch test", () => {
     });
 
     it("tests post delete indexing", async () => {
-        // Update post
         postData.title = '';
         postData.deleted = true;
         await lib.createPost({
@@ -100,7 +98,6 @@ describe("Meilisearch test", () => {
     });
 
     it("tests comment create indexing", async () => {
-        /// create comment
         await lib.createComment({
             comment: commentData
         });
@@ -117,7 +114,6 @@ describe("Meilisearch test", () => {
     })
 
     it("tests comment update indexing", async () => {
-        /// Update comment content
         commentData.content = newCommentContent;
         await lib.createComment({
             comment: commentData
@@ -140,7 +136,6 @@ describe("Meilisearch test", () => {
     })
 
     it("tests comment delete indexing", async () => {
-        /// Update comment content
         commentData.content = '';
         commentData.deleted = true;
         await lib.createComment({
