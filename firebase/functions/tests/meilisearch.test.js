@@ -118,7 +118,7 @@ describe("Meilisearch test", () => {
         const search = await client.index("comments").search('', { filter: ['id = ' + commentData.id] });
         assert.ok( search.hits.length > 0 );
         assert.ok( search.hits[0].content == commentData.content );
-    })
+    });
 
     it("tests comment update indexing", async () => {
         commentData.content = newCommentContent;
@@ -130,7 +130,7 @@ describe("Meilisearch test", () => {
         var search = await client.index("comments").search('', { filter: ['id = ' + commentData.id] });
         assert.ok( search.hits.length > 0 );
         assert.ok( search.hits[0].content == commentData.content );
-    })
+    });
 
     it("tests comment delete indexing", async () => {
         commentData.content = '';
@@ -142,7 +142,7 @@ describe("Meilisearch test", () => {
         await lib.delay(3000);
         var search = await client.index("comments").search('', { filter: ['id = ' + commentData.id] });
         assert.ok( search.hits.length == 0 );
-    })
+    });
 });
 
 
