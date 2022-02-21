@@ -23,6 +23,15 @@ const db = admin.firestore();
 const lib = require("../lib");
 
 describe("Backup test", () => {
+    it("Create a post in firestore", async() => {
+      await lib.createPost({
+        category: 'qna',
+        title: 'title-qna',
+        content: 'content-qna',
+      });
+    });
+
+
     // it("Backup a post", async () => {
     //   const _data = {
     //     id: 'id',
@@ -54,11 +63,4 @@ describe("Backup test", () => {
     //   // console.log('re; ', (await re.get()).data());
     // })
 
-    it("Create a post in firestore", async() => {
-      await lib.createPost({
-        category: 'qna',
-        title: 'title-qna',
-        content: 'content-qna',
-      });
-    });
 });
