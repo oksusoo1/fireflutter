@@ -32,7 +32,7 @@ describe("Meilisearch test", () => {
     const originalPostTitle = "post-" + timestamp;
     const newPostTitle = originalPostTitle + " ...(2)";
     const postData = {
-        id: "index-search-" + timestamp,
+        id: "index-post-" + timestamp,
         title: originalPostTitle,
     };
 
@@ -90,11 +90,6 @@ describe("Meilisearch test", () => {
         await lib.delay(3000);
         const search = await client.index("posts").search('"' + originalPostTitle + '"');
         assert.ok( search.hits.length == 0 );
-
-        // const newPostTitleIndex = search.hits.findIndex((item) => item['title'] === newPostTitle);
-        // const originalPostTitleIndex = search.hits.findIndex((item) => item['title'] === originalPostTitle);
-        // assert.ok( newPostTitleIndex != -1 );
-        // assert.ok( originalPostTitleIndex == -1 );
     });
 
     it("tests comment create indexing", async () => {
