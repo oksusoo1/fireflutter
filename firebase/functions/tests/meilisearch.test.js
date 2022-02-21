@@ -28,7 +28,7 @@ describe("Meilisearch test", () => {
     });
 
     /// Post test data.
-    const categoryData = { id: "update-test" };
+    const categoryData = { id: "index-test" };
     const originalPostTitle = "post-" + timestamp;
     const newPostTitle = originalPostTitle + " ...(2)";
     const postData = {
@@ -70,9 +70,7 @@ describe("Meilisearch test", () => {
 
     it("tests post create indexing", async () => {
         await lib.createPost({
-            category: {
-                id: "search-test",
-            },
+            category: categoryData,
             post: postData,
         });
         await lib.delay(3000);
