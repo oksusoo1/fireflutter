@@ -3,7 +3,7 @@
  */
 "use strict";
 
-// const functions = require("firebase-functions");
+const functions = require("firebase-functions");
 const admin = require("firebase-admin");
 const Axios = require("axios");
 
@@ -85,7 +85,7 @@ async function createCategory(data) {
   const id = data.id;
   // delete data.id; // call-by-reference. it will causes error after this method.
   data.timestamp = timestamp();
-  const writeResult = await categoryDoc(id).set(data, {merge: true});
+  await categoryDoc(id).set(data, {merge: true});
   return categoryDoc(id);
 }
 
@@ -97,7 +97,7 @@ async function createCategory(data) {
 async function createPost(data) {
   // if data.category.id comes in, then it will prepare the category to be exist.
   if ( data.category && data.category.id ) {
-    const catDoc = await createCategory(data.category);
+    await createCategory(data.category);
     // console.log((await catDoc.get()).data());
     // console.log('category id; ', catDoc.id);
   }
@@ -201,7 +201,7 @@ async function createComment(data) {
  */
 async function createTestUser(uid) {
   const timestamp = (new Date).getTime();
-  const res = await rdb.ref("users").child(uid).set({
+  await rdb.ref("users").child(uid).set({
     nickname: "testUser" + timestamp,
     timestamp_registered: timestamp,
   });
@@ -298,12 +298,15 @@ async function removeTopicAndForumAncestorsSubscriber(uids, topic) {
     // getTopicsPromise.push( admin.database().ref('user-settings').child(uid).child('topic').once('value'));  // same result above
   }
   const result = await Promise.all(getTopicsPromise);
+
   for (const i in result) {
+    if ( !result[i] ) continue;
     const v = result[i].val();
     if (v["newCommentUnderMyPostOrCOmment"] != null && v["newCommentUnderMyPostOrCOmment"] == true && (v[topic] == null || v[topic] == false)) {
       _uids.push(uids[i]);
     }
   }
+
   return _uids;
 }
 
@@ -325,7 +328,7 @@ async function getTokensFromUid(uids) {
 }
 
 function chunk(arr, chunkSize) {
-  if (chunkSize <= 0) throw "Invalid chunk size";
+  if (chunkSize <= 0) return []; // don't throw here since it will not be catched.
   const R = [];
   for (let i=0, len=arr.length; i<len; i+=chunkSize) {
     R.push(arr.slice(i, i+chunkSize));
