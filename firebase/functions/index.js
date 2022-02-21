@@ -150,7 +150,7 @@ exports.meilisearchUpdatePostIndex = functions
       if (data['deleted']) {
         return lib.deleteIndexedPost(context.params.postId);
       } else {
-        return lib.indexPost(context.params.commentId, data);
+        return lib.indexPost(context.params.postId, data);
       }
     });
 

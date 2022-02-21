@@ -65,9 +65,14 @@ async function createPost(data) {
   const postData = {
     category: data.category && data.category.id ? data.category.id : 'test',
     title: data.post && data.post.title ? data.post.title : 'create_post',
-    uid: data.post && data.post.uid ? data.post.uid : 'uid',
+    uid: data.post && data.post.uid ? data.post.uid : 'uid'
   };
+
   if ( data.post && data.post.id ) {
+    if (data.post.deleted && data.post.deleted === true) {
+      postData.deleted = true;
+    }
+    
     await postDoc(data.post.id).set(postData), {merge: true};
     return postDoc(data.post.id);
   } else {
@@ -135,8 +140,13 @@ async function createComment(data) {
     };
   }
   // if no comment id, then create one
-  if ( ! data.comment.id ) return db.collection('comments').add(commentData);
-  else {
+  if ( ! data.comment.id ) {
+    return db.collection('comments').add(commentData);
+  } else {
+    if (data.comment.deleted && data.comment.deleted === true) {
+      commentData.deleted = true;
+    }
+
     await commentDoc(data.comment.id).set(commentData);
     return commentDoc(data.comment.id);
   }

@@ -80,6 +80,25 @@ describe("Meilisearch test", () => {
         assert.ok( originalPostTitleIndex == -1 );
     });
 
+    it("tests post delete indexing", async () => {
+        // Update post
+        postData.title = '';
+        postData.deleted = true;
+        await lib.createPost({
+            category: categoryData,
+            post: postData,
+        });
+
+        await lib.delay(3000);
+        const search = await client.index("posts").search('"' + originalPostTitle + '"');
+        assert.ok( search.hits.length == 0 );
+
+        // const newPostTitleIndex = search.hits.findIndex((item) => item['title'] === newPostTitle);
+        // const originalPostTitleIndex = search.hits.findIndex((item) => item['title'] === originalPostTitle);
+        // assert.ok( newPostTitleIndex != -1 );
+        // assert.ok( originalPostTitleIndex == -1 );
+    });
+
     it("tests comment create indexing", async () => {
         /// create comment
         await lib.createComment({
@@ -118,6 +137,19 @@ describe("Meilisearch test", () => {
         const originalCommentContentIndex = search.hits.findIndex((item) => item['content'] === originalCommentContent);
         assert.ok( newCommentContentIndex != -1 );
         assert.ok( originalCommentContentIndex == -1 );
+    })
+
+    it("tests comment delete indexing", async () => {
+        /// Update comment content
+        commentData.content = '';
+        commentData.deleted = true;
+        await lib.createComment({
+            comment: commentData
+        });
+
+        await lib.delay(3000);
+        var search = await client.index("comments").search('"' + originalCommentContent + '"');
+        assert.ok( search.hits.length == 0 );
     })
 });
 
