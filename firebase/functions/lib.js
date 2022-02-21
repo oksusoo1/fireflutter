@@ -223,7 +223,7 @@ async function indexPostDocument(id, data) {
   const promises = [];
 
   promises.push(Axios.post(
-      "http://local.wonderfulkorea.kr/index.php?action=api/posts/record",
+      "https://wonderfulkorea.kr:4431/index.php?action=api/posts/record",
       _data,
   ));
   promises.push(Axios.post(
