@@ -57,7 +57,7 @@ exports.sendMessageOnCommentCreate = functions
       // prepare notification
       const payload = {
           notification: {
-              title: "New Comment: " + post.data().title ?? '',
+              title: "New Comment: " + post.data().title ? post.data().title : '',
               body: snapshot.data().content,
               clickAction: 'FLUTTER_NOTIFICATION_CLICK'
           },

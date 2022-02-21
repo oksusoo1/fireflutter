@@ -1,10 +1,10 @@
 "use strict";
 
-const functions = require("firebase-functions");
+// const functions = require("firebase-functions");
 const admin = require("firebase-admin");
 const Axios = require("axios");
 
-const {MeiliSearch} = require("meilisearch");
+// const {MeiliSearch} = require("meilisearch");
 
 
 // get firestore
