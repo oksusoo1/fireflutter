@@ -53,7 +53,7 @@ describe("Meilisearch test", () => {
         console.log("Post filterables: ", postFilters);
         if (!postFilters.includes('id')) {
             postFilters.push('id');
-            console.log("Updating comment filterables: ", postFilters);
+            console.log("Updating post filterables: ", postFilters);
             await client.index("posts").updateFilterableAttributes(postFilters);
         }
 
