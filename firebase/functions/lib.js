@@ -278,8 +278,8 @@ async function deleteIndexedForumDocument(id) {
 async function getCommentAncestors(id, authorUid) {
   let comment = await commentDoc(id).get();
   const uids = [];
-  while (true) {
-    if (comment.data().postId == comment.data().parentId ) break;
+  while ( comment.data().postId != comment.data().parentId ) {
+    // if (comment.data().postId == comment.data().parentId ) break;
     comment = await commentDoc(comment.data().parentId).get();
     if (comment.exists == false) continue;
     if (comment.data().uid == authorUid) continue; // skip the author's uid.
