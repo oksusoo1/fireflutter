@@ -96,6 +96,13 @@ class SearchService {
         );
   }
 
+  /// Updates filterable attributes for an index.
+  ///
+  Future deleteSearchIndex(String uid) async {
+    /// if (!UserService.instance.user.isAdmin) throw 'YOU_ARE_NOT_ADMIN';
+    return client.index(uid).delete();
+  }
+
   resetFilters() {
     uid = '';
     index = '';
