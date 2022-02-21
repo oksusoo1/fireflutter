@@ -10,6 +10,8 @@ module.exports = {
   ],
   rules: {
     "max-len": "off",
+    "valid-jsdoc": "off",
+    "require-jsdoc": "off",
     "quotes": ["error", "double"],
   },
   parserOptions: {

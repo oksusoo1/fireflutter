@@ -1,3 +1,6 @@
+/**
+ * @file lib.js
+ */
 "use strict";
 
 // const functions = require("firebase-functions");
@@ -15,25 +18,58 @@ const rdb = admin.database();
 
 const delay = (time) => new Promise((res)=>setTimeout(res, time));
 
+/**
+ * Returns unix timestamp
+ *
+ * @return int unix timestamp
+ */
 function timestamp() {
   return Math.round( (new Date).getTime() / 1000 );
 }
 
+/**
+ * Returns category referrence
+ *
+ * @param {*} id Category id
+ * @return reference
+ */
 function categoryDoc(id) {
   return db.collection("categories").doc(id);
 }
+
+/**
+ * Returns post reference
+ * @param {*} id post id
+ * @return reference
+ */
 function postDoc(id) {
   return db.collection("posts").doc(id);
 }
+
+/**
+ * Returns comment refernce
+ * @param {*} id comment id
+ * @return reference
+ */
 function commentDoc(id) {
   return db.collection("comments").doc(id);
 }
 
 
+/**
+ * Returns a query of getting all categories.
+ *
+ * @return query of categories
+ */
 function getCategories() {
   return db.collection("categories").get();
 }
 
+/**
+ * Returns the number of categories.
+ *
+ * @return no of categories
+ */
 async function getSizeOfCategories() {
   const snapshot = await getCategories();
   return snapshot.size;
