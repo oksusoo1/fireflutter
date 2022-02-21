@@ -47,15 +47,20 @@ exports.sendMessageOnPostCreate = functions
 // sendMessageOnCommentCreate({
 // content: 'new items for sale',
 // postId: '5xMgi3d3vYNabM0JbrSQ',
-// parentId: 'A6tMQIhWWKQhbWkyoJf1'
-// , uid: '1h0pWRlRkEOgQedJL5HriYMxqTw2'},{params:{commentId:'eIpYHUmYGKUf921B9fRj'}})
+// parentId: 'A6tMQIhWWKQhbWkyoJf1',
+// uid: '1h0pWRlRkEOgQedJL5HriYMxqTw2'},
+// {params:{commentId:'eIpYHUmYGKUf921B9fRj'}})
 exports.sendMessageOnCommentCreate = functions
     .region("asia-northeast3")
     .firestore
     .document("/comments/{commentId}")
     .onCreate(async (snapshot, context) => {
       // get root post
-      const post = await admin.firestore().collection("posts").doc(snapshot.data().postId).get();
+      const post = await admin
+          .firestore()
+          .collection("posts")
+          .doc(snapshot.data().postId)
+          .get();
 
       // prepare notification
       const payload = {
@@ -75,22 +80,22 @@ exports.sendMessageOnCommentCreate = functions
       const topic = "comments_" + post.data().category;
 
       // send push notification to topics
-      const res = await admin.messaging().sendToTopic(topic, payload);
+      await admin.messaging().sendToTopic(topic, payload);
 
       // get comment ancestors
-      const ancestors_uid = await lib.getCommentAncestors(context.params.commentId, snapshot.data().uid);
+      const ancestorsUid = await lib.getCommentAncestors(context.params.commentId, snapshot.data().uid);
 
       // add the post uid if the comment author is not the post author
-      if (post.data().uid != snapshot.data().uid && !ancestors_uid.includes(post.data().uid)) {
-        ancestors_uid.push(post.data().uid);
+      if (post.data().uid != snapshot.data().uid && !ancestorsUid.includes(post.data().uid)) {
+        ancestorsUid.push(post.data().uid);
       }
 
       // remove subcriber uid but want to get notification under their post/comment
-      const user_uids = await lib.removeTopicAndForumAncestorsSubscriber(ancestors_uid, topic);
+      const userUids = await lib.removeTopicAndForumAncestorsSubscriber(ancestorsUid, topic);
 
 
       // get users tokens
-      const tokens = await lib.getTokensFromUid(user_uids);
+      const tokens = await lib.getTokensFromUid(userUids);
 
       if (tokens.length == 0) return [];
 
