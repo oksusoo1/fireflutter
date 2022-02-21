@@ -24,88 +24,93 @@ class _SendPushNotificationState extends State<SendPushNotification> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        DropdownButton(
-          items: <String>['All', 'Topic', 'Tokens', 'User Ids']
-              .map<DropdownMenuItem<String>>((String value) {
-            return DropdownMenuItem<String>(
-              value: value,
-              child: Text(value),
-            );
-          }).toList(),
-          onChanged: (String? newValue) {
-            setState(() {
-              dropdownValue = newValue!;
-            });
-          },
-        ),
-        if (dropdownValue == 'topic')
-          Column(
-            children: [
-              const Text('topic'),
-              TextField(
-                controller: topic,
-              ),
-            ],
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          Text('Sending Option'),
+          DropdownButton(
+            isExpanded: true,
+            value: dropdownValue,
+            items: <String>['All', 'Topic', 'Tokens', 'User Ids']
+                .map<DropdownMenuItem<String>>((String value) {
+              return DropdownMenuItem<String>(
+                value: value,
+                child: Text(value),
+              );
+            }).toList(),
+            onChanged: (String? newValue) {
+              setState(() {
+                dropdownValue = newValue!;
+              });
+            },
           ),
-        if (dropdownValue == 'tokens')
-          Column(
-            children: [
-              const Text('tokens'),
-              TextField(
-                controller: tokens,
-              ),
-            ],
-          ),
-        if (dropdownValue == 'User Ids')
-          Column(
-            children: [
-              const Text('User Ids'),
-              TextField(
-                controller: uids,
-              ),
-            ],
-          ),
-        const Text('postId'),
-        Column(
-          children: [
-            TextField(
-              controller: postId,
+          if (dropdownValue == 'Topic')
+            Column(
+              children: [
+                const Text('Topic'),
+                TextField(
+                  controller: topic,
+                ),
+              ],
             ),
-            TextButton(
-                onPressed: () async {
-                  List<PostModel> posts =
-                      await PostService.instance.get(uid: postId.text);
-                  if (posts.isEmpty) widget.onError('Post not found');
-                  title.text = posts[0].title;
-                  content.text = posts[0].content;
-                },
-                child: Text('Load Post'))
-          ],
-        ),
-        const Text('Title'),
-        TextField(
-          controller: title,
-        ),
-        const Text('Content'),
-        TextField(
-          controller: content,
-        ),
-        TextButton(
-          onPressed: () {
-            SendPushNotificationService.instance.sendNotification({
-              'topic': topic.text,
-              'token': tokens.text,
-              'uids': uids.text,
-              'id': postId,
-              'title': title.text,
-              'content': content.text,
-            });
-          },
-          child: Text('Send'),
-        )
-      ],
+          if (dropdownValue == 'Tokens')
+            Column(
+              children: [
+                const Text('Tokens'),
+                TextField(
+                  controller: tokens,
+                ),
+              ],
+            ),
+          if (dropdownValue == 'User Ids')
+            Column(
+              children: [
+                const Text('User Ids'),
+                TextField(
+                  controller: uids,
+                ),
+              ],
+            ),
+          const Text('postId'),
+          Column(
+            children: [
+              TextField(
+                controller: postId,
+              ),
+              TextButton(
+                  onPressed: () async {
+                    List<PostModel> posts =
+                        await PostService.instance.get(uid: postId.text);
+                    if (posts.isEmpty) widget.onError('Post not found');
+                    title.text = posts[0].title;
+                    content.text = posts[0].content;
+                  },
+                  child: Text('Load Post'))
+            ],
+          ),
+          const Text('Title'),
+          TextField(
+            controller: title,
+          ),
+          const Text('Content'),
+          TextField(
+            controller: content,
+          ),
+          TextButton(
+            onPressed: () {
+              SendPushNotificationService.instance.sendNotification({
+                'topic': topic.text,
+                'token': tokens.text,
+                'uids': uids.text,
+                'id': postId,
+                'title': title.text,
+                'content': content.text,
+              });
+            },
+            child: Text('Send'),
+          )
+        ],
+      ),
     );
   }
 }
