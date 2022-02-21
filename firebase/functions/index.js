@@ -138,11 +138,11 @@ exports.sendMessageOnCommentCreate = functions
 
 // Indexes a post document when it is created.
 //
-// meilisearchCreatePostIndex({ 
-//  uid: 'user_ccc', 
+// meilisearchCreatePostIndex({
+//  uid: 'user_ccc',
 //  category: 'discussion',
 //  title: 'I post on discussion',
-//  content: 'Discussion' 
+//  content: 'Discussion'
 // })
 exports.meilisearchCreatePostIndex = functions
     .region("asia-northeast3").firestore
@@ -153,10 +153,10 @@ exports.meilisearchCreatePostIndex = functions
 
 // Updates or delete the indexed document when a post is updated or deleted.
 //
-// Update: 
-// meilisearchUpdatePostIndex({ 
+// Update:
+// meilisearchUpdatePostIndex({
 //  before: {},
-//  after: { 
+//  after: {
 //   uid: 'user_ccc',
 //   category: 'discussion',
 //   title: 'I post on discussion (update)',
@@ -164,11 +164,11 @@ exports.meilisearchCreatePostIndex = functions
 //   }},
 //   { params: { postId: 'postId2' }
 //  })
-// 
+//
 // Delete:
-// meilisearchUpdatePostIndex({ 
-//  before: {}, 
-//  after: { deleted: true }}, 
+// meilisearchUpdatePostIndex({
+//  before: {},
+//  after: { deleted: true }},
 //  { params: { postId: 'psot-id' }
 // })
 exports.meilisearchUpdatePostIndex = functions
@@ -196,17 +196,17 @@ exports.meilisearchCreateCommentIndex = functions
 
 // Updates or delete the indexed document when a comment is updated or deleted.
 //
-// Update: 
-//  meilisearchUpdateCommentIndex({ 
+// Update:
+//  meilisearchUpdateCommentIndex({
 //   before: {},
-//   after: { content: '...' }}, 
+//   after: { content: '...' }},
 //   { params: { commentId: 'comment-id' }
 //  })
-// 
+//
 // Delete:
-//  meilisearchUpdateCommentIndex({ 
-//   before: {}, 
-//   after: { deleted: true }}, 
+//  meilisearchUpdateCommentIndex({
+//   before: {},
+//   after: { deleted: true }},
 //   { params: { commentId: 'comment-id' }
 //  })
 exports.meilisearchUpdateCommentIndex = functions
