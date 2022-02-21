@@ -136,6 +136,7 @@ exports.sendMessageOnCommentCreate = functions
     });
 
 
+// todo - rename it to createPostIndex
 // Indexes a post document when it is created.
 //
 // meilisearchCreatePostIndex({
@@ -151,6 +152,7 @@ exports.meilisearchCreatePostIndex = functions
       return lib.indexPost(context.params.postId, snap.data());
     });
 
+// todo - rename it to updatePostIndex
 // Updates or delete the indexed document when a post is updated or deleted.
 //
 // Update:
@@ -193,7 +195,7 @@ exports.meilisearchCreateCommentIndex = functions
       return lib.indexComment(context.params.commentId, snap.data());
     });
 
-
+// todo - rename it to updateCommentIndex
 // Updates or delete the indexed document when a comment is updated or deleted.
 //
 // Update:

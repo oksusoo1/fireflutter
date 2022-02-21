@@ -50,7 +50,9 @@ class CommentModel with FirestoreMixin, ForumBase {
     Json data, {
     required String id,
   }) {
-    List<String> _files = data['files'] != null ? new List<String>.from(data['files']) : <String>[];
+    List<String> _files = data['files'] != null
+        ? new List<String>.from(data['files'])
+        : <String>[];
 
     return CommentModel(
       content: data['content'] ?? '',
@@ -113,6 +115,11 @@ class CommentModel with FirestoreMixin, ForumBase {
   //   };
   // }
 
+  /// Increases the view counter
+  ///
+  /// Becareful of using this. This makes another document changes and if there are
+  /// event trigger functions in cloud functions, those function may be trigger too
+  /// often.
   Future<void> increaseViewCounter() {
     return increaseForumViewCounter(commentDoc(id));
   }

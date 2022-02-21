@@ -5,12 +5,12 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Simulator - iPhone 12 Pro Max",
+            "name": "Simulator - iPhone 12 Pro Max - A",
             "cwd": "example",
             "program": "lib/main.dart",
             "request": "launch",
             "type": "dart",
-            "deviceId": "73CCDB85-2F31-4121-A76C-4280504F5651"
+            "deviceId": "A415280B-B17D-4FED-A40D-7AF8BC96B1C1"
         },
         {
             "name": "Simulator - iPhone 13 - A",
