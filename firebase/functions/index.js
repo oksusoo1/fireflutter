@@ -166,3 +166,10 @@ exports.meilisearchUpdateCommentIndex = functions
     .onUpdate((change, context) => {
       return lib.indexComment(context.params.commentId, change.after.data());
     });
+
+
+exports.sendPushNotification = functions.https.onCall((data, context) => {
+
+  return ["Apple", "Banana", "Cherry", "Date", "Fig", "Grapes"]
+  
+});

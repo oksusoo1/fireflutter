@@ -252,6 +252,10 @@ function chunk(arr, chunkSize) {
   return R;
 }
 
+function error(errorCode, errorMessage) {
+  throw new functions.https.HttpsError(errorCode, errorMessage);
+}
+
 
 
 exports.delay = delay;
@@ -272,3 +276,5 @@ exports.getCommentAncestors = getCommentAncestors;
 exports.removeTopicAndForumAncestorsSubscriber = removeTopicAndForumAncestorsSubscriber;
 exports.getTokensFromUid = getTokensFromUid;
 exports.chunk = chunk;
+
+exports.error = error;

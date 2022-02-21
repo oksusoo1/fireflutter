@@ -17,7 +17,9 @@ class _AdminScreenState extends State<AdminScreen> {
   void initState() {
     super.initState();
     print('initState;');
-    UserService.instance.updateAdminStatus().then((value) => setState(() => {}));
+    UserService.instance
+        .updateAdminStatus()
+        .then((value) => setState(() => {}));
   }
 
   @override
@@ -43,7 +45,8 @@ class _AdminScreenState extends State<AdminScreen> {
           ),
           Divider(),
           ElevatedButton(
-              onPressed: AppService.instance.openTranslations, child: Text('Update Translations')),
+              onPressed: AppService.instance.openTranslations,
+              child: Text('Update Translations')),
           Divider(),
           Text('Report Management'),
           Wrap(
@@ -66,6 +69,11 @@ class _AdminScreenState extends State<AdminScreen> {
               ),
             ],
           ),
+          Divider(),
+          ElevatedButton(
+            onPressed: () => AppService.instance.open('/pushNotification'),
+            child: const Text('Push Notification'),
+          )
         ],
       ),
     );

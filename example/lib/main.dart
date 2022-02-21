@@ -9,6 +9,7 @@ import 'package:fe/screens/admin/admin.search_settings.screen.dart';
 import 'package:fe/screens/admin/category.screen.dart';
 import 'package:fe/screens/admin/report.post.management.screen.dart';
 import 'package:fe/screens/admin/report.screen.dart';
+import 'package:fe/screens/admin/send.push.notification.dart';
 import 'package:fe/screens/admin/translatoins.screen.dart';
 import 'package:fe/screens/forum/post.list.screen.dart';
 import 'package:fe/screens/forum/post.form.screen.dart';
@@ -78,6 +79,8 @@ final Map<String, RouteFunction> routes = {
       PostListScreenV2(arguments: arguments),
   AdminSearchSettingsScreen.routeName: (context, arguments) =>
       AdminSearchSettingsScreen(),
+  PushNotificationScreen.routeName: (context, arguments) =>
+      PushNotificationScreen(),
 };
 
 void main() async {
