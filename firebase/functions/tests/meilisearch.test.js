@@ -46,6 +46,7 @@ describe("Meilisearch test", () => {
         content: originalCommentContent,
     };
 
+
     it("tests post create indexing", async () => {
         await lib.createPost({
             category: {
@@ -55,6 +56,8 @@ describe("Meilisearch test", () => {
         });
         await lib.delay(3000);
 
+
+        
         const search = await client.index("posts").search('"' + originalPostTitle + '"');
         assert.ok( search.hits.length > 0 );
 

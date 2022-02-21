@@ -169,18 +169,28 @@ async function indexPost(id, data) {
       title: data.title,
       category: data.category,
       content: data.content,
-      timestamp: data.timestamp ?? Date.now(),
+      timestamp: data.timestamp ?? ((new Date).getTime() / 1000),
   };
-  await Axios.post(
-    "http://local.wonderfulkorea.kr/index.php?action=api/posts/record",
-    _data
-  );
-  await Axios.post(
+  
+
+  const promises = [];
+
+  promises.push(Axios.post(
+      "http://local.wonderfulkorea.kr/index.php?action=api/posts/record",
+      _data
+    ));
+  promises.push(Axios.post(
       "http://wonderfulkorea.kr:7700/indexes/posts/documents",
       _data
-  );
-  return indexForumData(_data);
+  ));
+
+  promises.push(indexForumData(_data));
+
+  return Promise.all(promises);
 }
+
+
+
 
 async function indexComment(id, data) {
   const _data = {
