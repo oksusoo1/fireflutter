@@ -85,7 +85,7 @@ describe("Meilisearch test", () => {
       category: categoryData,
       post: postData,
     });
-    await lib.delay(3000);
+    await lib.delay(3500);
 
     const search = await client
         .index("posts")
@@ -102,7 +102,7 @@ describe("Meilisearch test", () => {
       post: postData,
     });
 
-    await lib.delay(3000);
+    await lib.delay(3500);
     const search = await client
         .index("posts")
         .search("", {filter: ["id = " + postData.id]});
@@ -119,7 +119,7 @@ describe("Meilisearch test", () => {
       post: postData,
     });
 
-    await lib.delay(3000);
+    await lib.delay(3500);
     const search = await client
         .index("posts")
         .search("", {filter: ["id = " + postData.id]});
