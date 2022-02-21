@@ -156,7 +156,7 @@ exports.meilisearchUpdatePostIndex = functions
 
 // Indexes a comment document when it is created.
 //
-// meilisearchCreatePostIndex({ uid: 'user_ccc', category: 'discussion', title: 'I post on discussion', content: 'Discussion' })
+// meilisearchCreateCommentIndex({ uid: 'user_ccc', content: 'Discussion' })
 exports.meilisearchCreateCommentIndex = functions
     .region("asia-northeast3").firestore
     .document("/comments/{commentId}")
