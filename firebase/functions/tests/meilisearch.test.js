@@ -41,8 +41,8 @@ describe("Meilisearch test", () => {
     const newCommentContent = originalCommentContent + " ... (2)";
     const commentData = {
         id: "index-comment-" + timestamp,
-        postId: "post-" + timestamp,
-        parentId: "post-" + timestamp,
+        postId: postData.id,
+        parentId: postData.id,
         content: originalCommentContent,
     };
 
