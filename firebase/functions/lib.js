@@ -152,8 +152,21 @@ async function createTestUser(uid) {
 }
 
 
+async function deleteIndexedPostDocument(id) {
+  await Axios.delete("http://wonderfulkorea.kr:7700/indexes/posts/documents/" + id);
+  return deleteIndexedForumDocument(id);
+}
 
-async function indexPost(id, data) {
+async function deleteIndexedCommentDocument(id) {
+  await Axios.delete("http://wonderfulkorea.kr:7700/indexes/comments/documents/" + id);
+  return deleteIndexedForumDocument(id);
+}
+
+async function deleteIndexedForumDocument(id) {
+  return Axios.delete("http://wonderfulkorea.kr:7700/indexes/posts-and-comments/documents/" + id);
+}
+
+async function indexPostDocument(id, data) {
   const _data = {
       id: id,
       uid: data.uid,
@@ -167,10 +180,10 @@ async function indexPost(id, data) {
       "http://wonderfulkorea.kr:7700/indexes/posts/documents",
       _data
   );
-  return indexForumData(_data);
+  return indexForumDocument(_data);
 }
 
-async function indexComment(id, data) {
+async function indexCommentDocument(id, data) {
   const _data = {
       id: id,
       uid: data.uid,
@@ -182,10 +195,10 @@ async function indexComment(id, data) {
       "http://wonderfulkorea.kr:7700/indexes/comments/documents",
       _data
   );
-  return indexForumData(_data);
+  return indexForumDocument(_data);
 }
 
-function indexForumData(data) {
+function indexForumDocument(data) {
   return Axios.post(
     "http://wonderfulkorea.kr:7700/indexes/posts-and-comments/documents",
     data
@@ -265,8 +278,11 @@ exports.createComment = createComment;
 exports.createTestUser = createTestUser;
 
 
-exports.indexComment = indexComment;
-exports.indexPost = indexPost;
+exports.indexComment = indexCommentDocument;
+exports.indexPost = indexPostDocument;
+
+exports.deleteIndexedPost = deleteIndexedPostDocument;
+exports.deleteIndexedComment = deleteIndexedCommentDocument;
 
 exports.getCommentAncestors = getCommentAncestors;
 exports.removeTopicAndForumAncestorsSubscriber = removeTopicAndForumAncestorsSubscriber;

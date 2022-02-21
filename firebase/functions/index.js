@@ -128,11 +128,7 @@ exports.sendMessageOnCommentCreate = functions
   });
 
 
-
-
-
-// Index when a post is created
-// todo - create 'posts-and-comments' index.
+// Indexes a post document when it is created.
 //
 // meilisearchCreatePostIndex({ uid: 'user_ccc', category: 'discussion', title: 'I post on discussion', content: 'Discussion' })
 exports.meilisearchCreatePostIndex = functions
@@ -142,17 +138,25 @@ exports.meilisearchCreatePostIndex = functions
       return lib.indexPost(context.params.postId, snap.data());
     });
 
-// Update the index when a post is updated or deleted.
+// Updates or delete the indexed document when a post is updated or deleted.
 //
-// Test call:
-//  meilisearchUpdatePostIndex({ before: {}, after: { uid: 'user_ccc', category: 'discussion', title: 'I post on discussion (update)', content: 'Discussion 2'}}, { params: { postId: 'postId2' }})
+// Update: meilisearchUpdatePostIndex({ before: {}, after: { uid: 'user_ccc', category: 'discussion', title: 'I post on discussion (update)', content: 'Discussion 2'}}, { params: { postId: 'postId2' }})
+// Delete: meilisearchUpdatePostIndex({ before: {}, after: { deleted: true }}, { params: { postId: 'psot-id' }})
 exports.meilisearchUpdatePostIndex = functions
     .region("asia-northeast3").firestore
     .document("/posts/{postId}")
     .onUpdate((change, context) => {
-      return lib.indexPost(context.params.postId, change.after.data());
+      const data = change.after.data();
+      if (data['deleted']) {
+        return lib.deleteIndexedPost(context.params.postId);
+      } else {
+        return lib.indexPost(context.params.commentId, data);
+      }
     });
 
+// Indexes a comment document when it is created.
+//
+// meilisearchCreatePostIndex({ uid: 'user_ccc', category: 'discussion', title: 'I post on discussion', content: 'Discussion' })
 exports.meilisearchCreateCommentIndex = functions
     .region("asia-northeast3").firestore
     .document("/comments/{commentId}")
@@ -160,9 +164,19 @@ exports.meilisearchCreateCommentIndex = functions
       return lib.indexComment(context.params.commentId, snap.data());
     });
 
+
+// Updates or delete the indexed document when a comment is updated or deleted.
+//
+// Update: meilisearchUpdateCommentIndex({ before: {}, after: { content: '...' }}, { params: { commentId: 'comment-id' } })
+// Delete: meilisearchUpdateCommentIndex({ before: {}, after: { deleted: true }}, { params: { commentId: 'comment-id' } })
 exports.meilisearchUpdateCommentIndex = functions
     .region("asia-northeast3").firestore
     .document("/comments/{commentId}")
     .onUpdate((change, context) => {
-      return lib.indexComment(context.params.commentId, change.after.data());
+      const data = change.after.data();
+      if (data['deleted']) {
+        return lib.deleteIndexedComment(context.params.commentId);
+      } else {
+        return lib.indexComment(context.params.commentId, data);
+      }
     });
