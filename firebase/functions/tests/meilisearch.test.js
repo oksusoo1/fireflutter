@@ -28,7 +28,7 @@ describe("Meilisearch test", () => {
     });
 
     /// Post test data.
-    const categoryData = { id: "update-test" };
+    const categoryData = { id: "index-test" };
     const originalPostTitle = "post-" + timestamp;
     const newPostTitle = originalPostTitle + " ...(2)";
     const postData = {
@@ -46,23 +46,38 @@ describe("Meilisearch test", () => {
         content: originalCommentContent,
     };
 
+    // ------ Prep
+
+    it("prepares test", async () => { 
+        const postFilters = await client.index("posts").getFilterableAttributes();
+        console.log("Post filterables: ", postFilters);
+        if (!postFilters.includes('id')) {
+            postFilters.push('id');
+            console.log("Updating post filterables: ", postFilters);
+            await client.index("posts").updateFilterableAttributes(postFilters);
+        }
+
+        const commentFilters = await client.index("comments").getFilterableAttributes();
+        console.log("Comment filterables: ", commentFilters);
+        if (!commentFilters.includes('id')) {
+            commentFilters.push('id');
+            console.log("Updating comment filterables: ", commentFilters);
+            await client.index("comments").updateFilterableAttributes(commentFilters);
+        }
+    });
+
+    // ------ Post test
 
     it("tests post create indexing", async () => {
         await lib.createPost({
-            category: {
-                id: "search-test",
-            },
+            category: categoryData,
             post: postData,
         });
         await lib.delay(3000);
-
-
         
-        const search = await client.index("posts").search('"' + originalPostTitle + '"');
+        const search = await client.index("posts").search('', { filter: ['id = ' + postData.id] });
         assert.ok( search.hits.length > 0 );
-
-        const index = search.hits.findIndex((item) => item['id'] === postData.id);
-        assert.ok( index != -1 );
+        assert.ok( search.hits[0].title == postData.title );
     });
 
     it("tests post update indexing", async () => {
@@ -73,13 +88,9 @@ describe("Meilisearch test", () => {
         });
 
         await lib.delay(3000);
-        const search = await client.index("posts").search('"' + originalPostTitle + '"');
+        const search = await client.index("posts").search('', { filter: ['id = ' + postData.id] });
         assert.ok( search.hits.length > 0 );
-
-        const newPostTitleIndex = search.hits.findIndex((item) => item['title'] === newPostTitle);
-        const originalPostTitleIndex = search.hits.findIndex((item) => item['title'] === originalPostTitle);
-        assert.ok( newPostTitleIndex != -1 );
-        assert.ok( originalPostTitleIndex == -1 );
+        assert.ok( search.hits[0].title == postData.title );
     });
 
     it("tests post delete indexing", async () => {
@@ -91,9 +102,12 @@ describe("Meilisearch test", () => {
         });
 
         await lib.delay(3000);
-        const search = await client.index("posts").search('"' + originalPostTitle + '"');
+        const search = await client.index("posts").search('', { filter: ['id = ' + postData.id] });
         assert.ok( search.hits.length == 0 );
     });
+
+
+    // ------ Comment test
 
     it("tests comment create indexing", async () => {
         await lib.createComment({
@@ -101,15 +115,10 @@ describe("Meilisearch test", () => {
         });
 
         await lib.delay(3000);
-        const search = await client.index("comments").search('"' + originalCommentContent + '"');
+        const search = await client.index("comments").search('', { filter: ['id = ' + commentData.id] });
         assert.ok( search.hits.length > 0 );
-        
-        // Find comment's ID on the returned list, to determine existence.
-        // When searching the whole content there is a high probability that it's the first item on the list.
-        // Expect that index is not equal to -1. Meaning the comment is indexed and searchable.
-        const index = search.hits.findIndex((item) => item['id'] === commentData.id);
-        assert.ok( index != -1 );
-    })
+        assert.ok( search.hits[0].content == commentData.content );
+    });
 
     it("tests comment update indexing", async () => {
         commentData.content = newCommentContent;
@@ -118,20 +127,10 @@ describe("Meilisearch test", () => {
         });
 
         await lib.delay(3000);
-        var search = await client.index("comments").search('"' + originalCommentContent + '"');
+        var search = await client.index("comments").search('', { filter: ['id = ' + commentData.id] });
         assert.ok( search.hits.length > 0 );
-
-        /// Search for the original content.
-        /// Comment with the updated content will be searched also since it partially contains the original content.
-        ///
-        /// Prove that the data is updated by:
-        ///  - Checking if the new content is existing on the result list, and;
-        ///  - the original content is not existing on the result list.
-        const newCommentContentIndex = search.hits.findIndex((item) => item['content'] === newCommentContent);
-        const originalCommentContentIndex = search.hits.findIndex((item) => item['content'] === originalCommentContent);
-        assert.ok( newCommentContentIndex != -1 );
-        assert.ok( originalCommentContentIndex == -1 );
-    })
+        assert.ok( search.hits[0].content == commentData.content );
+    });
 
     it("tests comment delete indexing", async () => {
         commentData.content = '';
@@ -141,9 +140,9 @@ describe("Meilisearch test", () => {
         });
 
         await lib.delay(3000);
-        var search = await client.index("comments").search('"' + originalCommentContent + '"');
+        var search = await client.index("comments").search('', { filter: ['id = ' + commentData.id] });
         assert.ok( search.hits.length == 0 );
-    })
+    });
 });
 
 
