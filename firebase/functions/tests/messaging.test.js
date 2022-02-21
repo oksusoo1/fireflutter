@@ -1,9 +1,13 @@
 "use strict";
 
+const mocha = require("mocha");
+const describe = mocha.describe;
+const it = mocha.it;
+
 
 const assert = require("assert");
 
-const functions = require("firebase-functions");
+// const functions = require("firebase-functions");
 const admin = require("firebase-admin");
 
 // initialize the firebase
@@ -22,7 +26,7 @@ const db = admin.firestore();
 
 describe("Messaging ~~~~~~~~~~~~~~~~", () => {
   it("get comment anscestor uid", async () => {
-    const parent = await lib.createComment({
+    await lib.createComment({
       category: {
         id: "test",
       },

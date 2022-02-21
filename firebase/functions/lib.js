@@ -1,6 +1,9 @@
+/**
+ * @file lib.js
+ */
 "use strict";
 
-// const functions = require("firebase-functions");
+const functions = require("firebase-functions");
 const admin = require("firebase-admin");
 const Axios = require("axios");
 
@@ -15,25 +18,58 @@ const rdb = admin.database();
 
 const delay = (time) => new Promise((res)=>setTimeout(res, time));
 
+/**
+ * Returns unix timestamp
+ *
+ * @return int unix timestamp
+ */
 function timestamp() {
   return Math.round( (new Date).getTime() / 1000 );
 }
 
+/**
+ * Returns category referrence
+ *
+ * @param {*} id Category id
+ * @return reference
+ */
 function categoryDoc(id) {
   return db.collection("categories").doc(id);
 }
+
+/**
+ * Returns post reference
+ * @param {*} id post id
+ * @return reference
+ */
 function postDoc(id) {
   return db.collection("posts").doc(id);
 }
+
+/**
+ * Returns comment refernce
+ * @param {*} id comment id
+ * @return reference
+ */
 function commentDoc(id) {
   return db.collection("comments").doc(id);
 }
 
 
+/**
+ * Returns a query of getting all categories.
+ *
+ * @return query of categories
+ */
 function getCategories() {
   return db.collection("categories").get();
 }
 
+/**
+ * Returns the number of categories.
+ *
+ * @return no of categories
+ */
 async function getSizeOfCategories() {
   const snapshot = await getCategories();
   return snapshot.size;
@@ -49,7 +85,7 @@ async function createCategory(data) {
   const id = data.id;
   // delete data.id; // call-by-reference. it will causes error after this method.
   data.timestamp = timestamp();
-  const writeResult = await categoryDoc(id).set(data, {merge: true});
+  await categoryDoc(id).set(data, {merge: true});
   return categoryDoc(id);
 }
 
@@ -61,7 +97,7 @@ async function createCategory(data) {
 async function createPost(data) {
   // if data.category.id comes in, then it will prepare the category to be exist.
   if ( data.category && data.category.id ) {
-    const catDoc = await createCategory(data.category);
+    await createCategory(data.category);
     // console.log((await catDoc.get()).data());
     // console.log('category id; ', catDoc.id);
   }
@@ -165,7 +201,7 @@ async function createComment(data) {
  */
 async function createTestUser(uid) {
   const timestamp = (new Date).getTime();
-  const res = await rdb.ref("users").child(uid).set({
+  await rdb.ref("users").child(uid).set({
     nickname: "testUser" + timestamp,
     timestamp_registered: timestamp,
   });
@@ -242,8 +278,8 @@ async function deleteIndexedForumDocument(id) {
 async function getCommentAncestors(id, authorUid) {
   let comment = await commentDoc(id).get();
   const uids = [];
-  while (true) {
-    if (comment.data().postId == comment.data().parentId ) break;
+  while ( comment.data().postId != comment.data().parentId ) {
+    // if (comment.data().postId == comment.data().parentId ) break;
     comment = await commentDoc(comment.data().parentId).get();
     if (comment.exists == false) continue;
     if (comment.data().uid == authorUid) continue; // skip the author's uid.
@@ -262,12 +298,15 @@ async function removeTopicAndForumAncestorsSubscriber(uids, topic) {
     // getTopicsPromise.push( admin.database().ref('user-settings').child(uid).child('topic').once('value'));  // same result above
   }
   const result = await Promise.all(getTopicsPromise);
+
   for (const i in result) {
+    if ( !result[i] ) continue;
     const v = result[i].val();
     if (v["newCommentUnderMyPostOrCOmment"] != null && v["newCommentUnderMyPostOrCOmment"] == true && (v[topic] == null || v[topic] == false)) {
       _uids.push(uids[i]);
     }
   }
+
   return _uids;
 }
 
@@ -289,7 +328,7 @@ async function getTokensFromUid(uids) {
 }
 
 function chunk(arr, chunkSize) {
-  if (chunkSize <= 0) throw "Invalid chunk size";
+  if (chunkSize <= 0) return []; // don't throw here since it will not be catched.
   const R = [];
   for (let i=0, len=arr.length; i<len; i+=chunkSize) {
     R.push(arr.slice(i, i+chunkSize));

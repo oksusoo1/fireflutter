@@ -3,9 +3,9 @@ import 'package:fireflutter/src/admin/send.push.notification.service.dart';
 import 'package:flutter/material.dart';
 
 class SendPushNotification extends StatefulWidget {
-  const SendPushNotification({Key? key, 
-    required this.onError}) : super(key: key);
-    
+  const SendPushNotification({Key? key, required this.onError})
+      : super(key: key);
+
   final Function onError;
 
   @override
@@ -73,10 +73,15 @@ class _SendPushNotificationState extends State<SendPushNotification> {
             TextField(
               controller: postId,
             ),
-            TextButton(onPressed: () async {
-             List<PostModel> post = await PostService.instance.get(uid: postId.text);
-             if(post.isEmpty) error
-            }, child: Text('Load Post'))
+            TextButton(
+                onPressed: () async {
+                  List<PostModel> posts =
+                      await PostService.instance.get(uid: postId.text);
+                  if (posts.isEmpty) widget.onError('Post not found');
+                  title.text = posts[0].title;
+                  content.text = posts[0].content;
+                },
+                child: Text('Load Post'))
           ],
         ),
         const Text('Title'),
@@ -93,6 +98,7 @@ class _SendPushNotificationState extends State<SendPushNotification> {
               'topic': topic.text,
               'token': tokens.text,
               'uids': uids.text,
+              'id': postId,
               'title': title.text,
               'content': content.text,
             });

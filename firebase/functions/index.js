@@ -47,15 +47,20 @@ exports.sendMessageOnPostCreate = functions
 // sendMessageOnCommentCreate({
 // content: 'new items for sale',
 // postId: '5xMgi3d3vYNabM0JbrSQ',
-// parentId: 'A6tMQIhWWKQhbWkyoJf1'
-// , uid: '1h0pWRlRkEOgQedJL5HriYMxqTw2'},{params:{commentId:'eIpYHUmYGKUf921B9fRj'}})
+// parentId: 'A6tMQIhWWKQhbWkyoJf1',
+// uid: '1h0pWRlRkEOgQedJL5HriYMxqTw2'},
+// {params:{commentId:'eIpYHUmYGKUf921B9fRj'}})
 exports.sendMessageOnCommentCreate = functions
     .region("asia-northeast3")
     .firestore
     .document("/comments/{commentId}")
     .onCreate(async (snapshot, context) => {
       // get root post
-      const post = await admin.firestore().collection("posts").doc(snapshot.data().postId).get();
+      const post = await admin
+          .firestore()
+          .collection("posts")
+          .doc(snapshot.data().postId)
+          .get();
 
       // prepare notification
       const payload = {
@@ -75,22 +80,22 @@ exports.sendMessageOnCommentCreate = functions
       const topic = "comments_" + post.data().category;
 
       // send push notification to topics
-      const res = await admin.messaging().sendToTopic(topic, payload);
+      await admin.messaging().sendToTopic(topic, payload);
 
       // get comment ancestors
-      const ancestors_uid = await lib.getCommentAncestors(context.params.commentId, snapshot.data().uid);
+      const ancestorsUid = await lib.getCommentAncestors(context.params.commentId, snapshot.data().uid);
 
       // add the post uid if the comment author is not the post author
-      if (post.data().uid != snapshot.data().uid && !ancestors_uid.includes(post.data().uid)) {
-        ancestors_uid.push(post.data().uid);
+      if (post.data().uid != snapshot.data().uid && !ancestorsUid.includes(post.data().uid)) {
+        ancestorsUid.push(post.data().uid);
       }
 
       // remove subcriber uid but want to get notification under their post/comment
-      const user_uids = await lib.removeTopicAndForumAncestorsSubscriber(ancestors_uid, topic);
+      const userUids = await lib.removeTopicAndForumAncestorsSubscriber(ancestorsUid, topic);
 
 
       // get users tokens
-      const tokens = await lib.getTokensFromUid(user_uids);
+      const tokens = await lib.getTokensFromUid(userUids);
 
       if (tokens.length == 0) return [];
 
@@ -133,7 +138,12 @@ exports.sendMessageOnCommentCreate = functions
 
 // Indexes a post document when it is created.
 //
-// meilisearchCreatePostIndex({ uid: 'user_ccc', category: 'discussion', title: 'I post on discussion', content: 'Discussion' })
+// meilisearchCreatePostIndex({ 
+//  uid: 'user_ccc', 
+//  category: 'discussion',
+//  title: 'I post on discussion',
+//  content: 'Discussion' 
+// })
 exports.meilisearchCreatePostIndex = functions
     .region("asia-northeast3").firestore
     .document("/posts/{postId}")
@@ -143,8 +153,24 @@ exports.meilisearchCreatePostIndex = functions
 
 // Updates or delete the indexed document when a post is updated or deleted.
 //
-// Update: meilisearchUpdatePostIndex({ before: {}, after: { uid: 'user_ccc', category: 'discussion', title: 'I post on discussion (update)', content: 'Discussion 2'}}, { params: { postId: 'postId2' }})
-// Delete: meilisearchUpdatePostIndex({ before: {}, after: { deleted: true }}, { params: { postId: 'psot-id' }})
+// Update: 
+// meilisearchUpdatePostIndex({ 
+//  before: {},
+//  after: { 
+//   uid: 'user_ccc',
+//   category: 'discussion',
+//   title: 'I post on discussion (update)',
+//   content: 'Discussion 2'
+//   }},
+//   { params: { postId: 'postId2' }
+//  })
+// 
+// Delete:
+// meilisearchUpdatePostIndex({ 
+//  before: {}, 
+//  after: { deleted: true }}, 
+//  { params: { postId: 'psot-id' }
+// })
 exports.meilisearchUpdatePostIndex = functions
     .region("asia-northeast3").firestore
     .document("/posts/{postId}")
@@ -170,8 +196,19 @@ exports.meilisearchCreateCommentIndex = functions
 
 // Updates or delete the indexed document when a comment is updated or deleted.
 //
-// Update: meilisearchUpdateCommentIndex({ before: {}, after: { content: '...' }}, { params: { commentId: 'comment-id' } })
-// Delete: meilisearchUpdateCommentIndex({ before: {}, after: { deleted: true }}, { params: { commentId: 'comment-id' } })
+// Update: 
+//  meilisearchUpdateCommentIndex({ 
+//   before: {},
+//   after: { content: '...' }}, 
+//   { params: { commentId: 'comment-id' }
+//  })
+// 
+// Delete:
+//  meilisearchUpdateCommentIndex({ 
+//   before: {}, 
+//   after: { deleted: true }}, 
+//   { params: { commentId: 'comment-id' }
+//  })
 exports.meilisearchUpdateCommentIndex = functions
     .region("asia-northeast3").firestore
     .document("/comments/{commentId}")
@@ -185,13 +222,3 @@ exports.meilisearchUpdateCommentIndex = functions
     });
 
 
-exports.AdminSendPushNotification = functions.https.onCall((data, context) => {
-
-  const uid = context.auth.uid;
-  const res = admin.database().ref('users').child(uid).get();
-  if(!res.exists()) return lib.error('login_first', 'user must login first');
-  const user = res.val()
-  if(user['isAdmin'] == null || user['isAdmin'] == false ) return lib.error('your_not_admin', 'user must be admin');
-
-  return ["Apple", "Banana", "Cherry", "Date", "Fig", "Grapes"];
-});
