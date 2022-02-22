@@ -343,7 +343,14 @@ async function removeTopicAndForumAncestorsSubscriber(uids, topic) {
   return _uids;
 }
 
-async function getTokensFromUid(uids) {
+async function getTokensFromUids(uids) {
+  let _uids;
+  if(typeof uids == 'string') {
+    _uids = uids.split(',');
+  } else {
+    _uids = uids;
+  }
+
   const _tokens = [];
   const getTokensPromise = [];
   for (const u of uids) {
@@ -375,12 +382,7 @@ function error(errorCode, errorMessage) {
 
 
 async function sendPushNotification(query) {
-  const payload = {
-    notification: {
-      title: query.title,
-      body: query.body,
-    },
-  };
+  const payload = prePayload(query);
 
   try {
     await admin.messaging().sendToTopic("/topics/" + query.topic, payload);
@@ -389,6 +391,112 @@ async function sendPushNotification(query) {
     return {code: 'error'};
   }
 }
+
+
+async function sendMessageToTopic(query) {
+  const payload = prePayload(query);
+
+  try {
+    const res = await admin.messaging().sendToTopic("/topics/" + query.topic, payload);
+    return {code: 'success', result: res};
+  } catch (e) {
+    return {code: 'error', message: e};
+  }
+
+}
+
+async function sendMessageToTokens(query) {
+  const payload = prePayload(query);
+
+  try {
+    const res = await sendingMessageToDevice(query.tokens, payload);
+    return {code: 'success', result: res};
+  } catch (e) {
+    return {code: 'error', message: e};
+  }
+
+
+}
+
+async function sendMessageToUsers(query) {
+  const payload = prePayload(query);
+  const tokens = getTokensFromUids(query.uids);
+
+  try {
+    const res = await sendingMessageToDevice(tokens, payload);
+    return {code: 'success', result: res};
+  } catch (e) {
+    return {code: 'error', message: e};
+  }
+
+
+}
+
+async function sendingMessageToDevice(tokens, payload) {
+  if (tokens.length == 0) return [];
+
+  // chuck token to 1000 https://firebase.google.com/docs/cloud-messaging/send-message#send-to-individual-devices
+  // You can send messages to up to 1000 devices in a single request.
+  // If you provide an array with over 1000 registration tokens,
+  // the request will fail with a messaging/invalid-recipient error.
+  const chunks = chunk(tokens, 1000);
+
+  const sendToDevicePromise = [];
+  for (const c of chunks) {
+    // Send notifications to all tokens.
+    sendToDevicePromise.push(admin.messaging().sendToDevice(c, payload));
+  }
+  const sendDevice = await Promise.all(sendToDevicePromise);
+
+  const tokensToRemove = [];
+  const tokenOk = [];
+  let successCount = 0;
+  let errorCount = 0;
+  sendDevice.forEach((response, i) => {
+    // For each message check if there was an error.
+      response.results.forEach((result, index) => {
+        const error = result.error;
+        if (error) {
+          // console.log(
+          //     "Failure sending notification to",
+          //     chunks[i][index],
+          //     error,
+          // );
+          // Cleanup the tokens who are not registered anymore.
+          if (error.code === "messaging/invalid-registration-token" ||
+                error.code === "messaging/registration-token-not-registered") {
+            tokensToRemove.push(admin.firestore().collection("message-tokens").doc(chunks[i][index]).delete());
+          }
+          errorCount++;
+        } else {
+          // tokenOk.push({[chunks[i]]: 'ok' });
+          successCount++;
+        }
+      });
+    },
+  );
+  await Promise.all(tokensToRemove);
+  return {success: successCount, error:errorCount};
+}
+
+
+
+function prePayload(query) {
+  return {
+    notification: {
+      title: query.title ? query.title : "",
+      body: query.body ? query.title : "",
+      clickAction: "FLUTTER_NOTIFICATION_CLICK",
+    },
+    data: {
+      id: query.postId ? query.postId : "",
+      type: query.postId ? query.postId : '',
+      sender_uid: query.uid ? query.uid : '',
+    },
+  };
+}
+
+
 
 exports.delay = delay;
 exports.getSizeOfCategories = getSizeOfCategories;
@@ -409,8 +517,17 @@ exports.deleteIndexedComment = deleteIndexedCommentDocument;
 
 exports.getCommentAncestors = getCommentAncestors;
 exports.removeTopicAndForumAncestorsSubscriber = removeTopicAndForumAncestorsSubscriber;
-exports.getTokensFromUid = getTokensFromUid;
+exports.getTokensFromUids = getTokensFromUids;
 exports.chunk = chunk;
 
 exports.error = error;
 exports.sendPushNotification = sendPushNotification;
+
+
+exports.sendMessageToTopic = sendMessageToTopic;
+exports.sendMessageToTokens = sendMessageToTokens;
+exports.sendMessageToUsers = sendMessageToUsers;
+
+
+exports.sendingMessageToDevice = sendingMessageToDevice;
+

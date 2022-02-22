@@ -95,44 +95,9 @@ exports.sendMessageOnCommentCreate = functions
 
 
       // get users tokens
-      const tokens = await lib.getTokensFromUid(userUids);
+      const tokens = await lib.getTokensFromUids(userUids);
 
-      if (tokens.length == 0) return [];
-
-      // chuck token to 1000 https://firebase.google.com/docs/cloud-messaging/send-message#send-to-individual-devices
-      // You can send messages to up to 1000 devices in a single request.
-      // If you provide an array with over 1000 registration tokens,
-      // the request will fail with a messaging/invalid-recipient error.
-      const chunks = lib.chunk(tokens, 1000);
-
-      const sendToDevicePromise = [];
-      for (const c of chunks) {
-        // Send notifications to all tokens.
-        sendToDevicePromise.push(admin.messaging().sendToDevice(c, payload));
-      }
-      const sendDevice = await Promise.all(sendToDevicePromise);
-
-      const tokensToRemove = [];
-      sendDevice.forEach((response, i) => {
-        // For each message check if there was an error.
-        response.results.forEach((result, index) => {
-          const error = result.error;
-          if (error) {
-            console.log(
-                "Failure sending notification to",
-                chunks[i][index],
-                error,
-            );
-            // Cleanup the tokens who are not registered anymore.
-            if (error.code === "messaging/invalid-registration-token" ||
-                  error.code === "messaging/registration-token-not-registered") {
-              tokensToRemove.push(admin.firestore().collection("message-tokens").doc(chunks[i][index]).delete());
-            }
-          }
-        });
-      },
-      );
-      return Promise.all(tokensToRemove);
+      return lib.sendingMessageToDevice(tokens, payload);
     });
 
 
@@ -230,3 +195,26 @@ exports.sendPushNotification = functions
   .onRequest(async (req, res) => {
   res.status(200).send(await lib.sendPushNotification(req.query));
 });
+
+exports.sendMessageToTopic = functions
+  .region("asia-northeast3")
+  .https
+  .onRequest(async (req, res) => {
+  res.status(200).send(await lib.sendMessageToTopic(req.query));
+});
+
+exports.sendMessageToTokens = functions
+  .region("asia-northeast3")
+  .https
+  .onRequest(async (req, res) => {
+  res.status(200).send(await lib.sendMessageToTokens(req.query));
+});
+
+exports.sendMessageToUsers = functions
+  .region("asia-northeast3")
+  .https
+  .onRequest(async (req, res) => {
+  res.status(200).send(await lib.sendMessageToUsers(req.query));
+});
+
+
