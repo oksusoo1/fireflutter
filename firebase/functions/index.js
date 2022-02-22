@@ -136,7 +136,6 @@ exports.sendMessageOnCommentCreate = functions
     });
 
 
-// todo - rename it to createPostIndex
 // Indexes a post document when it is created.
 //
 // meilisearchCreatePostIndex({
@@ -145,14 +144,13 @@ exports.sendMessageOnCommentCreate = functions
 //  title: 'I post on discussion',
 //  content: 'Discussion'
 // })
-exports.meilisearchCreatePostIndex = functions
+exports.createPostIndex = functions
     .region("asia-northeast3").firestore
     .document("/posts/{postId}")
     .onCreate((snap, context) => {
       return lib.indexPost(context.params.postId, snap.data());
     });
 
-// todo - rename it to updatePostIndex
 // Updates or delete the indexed document when a post is updated or deleted.
 //
 // Update:
@@ -173,7 +171,7 @@ exports.meilisearchCreatePostIndex = functions
 //  after: { deleted: true }},
 //  { params: { postId: 'psot-id' }
 // })
-exports.meilisearchUpdatePostIndex = functions
+exports.updatePostIndex = functions
     .region("asia-northeast3").firestore
     .document("/posts/{postId}")
     .onUpdate((change, context) => {
@@ -188,14 +186,13 @@ exports.meilisearchUpdatePostIndex = functions
 // Indexes a comment document when it is created.
 //
 // meilisearchCreateCommentIndex({ uid: 'user_ccc', content: 'Discussion' })
-exports.meilisearchCreateCommentIndex = functions
+exports.createCommentIndex = functions
     .region("asia-northeast3").firestore
     .document("/comments/{commentId}")
     .onCreate((snap, context) => {
       return lib.indexComment(context.params.commentId, snap.data());
     });
 
-// todo - rename it to updateCommentIndex
 // Updates or delete the indexed document when a comment is updated or deleted.
 //
 // Update:
@@ -211,7 +208,7 @@ exports.meilisearchCreateCommentIndex = functions
 //   after: { deleted: true }},
 //   { params: { commentId: 'comment-id' }
 //  })
-exports.meilisearchUpdateCommentIndex = functions
+exports.updateCommentIndex = functions
     .region("asia-northeast3").firestore
     .document("/comments/{commentId}")
     .onUpdate((change, context) => {
@@ -224,20 +221,9 @@ exports.meilisearchUpdateCommentIndex = functions
     });
 
 
-exports.date = functions.region('asia-northeast3').https.onRequest(async (req, res) => {
-  // res.status(200).send((new Date).toDateString());
-
-  const payload = {
-    notification: {
-      title: req.params.title,
-      body: req.params.body,
-    },
-  };
-
-  try {
-    await admin.messaging().sendToTopic(req.params.topic, payload);
-    res.status(200).send("success");
-  } catch (e) {
-    res.status(200).send("error");
-  }
+exports.sendPushNotification = functions
+  .region("asia-northeast3")
+  .https
+  .onRequest(async (req, res) => {
+  res.status(200).send(await lib.sendPushNotification(req.query));
 });
