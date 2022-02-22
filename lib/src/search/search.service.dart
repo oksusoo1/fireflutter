@@ -33,6 +33,9 @@ class SearchService {
   int page = 1;
   List<String> sort = ['timestamp:desc'];
 
+  int _hits = 0;
+  int get hits => _hits;
+
   init({required String serverUrl, String? apiKey}) {
     _serverUrl = serverUrl;
     _apiKey = apiKey;
@@ -65,6 +68,7 @@ class SearchService {
       if (res.hits!.length < limit) noMorePosts = true;
 
       _posts = res.hits!;
+      _hits = res.nbHits ?? 0;
       resultList.addAll(_posts);
       offset = limit * page;
       page += 1;
