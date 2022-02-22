@@ -1,5 +1,4 @@
-import 'package:fireflutter/fireflutter.dart';
-import 'package:fireflutter/src/admin/send.push.notification.service.dart';
+import '../../../fireflutter.dart';
 import 'package:flutter/material.dart';
 
 class SendPushNotification extends StatefulWidget {

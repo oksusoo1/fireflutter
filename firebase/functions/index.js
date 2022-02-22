@@ -221,20 +221,9 @@ exports.updateCommentIndex = functions
     });
 
 
-exports.date = functions.region('asia-northeast3').https.onRequest(async (req, res) => {
-  // res.status(200).send((new Date).toDateString());
-
-  const payload = {
-    notification: {
-      title: req.params.title,
-      body: req.params.body,
-    },
-  };
-
-  try {
-    await admin.messaging().sendToTopic(req.params.topic, payload);
-    res.status(200).send("success");
-  } catch (e) {
-    res.status(200).send("error");
-  }
+exports.sendPushNotification = functions
+  .region("asia-northeast3")
+  .https
+  .onRequest(async (req, res) => {
+  res.status(200).send(await lib.sendPushNotification(req.query));
 });
