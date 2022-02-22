@@ -385,9 +385,9 @@ async function sendPushNotification(query) {
 
   try {
     await admin.messaging().sendToTopic("/topics/" + query.topic, payload);
-    return {code: 'success'};
+    return {code: "success"};
   } catch (e) {
-    return {code: 'error'};
+    return {code: "error"};
   }
 }
 

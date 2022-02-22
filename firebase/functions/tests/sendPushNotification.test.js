@@ -22,15 +22,15 @@ const lib = require("../lib");
 describe("SendPushNotification test", () => {
   it("send message to default topic", async () => {
     try {
-        const re = await lib.sendPushNotification({
-            topic: 'defaultTopic',
-            title: 'push title 1',
-            body: 'push body 1',
-        });
-        if ( re.code == 'success') assert.ok('sending push notification was success.');
-        else assert.fail('failed on seding messaing to default topic');
-    } catch(e) {
-     assert.fail('send push notification should succeed.');   
+      const re = await lib.sendPushNotification({
+        topic: "defaultTopic",
+        title: "push title 1",
+        body: "push body 1",
+      });
+      if ( re.code == "success") assert.ok("sending push notification was success.");
+      else assert.fail("failed on seding messaing to default topic");
+    } catch (e) {
+      assert.fail("send push notification should succeed.");
     }
   });
 });

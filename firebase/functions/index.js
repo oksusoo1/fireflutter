@@ -222,8 +222,8 @@ exports.updateCommentIndex = functions
 
 
 exports.sendPushNotification = functions
-  .region("asia-northeast3")
-  .https
-  .onRequest(async (req, res) => {
-  res.status(200).send(await lib.sendPushNotification(req.query));
-});
+    .region("asia-northeast3")
+    .https
+    .onRequest(async (req, res) => {
+      res.status(200).send(await lib.sendPushNotification(req.query));
+    });
