@@ -109,10 +109,10 @@ class SearchService {
     return client.index(uid).delete();
   }
 
-  resetFilters() {
+  resetFilters({String index = ''}) {
     uid = '';
-    index = '';
     category = '';
+    index = index;
     searchKey = '';
     sort = ['timestamp:desc'];
   }
