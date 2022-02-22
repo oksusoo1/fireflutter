@@ -44,7 +44,7 @@ class _AdminSearchSettingsScreenState extends State<AdminSearchSettingsScreen> {
                 IndexSettingForm(
                   indexUid: index.uid,
                   onDeleted: () {
-                    indexes = indexes.skipWhile((idx) => idx.uid == index.uid).toList();
+                    alert('Delete', 'Documents deleted');
                     if (mounted) setState(() {});
                   },
                 ),
@@ -117,12 +117,12 @@ class _IndexSettingFormState extends State<IndexSettingForm> {
     }
   }
 
-  deleteIndex() async {
+  deleteIndexDocuments() async {
     try {
-      final conf = await confirm('Confirm', 'Delete ${widget.indexUid} index?');
+      final conf = await confirm('Confirm', 'Delete ${widget.indexUid} index documents?');
       if (!conf) return;
 
-      await SearchService.instance.deleteSearchIndex(widget.indexUid);
+      await SearchService.instance.deleteAllDocuments(widget.indexUid);
 
       if (widget.onDeleted != null) widget.onDeleted!();
     } catch (e) {
@@ -151,7 +151,7 @@ class _IndexSettingFormState extends State<IndexSettingForm> {
           TextFormField(controller: sortersController),
           SizedBox(height: 10),
           ElevatedButton(onPressed: updateIndexSettings, child: Text('UPDATE')),
-          ElevatedButton(onPressed: deleteIndex, child: Text('DELETE INDEX')),
+          ElevatedButton(onPressed: deleteIndexDocuments, child: Text('DELETE INDEX DOCUMENTS')),
         ],
       ),
     );

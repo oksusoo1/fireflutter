@@ -24,7 +24,8 @@ const delay = (time) => new Promise((res)=>setTimeout(res, time));
  * @return int unix timestamp
  */
 function timestamp() {
-  return Math.round( (new Date).getTime() / 1000 );
+  // return Math.round( (new Date).getTime() / 1000 );
+  return Math.round( (new Date).getTime() );
 }
 
 /**
