@@ -60,6 +60,9 @@ class CommentModel with FirestoreMixin, ForumBase {
       _files = new List<String>.from(data['files']);
     }
 
+    var _timestamp = data['timestamp'] ?? Timestamp.now();
+    if (_timestamp is int) _timestamp = Timestamp.fromMillisecondsSinceEpoch(_timestamp);
+
     return CommentModel(
       content: data['content'] ?? '',
       files: _files,
@@ -70,7 +73,7 @@ class CommentModel with FirestoreMixin, ForumBase {
       deleted: data['deleted'] ?? false,
       like: data['like'] ?? 0,
       dislike: data['dislike'] ?? 0,
-      timestamp: data['timestamp'] ?? Timestamp.now(),
+      timestamp: _timestamp,
       data: data,
     );
   }
