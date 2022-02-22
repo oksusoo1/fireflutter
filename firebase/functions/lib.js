@@ -374,6 +374,22 @@ function error(errorCode, errorMessage) {
 }
 
 
+async function sendPushNotification(query) {
+  const payload = {
+    notification: {
+      title: query.title,
+      body: query.body,
+    },
+  };
+
+  try {
+    await admin.messaging().sendToTopic("/topics/" + query.topic, payload);
+    return {code: 'success'};
+  } catch (e) {
+    return {code: 'error'};
+  }
+}
+
 exports.delay = delay;
 exports.getSizeOfCategories = getSizeOfCategories;
 exports.getCategories = getCategories;
@@ -397,3 +413,4 @@ exports.getTokensFromUid = getTokensFromUid;
 exports.chunk = chunk;
 
 exports.error = error;
+exports.sendPushNotification = sendPushNotification;

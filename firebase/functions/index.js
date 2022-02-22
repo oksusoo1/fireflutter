@@ -224,25 +224,9 @@ exports.meilisearchUpdateCommentIndex = functions
     });
 
 
-exports.sendPushNotification = functions.region("asia-northeast3").https.onRequest(async (req, res) => {
-  // res.set("Access-Control-Allow-Origin", "*");
-  // res.set("Access-Control-Allow-Methods", "GET");
-  // res.set("Access-Control-Allow-Headers", "Content-Type");
-  // res.set("Access-Control-Max-Age", "3600");
-  // res.status(200).send((new Date).toDateString());
-  console.log(req.query);
-
-  const payload = {
-    notification: {
-      title: req.query.title,
-      body: req.query.body,
-    },
-  };
-
-  try {
-    await admin.messaging().sendToTopic("/topics/" + req.query.topic, payload);
-    res.status(200).send("success");
-  } catch (e) {
-    res.status(200).send("error" + e + JSON.stringify(payload) + JSON.stringify(req.body) + JSON.stringify(req.query));
-  }
+exports.sendPushNotification = functions
+  .region("asia-northeast3")
+  .https
+  .onRequest(async (req, res) => {
+  res.status(200).send(await lib.sendPushNotification(req.query));
 });
