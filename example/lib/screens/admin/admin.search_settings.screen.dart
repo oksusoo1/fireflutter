@@ -1,6 +1,6 @@
 import 'package:extended/extended.dart';
-import 'package:fireflutter/src/search/search.service.dart';
 import 'package:flutter/material.dart';
+import 'package:fireflutter/fireflutter.dart';
 import 'package:meilisearch/meilisearch.dart';
 
 class AdminSearchSettingsScreen extends StatefulWidget {
@@ -44,7 +44,7 @@ class _AdminSearchSettingsScreenState extends State<AdminSearchSettingsScreen> {
                 IndexSettingForm(
                   indexUid: index.uid,
                   onDeleted: () {
-                    indexes = indexes.skipWhile((idx) => idx.uid == index.uid).toList();
+                    alert('Delete', 'Documents deleted');
                     if (mounted) setState(() {});
                   },
                 ),
@@ -117,13 +117,12 @@ class _IndexSettingFormState extends State<IndexSettingForm> {
     }
   }
 
-  deleteIndex() async {
+  deleteIndexDocuments() async {
     try {
-      final conf = await confirm('Confirm', 'Delete ${widget.indexUid} index?');
+      final conf = await confirm('Confirm', 'Delete ${widget.indexUid} index documents?');
       if (!conf) return;
 
-      await SearchService.instance.client.index(widget.indexUid).delete();
-      alert('Success!', 'Index deleted!');
+      await SearchService.instance.deleteAllDocuments(widget.indexUid);
 
       if (widget.onDeleted != null) widget.onDeleted!();
     } catch (e) {
@@ -152,7 +151,7 @@ class _IndexSettingFormState extends State<IndexSettingForm> {
           TextFormField(controller: sortersController),
           SizedBox(height: 10),
           ElevatedButton(onPressed: updateIndexSettings, child: Text('UPDATE')),
-          ElevatedButton(onPressed: deleteIndex, child: Text('DELETE INDEX')),
+          ElevatedButton(onPressed: deleteIndexDocuments, child: Text('DELETE INDEX DOCUMENTS')),
         ],
       ),
     );

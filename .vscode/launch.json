@@ -5,12 +5,12 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Simulator - iPhone 12 Pro Max",
+            "name": "Simulator - iPhone 12 Pro Max - A",
             "cwd": "example",
             "program": "lib/main.dart",
             "request": "launch",
             "type": "dart",
-            "deviceId": "73CCDB85-2F31-4121-A76C-4280504F5651"
+            "deviceId": "A415280B-B17D-4FED-A40D-7AF8BC96B1C1"
         },
         {
             "name": "Simulator - iPhone 13 - A",
@@ -19,6 +19,14 @@
             "request": "launch",
             "type": "dart",
             "deviceId": "962B61B8-7067-4256-9CBF-047E4EA352AC"
+        },
+        {
+            "name": "Simulator - iPhone 13 Pro Max - A",
+            "cwd": "example",
+            "program": "lib/main.dart",
+            "request": "launch",
+            "type": "dart",
+            "deviceId": "1341AB5D-0C8D-4A66-A08B-07712DF2E780"
         },
         {
             "name": "Simulator - iPhone 13",

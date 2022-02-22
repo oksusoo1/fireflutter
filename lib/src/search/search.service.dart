@@ -16,6 +16,8 @@ class SearchService {
 
   List<Map<String, dynamic>> resultList = [];
 
+  bool noMorePosts = false;
+
   /// Search options
   ///
   /// [limit] is the maximum number of documents that the search will return.
@@ -39,9 +41,11 @@ class SearchService {
   /// Searches for indexed documents in the given `_serverUrl`.
   ///
   Future<List<Map<String, dynamic>>> search() async {
-    print('limit ---> $limit');
-    print('offset ---> $offset');
-    print('page ---> $page');
+    if (noMorePosts) return [];
+    print('Fetching posts');
+    // print('limit ---> $limit');
+    // print('offset ---> $offset');
+    // print('page ---> $page');
 
     List filters = [];
     if (uid.isNotEmpty) filters.add('uid = $uid');
@@ -58,6 +62,8 @@ class SearchService {
         );
 
     if (res.hits != null) {
+      if (res.hits!.length < limit) noMorePosts = true;
+
       _posts = res.hits!;
       resultList.addAll(_posts);
       offset = limit * page;
@@ -71,7 +77,7 @@ class SearchService {
   /// ADMIN FUNCTIONS
   ///
 
-  /// Updates filterable attributes for an index.
+  /// Updates index search settings.
   ///
   Future updateIndexSearchSettings({
     required String index,
@@ -88,7 +94,7 @@ class SearchService {
             sortableAttributes: sortables,
             filterableAttributes: filterables,
             // rankingRules: [],
-            // distinctAttribute: '', default to index
+            // distinctAttribute: '', // default to index
             // displayedAttributes: ['*'], // default to '*' (all)
             // stopWords: [],
             // synonyms: { 'word': ['other', 'logan'] },
@@ -96,15 +102,23 @@ class SearchService {
         );
   }
 
-  resetFilters() {
+  /// Deletes all documents of an index.
+  ///
+  Future deleteAllDocuments(String uid) async {
+    /// if (!UserService.instance.user.isAdmin) throw 'YOU_ARE_NOT_ADMIN';
+    return client.index(uid).deleteAllDocuments();
+  }
+
+  resetFilters({String index = ''}) {
     uid = '';
-    index = '';
     category = '';
+    index = index;
     searchKey = '';
     sort = ['timestamp:desc'];
   }
 
   resetListAndPagination({int limit = 20}) {
+    noMorePosts = false;
     limit = limit;
     offset = 0;
     page = 1;

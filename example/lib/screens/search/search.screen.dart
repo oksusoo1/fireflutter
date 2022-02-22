@@ -20,7 +20,6 @@ class _PostListScreenV2State extends State<PostListScreenV2> {
   final scrollController = ScrollController();
 
   bool loading = false;
-  bool noMorePosts = false;
 
   bool get atBottom {
     return scrollController.offset > (scrollController.position.maxScrollExtent - 300);
@@ -55,13 +54,10 @@ class _PostListScreenV2State extends State<PostListScreenV2> {
   }
 
   search() async {
-    if (loading || noMorePosts) return;
+    if (loading) return;
     if (mounted) setState(() => loading = true);
-    print('Fetching posts');
-
     try {
-      final res = await searchService.search();
-      if (res.length < searchService.limit) noMorePosts = true;
+      await searchService.search();
     } catch (e) {
       error(e);
     }
@@ -85,8 +81,12 @@ class _PostListScreenV2State extends State<PostListScreenV2> {
     resetAndSearch();
   }
 
+  searchIndex(String index) {
+    searchService.index = index;
+    resetAndSearch();
+  }
+
   resetAndSearch() {
-    noMorePosts = false;
     searchService.resetListAndPagination(limit: 4);
     search();
   }
@@ -111,6 +111,18 @@ class _PostListScreenV2State extends State<PostListScreenV2> {
             Divider(),
             Wrap(
               children: [
+                ElevatedButton(
+                  onPressed: () => searchIndex('posts-and-comments'),
+                  child: Text('Post and Comments'),
+                ),
+                SizedBox(width: 10),
+                ElevatedButton(onPressed: () => searchIndex('posts'), child: Text('Posts')),
+                SizedBox(width: 10),
+                ElevatedButton(onPressed: () => searchIndex('comments'), child: Text('Comments')),
+              ],
+            ),
+            Wrap(
+              children: [
                 ElevatedButton(onPressed: () => searchUserPosts(''), child: Text('All Users')),
                 SizedBox(width: 10),
                 ElevatedButton(
@@ -129,34 +141,35 @@ class _PostListScreenV2State extends State<PostListScreenV2> {
                 ),
               ],
             ),
-            Wrap(
-              children: [
-                ElevatedButton(
-                  onPressed: () => searchCategoryPosts(''),
-                  child: Text('All Category'),
-                ),
-                SizedBox(width: 10),
-                ElevatedButton(
-                  onPressed: () => searchCategoryPosts('update-test'),
-                  child: Text('Update Test'),
-                ),
-                SizedBox(width: 10),
-                ElevatedButton(
-                  onPressed: () => searchCategoryPosts('qna'),
-                  child: Text('QnA'),
-                ),
-                SizedBox(width: 10),
-                ElevatedButton(
-                  onPressed: () => searchCategoryPosts('discussion'),
-                  child: Text('Discussion'),
-                ),
-                SizedBox(width: 10),
-                ElevatedButton(
-                  onPressed: () => searchCategoryPosts('job'),
-                  child: Text('Job'),
-                ),
-              ],
-            ),
+            if (searchService.index != 'comments')
+              Wrap(
+                children: [
+                  ElevatedButton(
+                    onPressed: () => searchCategoryPosts(''),
+                    child: Text('All Category'),
+                  ),
+                  SizedBox(width: 10),
+                  ElevatedButton(
+                    onPressed: () => searchCategoryPosts('update-test'),
+                    child: Text('Update Test'),
+                  ),
+                  SizedBox(width: 10),
+                  ElevatedButton(
+                    onPressed: () => searchCategoryPosts('qna'),
+                    child: Text('QnA'),
+                  ),
+                  SizedBox(width: 10),
+                  ElevatedButton(
+                    onPressed: () => searchCategoryPosts('discussion'),
+                    child: Text('Discussion'),
+                  ),
+                  SizedBox(width: 10),
+                  ElevatedButton(
+                    onPressed: () => searchCategoryPosts('job'),
+                    child: Text('Job'),
+                  ),
+                ],
+              ),
             TextField(
               onChanged: searchKeyword,
               decoration: InputDecoration(hintText: 'Search ...'),
@@ -182,7 +195,8 @@ class _PostListScreenV2State extends State<PostListScreenV2> {
                 },
               ),
             ),
-            if (searchService.resultList.isEmpty && !loading) Center(child: Text('NO POSTS FOUND.')),
+            if (searchService.resultList.isEmpty && !loading)
+              Center(child: Text('NO POSTS FOUND.')),
             if (loading) Center(child: CircularProgressIndicator())
           ],
         ),

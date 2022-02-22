@@ -12,7 +12,6 @@ class ButtonBase extends StatelessWidget {
     required this.onLike,
     required this.onDislike,
     this.onChat,
-    
     this.onHide,
     this.likeCount = 0,
     this.dislikeCount = 0,
@@ -43,7 +42,7 @@ class ButtonBase extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        _button(isPost ? 'Comment' : 'Reply', onReply),
+        _button(isPost ? 'Reply' : 'Reply', onReply),
         _button('Report', onReport),
         _button('Like ${likeCount > 0 ? likeCount : ""}', onLike),
         _button('Dislike ${dislikeCount > 0 ? dislikeCount : ""}', onDislike),
@@ -70,7 +69,8 @@ class ButtonBase extends StatelessWidget {
               child: Text('Report', style: TextStyle(color: Colors.red)),
             ),
             if (isPost && onHide != null)
-              PopupMenuItem<String>(value: 'hide_post', child: Text('Hide Post')),
+              PopupMenuItem<String>(
+                  value: 'hide_post', child: Text('Hide Post')),
             PopupMenuItem<String>(value: 'close_menu', child: Text('Close')),
           ],
           onSelected: (String value) async {
