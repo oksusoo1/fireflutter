@@ -218,6 +218,8 @@ async function createTestUser(uid) {
  * @returns promise
  */
 async function indexPostDocument(id, data) {
+  console.log("data; ", data);
+
   const _data = {
     id: id,
     uid: data.uid,
@@ -228,6 +230,7 @@ async function indexPostDocument(id, data) {
     files: data.files && data.files.length ? data.files.join(",") : "",
   };
 
+  console.log("_data; ", _data);
 
   const promises = [];
 

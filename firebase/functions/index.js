@@ -148,6 +148,9 @@ exports.createPostIndex = functions
     .region("asia-northeast3").firestore
     .document("/posts/{postId}")
     .onCreate((snap, context) => {
+      console.log("createPostIndex(); ");
+      console.log("id; ", context.params.postId);
+      console.log("snap.data(); ", snap.data());
       return lib.indexPost(context.params.postId, snap.data());
     });
 
