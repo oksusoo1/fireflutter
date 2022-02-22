@@ -110,6 +110,7 @@ Table of contents
   - [Delete uploaded image](#delete-uploaded-image)
   - [FileUploadButton](#fileuploadbutton)
   - [Displaying Uploaded Image](#displaying-uploaded-image)
+  - [Uploaded file management](#uploaded-file-management)
 - [Cloud Functions](#cloud-functions)
   - [Meilisearch](#meilisearch)
 
@@ -1241,6 +1242,30 @@ try {
   - It will first try to display thumbnail image. if it fails to display thumbnail image,
     - then, it will try to display original image. If it fails to dsipaly original image,
       - then it will display the error widget.
+
+
+## Uploaded file management
+
+- When a file is uploaded,
+  - `type`, `uid`, `basename` must be added as custom meta.
+    - `type` is the type of parent object. it can be one of `post`, `comment`, `user`.
+
+- When a post(or a comment) is submitted with uploaded files, then `cloud functions` will update custom metadata of those files in storage with the id of the post(or comment).
+  - That means, when a post(or comment) has attached files, the files will have the id of the post(or comment) in its custom metadata.
+  - So, you can delete files in storage if they don't have `id` in custom metadata when they have their `type` as one of `post` or `comment`.
+  - @todo - Firefluter does not provide the delition funtionality, yet. You may delete it by yourself at this time.
+
+
+/// 여기서 부터. 사진을 여러개 업로드해서, post 에 첨부한다.
+/// 그리고, github 에 있는 type 을 지정한다.
+/// 그리고, tinymce 의 본문에 추가한다.
+/// 그리고, 글 저장을 할 때, 업로드한 사진이 본문 내용이 없으면 에러를 낸다.
+/// 반대로, 사진이 본문에 있는데, upload URL 목록에 없으면 에러를 낸다.
+/// onWrite 에서 글/코멘트 아이디를 지정한다. 없으면, 나중에 정기적으로 삭제.
+사진을 업로드 할 때, custom meta 에 type: post, comment, user 등을 기록 할 수 있도록 한다. 이 것을 rule 에 적용해 놓고, type 이 없으면 에러를 낸다.
+
+그래서 나중에 injected: true 가 없는 storage 사진은 모두 삭제 할 수 있도록 한다.
+
 
 
 # Cloud Functions

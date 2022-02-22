@@ -232,7 +232,7 @@ async function indexPostDocument(id, data) {
   const promises = [];
 
   promises.push(Axios.post(
-      "https://wonderfulkorea.kr:4431/index.php?action=api/post/record",
+      "https://wonderfulkorea.kr:4431/index.php?api=post/record",
       _data,
   ));
   promises.push(Axios.post(
@@ -260,7 +260,7 @@ async function indexCommentDocument(id, data) {
   const promises = [];
 
   promises.push(Axios.post(
-      "https://wonderfulkorea.kr:4431/index.php?action=api/post/record",
+      "https://wonderfulkorea.kr:4431/index.php?api=post/record",
       _data,
   ));
 
@@ -284,7 +284,7 @@ function indexForumDocument(data) {
 async function deleteIndexedPostDocument(id) {
   const promises = [];
   promises.push(Axios.post(
-      "https://wonderfulkorea.kr:4431/index.php?action=api/post/record",
+      "https://wonderfulkorea.kr:4431/index.php?api=post/record",
       {id: id, deleted: true},
   ));
   promises.push(Axios.delete("http://wonderfulkorea.kr:7700/indexes/posts/documents/" + id));
@@ -295,7 +295,7 @@ async function deleteIndexedPostDocument(id) {
 async function deleteIndexedCommentDocument(id) {
   const promises = [];
   promises.push(Axios.post(
-      "https://wonderfulkorea.kr:4431/index.php?action=api/post/record",
+      "https://wonderfulkorea.kr:4431/index.php?api=post/record",
       {id: id, deleted: true},
   ));
   promises.push(Axios.delete("http://wonderfulkorea.kr:7700/indexes/comments/documents/" + id));
