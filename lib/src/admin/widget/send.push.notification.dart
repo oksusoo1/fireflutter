@@ -17,7 +17,7 @@ class _SendPushNotificationState extends State<SendPushNotification> {
   final uids = TextEditingController();
   final postId = TextEditingController();
   final title = TextEditingController();
-  final content = TextEditingController();
+  final body = TextEditingController();
 
   String dropdownValue = 'All';
 
@@ -25,6 +25,7 @@ class _SendPushNotificationState extends State<SendPushNotification> {
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text('Sending Option'),
           DropdownButton(
@@ -44,67 +45,66 @@ class _SendPushNotificationState extends State<SendPushNotification> {
             },
           ),
           if (dropdownValue == 'Topic')
-            Column(
-              children: [
-                const Text('Topic'),
-                TextField(
-                  controller: topic,
-                ),
-              ],
+            ListTile(
+              leading: Text('Topic'),
+              title: TextField(
+                controller: topic,
+              ),
             ),
           if (dropdownValue == 'Tokens')
-            Column(
-              children: [
-                const Text('Tokens'),
-                TextField(
-                  controller: tokens,
-                ),
-              ],
+            ListTile(
+              leading: Text('Tokens'),
+              title: TextField(
+                controller: tokens,
+              ),
             ),
           if (dropdownValue == 'User Ids')
-            Column(
-              children: [
-                const Text('User Ids'),
-                TextField(
-                  controller: uids,
-                ),
-              ],
-            ),
-          const Text('postId'),
-          Column(
-            children: [
-              TextField(
-                controller: postId,
+            ListTile(
+              leading: Text('User Ids'),
+              title: TextField(
+                controller: uids,
               ),
-              TextButton(
-                  onPressed: () async {
-                    List<PostModel> posts =
-                        await PostService.instance.get(uid: postId.text);
-                    if (posts.isEmpty) widget.onError('Post not found');
-                    title.text = posts[0].title;
-                    content.text = posts[0].content;
-                  },
-                  child: Text('Load Post'))
-            ],
+            ),
+          ListTile(
+            leading: Text('postId'),
+            title: TextField(
+              controller: postId,
+            ),
+            trailing: TextButton(
+              onPressed: () async {
+                List<PostModel> posts =
+                    await PostService.instance.get(uid: postId.text);
+                if (posts.isEmpty) widget.onError('Post not found');
+                title.text = posts[0].title;
+                body.text = posts[0].content;
+              },
+              child: Text('Load'),
+            ),
           ),
-          const Text('Title'),
-          TextField(
-            controller: title,
+          ListTile(
+            leading: Text('Title'),
+            title: TextField(
+              controller: title,
+            ),
           ),
-          const Text('Content'),
-          TextField(
-            controller: content,
+          ListTile(
+            leading: Text('Body'),
+            title: TextField(
+              controller: body,
+            ),
           ),
           TextButton(
             onPressed: () {
-              SendPushNotificationService.instance.sendNotification({
-                'topic': topic.text,
-                'token': tokens.text,
-                'uids': uids.text,
-                'id': postId,
+              Map<String, dynamic> data = {
                 'title': title.text,
-                'content': content.text,
-              });
+                'body': body.text,
+              };
+              if (postId.text.isNotEmpty) {
+                data['data'] = {
+                  'id': postId.text,
+                  'type': 'post',
+                };
+              }
             },
             child: Text('Send'),
           )
