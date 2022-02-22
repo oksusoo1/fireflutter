@@ -68,7 +68,8 @@ class StorageService {
     StreamSubscription? _sub;
     if (onProgress != null) {
       _sub = uploadTask.snapshotEvents.listen((event) {
-        double progress = event.bytesTransferred.toDouble() / event.totalBytes.toDouble();
+        double progress =
+            event.bytesTransferred.toDouble() / event.totalBytes.toDouble();
         onProgress(progress);
       });
     }
@@ -130,7 +131,8 @@ class StorageService {
     /// It can compress the image and then return it as a File object.
 
     final String basename = filepath.split('/').last;
-    String localFile = await getAbsoluteTemporaryFilePath(basename);
+    String localFile =
+        await getAbsoluteTemporaryFilePath('compressed-' + basename);
     File? file = await FlutterImageCompress.compressAndGetFile(
       filepath, // source file
       localFile, // target file. Overwrite the source with compressed.
@@ -155,6 +157,7 @@ class StorageService {
     }
     final String basename = _tempUrl.split('/').last;
     final String filename = basename.split('.').first;
-    return _tempUrl.replaceFirst(basename, '${filename}_200x200.webp') + '?alt=media';
+    return _tempUrl.replaceFirst(basename, '${filename}_200x200.webp') +
+        '?alt=media';
   }
 }

@@ -478,6 +478,10 @@ function prePayload(query) {
   };
 }
 
+function manageAttachments(id, before, after) {
+  
+}
+
 
 exports.delay = delay;
 exports.getSizeOfCategories = getSizeOfCategories;

@@ -45,7 +45,7 @@
             "deviceId": "00008030-000904C80290802E"
         },
         {
-            "name": "Emulator-5554 - Pixel 3a",
+            "name": "Emulator - Pixel3a - A",
             "cwd": "example",
             "program": "lib/main.dart",
             "request": "launch",

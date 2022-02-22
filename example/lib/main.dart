@@ -120,10 +120,14 @@ class _MainAppState extends State<MainApp> {
 
     // Timer(const Duration(milliseconds: 200), () => Get.toNamed('/email-verify'));
     // Timer(const Duration(milliseconds: 200), AppController.of.openCategory);
+    Timer(
+      const Duration(milliseconds: 200),
+      () => AppService.instance.open(PostListScreen.routeName, arguments: {
+        'category': 'qna',
+      }),
+    );
     // Timer(const Duration(milliseconds: 200),
-    //     () => AppController.of.openPostList(category: 'qna'));
-    Timer(const Duration(milliseconds: 200),
-        () => AppService.instance.open(TranslationsScreen.routeName));
+    //     () => AppService.instance.open(TranslationsScreen.routeName));
 
     // Open qna & open first post
     // Timer(const Duration(milliseconds: 100), () async {
