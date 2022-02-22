@@ -110,6 +110,8 @@ Table of contents
   - [Delete uploaded image](#delete-uploaded-image)
   - [FileUploadButton](#fileuploadbutton)
   - [Displaying Uploaded Image](#displaying-uploaded-image)
+- [Cloud Functions](#cloud-functions)
+  - [Meilisearch](#meilisearch)
 
 # TODOs
 
@@ -1239,3 +1241,15 @@ try {
   - It will first try to display thumbnail image. if it fails to display thumbnail image,
     - then, it will try to display original image. If it fails to dsipaly original image,
       - then it will display the error widget.
+
+
+# Cloud Functions
+
+- We want to avoid using `cloud functions` as much as possible. But there are some cases that we must use it like sending push notifications.
+- We also use `cloud functions` to send(for indexing) posts and comments into `meilisearch` and our own backend.
+  - And we think, sending posts and comments into different palce can be done by flutter app, we may remove those cloud functions in the future.
+    - One good reason why we do it in `cloud functions` is that, user can create a post or a comemnt not only using flutter app, but also using web site. And we don't have to implement the same code (for sending posts and comments into another place) twice.
+
+## Meilisearch
+
+https://docs.google.com/document/d/1tSJJt8iJsXNl9vcBqYhKPkiRZR5JFo-SQE2SJ90GItA/edit#heading=h.g94frts1xgxo
