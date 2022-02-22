@@ -102,17 +102,17 @@ class SearchService {
         );
   }
 
-  /// Deletes an index.
+  /// Deletes all documents of an index.
   ///
-  Future deleteSearchIndex(String uid) async {
+  Future deleteAllDocuments(String uid) async {
     /// if (!UserService.instance.user.isAdmin) throw 'YOU_ARE_NOT_ADMIN';
-    return client.index(uid).delete();
+    return client.index(uid).deleteAllDocuments();
   }
 
-  resetFilters() {
+  resetFilters({String index = ''}) {
     uid = '';
-    index = '';
     category = '';
+    index = index;
     searchKey = '';
     sort = ['timestamp:desc'];
   }

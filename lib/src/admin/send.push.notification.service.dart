@@ -8,8 +8,7 @@ class SendPushNotificationService {
   }
 
   sendNotification(Map<String, dynamic>? data) async {
-    HttpsCallable callable =
-        FirebaseFunctions.instance.httpsCallable('sendPushNotification');
+    HttpsCallable callable = FirebaseFunctions.instance.httpsCallable('sendPushNotification');
     final results = await callable(data);
     print(results);
   }

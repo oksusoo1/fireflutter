@@ -50,9 +50,15 @@ class CommentModel with FirestoreMixin, ForumBase {
     Json data, {
     required String id,
   }) {
-    List<String> _files = data['files'] != null
-        ? new List<String>.from(data['files'])
-        : <String>[];
+    List<String> _files = <String>[];
+
+    if (data['files'] is String && data['files'] != '') {
+      _files = data['files'].split(', ');
+    }
+
+    if (data['files'] is List) {
+      _files = new List<String>.from(data['files']);
+    }
 
     return CommentModel(
       content: data['content'] ?? '',

@@ -64,7 +64,15 @@ class PostModel with FirestoreMixin, ForumBase {
 
   /// Get document data of map and convert it into post model
   factory PostModel.fromJson(Json data, String id) {
-    List<String> _files = data['files'] != null ? new List<String>.from(data['files']) : <String>[];
+    List<String> _files = <String>[];
+
+    if (data['files'] is String && data['files'] != '') {
+      _files = data['files'].split(', ');
+    }
+
+    if (data['files'] is List) {
+      _files = new List<String>.from(data['files']);
+    }
 
     var _timestamp = data['timestamp'] ?? Timestamp.now();
     if (_timestamp is int) _timestamp = Timestamp.fromMillisecondsSinceEpoch(_timestamp);

@@ -27,6 +27,7 @@ function timestamp() {
   return Math.round( (new Date).getTime() / 1000 );
 }
 
+
 /**
  * Returns category referrence
  *
@@ -217,6 +218,8 @@ async function createTestUser(uid) {
  * @returns promise
  */
 async function indexPostDocument(id, data) {
+  console.log("data; ", data);
+
   const _data = {
     id: id,
     uid: data.uid,
@@ -227,6 +230,7 @@ async function indexPostDocument(id, data) {
     files: data.files && data.files.length ? data.files.join(",") : "",
   };
 
+  console.log("_data; ", _data);
 
   const promises = [];
 
@@ -345,15 +349,15 @@ async function removeTopicAndForumAncestorsSubscriber(uids, topic) {
 
 async function getTokensFromUids(uids) {
   let _uids;
-  if(typeof uids == 'string') {
-    _uids = uids.split(',');
+  if (typeof uids == "string") {
+    _uids = uids.split(",");
   } else {
     _uids = uids;
   }
 
   const _tokens = [];
   const getTokensPromise = [];
-  for (const u of uids) {
+  for (const u of _uids) {
     getTokensPromise.push(admin.firestore().collection("message-tokens").where("uid", "==", u).get());
   }
 
@@ -381,28 +385,15 @@ function error(errorCode, errorMessage) {
 }
 
 
-async function sendPushNotification(query) {
-  const payload = prePayload(query);
-
-  try {
-    await admin.messaging().sendToTopic("/topics/" + query.topic, payload);
-    return {code: 'success'};
-  } catch (e) {
-    return {code: 'error'};
-  }
-}
-
-
 async function sendMessageToTopic(query) {
   const payload = prePayload(query);
 
   try {
     const res = await admin.messaging().sendToTopic("/topics/" + query.topic, payload);
-    return {code: 'success', result: res};
+    return {code: "success", result: res};
   } catch (e) {
-    return {code: 'error', message: e};
+    return {code: "error", message: e};
   }
-
 }
 
 async function sendMessageToTokens(query) {
@@ -410,12 +401,10 @@ async function sendMessageToTokens(query) {
 
   try {
     const res = await sendingMessageToDevice(query.tokens, payload);
-    return {code: 'success', result: res};
+    return {code: "success", result: res};
   } catch (e) {
-    return {code: 'error', message: e};
+    return {code: "error", message: e};
   }
-
-
 }
 
 async function sendMessageToUsers(query) {
@@ -424,12 +413,10 @@ async function sendMessageToUsers(query) {
 
   try {
     const res = await sendingMessageToDevice(tokens, payload);
-    return {code: 'success', result: res};
+    return {code: "success", result: res};
   } catch (e) {
-    return {code: 'error', message: e};
+    return {code: "error", message: e};
   }
-
-
 }
 
 async function sendingMessageToDevice(tokens, payload) {
@@ -449,36 +436,34 @@ async function sendingMessageToDevice(tokens, payload) {
   const sendDevice = await Promise.all(sendToDevicePromise);
 
   const tokensToRemove = [];
-  const tokenOk = [];
   let successCount = 0;
   let errorCount = 0;
   sendDevice.forEach((response, i) => {
     // For each message check if there was an error.
-      response.results.forEach((result, index) => {
-        const error = result.error;
-        if (error) {
-          // console.log(
-          //     "Failure sending notification to",
-          //     chunks[i][index],
-          //     error,
-          // );
-          // Cleanup the tokens who are not registered anymore.
-          if (error.code === "messaging/invalid-registration-token" ||
+    response.results.forEach((result, index) => {
+      const error = result.error;
+      if (error) {
+        // console.log(
+        //     "Failure sending notification to",
+        //     chunks[i][index],
+        //     error,
+        // );
+        // Cleanup the tokens who are not registered anymore.
+        if (error.code === "messaging/invalid-registration-token" ||
                 error.code === "messaging/registration-token-not-registered") {
-            tokensToRemove.push(admin.firestore().collection("message-tokens").doc(chunks[i][index]).delete());
-          }
-          errorCount++;
-        } else {
-          // tokenOk.push({[chunks[i]]: 'ok' });
-          successCount++;
+          tokensToRemove.push(admin.firestore().collection("message-tokens").doc(chunks[i][index]).delete());
         }
-      });
-    },
+        errorCount++;
+      } else {
+        // tokenOk.push({[chunks[i]]: 'ok' });
+        successCount++;
+      }
+    });
+  },
   );
   await Promise.all(tokensToRemove);
-  return {success: successCount, error:errorCount};
+  return {success: successCount, error: errorCount};
 }
-
 
 
 function prePayload(query) {
@@ -490,12 +475,11 @@ function prePayload(query) {
     },
     data: {
       id: query.postId ? query.postId : "",
-      type: query.postId ? query.postId : '',
-      sender_uid: query.uid ? query.uid : '',
+      type: query.postId ? query.postId : "",
+      sender_uid: query.uid ? query.uid : "",
     },
   };
 }
-
 
 
 exports.delay = delay;
@@ -521,13 +505,10 @@ exports.getTokensFromUids = getTokensFromUids;
 exports.chunk = chunk;
 
 exports.error = error;
-exports.sendPushNotification = sendPushNotification;
-
 
 exports.sendMessageToTopic = sendMessageToTopic;
 exports.sendMessageToTokens = sendMessageToTokens;
 exports.sendMessageToUsers = sendMessageToUsers;
-
 
 exports.sendingMessageToDevice = sendingMessageToDevice;
 

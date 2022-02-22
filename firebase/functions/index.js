@@ -101,27 +101,28 @@ exports.sendMessageOnCommentCreate = functions
     });
 
 
-// todo - rename it to createPostIndex
 // Indexes a post document when it is created.
 //
-// meilisearchCreatePostIndex({
+// createPostIndex({
 //  uid: 'user_ccc',
 //  category: 'discussion',
 //  title: 'I post on discussion',
 //  content: 'Discussion'
 // })
-exports.meilisearchCreatePostIndex = functions
+exports.createPostIndex = functions
     .region("asia-northeast3").firestore
     .document("/posts/{postId}")
     .onCreate((snap, context) => {
+      console.log("createPostIndex(); ");
+      console.log("id; ", context.params.postId);
+      console.log("snap.data(); ", snap.data());
       return lib.indexPost(context.params.postId, snap.data());
     });
 
-// todo - rename it to updatePostIndex
 // Updates or delete the indexed document when a post is updated or deleted.
 //
 // Update:
-// meilisearchUpdatePostIndex({
+// updatePostIndex({
 //  before: {},
 //  after: {
 //   uid: 'user_ccc',
@@ -133,12 +134,12 @@ exports.meilisearchCreatePostIndex = functions
 //  })
 //
 // Delete:
-// meilisearchUpdatePostIndex({
+// updatePostIndex({
 //  before: {},
 //  after: { deleted: true }},
 //  { params: { postId: 'psot-id' }
 // })
-exports.meilisearchUpdatePostIndex = functions
+exports.updatePostIndex = functions
     .region("asia-northeast3").firestore
     .document("/posts/{postId}")
     .onUpdate((change, context) => {
@@ -152,31 +153,30 @@ exports.meilisearchUpdatePostIndex = functions
 
 // Indexes a comment document when it is created.
 //
-// meilisearchCreateCommentIndex({ uid: 'user_ccc', content: 'Discussion' })
-exports.meilisearchCreateCommentIndex = functions
+// createCommentIndex({ uid: 'user_ccc', content: 'Discussion' })
+exports.createCommentIndex = functions
     .region("asia-northeast3").firestore
     .document("/comments/{commentId}")
     .onCreate((snap, context) => {
       return lib.indexComment(context.params.commentId, snap.data());
     });
 
-// todo - rename it to updateCommentIndex
 // Updates or delete the indexed document when a comment is updated or deleted.
 //
 // Update:
-//  meilisearchUpdateCommentIndex({
+//  updateCommentIndex({
 //   before: {},
 //   after: { content: '...' }},
 //   { params: { commentId: 'comment-id' }
 //  })
 //
 // Delete:
-//  meilisearchUpdateCommentIndex({
+//  updateCommentIndex({
 //   before: {},
 //   after: { deleted: true }},
 //   { params: { commentId: 'comment-id' }
 //  })
-exports.meilisearchUpdateCommentIndex = functions
+exports.updateCommentIndex = functions
     .region("asia-northeast3").firestore
     .document("/comments/{commentId}")
     .onUpdate((change, context) => {
@@ -189,32 +189,24 @@ exports.meilisearchUpdateCommentIndex = functions
     });
 
 
-exports.sendPushNotification = functions
-  .region("asia-northeast3")
-  .https
-  .onRequest(async (req, res) => {
-  res.status(200).send(await lib.sendPushNotification(req.query));
-});
-
 exports.sendMessageToTopic = functions
-  .region("asia-northeast3")
-  .https
-  .onRequest(async (req, res) => {
-  res.status(200).send(await lib.sendMessageToTopic(req.query));
-});
+    .region("asia-northeast3")
+    .https
+    .onRequest(async (req, res) => {
+      res.status(200).send(await lib.sendMessageToTopic(req.query));
+    });
 
 exports.sendMessageToTokens = functions
-  .region("asia-northeast3")
-  .https
-  .onRequest(async (req, res) => {
-  res.status(200).send(await lib.sendMessageToTokens(req.query));
-});
+    .region("asia-northeast3")
+    .https
+    .onRequest(async (req, res) => {
+      res.status(200).send(await lib.sendMessageToTokens(req.query));
+    });
 
 exports.sendMessageToUsers = functions
-  .region("asia-northeast3")
-  .https
-  .onRequest(async (req, res) => {
-  res.status(200).send(await lib.sendMessageToUsers(req.query));
-});
-
+    .region("asia-northeast3")
+    .https
+    .onRequest(async (req, res) => {
+      res.status(200).send(await lib.sendMessageToUsers(req.query));
+    });
 

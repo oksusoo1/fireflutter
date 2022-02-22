@@ -15,14 +15,14 @@ class TranslationService with DatabaseMixin {
 
   Map<String, Map<String, String>> texts = {};
   // ignore: close_sinks
-  BehaviorSubject<Map<String, Map<String, String>>> changes =
-      BehaviorSubject.seeded({});
+  BehaviorSubject<Map<String, Map<String, String>>> changes = BehaviorSubject.seeded({});
 
   TranslationService() {
+    debugPrint('===> TranslationService::constructor;');
     translationDoc.onValue.listen((event) {
       if (event.snapshot.exists) {
-        print('onValue; exists; $event');
         convertData(event.snapshot.value);
+        print('onValue; exists; $texts');
         changes.add(texts);
       }
     });
@@ -38,6 +38,9 @@ class TranslationService with DatabaseMixin {
   }
 
   convertData(dynamic data) {
+    if (!(data is Map)) return;
+    if (data is String) return;
+
     texts = {};
     for (final k in data.keys) {
       texts[k] = {

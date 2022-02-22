@@ -27,70 +27,66 @@ const lib = require("../lib");
 
 describe("SendPushNotification test  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~", () => {
   it("send message to topic", async () => {
-
-    const testTopic = 'sendingToTestTopic';
+    const testTopic = "sendingToTestTopic";
 
     await admin.messaging().subscribeToTopic(validToken1, testTopic);
     try {
-        const re = await lib.sendMessageToTopic({
-            topic: testTopic,
-            title: 'push title test via topic 1',
-            body: 'push body test via topic 1',
-        });
-        if ( re.code == 'success') {
-          assert.ok('sending push notification was success.');
-          assert.ok(re.result.messageId != null, 'messageId must exist');
-        }
-        else assert.fail('failed on seding messaing to default topic');
-    } catch(e) {
-     assert.fail('send push notification should succeed.');   
+      const re = await lib.sendMessageToTopic({
+        topic: testTopic,
+        title: "push title test via topic 1",
+        body: "push body test via topic 1",
+      });
+      if ( re.code == "success") {
+        assert.ok("sending push notification was success.");
+        assert.ok(re.result.messageId != null, "messageId must exist");
+      } else assert.fail("failed on seding messaing to default topic");
+    } catch (e) {
+      assert.fail("send push notification should succeed.");
     }
   });
 
   it("send message to token", async () => {
-
     try {
       const re = await lib.sendMessageToTokens({
-          tokens: 'invalidToken-this-is-not-valid',
-          title: 'push title test via token 1',
-          body: 'push body test via token 1',
+        tokens: "invalidToken-this-is-not-valid",
+        title: "push title test via token 1",
+        body: "push body test via token 1",
       });
-      if ( re.code == 'success') assert.fail('sending push notification should fail.');
-      else assert.ok('failed on sending message to token');
-    } catch(e) {
-        assert.ok('send push notification should fail.');   
-    }
-    
-    try {
-      const re = await lib.sendMessageToTokens({
-          tokens: validToken1,
-          title: 'push title test via token 1',
-          body: 'push body test via token 1',
-      });
-      if ( re.code == 'success') assert.ok('sending push notification was success.');
-      else assert.fail('failed on seding messaing to topic');
-    } catch(e) {
-      assert.fail('send push notification should succeed.');   
+      if ( re.code == "success") assert.fail("sending push notification should fail.");
+      else assert.ok("failed on sending message to token");
+    } catch (e) {
+      assert.ok("send push notification should fail.");
     }
 
     try {
-        const re = await lib.sendMessageToTokens({
-            tokens: [validToken1, validToken2, 'invalidtoken'],
-            title: 'push title test via multiple tokens',
-            body: 'push body test via multiple tokens',
-        });
-        if ( re.code == 'success') {
-          assert.ok('sending push notification was success.');
-          assert.ok(re.result.success == 2);
-          assert.ok(re.result.error == 1);
-        }
-        else assert.fail('failed on seding messaing to default topic');
-    } catch(e) {
-      assert.fail('send push notification should succeed.');   
+      const re = await lib.sendMessageToTokens({
+        tokens: validToken1,
+        title: "push title test via token 1",
+        body: "push body test via token 1",
+      });
+      if ( re.code == "success") assert.ok("sending push notification was success.");
+      else assert.fail("failed on seding messaing to topic");
+    } catch (e) {
+      assert.fail("send push notification should succeed.");
+    }
+
+    try {
+      const re = await lib.sendMessageToTokens({
+        tokens: [validToken1, validToken2, "invalidtoken"],
+        title: "push title test via multiple tokens",
+        body: "push body test via multiple tokens",
+      });
+      if ( re.code == "success") {
+        assert.ok("sending push notification was success.");
+        assert.ok(re.result.success == 2);
+        assert.ok(re.result.error == 1);
+      } else assert.fail("failed on seding messaing to default topic");
+    } catch (e) {
+      assert.fail("send push notification should succeed.");
     }
   });
 
-  
+
   it("send message to user", async () => {
     const userA = "sendMessaegUserA";
     const userB = "sendMessaegUserB";
@@ -102,26 +98,26 @@ describe("SendPushNotification test  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~", () => {
     tokenUpdates.push( db.collection("message-tokens").doc(validToken2).set({uid: userB}));
     await Promise.all(tokenUpdates);
     try {
-        const re = await lib.sendMessageToUsers({
-            uids: userA,
-            title: 'push title 1',
-            body: 'push body 1',
-        });
-        if ( re.code == 'success') assert.ok('sending push notification was success.');
-        else assert.fail('failed on seding messaing to default topic');
-    } catch(e) {
-     assert.fail('send push notification should succeed.');   
+      const re = await lib.sendMessageToUsers({
+        uids: userA,
+        title: "push title 1",
+        body: "push body 1",
+      });
+      if ( re.code == "success") assert.ok("sending push notification was success.");
+      else assert.fail("failed on seding messaing to default topic");
+    } catch (e) {
+      assert.fail("send push notification should succeed.");
     }
     try {
-        const re = await lib.sendMessageToUsers({
-            tokens: [userA, userA],
-            title: 'push title 1',
-            body: 'push body 1',
-        });
-        if ( re.code == 'success') assert.ok('sending push notification was success.');
-        else assert.fail('failed on seding messaing to default topic');
-    } catch(e) {
-    assert.fail('send push notification should succeed.');   
+      const re = await lib.sendMessageToUsers({
+        tokens: [userA, userA],
+        title: "push title 1",
+        body: "push body 1",
+      });
+      if ( re.code == "success") assert.ok("sending push notification was success.");
+      else assert.fail("failed on seding messaing to default topic");
+    } catch (e) {
+      assert.fail("send push notification should succeed.");
     }
   });
 });
