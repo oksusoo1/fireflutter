@@ -85,3 +85,4 @@ export 'src/translation/translation.list.dart';
 export 'src/search/search.service.dart';
 
 export 'src/admin/widget/send.push.notification.dart';
+export 'src/admin/send.push.notification.service.dart';

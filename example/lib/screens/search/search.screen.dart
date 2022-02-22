@@ -20,7 +20,6 @@ class _PostListScreenV2State extends State<PostListScreenV2> {
   final scrollController = ScrollController();
 
   bool loading = false;
-  bool noMorePosts = false;
 
   bool get atBottom {
     return scrollController.offset > (scrollController.position.maxScrollExtent - 300);
@@ -55,13 +54,10 @@ class _PostListScreenV2State extends State<PostListScreenV2> {
   }
 
   search() async {
-    if (loading || noMorePosts) return;
+    if (loading) return;
     if (mounted) setState(() => loading = true);
-    print('Fetching posts');
-
     try {
-      final res = await searchService.search();
-      if (res.length < searchService.limit) noMorePosts = true;
+      await searchService.search();
     } catch (e) {
       error(e);
     }
@@ -91,7 +87,6 @@ class _PostListScreenV2State extends State<PostListScreenV2> {
   }
 
   resetAndSearch() {
-    noMorePosts = false;
     searchService.resetListAndPagination(limit: 4);
     search();
   }

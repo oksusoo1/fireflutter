@@ -16,6 +16,8 @@ class SearchService {
 
   List<Map<String, dynamic>> resultList = [];
 
+  bool noMorePosts = false;
+
   /// Search options
   ///
   /// [limit] is the maximum number of documents that the search will return.
@@ -39,6 +41,8 @@ class SearchService {
   /// Searches for indexed documents in the given `_serverUrl`.
   ///
   Future<List<Map<String, dynamic>>> search() async {
+    if (noMorePosts) return [];
+    print('Fetching posts');
     // print('limit ---> $limit');
     // print('offset ---> $offset');
     // print('page ---> $page');
@@ -58,6 +62,8 @@ class SearchService {
         );
 
     if (res.hits != null) {
+      if (res.hits!.length < limit) noMorePosts = true;
+
       _posts = res.hits!;
       resultList.addAll(_posts);
       offset = limit * page;
@@ -71,7 +77,7 @@ class SearchService {
   /// ADMIN FUNCTIONS
   ///
 
-  /// Updates filterable attributes for an index.
+  /// Updates index search settings.
   ///
   Future updateIndexSearchSettings({
     required String index,
@@ -96,7 +102,7 @@ class SearchService {
         );
   }
 
-  /// Updates filterable attributes for an index.
+  /// Deletes an index.
   ///
   Future deleteSearchIndex(String uid) async {
     /// if (!UserService.instance.user.isAdmin) throw 'YOU_ARE_NOT_ADMIN';
@@ -112,6 +118,7 @@ class SearchService {
   }
 
   resetListAndPagination({int limit = 20}) {
+    noMorePosts = false;
     limit = limit;
     offset = 0;
     page = 1;
