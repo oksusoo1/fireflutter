@@ -247,7 +247,7 @@ function lessThan(n) {
 }
 
 function checkType() {
-	return request.resource.metadata.type == 'post' || request.resource.metadata.type == 'comment' || request.resource.metadata.type == 'user';
+	return request.resource.metadata.type == 'post' || request.resource.metadata.type == 'comment' || request.resource.metadata.type == 'chat';
 }
 ```
 
@@ -1252,7 +1252,7 @@ try {
 
 - When a file is uploaded,
   - `type`, `uid`, `basename` must be added as custom meta.
-    - `type` is the type of parent object. it can be one of `post`, `comment`, `user`.
+    - `type` is the type of parent object. it can be one of `post`, `comment`, `user`, or `chat`.
 
 
 - When files are uploaded with a post(or comment), the URLs will be saved in `files` property of the post(or comment).

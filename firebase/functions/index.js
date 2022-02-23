@@ -209,10 +209,10 @@ exports.sendMessageToUsers = functions
     });
 
 
-exports.updateFileParentId = functions
+exports.updateFileParentIdForPost = functions
     .region("asia-northeast3")
     .firestore
-    .document("posts/{postId}")
+    .document("/posts/{postId}")
     .onWrite((change, context) => {
       return lib.updateFileParentId(
           context.params.postId,
@@ -220,10 +220,10 @@ exports.updateFileParentId = functions
       );
     });
 
-exports.updateFileParentId = functions
+exports.updateFileParentIdForComment = functions
     .region("asia-northeast3")
     .firestore
-    .document("comments/{commentId}")
+    .document("/comments/{commentId}")
     .onWrite((change, context) => {
       return lib.updateFileParentId(
           context.params.commentId,

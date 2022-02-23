@@ -24,7 +24,7 @@ class UserService with FirestoreMixin, DatabaseMixin {
   }
 
   UserModel user = UserModel();
-  User? currentUser = FirebaseAuth.instance.currentUser;
+  User? get currentUser => FirebaseAuth.instance.currentUser;
 
   /// Returns currently signed in user's uid or empty string.
   String get uid => FirebaseAuth.instance.currentUser?.uid ?? '';
