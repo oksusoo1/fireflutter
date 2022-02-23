@@ -84,6 +84,21 @@ describe("SendPushNotification test  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~", () => {
     } catch (e) {
       assert.fail("send push notification should succeed.");
     }
+
+    try {
+      const re = await lib.sendMessageToTokens({
+        tokens: validToken1 + "," + validToken2 + "," + "invalidtoken",
+        title: "push title test via multiple tokens",
+        body: "push body test via multiple tokens",
+      });
+      if ( re.code == "success") {
+        assert.ok("sending push notification was success.");
+        assert.ok(re.result.success == 2);
+        assert.ok(re.result.error == 1);
+      } else assert.fail("failed on seding messaing to default topic");
+    } catch (e) {
+      assert.fail("send push notification should succeed.");
+    }
   });
 
 

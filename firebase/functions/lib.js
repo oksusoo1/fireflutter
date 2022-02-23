@@ -416,9 +416,16 @@ async function sendMessageToTopic(query) {
 
 async function sendMessageToTokens(query) {
   const payload = prePayload(query);
+  
+  let _tokens;
+  if (typeof query.tokens == "string") {
+    _tokens = query.tokens.split(",");
+  } else {
+    _tokens = query.tokens;
+  }
 
   try {
-    const res = await sendingMessageToDevice(query.tokens, payload);
+    const res = await sendingMessageToDevice(_tokens, payload);
     return {code: "success", result: res};
   } catch (e) {
     return {code: "error", message: e};
@@ -444,7 +451,7 @@ async function sendingMessageToDevice(tokens, payload) {
   // You can send messages to up to 1000 devices in a single request.
   // If you provide an array with over 1000 registration tokens,
   // the request will fail with a messaging/invalid-recipient error.
-  const chunks = chunk(tokens, 1000);
+  const chunks = chunk(_tokens, 1000);
 
   const sendToDevicePromise = [];
   for (const c of chunks) {
