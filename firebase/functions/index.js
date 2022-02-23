@@ -190,6 +190,14 @@ exports.updateCommentIndex = functions
       }
     });
 
+exports.sendMessageToAll = functions
+    .region("asia-northeast3")
+    .https.onRequest(async (req, res) => {
+      const query = req.query;
+      query["topic"] = "defaultTopic";
+      res.status(200).send(await lib.sendMessageToTopic(query));
+    });
+
 exports.sendMessageToTopic = functions
     .region("asia-northeast3")
     .https.onRequest(async (req, res) => {

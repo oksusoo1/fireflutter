@@ -417,8 +417,15 @@ async function sendMessageToTopic(query) {
 async function sendMessageToTokens(query) {
   const payload = prePayload(query);
 
+  let _tokens;
+  if (typeof query.tokens == "string") {
+    _tokens = query.tokens.split(",");
+  } else {
+    _tokens = query.tokens;
+  }
+
   try {
-    const res = await sendingMessageToDevice(query.tokens, payload);
+    const res = await sendingMessageToDevice(_tokens, payload);
     return {code: "success", result: res};
   } catch (e) {
     return {code: "error", message: e};

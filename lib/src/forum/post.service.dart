@@ -46,7 +46,8 @@ class PostService with FirestoreMixin {
     /// TODO: check if it's working.
     if (within != null) {
       q = q.where('timestamp',
-          isGreaterThanOrEqualTo: Jiffy().subtract(days: within).format("yyyy-MM-dd"));
+          isGreaterThanOrEqualTo:
+              Jiffy().subtract(days: within).format("yyyy-MM-dd"));
     }
     q = q.limit(limit);
 
@@ -65,5 +66,11 @@ class PostService with FirestoreMixin {
       cacheContainer[cacheId] = posts;
     }
     return posts;
+  }
+
+  Future<PostModel?> load(id) async {
+    DocumentSnapshot doc = await postCol.doc(id).get();
+    if (doc.exists == false) return null;
+    return PostModel.fromJson(doc.data() as Map<String, dynamic>, doc.id);
   }
 }
