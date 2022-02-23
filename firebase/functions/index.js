@@ -23,8 +23,7 @@ const lib = require("./lib");
  */
 exports.sendMessageOnPostCreate = functions
     .region("asia-northeast3")
-    .firestore
-    .document("/posts/{postId}")
+    .firestore.document("/posts/{postId}")
     .onCreate((snapshot, context) => {
       const category = snapshot.data().category;
       const payload = {
@@ -52,10 +51,9 @@ exports.sendMessageOnPostCreate = functions
 // {params:{commentId:'eIpYHUmYGKUf921B9fRj'}})
 exports.sendMessageOnCommentCreate = functions
     .region("asia-northeast3")
-    .firestore
-    .document("/comments/{commentId}")
+    .firestore.document("/comments/{commentId}")
     .onCreate(async (snapshot, context) => {
-      // get root post
+    // get root post
       const post = await admin
           .firestore()
           .collection("posts")
@@ -83,23 +81,30 @@ exports.sendMessageOnCommentCreate = functions
       await admin.messaging().sendToTopic(topic, payload);
 
       // get comment ancestors
-      const ancestorsUid = await lib.getCommentAncestors(context.params.commentId, snapshot.data().uid);
+      const ancestorsUid = await lib.getCommentAncestors(
+          context.params.commentId,
+          snapshot.data().uid,
+      );
 
       // add the post uid if the comment author is not the post author
-      if (post.data().uid != snapshot.data().uid && !ancestorsUid.includes(post.data().uid)) {
+      if (
+        post.data().uid != snapshot.data().uid &&
+      !ancestorsUid.includes(post.data().uid)
+      ) {
         ancestorsUid.push(post.data().uid);
       }
 
       // remove subcriber uid but want to get notification under their post/comment
-      const userUids = await lib.removeTopicAndForumAncestorsSubscriber(ancestorsUid, topic);
-
+      const userUids = await lib.removeTopicAndForumAncestorsSubscriber(
+          ancestorsUid,
+          topic,
+      );
 
       // get users tokens
       const tokens = await lib.getTokensFromUids(userUids);
 
       return lib.sendingMessageToDevice(tokens, payload);
     });
-
 
 // Indexes a post document when it is created.
 //
@@ -110,8 +115,8 @@ exports.sendMessageOnCommentCreate = functions
 //  content: 'Discussion'
 // })
 exports.createPostIndex = functions
-    .region("asia-northeast3").firestore
-    .document("/posts/{postId}")
+    .region("asia-northeast3")
+    .firestore.document("/posts/{postId}")
     .onCreate((snap, context) => {
       return lib.indexPost(context.params.postId, snap.data());
     });
@@ -137,8 +142,8 @@ exports.createPostIndex = functions
 //  { params: { postId: 'psot-id' }
 // })
 exports.updatePostIndex = functions
-    .region("asia-northeast3").firestore
-    .document("/posts/{postId}")
+    .region("asia-northeast3")
+    .firestore.document("/posts/{postId}")
     .onUpdate((change, context) => {
       const data = change.after.data();
       if (data["deleted"]) {
@@ -152,8 +157,8 @@ exports.updatePostIndex = functions
 //
 // createCommentIndex({ uid: 'user_ccc', content: 'Discussion' })
 exports.createCommentIndex = functions
-    .region("asia-northeast3").firestore
-    .document("/comments/{commentId}")
+    .region("asia-northeast3")
+    .firestore.document("/comments/{commentId}")
     .onCreate((snap, context) => {
       return lib.indexComment(context.params.commentId, snap.data());
     });
@@ -174,8 +179,8 @@ exports.createCommentIndex = functions
 //   { params: { commentId: 'comment-id' }
 //  })
 exports.updateCommentIndex = functions
-    .region("asia-northeast3").firestore
-    .document("/comments/{commentId}")
+    .region("asia-northeast3")
+    .firestore.document("/comments/{commentId}")
     .onUpdate((change, context) => {
       const data = change.after.data();
       if (data["deleted"]) {
@@ -185,25 +190,31 @@ exports.updateCommentIndex = functions
       }
     });
 
-
 exports.sendMessageToTopic = functions
     .region("asia-northeast3")
-    .https
-    .onRequest(async (req, res) => {
+    .https.onRequest(async (req, res) => {
       res.status(200).send(await lib.sendMessageToTopic(req.query));
     });
 
 exports.sendMessageToTokens = functions
     .region("asia-northeast3")
-    .https
-    .onRequest(async (req, res) => {
+    .https.onRequest(async (req, res) => {
       res.status(200).send(await lib.sendMessageToTokens(req.query));
     });
 
 exports.sendMessageToUsers = functions
     .region("asia-northeast3")
-    .https
-    .onRequest(async (req, res) => {
+    .https.onRequest(async (req, res) => {
       res.status(200).send(await lib.sendMessageToUsers(req.query));
     });
 
+// Listen for changes in all documents in the 'users' collection
+exports.updateFileParentId = functions.firestore
+    .region("asia-northeast3")
+    .document("posts/{postId}")
+    .onWrite((change, context) => {
+      return lib.updateFileParentId(
+          context.params.postId,
+          change.after.data(),
+      );
+    });

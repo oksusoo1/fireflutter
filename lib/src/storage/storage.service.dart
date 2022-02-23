@@ -34,6 +34,7 @@ class StorageService {
     required ImageSource source,
     int quality = 90,
     Function(double)? onProgress,
+    required String type,
   }) async {
     if (UserService.instance.notSignIn) throw ERROR_SIGN_IN;
 
@@ -62,6 +63,7 @@ class StorageService {
         SettableMetadata(customMetadata: {
           'basename': basename,
           'uid': UserService.instance.uid,
+          'type': type,
         }));
 
     /// Progress listener
@@ -131,8 +133,9 @@ class StorageService {
     /// It can compress the image and then return it as a File object.
 
     final String basename = filepath.split('/').last;
-    String localFile =
-        await getAbsoluteTemporaryFilePath('compressed-' + basename);
+
+    /// 'c_' means, compressed.
+    String localFile = await getAbsoluteTemporaryFilePath('c_' + basename);
     File? file = await FlutterImageCompress.compressAndGetFile(
       filepath, // source file
       localFile, // target file. Overwrite the source with compressed.

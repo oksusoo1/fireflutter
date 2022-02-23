@@ -274,6 +274,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     onPressed: () async {
                       try {
                         uploadUrl = await StorageService.instance.pickUpload(
+                          type: 'user',
                           source: ImageSource.gallery,
                           onProgress: print,
                         );

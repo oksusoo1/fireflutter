@@ -1255,10 +1255,10 @@ try {
 
 - When a post(or a comment) is submitted with uploaded files, then `cloud functions` will update custom metadata of those files in storage with the id of the post(or comment).
   - That means, when a post(or comment) has attached files, the files will have the id of the post(or comment) in its custom metadata.
-  - So, you can delete files in storage if they don't have `id` in custom metadata when they have their `type` as one of `post` or `comment`.
+  - So, you can delete files in storage if
+    - they don't have `id` in custom metadata when their `type` is one of `post` or `comment`.
+    - the url is no longer being used by the `id` of the post(or comment).
   - @todo - Firefluter does not provide the delition funtionality, yet. You may delete it by yourself at this time.
-
-- When a post(or a comment) is submitted(created, updated, or deleted), `cloud funtions` will delete the files in storage if there is changes in the post(or comment) `files` property.
 
 
 /// onWrite 에서 글/코멘트 아이디를 지정한다. 없으면, 나중에 정기적으로 삭제.

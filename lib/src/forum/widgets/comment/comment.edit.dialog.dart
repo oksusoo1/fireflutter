@@ -51,6 +51,7 @@ class _CommentEditDialogState extends State<CommentEditDialog> {
             ),
             Row(children: [
               FileUploadButton(
+                type: 'comment',
                 onUploaded: (url) {
                   files = [...files, url];
                   uploadProgress = 0;
@@ -73,7 +74,8 @@ class _CommentEditDialogState extends State<CommentEditDialog> {
                 },
               ),
             ]),
-            if (uploadProgress > 0) LinearProgressIndicator(value: uploadProgress),
+            if (uploadProgress > 0)
+              LinearProgressIndicator(value: uploadProgress),
             ImageListEdit(files: files, onError: widget.onError),
           ],
         ),

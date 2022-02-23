@@ -15,8 +15,10 @@ class ProfileScreenState extends State<ProfileScreen> {
   bool nicknameLoader = false;
   bool photoUrlLoader = false;
 
-  final nickname = TextEditingController(text: UserService.instance.user.nickname);
-  final photoUrl = TextEditingController(text: UserService.instance.user.photoUrl);
+  final nickname =
+      TextEditingController(text: UserService.instance.user.nickname);
+  final photoUrl =
+      TextEditingController(text: UserService.instance.user.photoUrl);
 
   double uploadProgress = 0;
 
@@ -36,14 +38,17 @@ class ProfileScreenState extends State<ProfileScreen> {
                   child: u.photoUrl.isNotEmpty
                       ? UploadedImage(url: u.photoUrl)
                       : Icon(Icons.person, size: 40),
+                  type: 'user',
                   onUploaded: updatePhotoUrl,
-                  onProgress: (progress) => setState(() => uploadProgress = progress),
+                  onProgress: (progress) =>
+                      setState(() => uploadProgress = progress),
                   onError: error,
                 );
               },
             ),
             spaceSm,
-            if (uploadProgress != 0) LinearProgressIndicator(value: uploadProgress),
+            if (uploadProgress != 0)
+              LinearProgressIndicator(value: uploadProgress),
             spaceXl,
             const Text('Nickname'),
             Row(
@@ -68,7 +73,9 @@ class ProfileScreenState extends State<ProfileScreen> {
   updateNickname(t) {
     setState(() => nicknameLoader = true);
     bounce('nickname', 500, (s) async {
-      await UserService.instance.user.updateNickname(t).catchError((e) => error(e));
+      await UserService.instance.user
+          .updateNickname(t)
+          .catchError((e) => error(e));
       setState(() => nicknameLoader = false);
     });
   }
@@ -83,7 +90,8 @@ class ProfileScreenState extends State<ProfileScreen> {
       await user.updatePhotoUrl(t).catchError((e) => error(e));
       setState(() => uploadProgress = 0);
     } catch (e) {
-      debugPrint('updatePhotoUrl() => StorageService.instance.delete(${user.photoUrl})');
+      debugPrint(
+          'updatePhotoUrl() => StorageService.instance.delete(${user.photoUrl})');
       error(e);
     }
   }

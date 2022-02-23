@@ -59,7 +59,8 @@ class _PostFormState extends State<PostForm> {
 
     final submitButton = widget.submitButtonBuilder != null
         ? widget.submitButtonBuilder!(onSubmit)
-        : ElevatedButton(onPressed: () => onSubmit(), child: const Text('SUBMIT'));
+        : ElevatedButton(
+            onPressed: () => onSubmit(), child: const Text('SUBMIT'));
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -74,6 +75,7 @@ class _PostFormState extends State<PostForm> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             FileUploadButton(
+              type: 'post',
               onUploaded: (url) {
                 files = [...files, url];
                 if (mounted) setState(() {});

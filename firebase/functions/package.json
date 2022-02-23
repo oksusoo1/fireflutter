@@ -13,6 +13,7 @@
     "test:meilisearch": "mocha --timeout 5000 --watch tests/meilisearch.test.js",
     "test:backup": "mocha --timeout 5000 --watch tests/backup.test.js",
     "test:messaging:sendMessage": "mocha --timeout 50000 --watch tests/sendPushNotification.test.js",
+    "test:uploadFileParentId": "mocha --timeout 10000 --watch tests/uploadFileParentId.test.js",
     "lint:fix": "./node_modules/.bin/eslint . --fix"
   },
   "engines": {

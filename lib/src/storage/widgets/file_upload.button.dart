@@ -5,6 +5,7 @@ import '../../../fireflutter.dart';
 class FileUploadButton extends StatelessWidget {
   const FileUploadButton({
     this.child,
+    required this.type,
     required this.onUploaded,
     required this.onProgress,
     required this.onError,
@@ -12,6 +13,7 @@ class FileUploadButton extends StatelessWidget {
   }) : super(key: key);
 
   final Widget? child;
+  final String type;
   final Function(String) onUploaded;
   final Function(double) onProgress;
   final Function(dynamic) onError;
@@ -57,6 +59,7 @@ class FileUploadButton extends StatelessWidget {
       String uploadedFileUrl = await StorageService.instance.pickUpload(
         onProgress: onProgress,
         source: re,
+        type: type,
       );
       onUploaded(uploadedFileUrl);
     } catch (e) {

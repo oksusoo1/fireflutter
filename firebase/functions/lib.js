@@ -9,14 +9,13 @@ const Axios = require("axios");
 
 // const {MeiliSearch} = require("meilisearch");
 
-
 // get firestore
 const db = admin.firestore();
 
 // get real time database
 const rdb = admin.database();
 
-const delay = (time) => new Promise((res)=>setTimeout(res, time));
+const delay = (time) => new Promise((res) => setTimeout(res, time));
 
 /**
  * Returns unix timestamp
@@ -24,9 +23,8 @@ const delay = (time) => new Promise((res)=>setTimeout(res, time));
  * @return int unix timestamp
  */
 function timestamp() {
-  return Math.round( (new Date).getTime() / 1000 );
+  return Math.round(new Date().getTime() / 1000);
 }
-
 
 /**
  * Returns category referrence
@@ -55,7 +53,6 @@ function postDoc(id) {
 function commentDoc(id) {
   return db.collection("comments").doc(id);
 }
-
 
 /**
  * Returns a query of getting all categories.
@@ -97,7 +94,7 @@ async function createCategory(data) {
  */
 async function createPost(data) {
   // if data.category.id comes in, then it will prepare the category to be exist.
-  if ( data.category && data.category.id ) {
+  if (data.category && data.category.id) {
     await createCategory(data.category);
     // console.log((await catDoc.get()).data());
     // console.log('category id; ', catDoc.id);
@@ -109,7 +106,7 @@ async function createPost(data) {
     uid: data.post && data.post.uid ? data.post.uid : "uid",
   };
 
-  if ( data.post && data.post.id ) {
+  if (data.post && data.post.id) {
     if (data.post.deleted && data.post.deleted === true) {
       postData.deleted = true;
     }
@@ -120,7 +117,6 @@ async function createPost(data) {
     return db.collection("posts").add(postData);
   }
 }
-
 
 /**
  * Create a comment for a test
@@ -158,13 +154,13 @@ async function createPost(data) {
   });
  */
 async function createComment(data) {
-  if ( data.category && data.category.id ) {
+  if (data.category && data.category.id) {
     await createCategory(data.category);
   }
 
   let commentData;
   // If there is no postId in data, then create one.
-  if ( data.post ) {
+  if (data.post) {
     const ref = await createPost(data);
 
     commentData = {
@@ -182,7 +178,7 @@ async function createComment(data) {
     };
   }
   // if no comment id, then create one
-  if ( ! data.comment.id ) {
+  if (!data.comment.id) {
     return db.collection("comments").add(commentData);
   } else {
     if (data.comment.deleted && data.comment.deleted === true) {
@@ -201,14 +197,16 @@ async function createComment(data) {
  * @returns
  */
 async function createTestUser(uid) {
-  const timestamp = (new Date).getTime();
-  await rdb.ref("users").child(uid).set({
-    nickname: "testUser" + timestamp,
-    timestamp_registered: timestamp,
-  });
+  const timestamp = new Date().getTime();
+  await rdb
+      .ref("users")
+      .child(uid)
+      .set({
+        nickname: "testUser" + timestamp,
+        timestamp_registered: timestamp,
+      });
   return rdb.ref("users").child(uid);
 }
-
 
 /**
  * Indexes a post
@@ -228,23 +226,22 @@ async function indexPostDocument(id, data) {
     files: data.files && data.files.length ? data.files.join(",") : "",
   };
 
-
   const promises = [];
 
-  promises.push(Axios.post(
-      "https://wonderfulkorea.kr:4431/index.php?api=post/record",
-      _data,
-  ));
-  promises.push(Axios.post(
-      "http://wonderfulkorea.kr:7700/indexes/posts/documents",
-      _data,
-  ));
+  promises.push(
+      Axios.post(
+          "https://wonderfulkorea.kr:4431/index.php?api=post/record",
+          _data,
+      ),
+  );
+  promises.push(
+      Axios.post("http://wonderfulkorea.kr:7700/indexes/posts/documents", _data),
+  );
 
   promises.push(indexForumDocument(_data));
 
   return Promise.all(promises);
 }
-
 
 async function indexCommentDocument(id, data) {
   const _data = {
@@ -259,15 +256,19 @@ async function indexCommentDocument(id, data) {
 
   const promises = [];
 
-  promises.push(Axios.post(
-      "https://wonderfulkorea.kr:4431/index.php?api=post/record",
-      _data,
-  ));
+  promises.push(
+      Axios.post(
+          "https://wonderfulkorea.kr:4431/index.php?api=post/record",
+          _data,
+      ),
+  );
 
-  promises.push(Axios.post(
-      "http://wonderfulkorea.kr:7700/indexes/comments/documents",
-      _data,
-  ));
+  promises.push(
+      Axios.post(
+          "http://wonderfulkorea.kr:7700/indexes/comments/documents",
+          _data,
+      ),
+  );
 
   promises.push(indexForumDocument(_data));
 
@@ -283,28 +284,40 @@ function indexForumDocument(data) {
 
 async function deleteIndexedPostDocument(id) {
   const promises = [];
-  promises.push(Axios.post(
-      "https://wonderfulkorea.kr:4431/index.php?api=post/record",
-      {id: id, deleted: true},
-  ));
-  promises.push(Axios.delete("http://wonderfulkorea.kr:7700/indexes/posts/documents/" + id));
+  promises.push(
+      Axios.post("https://wonderfulkorea.kr:4431/index.php?api=post/record", {
+        id: id,
+        deleted: true,
+      }),
+  );
+  promises.push(
+      Axios.delete("http://wonderfulkorea.kr:7700/indexes/posts/documents/" + id),
+  );
   promises.push(deleteIndexedForumDocument(id));
   return Promise.all(promises);
 }
 
 async function deleteIndexedCommentDocument(id) {
   const promises = [];
-  promises.push(Axios.post(
-      "https://wonderfulkorea.kr:4431/index.php?api=post/record",
-      {id: id, deleted: true},
-  ));
-  promises.push(Axios.delete("http://wonderfulkorea.kr:7700/indexes/comments/documents/" + id));
+  promises.push(
+      Axios.post("https://wonderfulkorea.kr:4431/index.php?api=post/record", {
+        id: id,
+        deleted: true,
+      }),
+  );
+  promises.push(
+      Axios.delete(
+          "http://wonderfulkorea.kr:7700/indexes/comments/documents/" + id,
+      ),
+  );
   promises.push(deleteIndexedForumDocument(id));
   return Promise.all(promises);
 }
 
 async function deleteIndexedForumDocument(id) {
-  return Axios.delete("http://wonderfulkorea.kr:7700/indexes/posts-and-comments/documents/" + id);
+  return Axios.delete(
+      "http://wonderfulkorea.kr:7700/indexes/posts-and-comments/documents/" + id,
+  );
 }
 
 // get comment ancestor by getting parent comment until it reach the root comment
@@ -312,7 +325,7 @@ async function deleteIndexedForumDocument(id) {
 async function getCommentAncestors(id, authorUid) {
   let comment = await commentDoc(id).get();
   const uids = [];
-  while ( comment.data().postId != comment.data().parentId ) {
+  while (comment.data().postId != comment.data().parentId) {
     // if (comment.data().postId == comment.data().parentId ) break;
     comment = await commentDoc(comment.data().parentId).get();
     if (comment.exists == false) continue;
@@ -322,21 +335,26 @@ async function getCommentAncestors(id, authorUid) {
   return uids.filter((v, i, a) => a.indexOf(v) === i); // remove duplicate
 }
 
-
 // check the uids if they are subscribe to topic and also want to get notification under their post/comment
 async function removeTopicAndForumAncestorsSubscriber(uids, topic) {
   const _uids = [];
   const getTopicsPromise = [];
-  for (const uid of uids ) {
-    getTopicsPromise.push( rdb.ref("user-settings").child(uid).child("topic").get());
+  for (const uid of uids) {
+    getTopicsPromise.push(
+        rdb.ref("user-settings").child(uid).child("topic").get(),
+    );
     // getTopicsPromise.push( admin.database().ref('user-settings').child(uid).child('topic').once('value'));  // same result above
   }
   const result = await Promise.all(getTopicsPromise);
 
   for (const i in result) {
-    if ( !result[i] ) continue;
+    if (!result[i]) continue;
     const v = result[i].val();
-    if (v["newCommentUnderMyPostOrCOmment"] != null && v["newCommentUnderMyPostOrCOmment"] == true && (v[topic] == null || v[topic] == false)) {
+    if (
+      v["newCommentUnderMyPostOrCOmment"] != null &&
+      v["newCommentUnderMyPostOrCOmment"] == true &&
+      (v[topic] == null || v[topic] == false)
+    ) {
       _uids.push(uids[i]);
     }
   }
@@ -355,13 +373,15 @@ async function getTokensFromUids(uids) {
   const _tokens = [];
   const getTokensPromise = [];
   for (const u of _uids) {
-    getTokensPromise.push(admin.firestore().collection("message-tokens").where("uid", "==", u).get());
+    getTokensPromise.push(
+        admin.firestore().collection("message-tokens").where("uid", "==", u).get(),
+    );
   }
 
   const result = await Promise.all(getTokensPromise);
   for (const tokens of result) {
     if (tokens.size == 0) continue;
-    for ( const doc of tokens.docs) {
+    for (const doc of tokens.docs) {
       _tokens.push(doc.id);
     }
   }
@@ -371,8 +391,8 @@ async function getTokensFromUids(uids) {
 function chunk(arr, chunkSize) {
   if (chunkSize <= 0) return []; // don't throw here since it will not be catched.
   const R = [];
-  for (let i=0, len=arr.length; i<len; i+=chunkSize) {
-    R.push(arr.slice(i, i+chunkSize));
+  for (let i = 0, len = arr.length; i < len; i += chunkSize) {
+    R.push(arr.slice(i, i + chunkSize));
   }
   return R;
 }
@@ -381,12 +401,13 @@ function error(errorCode, errorMessage) {
   throw new functions.https.HttpsError(errorCode, errorMessage);
 }
 
-
 async function sendMessageToTopic(query) {
   const payload = prePayload(query);
 
   try {
-    const res = await admin.messaging().sendToTopic("/topics/" + query.topic, payload);
+    const res = await admin
+        .messaging()
+        .sendToTopic("/topics/" + query.topic, payload);
     return {code: "success", result: res};
   } catch (e) {
     return {code: "error", message: e};
@@ -446,9 +467,17 @@ async function sendingMessageToDevice(tokens, payload) {
         //     error,
         // );
         // Cleanup the tokens who are not registered anymore.
-        if (error.code === "messaging/invalid-registration-token" ||
-                error.code === "messaging/registration-token-not-registered") {
-          tokensToRemove.push(admin.firestore().collection("message-tokens").doc(chunks[i][index]).delete());
+        if (
+          error.code === "messaging/invalid-registration-token" ||
+          error.code === "messaging/registration-token-not-registered"
+        ) {
+          tokensToRemove.push(
+              admin
+                  .firestore()
+                  .collection("message-tokens")
+                  .doc(chunks[i][index])
+                  .delete(),
+          );
         }
         errorCount++;
       } else {
@@ -456,12 +485,10 @@ async function sendingMessageToDevice(tokens, payload) {
         successCount++;
       }
     });
-  },
-  );
+  });
   await Promise.all(tokensToRemove);
   return {success: successCount, error: errorCount};
 }
-
 
 function prePayload(query) {
   return {
@@ -478,10 +505,38 @@ function prePayload(query) {
   };
 }
 
-function manageAttachments(id, before, after) {
-  
+/**
+ * Returns the storage path of the uploaded file.
+ *
+ * @param {*} url url of the uploaded file
+ * @returns path of the uploaded file
+ *
+ * @usage Use this to get file from url.
+ *
+ * @example
+ * admin.storage().bucket().file( getFilePathFromUrl('https://...'))
+ */
+function getFilePathFromUrl(url) {
+  const token = url.split("?");
+  const parts = token[0].split("/");
+  return parts[parts.length - 1].replaceAll("%2F", "/");
 }
 
+async function updateFileParentId(id, data) {
+  if (!data || !data.files || !data.files.length) {
+    return;
+  }
+  const bucket = admin.storage().bucket();
+  for ( const url of data.files ) {
+    const f = bucket.file( getFilePathFromUrl(url) );
+    console.log(await f.exists);
+    await f.setMetadata({
+      metadata: {
+        id: id,
+      },
+    });
+  }
+}
 
 exports.delay = delay;
 exports.getSizeOfCategories = getSizeOfCategories;
@@ -490,9 +545,7 @@ exports.createCategory = createCategory;
 exports.createPost = createPost;
 exports.createComment = createComment;
 
-
 exports.createTestUser = createTestUser;
-
 
 exports.indexComment = indexCommentDocument;
 exports.indexPost = indexPostDocument;
@@ -501,7 +554,8 @@ exports.deleteIndexedPost = deleteIndexedPostDocument;
 exports.deleteIndexedComment = deleteIndexedCommentDocument;
 
 exports.getCommentAncestors = getCommentAncestors;
-exports.removeTopicAndForumAncestorsSubscriber = removeTopicAndForumAncestorsSubscriber;
+exports.removeTopicAndForumAncestorsSubscriber =
+  removeTopicAndForumAncestorsSubscriber;
 exports.getTokensFromUids = getTokensFromUids;
 exports.chunk = chunk;
 
@@ -513,3 +567,4 @@ exports.sendMessageToUsers = sendMessageToUsers;
 
 exports.sendingMessageToDevice = sendingMessageToDevice;
 
+exports.updateFileParentId = updateFileParentId;
