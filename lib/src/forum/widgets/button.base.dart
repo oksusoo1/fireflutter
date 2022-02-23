@@ -33,7 +33,9 @@ class ButtonBase extends StatelessWidget {
   final Widget? shareButton;
   final Widget Function(String, Function())? buttonBuilder;
 
-  bool get isMine => UserService.instance.currentUser?.uid == uid;
+  bool get isMine {
+    return UserService.instance.currentUser?.uid == uid;
+  }
 
   final int likeCount;
   final int dislikeCount;
