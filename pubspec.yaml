@@ -65,6 +65,17 @@ dependencies:
   # Forum search function
   meilisearch: ^0.5.1
 
+  # flutter_html for post content and comment content.
+  # flutter_html 2.x has dependency problem with fluter_svg
+  flutter_html: ^3.0.0-alpha.2
+
+  # for post content & comment content
+  url_launcher: ^6.0.20
+
+  # for post & comment
+  flutter_linkify: ^5.0.2
+  
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

@@ -4,7 +4,7 @@ import '../../../../fireflutter.dart';
 class Post extends StatelessWidget {
   const Post({
     Key? key,
-    this.contentBuilder,
+    // this.contentBuilder,
     this.buttonBuilder,
     this.shareButton,
     required this.post,
@@ -19,7 +19,7 @@ class Post extends StatelessWidget {
     this.onHide,
   }) : super(key: key);
 
-  final Function(PostModel)? contentBuilder;
+  // final Function(PostModel)? contentBuilder;
   final Widget Function(String, Function())? buttonBuilder;
   final Widget? shareButton;
   final PostModel post;
@@ -35,19 +35,10 @@ class Post extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final content = contentBuilder != null
-        ? contentBuilder!(post)
-        : Padding(
-            padding: EdgeInsets.all(8),
-            child: Text(
-              post.displayContent,
-            ),
-          );
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        content,
+        PostContent(post),
         ImageList(
           files: post.files,
           onImageTap: (i) => onImageTap(i, post.files),
