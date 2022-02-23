@@ -5,6 +5,7 @@ import 'package:fe/screens/admin/report.screen.dart';
 import 'package:fe/screens/admin/translatoins.screen.dart';
 import 'package:fe/screens/forum/post.form.screen.dart';
 import 'package:fe/screens/forum/post.list.screen.dart';
+import 'package:fe/screens/forum/post.view.screen.dart';
 import 'package:fe/screens/search/search.screen.dart';
 import 'package:fe/screens/home/home.screen.dart';
 import 'package:fe/screens/profile/profile.screen.dart';
@@ -41,6 +42,10 @@ class AppService {
   /// TODO: remove all the routes from route stack
   Future<void> openHome() async {
     return open(HomeScreen.routeName);
+  }
+
+  Future openPostView({PostModel? post, String? id}) {
+    return open(PostViewScreen.routeName, arguments: {'post': post, 'id': id});
   }
 
   Future<void> openTranslations() {

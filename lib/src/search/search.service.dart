@@ -52,8 +52,7 @@ class SearchService {
 
     List filters = [];
     if (uid.isNotEmpty) filters.add('uid = $uid');
-    if (category.isNotEmpty) filters.add('category = $category');
-    // if (extrafilters.isNotEmpty) _filters.addAll(extrafilters);
+    if (category.isNotEmpty && index != 'comments') filters.add('category = $category');
 
     List<Map<String, dynamic>> _posts = [];
     final SearchResult res = await client.index(index).search(
