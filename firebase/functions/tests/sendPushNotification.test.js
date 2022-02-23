@@ -22,7 +22,6 @@ const validToken1 = "eiG6CUPQS66swAIEOakM60:APA91bGj4tjLswDzSAWz72onE_Tv50TYrI2I
 const validToken2 = "ecw_jCq6TV273wlDMeaQRY:APA91bF8GUuxtjlpBf7xI9M4dv6MD74rb40tpDedeoJ9w1TYi-9TmGCrt862Qcrj4nQifRBrxS60AiBSQW8ynYQFVj9Hkrd3p-w9UyDscLncNdwdZNXpqRgBR-LmSeZIcNBejvxjtfW4";
 
 
-
 // This must come after initlization
 const lib = require("../lib");
 
@@ -134,9 +133,8 @@ describe("SendPushNotification test  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~", () => {
       console.log(re.result.success);
       if ( re.code == "success") {
         assert.ok("sending push notification was success.");
-        assert.ok(re.result.success == 2 ,"sending push notification was success.");
-      }
-      else assert.fail("failed on sending message to default topic");
+        assert.ok(re.result.success == 2, "sending push notification was success.");
+      } else assert.fail("failed on sending message to default topic");
     } catch (e) {
       assert.fail("send push notification should succeed.");
     }
@@ -150,10 +148,9 @@ describe("SendPushNotification test  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~", () => {
       console.log(re);
       if ( re.code == "success") {
         assert.ok("sending push notification was success.");
-        assert.ok(re.result.success == 2 ,"sending push notification 2 success.");
-        assert.ok(re.result.error == 0 ,"sending push notification 0 error.");
-      }
-      else assert.fail("failed on sending message to default topic");
+        assert.ok(re.result.success == 2, "sending push notification 2 success.");
+        assert.ok(re.result.error == 0, "sending push notification 0 error.");
+      } else assert.fail("failed on sending message to default topic");
     } catch (e) {
       assert.fail("send push notification should succeed.");
     }
