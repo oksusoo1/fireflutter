@@ -514,9 +514,9 @@ function prePayload(query) {
  * @usage Use this to get file from url.
  *
  * @example
- * admin.storage().bucket().file( getFilePathFromUrl('https://...'))
+ * admin.storage().bucket().file( getFilePathFromStorageUrl('https://...'))
  */
-function getFilePathFromUrl(url) {
+function getFilePathFromStorageUrl(url) {
   const token = url.split("?");
   const parts = token[0].split("/");
   return parts[parts.length - 1].replaceAll("%2F", "/");
@@ -528,7 +528,7 @@ async function updateFileParentId(id, data) {
   }
   const bucket = admin.storage().bucket();
   for ( const url of data.files ) {
-    const f = bucket.file( getFilePathFromUrl(url) );
+    const f = bucket.file( getFilePathFromStorageUrl(url) );
     console.log(await f.exists);
     await f.setMetadata({
       metadata: {
