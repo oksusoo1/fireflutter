@@ -1,4 +1,5 @@
 import 'package:extended/extended.dart';
+import 'package:fe/screens/search/search.item.dart';
 import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
 
@@ -102,96 +103,61 @@ class _PostListScreenV2State extends State<PostListScreenV2> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text('Current Index: ${searchService.index}'),
-            Text('Current Search Params'),
-            SizedBox(height: 8),
-            Text('  UID: ${searchService.uid}'),
-            Text('  Category: ${searchService.category}'),
-            Text('  Search Key: ${searchService.searchKey}'),
-            Divider(),
-            Wrap(
-              children: [
-                ElevatedButton(
-                  onPressed: () => searchIndex('posts-and-comments'),
-                  child: Text('Post and Comments'),
-                ),
-                SizedBox(width: 10),
-                ElevatedButton(onPressed: () => searchIndex('posts'), child: Text('Posts')),
-                SizedBox(width: 10),
-                ElevatedButton(onPressed: () => searchIndex('comments'), child: Text('Comments')),
-              ],
-            ),
-            Wrap(
-              children: [
-                ElevatedButton(onPressed: () => searchUserPosts(''), child: Text('All Users')),
-                SizedBox(width: 10),
-                ElevatedButton(
-                  onPressed: () => searchUserPosts('user_aaa'),
-                  child: Text('User A'),
-                ),
-                SizedBox(width: 10),
-                ElevatedButton(
-                  onPressed: () => searchUserPosts('user_bbb'),
-                  child: Text('User B'),
-                ),
-                SizedBox(width: 10),
-                ElevatedButton(
-                  onPressed: () => searchUserPosts('user_ccc'),
-                  child: Text('User C'),
-                ),
-              ],
-            ),
-            if (searchService.index != 'comments')
-              Wrap(
-                children: [
-                  ElevatedButton(
-                    onPressed: () => searchCategoryPosts(''),
-                    child: Text('All Category'),
-                  ),
-                  SizedBox(width: 10),
-                  ElevatedButton(
-                    onPressed: () => searchCategoryPosts('update-test'),
-                    child: Text('Update Test'),
-                  ),
-                  SizedBox(width: 10),
-                  ElevatedButton(
-                    onPressed: () => searchCategoryPosts('qna'),
-                    child: Text('QnA'),
-                  ),
-                  SizedBox(width: 10),
-                  ElevatedButton(
-                    onPressed: () => searchCategoryPosts('discussion'),
-                    child: Text('Discussion'),
-                  ),
-                  SizedBox(width: 10),
-                  ElevatedButton(
-                    onPressed: () => searchCategoryPosts('job'),
-                    child: Text('Job'),
-                  ),
-                ],
-              ),
             TextField(
               onChanged: searchKeyword,
               decoration: InputDecoration(hintText: 'Search ...'),
             ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                DropdownButton<String>(
+                  hint: Text('Select Index'),
+                  value: searchService.index,
+                  items: [
+                    DropdownMenuItem(child: Text('All'), value: 'posts-and-comments'),
+                    DropdownMenuItem(child: Text('Posts'), value: 'posts'),
+                    DropdownMenuItem(child: Text('Comments'), value: 'comments'),
+                  ],
+                  onChanged: (value) {
+                    if (value != null) searchIndex(value);
+                  },
+                ),
+                if (searchService.index != 'comments')
+                  DropdownButton<String>(
+                    hint: Text('Select Category'),
+                    value: searchService.category,
+                    items: [
+                      DropdownMenuItem(child: Text('All'), value: ''),
+                      DropdownMenuItem(child: Text('QnA'), value: 'qna'),
+                      DropdownMenuItem(child: Text('Discussion'), value: 'discussion'),
+                      DropdownMenuItem(child: Text('Job'), value: 'job'),
+                    ],
+                    onChanged: (value) => searchCategoryPosts(value ?? ''),
+                  ),
+                DropdownButton<String>(
+                  hint: Text('Select User'),
+                  value: searchService.uid,
+                  items: [
+                    DropdownMenuItem(child: Text('All'), value: ''),
+                    DropdownMenuItem(child: Text('Current User'), value: UserService.instance.uid),
+                    DropdownMenuItem(child: Text('User A'), value: 'jAXh1SngnafzPikQM0jpzKO3yj73'),
+                    DropdownMenuItem(child: Text('User B'), value: 'Nb1NJ0d0XcQNKVEjbCj0IXN543r2'),
+                  ],
+                  onChanged: (value) => searchUserPosts(value ?? ''),
+                ),
+              ],
+            ),
+            SizedBox(height: 16),
+            Text('No of items found: ${searchService.hits}'),
             SizedBox(height: 16),
             Expanded(
-              child: ListView.separated(
+              child: ListView.builder(
                 shrinkWrap: true,
                 keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-                separatorBuilder: (c, i) => Divider(),
                 itemCount: searchService.resultList.length,
                 controller: scrollController,
                 itemBuilder: (c, i) {
-                  return Container(
-                    margin: EdgeInsets.only(bottom: 16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        Text("ID: ${searchService.resultList[i].toString()}"),
-                      ],
-                    ),
-                  );
+                  return SearchItem(item: searchService.resultList[i]);
                 },
               ),
             ),
