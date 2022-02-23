@@ -73,6 +73,11 @@ class _AdminScreenState extends State<AdminScreen> {
           ElevatedButton(
             onPressed: () => AppService.instance.open('/pushNotification'),
             child: const Text('Push Notification'),
+          ),
+          ElevatedButton(
+            onPressed: () => AppService.instance.open('/pushNotification',
+                arguments: {'postId': '0EWGGe64ckjBtiU1LeB1'}),
+            child: const Text('Push Notification with postId'),
           )
         ],
       ),
