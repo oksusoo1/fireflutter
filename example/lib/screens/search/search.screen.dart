@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:extended/extended.dart';
 import 'package:fe/screens/search/search.item.dart';
 import 'package:fireflutter/fireflutter.dart';
@@ -26,6 +28,8 @@ class _PostListScreenV2State extends State<PostListScreenV2> {
     return scrollController.offset > (scrollController.position.maxScrollExtent - 300);
   }
 
+  Timer? _debounce;
+
   @override
   void initState() {
     super.initState();
@@ -51,45 +55,8 @@ class _PostListScreenV2State extends State<PostListScreenV2> {
     searchService.resetFilters();
     searchService.resetListAndPagination(limit: 4);
     scrollController.dispose();
+    _debounce?.cancel();
     super.dispose();
-  }
-
-  search() async {
-    if (loading) return;
-    if (mounted) setState(() => loading = true);
-    try {
-      await searchService.search();
-    } catch (e) {
-      error(e);
-    }
-    if (mounted) setState(() => loading = false);
-  }
-
-  searchUserPosts(String _uid) {
-    if (searchService.uid == _uid) return;
-    searchService.uid = _uid;
-    resetAndSearch();
-  }
-
-  searchCategoryPosts(String _category) {
-    if (searchService.category == _category) return;
-    searchService.category = _category;
-    resetAndSearch();
-  }
-
-  searchKeyword(String _keyword) {
-    searchService.searchKey = _keyword;
-    resetAndSearch();
-  }
-
-  searchIndex(String index) {
-    searchService.index = index;
-    resetAndSearch();
-  }
-
-  resetAndSearch() {
-    searchService.resetListAndPagination(limit: 4);
-    search();
   }
 
   @override
@@ -104,7 +71,13 @@ class _PostListScreenV2State extends State<PostListScreenV2> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             TextField(
-              onChanged: searchKeyword,
+              controller: searchEditController,
+              onChanged: (key) {
+                if (_debounce?.isActive ?? false) _debounce?.cancel();
+                _debounce = Timer(const Duration(milliseconds: 500), () {
+                  searchKeyword(key);
+                });
+              },
               decoration: InputDecoration(hintText: 'Search ...'),
             ),
             Row(
@@ -168,5 +141,43 @@ class _PostListScreenV2State extends State<PostListScreenV2> {
         ),
       ),
     );
+  }
+
+  search() async {
+    if (loading) return;
+    if (mounted) setState(() => loading = true);
+    try {
+      await searchService.search();
+    } catch (e) {
+      error(e);
+    }
+    if (mounted) setState(() => loading = false);
+  }
+
+  searchUserPosts(String _uid) {
+    if (searchService.uid == _uid) return;
+    searchService.uid = _uid;
+    resetAndSearch();
+  }
+
+  searchCategoryPosts(String _category) {
+    if (searchService.category == _category) return;
+    searchService.category = _category;
+    resetAndSearch();
+  }
+
+  searchKeyword(String _keyword) {
+    searchService.searchKey = _keyword;
+    resetAndSearch();
+  }
+
+  searchIndex(String index) {
+    searchService.index = index;
+    resetAndSearch();
+  }
+
+  resetAndSearch() {
+    searchService.resetListAndPagination(limit: 4);
+    search();
   }
 }

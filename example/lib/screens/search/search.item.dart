@@ -18,9 +18,11 @@ class SearchItem extends StatelessWidget {
       spaceXxs,
       Text('user ID : ${item['uid']}'),
       spaceXxs,
-      Text('${item['content']}'),
+      if (!isComment) Text('Title: ${item['title']}'),
+      Text('Content: ${item['content']}'),
       spaceXxs,
-      Text('${item['id']}'),
+      Text('Id: ${item['id']}'),
+      if (isComment) Text('postId: ${item['postId']}'),
     ];
 
     return GestureDetector(
