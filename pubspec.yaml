@@ -75,6 +75,7 @@ dependencies:
   # for post & comment
   flutter_linkify: ^5.0.2
   
+  # where does it be used?
   dio: ^4.0.4
 
 dev_dependencies:
