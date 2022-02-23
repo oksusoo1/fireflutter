@@ -39,10 +39,11 @@ class Post extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         PostContent(post),
-        ImageList(
-          files: post.files,
-          onImageTap: (i) => onImageTap(i, post.files),
-        ),
+        if (post.isHtmlContent == false)
+          ImageList(
+            files: post.files,
+            onImageTap: (i) => onImageTap(i, post.files),
+          ),
         ButtonBase(
           uid: post.uid,
           isPost: true,

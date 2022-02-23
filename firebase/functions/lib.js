@@ -224,6 +224,7 @@ async function indexPostDocument(id, data) {
     content: data.content,
     timestamp: timestamp(),
     files: data.files && data.files.length ? data.files.join(",") : "",
+    deleted: data.deleted,
   };
 
   const promises = [];
