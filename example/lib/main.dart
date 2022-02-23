@@ -105,6 +105,9 @@ class _MainAppState extends State<MainApp> {
 
     SearchService.instance.init(serverUrl: 'http://wonderfulkorea.kr:7700');
 
+    
+    SendPushNotificationService.instance.init(serverUrl: 'https://asia-northeast3-withcenter-test-project.cloudfunctions.net');
+
     // Timer(const Duration(milliseconds: 200), () => Get.toNamed('/email-verify'));
     // Timer(const Duration(milliseconds: 200), AppController.of.openCategory);
     Timer(

@@ -7,30 +7,36 @@ class SendPushNotificationService {
     return _instance!;
   }
 
+  late String _serverUrl;
+
+  init({required String serverUrl}) {
+    _serverUrl = serverUrl;
+  }
+
   sendToAll(Map<String, dynamic>? data) async {
     return Dio().get(
-      'https://asia-northeast3-withcenter-test-project.cloudfunctions.net/sendMessageToAll',
+      _serverUrl + '/sendMessageToAll',
       queryParameters: data,
     );
   }
 
   sendToToken(Map<String, dynamic>? data) async {
     return Dio().get(
-      'https://asia-northeast3-withcenter-test-project.cloudfunctions.net/sendMessageToTokens',
+      _serverUrl + '/sendMessageToTokens',
       queryParameters: data,
     );
   }
 
   sendToTopic(Map<String, dynamic>? data) async {
     return Dio().get(
-      'https://asia-northeast3-withcenter-test-project.cloudfunctions.net/sendMessageToTopic',
+      _serverUrl + '/sendMessageToTopic',
       queryParameters: data,
     );
   }
 
   sendToUsers(Map<String, dynamic>? data) async {
     return Dio().get(
-      'https://asia-northeast3-withcenter-test-project.cloudfunctions.net/sendMessageToUsers',
+      _serverUrl + '/sendMessageToUsers',
       queryParameters: data,
     );
   }

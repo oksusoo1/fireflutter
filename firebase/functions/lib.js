@@ -434,8 +434,8 @@ async function sendMessageToTokens(query) {
 
 async function sendMessageToUsers(query) {
   const payload = prePayload(query);
-  const tokens = getTokensFromUids(query.uids);
-
+  const tokens = await getTokensFromUids(query.uids);
+  console.log(tokens);
   try {
     const res = await sendingMessageToDevice(tokens, payload);
     return {code: "success", result: res};

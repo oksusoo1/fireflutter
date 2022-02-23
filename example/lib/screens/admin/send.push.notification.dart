@@ -11,7 +11,7 @@ class PushNotificationScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Push Notification'),
+        title: const Text('Send Push Notification'),
       ),
       body: SendPushNotification(
         onError: error,

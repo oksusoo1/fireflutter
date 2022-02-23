@@ -18,7 +18,7 @@ class _SendPushNotificationState extends State<SendPushNotification> {
       text:
           'ecw_jCq6TV273wlDMeaQRY:APA91bF8GUuxtjlpBf7xI9M4dv6MD74rb40tpDedeoJ9w1TYi-9TmGCrt862Qcrj4nQifRBrxS60AiBSQW8ynYQFVj9Hkrd3p-w9UyDscLncNdwdZNXpqRgBR-LmSeZIcNBejvxjtfW4');
   final topic = TextEditingController(text: 'sendingToTestTopic');
-  final uids = TextEditingController();
+  final uids = TextEditingController(text: 'sendMessaegUserB,sendMessaegUserA');
   final postId = TextEditingController(text: '0EWGGe64ckjBtiU1LeB1');
   final title = TextEditingController();
   final body = TextEditingController();
@@ -117,12 +117,12 @@ class _SendPushNotificationState extends State<SendPushNotification> {
   }
 
   sendMessage(context) async {
-    Map<String, dynamic> data = {
+    Map<String, dynamic> req = {
       'title': title.text,
       'body': body.text,
     };
     if (postId.text.isNotEmpty) {
-      data['data'] = {
+      req['data'] = {
         'id': postId.text,
         'type': 'post',
       };
@@ -131,32 +131,32 @@ class _SendPushNotificationState extends State<SendPushNotification> {
     try {
       Response<dynamic>? res;
       if (sendOption == 'all') {
-        res = await SendPushNotificationService.instance.sendToAll(data);
+        res = await SendPushNotificationService.instance.sendToAll(req);
       } else if (sendOption == 'topic') {
-        data['topic'] = topic.text;
-        res = await SendPushNotificationService.instance.sendToTopic(data);
+        req['topic'] = topic.text;
+        res = await SendPushNotificationService.instance.sendToTopic(req);
       } else if (sendOption == 'tokens') {
-        data['tokens'] = tokens.text;
-        res = await SendPushNotificationService.instance.sendToToken(data);
+        req['tokens'] = tokens.text;
+        res = await SendPushNotificationService.instance.sendToToken(req);
       } else if (sendOption == 'uids') {
-        data['uids'] = uids.text;
-        res = await SendPushNotificationService.instance.sendToUsers(data);
+        req['uids'] = uids.text;
+        res = await SendPushNotificationService.instance.sendToUsers(req);
       }
 
-      Map<String, dynamic> d = res!.data;
+      Map<String, dynamic> data = res!.data;
       String msg = '';
-      if (d['code'] == 'success') {
+      if (data['code'] == 'success') {
         if (sendOption == 'tokens' || sendOption == 'uids') {
-          int s = d['result']['success'];
-          int f = d['result']['error'];
+          int s = data['result']['success'];
+          int f = data['result']['error'];
           msg = "Send count $s Success, $f Fail.";
-        } else if (d['result']['messageId'] != null) {
+        } else if (data['result']['messageId'] != null) {
           msg = 'Push send Success';
         } else {
           msg = 'Push send didnt return proper data';
         }
-      } else if (d['code'] == 'error') {
-        msg = d['message'];
+      } else if (data['code'] == 'error') {
+        msg = data['message'];
       }
 
       // print(msg);
