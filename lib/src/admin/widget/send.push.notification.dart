@@ -107,9 +107,11 @@ class _SendPushNotificationState extends State<SendPushNotification> {
               controller: body,
             ),
           ),
-          TextButton(
-            onPressed: () => sendMessage(context),
-            child: Text('Send Push Notification'),
+          Center(
+            child: ElevatedButton(
+              onPressed: () => sendMessage(context),
+              child: Text('Send Push Notification'),
+            ),
           )
         ],
       ),
