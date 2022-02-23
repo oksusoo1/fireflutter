@@ -21,6 +21,7 @@ class PostModel with FirestoreMixin, ForumBase {
     this.deleted = false,
     this.timestamp_,
     this.data_,
+    this.isHtmlContent = false,
   });
 
   /// data is the document data object.
@@ -54,6 +55,7 @@ class PostModel with FirestoreMixin, ForumBase {
   int noOfComments;
 
   bool hasPhoto;
+  bool isHtmlContent;
   List<String> files;
 
   int like;
@@ -77,11 +79,26 @@ class PostModel with FirestoreMixin, ForumBase {
     var _timestamp = data['timestamp'] ?? Timestamp.now();
     if (_timestamp is int) _timestamp = Timestamp.fromMillisecondsSinceEpoch(_timestamp);
 
+    String content = data['content'] ?? '';
+
+    /// Check if the content has any html tag.
+    bool html = false;
+    if (content.indexOf('</p>') > -1 ||
+        content.indexOf('</span') > -1 ||
+        content.indexOf('</em>') > -1 ||
+        content.indexOf('</strong>') > -1 ||
+        content.indexOf('<br>') > -1 ||
+        content.indexOf('<img') > -1 ||
+        content.indexOf('style="') > -1) {
+      html = true;
+    }
+
     return PostModel(
       id: id,
       category: data['category'] ?? '',
       title: data['title'] ?? '',
-      content: data['content'] ?? '',
+      content: content,
+      isHtmlContent: html,
       noOfComments: data['noOfComments'] ?? 0,
       hasPhoto: data['hasPhoto'] ?? false,
       files: _files,
@@ -100,6 +117,7 @@ class PostModel with FirestoreMixin, ForumBase {
       'category': category,
       'title': title,
       'content': content,
+      'isHtmlContent': isHtmlContent,
       'noOfComments': noOfComments,
       'hasPhoto': hasPhoto,
       'files': files,
