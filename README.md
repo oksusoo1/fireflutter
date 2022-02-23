@@ -247,7 +247,7 @@ function lessThan(n) {
 }
 
 function checkType() {
-	return request.resource.metadata.type == 'post' || request.resource.metadata.type == 'comment' || request.resource.metadata.type == 'user';
+	return request.resource.metadata.type == 'post' || request.resource.metadata.type == 'comment' || request.resource.metadata.type == 'chat';
 }
 ```
 
@@ -1252,7 +1252,7 @@ try {
 
 - When a file is uploaded,
   - `type`, `uid`, `basename` must be added as custom meta.
-    - `type` is the type of parent object. it can be one of `post`, `comment`, `user`.
+    - `type` is the type of parent object. it can be one of `post`, `comment`, `user`, or `chat`.
 
 
 - When files are uploaded with a post(or comment), the URLs will be saved in `files` property of the post(or comment).
@@ -1264,9 +1264,6 @@ try {
     - the url is no longer being used by the `id` of the post(or comment).
   - @todo - Firefluter does not provide the delition funtionality, yet. You may delete it by yourself at this time.
 
-
-/// onWrite 에서 글/코멘트 아이디를 지정한다. 없으면, 나중에 정기적으로 삭제.
-사진을 업로드 할 때, custom meta 에 type: post, comment, user 등을 기록 할 수 있도록 한다. 이 것을 rule 에 적용해 놓고, type 이 없으면 에러를 낸다.
 
 
 

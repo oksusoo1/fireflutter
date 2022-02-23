@@ -55,7 +55,8 @@ class _CommentState extends State<Comment> with FirestoreMixin {
         .listen((QuerySnapshot snapshots) {
       snapshots.docs.forEach((QueryDocumentSnapshot snapshot) {
         /// is it immediate child?
-        final CommentModel c = CommentModel.fromJson(snapshot.data() as Json, id: snapshot.id);
+        final CommentModel c =
+            CommentModel.fromJson(snapshot.data() as Json, id: snapshot.id);
         // print(c);
 
         // if exists in array, just update it.
@@ -115,6 +116,7 @@ class _CommentState extends State<Comment> with FirestoreMixin {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                // Text('Comment Id: ${comment.id}'),
                 _commentHeader(comment),
                 _contentBuilder(comment),
                 ImageList(
@@ -145,7 +147,8 @@ class _CommentState extends State<Comment> with FirestoreMixin {
     return widget.headerBuilder != null
         ? widget.headerBuilder!(comment)
         : Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
+            padding:
+                const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
             child: UserDoc(
               uid: comment.uid,
               builder: (user) => Row(
@@ -159,7 +162,9 @@ class _CommentState extends State<Comment> with FirestoreMixin {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(user.displayName.isNotEmpty ? "${user.displayName}" : "No name"),
+                      Text(user.displayName.isNotEmpty
+                          ? "${user.displayName}"
+                          : "No name"),
                       SizedBox(height: 8),
                       ShortDate(comment.timestamp.millisecondsSinceEpoch),
                     ],
