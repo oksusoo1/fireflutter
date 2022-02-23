@@ -83,7 +83,7 @@ class _PostListScreenState extends State<PostListScreen> with FirestoreMixin {
               }
             },
             children: [
-              Text('Post Id: ${post.id}'),
+              // Text('Post Id: ${post.id}'),
               Post(
                 post: post,
                 onReply: onReply,
