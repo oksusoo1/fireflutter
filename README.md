@@ -227,8 +227,8 @@ service firebase.storage {
   match /b/{bucket}/o {
     match /{allPaths=**} {
     	allow read: if request.auth!=null || resource.contentType.matches('image/.*');
-      allow create: if willBeMine() && lessThan(10);
-      allow update: if isMine();
+      allow create: if willBeMine() && checkType() && lessThan(10);
+      allow update: if isMine() && checkType();
       allow delete: if isMine();
     }
   }
@@ -244,6 +244,10 @@ function isMine() {
 
 function lessThan(n) {
 	return request.resource.size < n * 1024 * 1024;
+}
+
+function checkType() {
+	return request.resource.metadata.type == 'post' || request.resource.metadata.type == 'comment' || request.resource.metadata.type == 'user';
 }
 ```
 

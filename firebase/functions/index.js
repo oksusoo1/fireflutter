@@ -208,13 +208,25 @@ exports.sendMessageToUsers = functions
       res.status(200).send(await lib.sendMessageToUsers(req.query));
     });
 
-// Listen for changes in all documents in the 'users' collection
-exports.updateFileParentId = functions.firestore
+
+exports.updateFileParentId = functions
     .region("asia-northeast3")
+    .firestore
     .document("posts/{postId}")
     .onWrite((change, context) => {
       return lib.updateFileParentId(
           context.params.postId,
+          change.after.data(),
+      );
+    });
+
+exports.updateFileParentId = functions
+    .region("asia-northeast3")
+    .firestore
+    .document("comments/{commentId}")
+    .onWrite((change, context) => {
+      return lib.updateFileParentId(
+          context.params.commentId,
           change.after.data(),
       );
     });
