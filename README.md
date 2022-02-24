@@ -264,6 +264,9 @@ function checkType() {
 - We use Firestore only for `Chat` and `Forum` features since they needs more support on query and search functionalities.
   - All other features should go to realtime database.
 
+- Note that, you need to create your own composite indexes when you build functions that query on fields that are not indexed by fireflutter.
+  - For instance, you make a function for getting posts that have most no of comments on this year. then, you may need to create an composite index with `noOfComments` and `year`.
+
 ### Setting admin on firestore security rules
 
 - To set a user admin, Add the user's UID as field name(key) with the value of `true` in `/settings/admin`.
@@ -1112,8 +1115,7 @@ DynamicLinksService.instance.listen((Uri? deepLink) {
     - `month` - the month of a year (1-12)
     - `day` - the day of a month (1-31)
     - `dayOfYear` - the day of a year (1-366)
-    - `weekOfYear` - the week of a year
-    - `quarter` - the quarter of a year (1-4)
+    - `week` - the week number since epoch ( from Jan 1st, 1970)
     - `createdAt` - database's server time stamp for the time of document creation.
     - `updatedAt` - server timestamp for update.
     Note that, these date properties except `createdAt` and `updatedAt` are optional fields, and added by `PostModel.create()`

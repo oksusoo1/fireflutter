@@ -168,6 +168,7 @@ class PostModel with FirestoreMixin, ForumBase {
     if (UserService.instance.user.exists == false) throw ERROR_USER_DOCUMENT_NOT_EXISTS;
 
     final j = Jiffy();
+    int week = ((j.unix() - 345600) / 604800).floor();
     final createData = {
       'category': category,
       'title': title,
@@ -181,8 +182,7 @@ class PostModel with FirestoreMixin, ForumBase {
       'month': j.month,
       'day': j.date,
       'dayOfYear': j.dayOfYear,
-      'weekOfYear': j.week,
-      'quarter': j.quarter,
+      'week': week,
       'createdAt': FieldValue.serverTimestamp(),
       'updatedAt': FieldValue.serverTimestamp(),
     };
