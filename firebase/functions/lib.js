@@ -224,7 +224,7 @@ async function indexPostDocument(id, data) {
     content: data.content,
     timestamp: timestamp(),
     files: data.files && data.files.length ? data.files.join(",") : "",
-    deleted: data.deleted,
+    deleted: data.deleted ? "Y" : "N",
   };
 
   const promises = [];
@@ -286,9 +286,8 @@ function indexForumDocument(data) {
 async function deleteIndexedPostDocument(id) {
   const promises = [];
   promises.push(
-      Axios.post("https://wonderfulkorea.kr:4431/index.php?api=post/record", {
+      Axios.post("https://wonderfulkorea.kr:4431/index.php?api=post/delete", {
         id: id,
-        deleted: true,
       }),
   );
   promises.push(
@@ -301,9 +300,8 @@ async function deleteIndexedPostDocument(id) {
 async function deleteIndexedCommentDocument(id) {
   const promises = [];
   promises.push(
-      Axios.post("https://wonderfulkorea.kr:4431/index.php?api=post/record", {
+      Axios.post("https://wonderfulkorea.kr:4431/index.php?api=post/delete", {
         id: id,
-        deleted: true,
       }),
   );
   promises.push(
