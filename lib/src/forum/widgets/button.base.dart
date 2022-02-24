@@ -17,6 +17,7 @@ class ButtonBase extends StatelessWidget {
     this.dislikeCount = 0,
     required this.buttonBuilder,
     this.shareButton,
+    this.onSendPushNotification,
     Key? key,
   }) : super(key: key);
 
@@ -31,10 +32,16 @@ class ButtonBase extends StatelessWidget {
   final Function()? onChat;
   final Function()? onHide;
   final Widget? shareButton;
+  final Function()? onSendPushNotification;
+
   final Widget Function(String, Function())? buttonBuilder;
 
   bool get isMine {
     return UserService.instance.currentUser?.uid == uid;
+  }
+
+  bool get isAdmin {
+    return UserService.instance.user.isAdmin;
   }
 
   final int likeCount;
@@ -70,9 +77,15 @@ class ButtonBase extends StatelessWidget {
               value: 'report',
               child: Text('Report', style: TextStyle(color: Colors.red)),
             ),
-            if (isPost && onHide != null)
+            if (isAdmin && onSendPushNotification != null)
               PopupMenuItem<String>(
-                  value: 'hide_post', child: Text('Hide Post')),
+                value: 'notification',
+                child: Text(
+                  'Send push notification',
+                ),
+              ),
+            if (isPost && onHide != null)
+              PopupMenuItem<String>(value: 'hide_post', child: Text('Hide Post')),
             PopupMenuItem<String>(value: 'close_menu', child: Text('Close')),
           ],
           onSelected: (String value) async {
@@ -91,6 +104,11 @@ class ButtonBase extends StatelessWidget {
             }
             if (value == 'delete') {
               onDelete();
+              return;
+            }
+
+            if (value == 'notification') {
+              onSendPushNotification!();
               return;
             }
           },

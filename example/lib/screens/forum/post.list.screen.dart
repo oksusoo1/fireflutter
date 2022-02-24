@@ -1,4 +1,5 @@
 import 'package:extended/extended.dart';
+import 'package:fe/screens/admin/send.push.notification.dart';
 import 'package:fe/screens/forum/forum.mixin.dart';
 import 'package:fe/service/app.service.dart';
 import 'package:fireflutter/fireflutter.dart';
@@ -92,6 +93,8 @@ class _PostListScreenState extends State<PostListScreen> with FirestoreMixin, Fo
                 onDislike: onDislike,
                 onHide: () {},
                 onChat: (post) {},
+                onSendPushNotification: (post) => AppService.instance
+                    .open(PushNotificationScreen.routeName, arguments: {'postId': post.id}),
               ),
               Divider(color: Colors.red),
               Comment(
