@@ -1114,7 +1114,9 @@ DynamicLinksService.instance.listen((Uri? deepLink) {
     - `dayOfYear` - the day of a year (1-366)
     - `weekOfYear` - the week of a year
     - `quarter` - the quarter of a year (1-4)
-    - `timestamp` - database's server time stamp.
+    - `createdAt` - database's server time stamp for the time of document creation.
+    - `updatedAt` - server timestamp for update.
+    Note that, these date properties except `createdAt` and `updatedAt` are optional fields, and added by `PostModel.create()`
 
 ## Comment
 
