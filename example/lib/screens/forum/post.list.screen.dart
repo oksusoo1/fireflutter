@@ -50,7 +50,7 @@ class _PostListScreenState extends State<PostListScreen> with FirestoreMixin, Fo
       body: FirestoreListView(
         key: ValueKey(newPostId),
         query: postCol.where('category', isEqualTo: category).orderBy(
-              'timestamp',
+              'createdAt',
               descending: true,
             ),
         itemBuilder: (context, snapshot) {
@@ -72,7 +72,7 @@ class _PostListScreenState extends State<PostListScreen> with FirestoreMixin, Fo
                   uid: post.uid,
                   builder: (user) => user.exists ? Text('By: ${user.nickname} ') : Text('NO-USER '),
                 ),
-                ShortDate(post.timestamp.millisecondsSinceEpoch),
+                ShortDate(post.createdAt.millisecondsSinceEpoch),
               ],
             ),
             onExpansionChanged: (value) {
