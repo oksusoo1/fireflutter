@@ -503,6 +503,8 @@ function prePayload(query) {
       title: query.title ? query.title : "",
       body: query.body ? query.title : "",
       clickAction: "FLUTTER_NOTIFICATION_CLICK",
+      sound: "defaultSound.wav",
+      channel: "PUSH_NOTIFICATION",
     },
     data: {
       id: query.postId ? query.postId : "",
