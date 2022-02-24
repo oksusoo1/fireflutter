@@ -5,10 +5,7 @@ module.exports = {
     node: true,
     mocha: true,
   },
-  extends: [
-    "eslint:recommended",
-    "google",
-  ],
+  extends: ["eslint:recommended", "google"],
   rules: {
     "max-len": "off",
     "valid-jsdoc": "off",
@@ -16,6 +13,7 @@ module.exports = {
     "quotes": ["error", "double"],
   },
   parserOptions: {
-    ecmaVersion: 8, // or 2017
+    // ecmaVersion: 8, // or 2017
+    ecmaVersion: 2020,
   },
 };
