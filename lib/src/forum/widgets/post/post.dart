@@ -17,6 +17,7 @@ class Post extends StatelessWidget {
     required this.onChat,
     required this.onImageTap,
     this.onHide,
+    required this.onSendPushNotification,
   }) : super(key: key);
 
   // final Function(PostModel)? contentBuilder;
@@ -31,6 +32,7 @@ class Post extends StatelessWidget {
   final Function(PostModel post) onDislike;
   final Function(PostModel post) onChat;
   final Function()? onHide;
+  final Function(PostModel post) onSendPushNotification;
   final Function(int index, List<String> fileList) onImageTap;
 
   @override
@@ -59,6 +61,7 @@ class Post extends StatelessWidget {
           likeCount: post.like,
           dislikeCount: post.dislike,
           shareButton: shareButton,
+          onSendPushNotification: () => onSendPushNotification(post),
         ),
       ],
     );

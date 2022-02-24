@@ -66,7 +66,7 @@ class IndexSettingForm extends StatefulWidget {
   State<IndexSettingForm> createState() => _IndexSettingFormState();
 }
 
-class _IndexSettingFormState extends State<IndexSettingForm> {
+class _IndexSettingFormState extends State<IndexSettingForm> with FirestoreMixin {
   final searchablesController = TextEditingController();
   final filtersController = TextEditingController();
   final sortersController = TextEditingController();
@@ -130,6 +130,26 @@ class _IndexSettingFormState extends State<IndexSettingForm> {
     }
   }
 
+  /// TODO: Index documents.
+  reIndexDocuments() async {
+    try {
+      final conf = await confirm('Confirm', 'Re-index documents under ${widget.indexUid}?');
+      if (!conf) return;
+
+      final snap = await postCol.get();
+      List<Map<String, dynamic>> docs = snap.docs.map((doc) {
+        final data = doc.data() as Json;
+        data['id'] = doc.id;
+        return data;
+      }).toList();
+
+      print(docs);
+      // await SearchService.instance.indexDocuments(widget.indexUid, docs);
+    } catch (e) {
+      error(e);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -152,6 +172,7 @@ class _IndexSettingFormState extends State<IndexSettingForm> {
           SizedBox(height: 10),
           ElevatedButton(onPressed: updateIndexSettings, child: Text('UPDATE')),
           ElevatedButton(onPressed: deleteIndexDocuments, child: Text('DELETE INDEX DOCUMENTS')),
+          ElevatedButton(onPressed: reIndexDocuments, child: Text('RE-INDEX DOCUMENTS')),
         ],
       ),
     );
