@@ -6,6 +6,7 @@
 const functions = require("firebase-functions");
 const admin = require("firebase-admin");
 const Axios = require("axios");
+const utils = require("./utils");
 
 // const {MeiliSearch} = require("meilisearch");
 
@@ -83,7 +84,7 @@ async function createCategory(data) {
   const id = data.id;
   // delete data.id; // call-by-reference. it will causes error after this method.
   data.timestamp = timestamp();
-  await categoryDoc(id).set(data, {merge: true});
+  await categoryDoc(id).set(data, { merge: true });
   return categoryDoc(id);
 }
 
@@ -111,7 +112,7 @@ async function createPost(data) {
       postData.deleted = true;
     }
 
-    await postDoc(data.post.id).set(postData), {merge: true};
+    await postDoc(data.post.id).set(postData), { merge: true };
     return postDoc(data.post.id);
   } else {
     return db.collection("posts").add(postData);
@@ -199,12 +200,12 @@ async function createComment(data) {
 async function createTestUser(uid) {
   const timestamp = new Date().getTime();
   await rdb
-      .ref("users")
-      .child(uid)
-      .set({
-        nickname: "testUser" + timestamp,
-        timestamp_registered: timestamp,
-      });
+    .ref("users")
+    .child(uid)
+    .set({
+      nickname: "testUser" + timestamp,
+      timestamp_registered: timestamp,
+    });
   return rdb.ref("users").child(uid);
 }
 
@@ -219,25 +220,20 @@ async function indexPostDocument(id, data) {
   const _data = {
     id: id,
     uid: data.uid,
-    title: data.title,
+    title: data.title ?? "",
     category: data.category,
-    content: data.content,
+    content: data.content ?? "",
     timestamp: timestamp(),
     files: data.files && data.files.length ? data.files.join(",") : "",
+    deleted: data.deleted ? "Y" : "N",
   };
 
   const promises = [];
 
-  promises.push(
-      Axios.post(
-          "https://wonderfulkorea.kr:4431/index.php?api=post/record",
-          _data,
-      ),
-  );
-  promises.push(
-      Axios.post("http://wonderfulkorea.kr:7700/indexes/posts/documents", _data),
-  );
+  promises.push(Axios.post("https://wonderfulkorea.kr:4431/index.php?api=post/record", _data));
 
+  _data.content = utils.removeHtmlTags(_data.content);
+  promises.push(Axios.post("http://wonderfulkorea.kr:7700/indexes/posts/documents", _data));
   promises.push(indexForumDocument(_data));
 
   return Promise.all(promises);
@@ -256,43 +252,27 @@ async function indexCommentDocument(id, data) {
 
   const promises = [];
 
-  promises.push(
-      Axios.post(
-          "https://wonderfulkorea.kr:4431/index.php?api=post/record",
-          _data,
-      ),
-  );
+  promises.push(Axios.post("https://wonderfulkorea.kr:4431/index.php?api=post/record", _data));
 
-  promises.push(
-      Axios.post(
-          "http://wonderfulkorea.kr:7700/indexes/comments/documents",
-          _data,
-      ),
-  );
-
+  _data.content = utils.removeHtmlTags(_data.content);
+  promises.push(Axios.post("http://wonderfulkorea.kr:7700/indexes/comments/documents", _data));
   promises.push(indexForumDocument(_data));
 
   return Promise.all(promises);
 }
 
 function indexForumDocument(data) {
-  return Axios.post(
-      "http://wonderfulkorea.kr:7700/indexes/posts-and-comments/documents",
-      data,
-  );
+  return Axios.post("http://wonderfulkorea.kr:7700/indexes/posts-and-comments/documents", data);
 }
 
 async function deleteIndexedPostDocument(id) {
   const promises = [];
   promises.push(
-      Axios.post("https://wonderfulkorea.kr:4431/index.php?api=post/record", {
-        id: id,
-        deleted: true,
-      }),
+    Axios.post("https://wonderfulkorea.kr:4431/index.php?api=post/delete", {
+      id: id,
+    })
   );
-  promises.push(
-      Axios.delete("http://wonderfulkorea.kr:7700/indexes/posts/documents/" + id),
-  );
+  promises.push(Axios.delete("http://wonderfulkorea.kr:7700/indexes/posts/documents/" + id));
   promises.push(deleteIndexedForumDocument(id));
   return Promise.all(promises);
 }
@@ -300,24 +280,17 @@ async function deleteIndexedPostDocument(id) {
 async function deleteIndexedCommentDocument(id) {
   const promises = [];
   promises.push(
-      Axios.post("https://wonderfulkorea.kr:4431/index.php?api=post/record", {
-        id: id,
-        deleted: true,
-      }),
+    Axios.post("https://wonderfulkorea.kr:4431/index.php?api=post/delete", {
+      id: id,
+    })
   );
-  promises.push(
-      Axios.delete(
-          "http://wonderfulkorea.kr:7700/indexes/comments/documents/" + id,
-      ),
-  );
+  promises.push(Axios.delete("http://wonderfulkorea.kr:7700/indexes/comments/documents/" + id));
   promises.push(deleteIndexedForumDocument(id));
   return Promise.all(promises);
 }
 
 async function deleteIndexedForumDocument(id) {
-  return Axios.delete(
-      "http://wonderfulkorea.kr:7700/indexes/posts-and-comments/documents/" + id,
-  );
+  return Axios.delete("http://wonderfulkorea.kr:7700/indexes/posts-and-comments/documents/" + id);
 }
 
 // get comment ancestor by getting parent comment until it reach the root comment
@@ -340,9 +313,7 @@ async function removeTopicAndForumAncestorsSubscriber(uids, topic) {
   const _uids = [];
   const getTopicsPromise = [];
   for (const uid of uids) {
-    getTopicsPromise.push(
-        rdb.ref("user-settings").child(uid).child("topic").get(),
-    );
+    getTopicsPromise.push(rdb.ref("user-settings").child(uid).child("topic").get());
     // getTopicsPromise.push( admin.database().ref('user-settings').child(uid).child('topic').once('value'));  // same result above
   }
   const result = await Promise.all(getTopicsPromise);
@@ -374,7 +345,7 @@ async function getTokensFromUids(uids) {
   const getTokensPromise = [];
   for (const u of _uids) {
     getTokensPromise.push(
-        admin.firestore().collection("message-tokens").where("uid", "==", u).get(),
+      admin.firestore().collection("message-tokens").where("uid", "==", u).get()
     );
   }
 
@@ -405,12 +376,10 @@ async function sendMessageToTopic(query) {
   const payload = prePayload(query);
 
   try {
-    const res = await admin
-        .messaging()
-        .sendToTopic("/topics/" + query.topic, payload);
-    return {code: "success", result: res};
+    const res = await admin.messaging().sendToTopic("/topics/" + query.topic, payload);
+    return { code: "success", result: res };
   } catch (e) {
-    return {code: "error", message: e};
+    return { code: "error", message: e };
   }
 }
 
@@ -426,9 +395,9 @@ async function sendMessageToTokens(query) {
 
   try {
     const res = await sendingMessageToDevice(_tokens, payload);
-    return {code: "success", result: res};
+    return { code: "success", result: res };
   } catch (e) {
-    return {code: "error", message: e};
+    return { code: "error", message: e };
   }
 }
 
@@ -438,9 +407,9 @@ async function sendMessageToUsers(query) {
   console.log(tokens);
   try {
     const res = await sendingMessageToDevice(tokens, payload);
-    return {code: "success", result: res};
+    return { code: "success", result: res };
   } catch (e) {
-    return {code: "error", message: e};
+    return { code: "error", message: e };
   }
 }
 
@@ -479,11 +448,7 @@ async function sendingMessageToDevice(tokens, payload) {
           error.code === "messaging/registration-token-not-registered"
         ) {
           tokensToRemove.push(
-              admin
-                  .firestore()
-                  .collection("message-tokens")
-                  .doc(chunks[i][index])
-                  .delete(),
+            admin.firestore().collection("message-tokens").doc(chunks[i][index]).delete()
           );
         }
         errorCount++;
@@ -494,7 +459,7 @@ async function sendingMessageToDevice(tokens, payload) {
     });
   });
   await Promise.all(tokensToRemove);
-  return {success: successCount, error: errorCount};
+  return { success: successCount, error: errorCount };
 }
 
 function prePayload(query) {
@@ -536,8 +501,8 @@ async function updateFileParentId(id, data) {
     return;
   }
   const bucket = admin.storage().bucket();
-  for ( const url of data.files ) {
-    const f = bucket.file( getFilePathFromStorageUrl(url) );
+  for (const url of data.files) {
+    const f = bucket.file(getFilePathFromStorageUrl(url));
     console.log(await f.exists);
     await f.setMetadata({
       metadata: {
@@ -563,8 +528,7 @@ exports.deleteIndexedPost = deleteIndexedPostDocument;
 exports.deleteIndexedComment = deleteIndexedCommentDocument;
 
 exports.getCommentAncestors = getCommentAncestors;
-exports.removeTopicAndForumAncestorsSubscriber =
-  removeTopicAndForumAncestorsSubscriber;
+exports.removeTopicAndForumAncestorsSubscriber = removeTopicAndForumAncestorsSubscriber;
 exports.getTokensFromUids = getTokensFromUids;
 exports.chunk = chunk;
 

@@ -247,7 +247,7 @@ function lessThan(n) {
 }
 
 function checkType() {
-	return request.resource.metadata.type == 'post' || request.resource.metadata.type == 'comment' || request.resource.metadata.type == 'chat';
+	return request.resource.metadata.type == 'post' || request.resource.metadata.type == 'comment' || request.resource.metadata.type == 'user' || request.resource.metadata.type == 'chat';
 }
 ```
 
@@ -1262,7 +1262,8 @@ try {
   - So, you can delete files in storage if
     - they don't have `id` in custom metadata when their `type` is one of `post` or `comment`.
     - the url is no longer being used by the `id` of the post(or comment).
-  - @todo - Firefluter does not provide the delition funtionality, yet. You may delete it by yourself at this time.
+    - their parent (post or comment) has deleted.
+  - @todo - Firefluter does not provide the delition funtionality, yet. You may delete it by yourself at this time. @see https://github.com/withcenter/wonderfulkorea/issues/77
 
 
 

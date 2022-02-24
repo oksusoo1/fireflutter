@@ -174,6 +174,7 @@ class PostModel with FirestoreMixin, ForumBase {
       if (files != null) 'files': files,
       'uid': UserService.instance.user.uid,
       'hasPhoto': (files == null || files.length == 0) ? false : true,
+      'deleted': false,
       'noOfComments': 0,
       'year': j.year,
       'month': j.month,
@@ -212,6 +213,7 @@ class PostModel with FirestoreMixin, ForumBase {
 
   Future<void> delete() {
     if (deleted) throw ERROR_ALREADY_DELETED;
+
     return postDoc(id).update({
       'deleted': true,
       'content': '',
