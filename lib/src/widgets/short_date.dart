@@ -4,10 +4,12 @@ import 'package:intl/intl.dart';
 class ShortDate extends StatelessWidget {
   const ShortDate(
     this.timestamp, {
+    this.style,
     Key? key,
   }) : super(key: key);
 
   final int timestamp;
+  final TextStyle? style;
 
   @override
   Widget build(BuildContext context) {
@@ -20,6 +22,6 @@ class ShortDate extends StatelessWidget {
       re = false;
     }
 
-    return Text(re ? DateFormat.jm().format(date) : DateFormat.yMd().format(date));
+    return Text(re ? DateFormat.jm().format(date) : DateFormat.yMd().format(date), style: style);
   }
 }
