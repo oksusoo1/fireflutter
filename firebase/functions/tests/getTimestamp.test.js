@@ -18,13 +18,21 @@ if (!admin.apps.length) {
 }
 
 // get firestore
-const db = admin.firestore();
+// const db = admin.firestore();
 
 // This must come after initlization
+const test = require("../test");
 const utils = require("../utils");
 
 describe("getTimestamp test", () => {
-  it("firestore timestamp", () => {
-    console.log(db.Timestamp);
+  it("firestore timestamp", async () => {
+    const ref = await test.createPost({
+      category: "test",
+      post: {},
+    });
+    const data = (await ref.get()).data();
+
+    console.log(utils.getTimestamp());
+    console.log(utils.getTimestamp(data.createdAt));
   });
 });
