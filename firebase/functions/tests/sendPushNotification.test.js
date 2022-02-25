@@ -23,6 +23,8 @@ const validToken2 = "ecw_jCq6TV273wlDMeaQRY:APA91bF8GUuxtjlpBf7xI9M4dv6MD74rb40t
 
 
 // This must come after initlization
+
+const test = require("../test");
 const lib = require("../lib");
 
 describe("SendPushNotification test  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~", () => {
@@ -106,8 +108,8 @@ describe("SendPushNotification test  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~", () => {
   it("send message to user", async () => {
     const userA = "sendMessaegUserA";
     const userB = "sendMessaegUserB";
-    await lib.createTestUser(userA);
-    await lib.createTestUser(userB);
+    await test.createTestUser(userA);
+    await test.createTestUser(userB);
 
     const tokenUpdates = [];
     tokenUpdates.push( db.collection("message-tokens").doc(validToken1).set({uid: userA}));
