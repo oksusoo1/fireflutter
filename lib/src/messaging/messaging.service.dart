@@ -96,8 +96,8 @@ class MessagingService with FirestoreMixin, DatabaseMixin {
 
     try {
       token = (await FirebaseMessaging.instance.getToken())!;
-      print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-      print(token);
+      // print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+      // print(token);
     } catch (e) {
       print('------> getToken() error $e');
     }

@@ -1255,6 +1255,13 @@ try {
     - then, it will try to display original image. If it fails to dsipaly original image,
       - then it will display the error widget.
 
+- Errors with `UploadedImage`.
+  When thumbnail does not exists, the error message below may appear. And this is not a critical error. Thumbnails are generated automatically by the cloud function. And sometimes, very rarely happens when there is no thumbnail generated.
+```text
+════════ Exception caught by image resource service ════════════════════════════
+The following HttpExceptionWithStatus was thrown resolving an image codec:
+HttpException: Invalid statusCode: 403, uri = https://firebasestorage.googleapis.com/v0/b/wonderful-korea.appspot.com/o/test%2F6_200x200.webp?alt=media
+```
 
 ## Uploaded file management
 
