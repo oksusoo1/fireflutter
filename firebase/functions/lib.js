@@ -53,6 +53,7 @@ async function indexPostDocument(id, data) {
     category: data.category,
     content: data.content ?? "",
     files: data.files && data.files.length ? data.files.join(",") : "",
+    noOfComments: data.noOfComments ?? 0,
     deleted: data.deleted ? "Y" : "N",
     createdAt: utils.getTimestamp(data.createdAt),
     updatedAt: utils.getTimestamp(data.updatedAt),
