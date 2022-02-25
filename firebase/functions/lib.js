@@ -329,16 +329,6 @@ function topicPayload(topic, query) {
 
 function preMessagePayload(query) {
   return {
-<<<<<<< HEAD
-    notification: {
-      title: query.title ? query.title : "",
-      body: query.body ? query.title : "",
-      clickAction: "FLUTTER_NOTIFICATION_CLICK",
-      sound: "defaultSoundwav",
-      channel: "PUSH_NOTIFICATION",
-    },
-=======
->>>>>>> 1b404014ae8cdc09366a338313c29cde848637c3
     data: {
       id: query.postId ? query.postId : "",
       type: query.type ? query.type : "",
