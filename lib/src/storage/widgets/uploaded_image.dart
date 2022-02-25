@@ -4,6 +4,8 @@ import '../../../fireflutter.dart';
 
 /// UploadedImage
 ///
+/// Use this widget to display images that are uploaded into firebase storage.
+///
 /// [url] is always the original image. Not thumbnail image.
 ///
 /// When [useThumbnail] is set to true, it will look for thumbnail image, first.
