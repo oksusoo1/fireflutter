@@ -32,7 +32,7 @@ exports.sendMessageOnPostCreate = functions
         body: snapshot.data().content ? snapshot.data().content : "",
         postId: context.params.postId,
         type: "post",
-        sender_uid: snapshot.data().uid,
+        uid: snapshot.data().uid,
       });
       return admin.messaging().send(payload);
     });
