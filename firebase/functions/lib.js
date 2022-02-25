@@ -326,12 +326,12 @@ function preMessagePayload(query) {
   return {
     data: {
       id: query.postId ? query.postId : "",
-      type: query.postId ? query.postId : "",
+      type: query.type ? query.type : "",
       sender_uid: query.uid ? query.uid : "",
     },
     notification: {
       title: query.title ? query.title : "",
-      body: query.body ? query.title : "",
+      body: query.body ? query.body : "",
     },
     android: {
       notification: {
@@ -407,6 +407,7 @@ exports.error = error;
 exports.sendMessageToTopic = sendMessageToTopic;
 exports.sendMessageToTokens = sendMessageToTokens;
 exports.sendMessageToUsers = sendMessageToUsers;
+exports.preMessagePayload = preMessagePayload;
 
 exports.sendingMessageToTokens = sendingMessageToTokens;
 
