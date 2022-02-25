@@ -65,7 +65,7 @@ class UserModel with FirestoreMixin, DatabaseMixin {
   bool get signedOut => signedIn == false;
 
   ///
-  DatabaseReference get _myDoc => FirebaseDatabase.instance.ref('users').child(uid);
+  DatabaseReference get _userDoc => FirebaseDatabase.instance.ref('users').child(uid);
 
   factory UserModel.fromJson(dynamic data, String uid) {
     if (data == null) return UserModel();
@@ -111,7 +111,7 @@ class UserModel with FirestoreMixin, DatabaseMixin {
 
   ///
   Future<void> create() {
-    return _myDoc.set({'timestamp_registered': ServerValue.timestamp});
+    return _userDoc.set({'timestamp_registered': ServerValue.timestamp});
   }
 
   /// Update login user's document on `/users/{userDoc}` in realtime database.
@@ -124,7 +124,7 @@ class UserModel with FirestoreMixin, DatabaseMixin {
       // throw Exception(ERROR_NOT_SUPPORTED_FIELD_ON_USER_UPDATE);
       throw ERROR_NOT_SUPPORTED_FIELD_ON_USER_UPDATE;
     }
-    return _myDoc.update({field: value});
+    return _userDoc.update({field: value});
   }
 
   /// Update nickname
@@ -156,7 +156,7 @@ class UserModel with FirestoreMixin, DatabaseMixin {
   /// Update wether if the user is an admin or not.
   /// Refer readme for details
   Future<void> updateAdminStatus() async {
-    if ( signedOut ) return;
+    if (signedOut) return;
     final DocumentSnapshot doc = await adminsDoc.get();
     if (doc.exists) {
       final data = doc.data()! as Map<String, dynamic>;

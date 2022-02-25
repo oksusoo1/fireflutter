@@ -36,8 +36,7 @@ class UserService with FirestoreMixin, DatabaseMixin {
 
   String get photoUrl => user.photoUrl;
 
-  DatabaseReference get _myDoc =>
-      FirebaseDatabase.instance.ref('users').child(uid);
+  DatabaseReference get _myDoc => FirebaseDatabase.instance.ref('users').child(uid);
 
   StreamSubscription? userSubscription;
 
@@ -63,12 +62,13 @@ class UserService with FirestoreMixin, DatabaseMixin {
     FirebaseAuth.instance.authStateChanges().listen(
       (_user) async {
         userSubscription?.cancel();
-        user = UserModel();
         if (_user == null) {
+          user = UserModel();
           debugPrint('User signed-out');
           changes.add(user);
           onSignedOut();
         } else {
+          user = UserModel(uid: uid);
           if (_user.isAnonymous) {
             /// Note, anonymous sigin-in is not supported by fireflutter.
             debugPrint(
