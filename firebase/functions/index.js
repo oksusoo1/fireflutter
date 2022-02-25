@@ -26,21 +26,31 @@ exports.sendMessageOnPostCreate = functions
     .firestore.document("/posts/{postId}")
     .onCreate((snapshot, context) => {
       const category = snapshot.data().category;
-      const payload = {
-        notification: {
-          title: snapshot.data().title ? snapshot.data().title : "",
-          body: snapshot.data().content ? snapshot.data().content : "",
-          clickAction: "FLUTTER_NOTIFICATION_CLICK",
-        },
-        data: {
-          id: context.params.postId,
-          type: "post",
-          sender_uid: snapshot.data().uid,
-        },
-      };
-      const topic = "posts_" + category;
-      console.info("topic; ", topic);
-      return admin.messaging().sendToTopic(topic, payload);
+      // const payload = {
+      //   notification: {
+      //     title: snapshot.data().title ? snapshot.data().title : "",
+      //     body: snapshot.data().content ? snapshot.data().content : "",
+      //     clickAction: "FLUTTER_NOTIFICATION_CLICK",
+      //   },
+      //   data: {
+      //     id: context.params.postId,
+      //     type: "post",
+      //     sender_uid: snapshot.data().uid,
+      //   },
+      // };
+      const payload = lib.preMessagePayload({
+        title: snapshot.data().title ? snapshot.data().title : "",
+        body: snapshot.data().content ? snapshot.data().content : "",
+        postId: context.params.postId,
+        type: "post",
+        sender_uid: snapshot.data().uid,
+      });      
+      payload["topic"] = "/topics/" + category;
+      return admin.messaging().send(payload);
+
+      // const topic = "posts_" + category;
+      // console.info("topic; ", topic);
+      // return admin.messaging().sendToTopic(topic, payload);
     });
 
 // sendMessageOnCommentCreate({
@@ -61,18 +71,26 @@ exports.sendMessageOnCommentCreate = functions
           .get();
 
       // prepare notification
-      const payload = {
-        notification: {
-          title: "New Comment: " + post.data().title ? post.data().title : "",
-          body: snapshot.data().content,
-          clickAction: "FLUTTER_NOTIFICATION_CLICK",
-        },
-        data: {
-          id: snapshot.data().postId,
-          type: "post",
-          sender_uid: snapshot.data().uid,
-        },
-      };
+      // const payload = {
+      //   notification: {
+      //     title: "New Comment: " + post.data().title ? post.data().title : "",
+      //     body: snapshot.data().content,
+      //     clickAction: "FLUTTER_NOTIFICATION_CLICK",
+      //   },
+      //   data: {
+      //     id: snapshot.data().postId,
+      //     type: "post",
+      //     sender_uid: snapshot.data().uid,
+      //   },
+      // };
+
+      const payload = lib.preMessagePayload({
+        title: "New Comment: " + post.data().title ? post.data().title : "",
+        body: snapshot.data().content,
+        postId: snapshot.data().postId,
+        type: "post",
+        sender_uid: snapshot.data().uid,
+      })
 
       // comment topic
       const topic = "comments_" + post.data().category;
