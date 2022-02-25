@@ -119,11 +119,6 @@ class PostModel with FirestoreMixin, ForumBase {
     final _createdAt = data['createdAt'] ?? 0;
     final _updatedAt = data['updatedAt'] ?? 0;
 
-    dynamic _deleted = data['deleted'] ?? false;
-    if (data['deleted'] is String) {
-      _deleted = data['deleted'] == 'Y';
-    }
-
     return PostModel(
       id: id,
       category: data['category'] ?? '',
@@ -132,7 +127,7 @@ class PostModel with FirestoreMixin, ForumBase {
       uid: data['uid'] ?? '',
       like: data['like'] ?? 0,
       dislike: data['dislike'] ?? 0,
-      deleted: _deleted,
+      deleted: data.containsKey('deleted') ? data['deleted'] == 'Y' : false,
       createdAt: Timestamp.fromMillisecondsSinceEpoch(_createdAt * 1000),
       updatedAt: Timestamp.fromMillisecondsSinceEpoch(_updatedAt * 1000),
       data: data,

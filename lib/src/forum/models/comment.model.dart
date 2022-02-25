@@ -82,6 +82,7 @@ class CommentModel with FirestoreMixin, ForumBase {
       uid: data['uid'] ?? '',
       like: data['like'] ?? 0,
       dislike: data['dislike'] ?? 0,
+      deleted: data.containsKey('deleted') ? data['deleted'] == 'Y' : false,
       createdAt: Timestamp.fromMillisecondsSinceEpoch(_createdAt * 1000),
       updatedAt: Timestamp.fromMillisecondsSinceEpoch(_updatedAt * 1000),
       data: data,
