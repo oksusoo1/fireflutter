@@ -38,7 +38,7 @@ describe("SendPushNotification test  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~", () => {
       });
       if ( re.code == "success") {
         assert.ok("sending push notification was success.");
-        assert.ok(re.result.messageId != null, "messageId must exist");
+        assert.ok(re.result != null, "messageId must exist");
       } else assert.fail("failed on sending message to default topic");
     } catch (e) {
       assert.fail("send push notification should succeed.");
@@ -69,6 +69,7 @@ describe("SendPushNotification test  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~", () => {
     } catch (e) {
       assert.fail("send push notification should succeed::." + e);
     }
+
 
     try {
       const re = await lib.sendMessageToTokens({
@@ -130,7 +131,6 @@ describe("SendPushNotification test  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~", () => {
         title: "push title 1",
         body: "push body 1",
       });
-      console.log(re.result.success);
       if ( re.code == "success") {
         assert.ok("sending push notification was success.");
         assert.ok(re.result.success == 2, "sending push notification was success.");
@@ -145,7 +145,6 @@ describe("SendPushNotification test  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~", () => {
         title: "push title 1",
         body: "push body 1",
       });
-      console.log(re);
       if ( re.code == "success") {
         assert.ok("sending push notification was success.");
         assert.ok(re.result.success == 2, "sending push notification 2 success.");
