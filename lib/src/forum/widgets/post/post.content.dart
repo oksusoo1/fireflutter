@@ -5,10 +5,12 @@ import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class PostContent extends StatelessWidget {
-  const PostContent(this.post, {this.withImage = true, Key? key}) : super(key: key);
+  const PostContent(this.post, {this.withImage = true, this.onImageTapped, Key? key})
+      : super(key: key);
 
   final PostModel post;
   final bool withImage;
+  final Function(String)? onImageTapped;
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +28,12 @@ class PostContent extends StatelessWidget {
             //   return HtmlContent(content);
             // } else if (post.html)
             if (post.isHtmlContent)
-              return Html(data: post.displayContent);
+              return Html(
+                data: post.displayContent,
+                onImageTap: (url, renderContext, attributes, element) {
+                  if (onImageTapped != null) onImageTapped!(url ?? '');
+                },
+              );
             else
               return SelectableLinkify(
                 text: post.displayContent,

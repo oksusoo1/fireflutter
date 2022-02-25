@@ -59,29 +59,44 @@ class _ImageViewerState extends State<ImageViewer> {
             ),
           ),
           if (currentIndex != 0)
-            Positioned(
-              bottom: (MediaQuery.of(context).size.height / 2) - 28,
-              child: IconButton(
-                icon: Icon(Icons.arrow_left_rounded, color: Colors.white, size: 32),
-                onPressed: () => _controller.previousPage(
-                  duration: Duration(milliseconds: 500),
-                  curve: Curves.ease,
-                ),
-              ),
-            ),
+            buildNavButton(Icons.arrow_left_rounded,
+                callback: () => _controller.previousPage(
+                      duration: Duration(milliseconds: 500),
+                      curve: Curves.ease,
+                    ),
+                left: 18),
           if (currentIndex != widget.files.length - 1)
-            Positioned(
-              bottom: (MediaQuery.of(context).size.height / 2) - 28,
-              right: 18,
-              child: IconButton(
-                icon: Icon(Icons.arrow_right_rounded, color: Colors.white, size: 32),
-                onPressed: () => _controller.nextPage(
-                  duration: Duration(milliseconds: 500),
-                  curve: Curves.ease,
-                ),
-              ),
-            ),
+            buildNavButton(Icons.arrow_right_rounded,
+                callback: () => _controller.nextPage(
+                      duration: Duration(milliseconds: 500),
+                      curve: Curves.ease,
+                    ),
+                right: 18)
         ],
+      ),
+    );
+  }
+
+  Widget buildNavButton(
+    IconData icon, {
+    Function()? callback,
+    double? right,
+    double? left,
+  }) {
+    return Positioned(
+      bottom: (MediaQuery.of(context).size.height / 2) - 28,
+      right: right,
+      left: left,
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.grey.withOpacity(.7),
+          borderRadius: BorderRadius.circular(50),
+        ),
+        child: Center(
+            child: IconButton(
+          icon: Icon(icon, color: Colors.black, size: 32),
+          onPressed: callback,
+        )),
       ),
     );
   }

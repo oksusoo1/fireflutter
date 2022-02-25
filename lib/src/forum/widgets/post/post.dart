@@ -40,7 +40,12 @@ class Post extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        PostContent(post),
+        PostContent(
+          post,
+          onImageTapped: (url) {
+            onImageTap(post.files.indexWhere((u) => url == u), post.files);
+          },
+        ),
         if (post.isHtmlContent == false)
           ImageList(
             files: post.files,
