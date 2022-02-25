@@ -19,8 +19,16 @@ class CommentModel with FirestoreMixin, ForumBase {
     updatedAt,
     required this.data,
     this.files = const [],
-  })  : createdAt = createdAt ?? Timestamp.now(),
-        updatedAt = updatedAt ?? Timestamp.now();
+  })  : createdAt = createdAt == null
+            ? Timestamp.now()
+            : createdAt is int
+                ? Timestamp.fromMillisecondsSinceEpoch(createdAt * 1000)
+                : createdAt,
+        updatedAt = updatedAt == null
+            ? Timestamp.now()
+            : createdAt is int
+                ? Timestamp.fromMillisecondsSinceEpoch(createdAt * 1000)
+                : updatedAt;
 
   /// data is the document data object.
   Json data;
