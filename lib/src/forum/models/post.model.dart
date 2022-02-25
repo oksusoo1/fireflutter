@@ -19,10 +19,12 @@ class PostModel with FirestoreMixin, ForumBase {
     this.like = 0,
     this.dislike = 0,
     this.deleted = false,
-    this.timestamp_,
+    createdAt,
+    updatedAt,
     this.data_,
     this.isHtmlContent = false,
-  });
+  })  : createdAt = createdAt ?? Timestamp.now(),
+        updatedAt = updatedAt ?? Timestamp.now();
 
   /// data is the document data object.
   Json? data_;
@@ -61,8 +63,8 @@ class PostModel with FirestoreMixin, ForumBase {
   int like;
   int dislike;
 
-  Timestamp? timestamp_;
-  Timestamp get timestamp => timestamp_ ?? Timestamp.now();
+  Timestamp createdAt;
+  Timestamp updatedAt;
 
   /// Get document data of map and convert it into post model
   factory PostModel.fromJson(Json data, String id) {
@@ -75,9 +77,6 @@ class PostModel with FirestoreMixin, ForumBase {
     if (data['files'] is List) {
       _files = new List<String>.from(data['files']);
     }
-
-    var _timestamp = data['timestamp'] ?? Timestamp.now();
-    if (_timestamp is int) _timestamp = Timestamp.fromMillisecondsSinceEpoch(_timestamp);
 
     String content = data['content'] ?? '';
 
@@ -106,7 +105,8 @@ class PostModel with FirestoreMixin, ForumBase {
       uid: data['uid'] ?? '',
       like: data['like'] ?? 0,
       dislike: data['dislike'] ?? 0,
-      timestamp_: _timestamp,
+      createdAt: data['createdAt'],
+      updatedAt: data['updatedAt'],
       data_: data,
     );
   }
@@ -125,7 +125,8 @@ class PostModel with FirestoreMixin, ForumBase {
       'uid': uid,
       'like': like,
       'dislike': dislike,
-      'timestamp': timestamp,
+      'createdAt': createdAt,
+      'updatedAt': updatedAt,
       'data': data,
     };
   }
@@ -167,6 +168,7 @@ class PostModel with FirestoreMixin, ForumBase {
     if (UserService.instance.user.exists == false) throw ERROR_USER_DOCUMENT_NOT_EXISTS;
 
     final j = Jiffy();
+    int week = ((j.unix() - 345600) / 604800).floor();
     final createData = {
       'category': category,
       'title': title,
@@ -180,9 +182,9 @@ class PostModel with FirestoreMixin, ForumBase {
       'month': j.month,
       'day': j.date,
       'dayOfYear': j.dayOfYear,
-      'weekOfYear': j.week,
-      'quarter': j.quarter,
-      'timestamp': FieldValue.serverTimestamp(),
+      'week': week,
+      'createdAt': FieldValue.serverTimestamp(),
+      'updatedAt': FieldValue.serverTimestamp(),
     };
     return postCol.add({...createData, ...extra});
   }
@@ -200,7 +202,7 @@ class PostModel with FirestoreMixin, ForumBase {
         'content': content,
         if (files != null) 'files': files,
         'hasPhoto': (files == null || files.length == 0) ? false : true,
-        'timestamp': FieldValue.serverTimestamp(),
+        'updatedAt': FieldValue.serverTimestamp(),
       },
       ...extra
     });
@@ -218,7 +220,7 @@ class PostModel with FirestoreMixin, ForumBase {
       'deleted': true,
       'content': '',
       'title': '',
-      'timestamp': FieldValue.serverTimestamp(),
+      'updatedAt': FieldValue.serverTimestamp(),
     });
   }
 

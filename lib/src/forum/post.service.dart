@@ -45,15 +45,22 @@ class PostService with FirestoreMixin {
 
     /// TODO: check if it's working.
     if (within != null) {
-      q = q.where('timestamp',
-          isGreaterThanOrEqualTo:
-              Jiffy().subtract(days: within).format("yyyy-MM-dd"));
+      q = q.where(
+        'createdAt',
+        isGreaterThanOrEqualTo: Jiffy().subtract(days: within).format("yyyy-MM-dd"),
+      );
     }
     q = q.limit(limit);
 
-    q = q.orderBy('timestamp', descending: true);
+    q = q.orderBy('createdAt', descending: true);
 
-    QuerySnapshot snapshot = await q.get();
+    QuerySnapshot snapshot;
+    try {
+      snapshot = await q.get();
+    } on FirebaseException catch (e) {
+      debugPrint("${e.code}, ${e.message ?? ''}");
+      rethrow;
+    }
 
     List<PostModel> posts = [];
     snapshot.docs.forEach((doc) {

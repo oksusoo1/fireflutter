@@ -48,7 +48,7 @@ class _PostViewScreenState extends State<PostViewScreen> with FirestoreMixin, Fo
                 uid: post.uid,
                 builder: (user) => user.exists ? Text('By: ${user.nickname} ') : Text('NO-USER '),
               ),
-              ShortDate(post.timestamp.millisecondsSinceEpoch),
+              ShortDate(post.createdAt.millisecondsSinceEpoch),
             ],
           ),
           children: [
