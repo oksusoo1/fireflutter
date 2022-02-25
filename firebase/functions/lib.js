@@ -53,6 +53,7 @@ async function indexPostDocument(id, data) {
     category: data.category,
     content: data.content ?? "",
     files: data.files && data.files.length ? data.files.join(",") : "",
+    noOfComments: data.noOfComments ?? 0,
     deleted: data.deleted ? "Y" : "N",
     createdAt: utils.getTimestamp(data.createdAt),
     updatedAt: utils.getTimestamp(data.updatedAt),
@@ -204,10 +205,12 @@ function error(errorCode, errorMessage) {
 }
 
 async function sendMessageToTopic(query) {
-  const payload = prePayload(query);
-
+  const payload = topicPayload(query);
   try {
-    const res = await admin.messaging().sendToTopic("/topics/" + query.topic, payload);
+    const res = await admin
+        .messaging()
+        .send(payload);
+    // .sendToTopic("/topics/" + query.topic, payload);
     return {code: "success", result: res};
   } catch (e) {
     return {code: "error", message: e};
@@ -215,7 +218,7 @@ async function sendMessageToTopic(query) {
 }
 
 async function sendMessageToTokens(query) {
-  const payload = prePayload(query);
+  const payload = preMessagePayload(query);
 
   let _tokens;
   if (typeof query.tokens == "string") {
@@ -225,7 +228,7 @@ async function sendMessageToTokens(query) {
   }
 
   try {
-    const res = await sendingMessageToDevice(_tokens, payload);
+    const res = await sendingMessageToTokens(_tokens, payload);
     return {code: "success", result: res};
   } catch (e) {
     return {code: "error", message: e};
@@ -233,39 +236,51 @@ async function sendMessageToTokens(query) {
 }
 
 async function sendMessageToUsers(query) {
-  const payload = prePayload(query);
+  const payload = preMessagePayload(query);
   const tokens = await getTokensFromUids(query.uids);
-  console.log(tokens);
+  // console.log(tokens);
   try {
-    const res = await sendingMessageToDevice(tokens, payload);
+    const res = await sendingMessageToTokens(tokens, payload);
     return {code: "success", result: res};
   } catch (e) {
     return {code: "error", message: e};
   }
 }
 
-async function sendingMessageToDevice(tokens, payload) {
+async function sendingMessageToTokens(tokens, payload) {
   if (tokens.length == 0) return [];
 
+  // sending to device can be up to 1000 per batch but the downside is it cant set sound
   // chuck token to 1000 https://firebase.google.com/docs/cloud-messaging/send-message#send-to-individual-devices
   // You can send messages to up to 1000 devices in a single request.
   // If you provide an array with over 1000 registration tokens,
   // the request will fail with a messaging/invalid-recipient error.
-  const chunks = chunk(tokens, 1000);
+
+
+  // / sendMulticast supports 500 token per batch only.
+  const chunks = chunk(tokens, 500);
 
   const sendToDevicePromise = [];
   for (const c of chunks) {
     // Send notifications to all tokens.
-    sendToDevicePromise.push(admin.messaging().sendToDevice(c, payload));
+    const newPayload = payload;
+    newPayload["tokens"] = c;
+    sendToDevicePromise.push(admin.messaging().sendMulticast(payload));
+    // sendToDevicePromise.push(admin.messaging().sendToDevice(c, payload));
   }
   const sendDevice = await Promise.all(sendToDevicePromise);
 
   const tokensToRemove = [];
   let successCount = 0;
   let errorCount = 0;
-  sendDevice.forEach((response, i) => {
+  sendDevice.forEach((res, i) => {
+    successCount += res.successCount;
+    errorCount += res.failureCount;
+
     // For each message check if there was an error.
-    response.results.forEach((result, index) => {
+    // res.results.forEach((result, index) => { // sendToDevice response
+
+    res.responses.forEach((result, index) => {
       const error = result.error;
       if (error) {
         // console.log(
@@ -282,10 +297,6 @@ async function sendingMessageToDevice(tokens, payload) {
               admin.firestore().collection("message-tokens").doc(chunks[i][index]).delete(),
           );
         }
-        errorCount++;
-      } else {
-        // tokenOk.push({[chunks[i]]: 'ok' });
-        successCount++;
       }
     });
   });
@@ -293,8 +304,32 @@ async function sendingMessageToDevice(tokens, payload) {
   return {success: successCount, error: errorCount};
 }
 
-function prePayload(query) {
+// function prePayload(query) {
+//   return {
+//     notification: {
+//       title: query.title ? query.title : "",
+//       body: query.body ? query.title : "",
+//       clickAction: "FLUTTER_NOTIFICATION_CLICK",
+//       sound: "defaultSound.wav",
+//       channel: "PUSH_NOTIFICATION",
+//     },
+//     data: {
+//       id: query.postId ? query.postId : "",
+//       type: query.postId ? query.postId : "",
+//       sender_uid: query.uid ? query.uid : "",
+//     },
+//   };
+// }
+
+function topicPayload(topic, query) {
+  const payload = preMessagePayload(query);
+  payload["topic"] = "/topics/" + topic;
+  return payload;
+}
+
+function preMessagePayload(query) {
   return {
+<<<<<<< HEAD
     notification: {
       title: query.title ? query.title : "",
       body: query.body ? query.title : "",
@@ -302,10 +337,34 @@ function prePayload(query) {
       sound: "defaultSoundwav",
       channel: "PUSH_NOTIFICATION",
     },
+=======
+>>>>>>> 1b404014ae8cdc09366a338313c29cde848637c3
     data: {
       id: query.postId ? query.postId : "",
-      type: query.postId ? query.postId : "",
+      type: query.type ? query.type : "",
       sender_uid: query.uid ? query.uid : "",
+    },
+    notification: {
+      title: query.title ? query.title : "",
+      body: query.body ? query.body : "",
+    },
+    android: {
+      notification: {
+        channelId: "PUSH_NOTIFICATION",
+        clickAction: "FLUTTER_NOTIFICATION_CLICK",
+        sound: "defaultSound.wav",
+      },
+    },
+    apns: {
+      payload: {
+        aps: {
+          alert: {
+            title: query.title ? query.title : "",
+            body: query.body ? query.title : "",
+          },
+          sound: "defaultSound.wav",
+        },
+      },
     },
   };
 }
@@ -363,7 +422,9 @@ exports.error = error;
 exports.sendMessageToTopic = sendMessageToTopic;
 exports.sendMessageToTokens = sendMessageToTokens;
 exports.sendMessageToUsers = sendMessageToUsers;
+exports.preMessagePayload = preMessagePayload;
+exports.topicPayload = topicPayload;
 
-exports.sendingMessageToDevice = sendingMessageToDevice;
+exports.sendingMessageToTokens = sendingMessageToTokens;
 
 exports.updateFileParentId = updateFileParentId;

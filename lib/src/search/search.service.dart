@@ -68,6 +68,8 @@ class SearchService {
 
       _posts = res.hits!;
       _hits = res.nbHits ?? 0;
+
+      ///
       resultList.addAll(_posts);
       offset = limit * page;
       page += 1;
@@ -114,10 +116,13 @@ class SearchService {
 
   ///
   ///
-  Future indexDocuments(String index, List<Map<String, dynamic>> documents,
-      [String? primaryKey]) async {
-    return client.index(uid).addDocuments(documents, primaryKey: primaryKey);
-  }
+  // Future indexDocuments(
+  //   String index,
+  //   List<Map<String, dynamic>> documents, [
+  //   String? primaryKey,
+  // ]) async {
+  //   return client.index(uid).addDocuments(documents, primaryKey: primaryKey);
+  // }
 
   resetFilters({String index = ''}) {
     uid = '';

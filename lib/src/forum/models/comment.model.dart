@@ -53,19 +53,9 @@ class CommentModel with FirestoreMixin, ForumBase {
     Json data, {
     required String id,
   }) {
-    List<String> _files = <String>[];
-
-    if (data['files'] is String && data['files'] != '') {
-      _files = data['files'].split(', ');
-    }
-
-    if (data['files'] is List) {
-      _files = new List<String>.from(data['files']);
-    }
-
     return CommentModel(
       content: data['content'] ?? '',
-      files: _files,
+      files: new List<String>.from(data['files']),
       id: id,
       postId: data['postId'],
       parentId: data['parentId'],
@@ -75,6 +65,26 @@ class CommentModel with FirestoreMixin, ForumBase {
       dislike: data['dislike'] ?? 0,
       createdAt: data['createdAt'],
       updatedAt: data['updatedAt'],
+      data: data,
+    );
+  }
+
+  /// Get indexed document data from meilisearch of map and convert it into comment model
+  factory CommentModel.fromMeili(Json data, String id) {
+    final _createdAt = data['createdAt'] ?? 0;
+    final _updatedAt = data['updatedAt'] ?? 0;
+
+    return CommentModel(
+      id: id,
+      postId: data['postId'],
+      parentId: data['parentId'],
+      content: data['content'] ?? '',
+      uid: data['uid'] ?? '',
+      like: data['like'] ?? 0,
+      dislike: data['dislike'] ?? 0,
+      deleted: data.containsKey('deleted') ? data['deleted'] == 'Y' : false,
+      createdAt: Timestamp.fromMillisecondsSinceEpoch(_createdAt * 1000),
+      updatedAt: Timestamp.fromMillisecondsSinceEpoch(_updatedAt * 1000),
       data: data,
     );
   }
