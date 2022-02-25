@@ -247,7 +247,7 @@ function lessThan(n) {
 }
 
 function checkType() {
-	return request.resource.metadata.type == 'post' || request.resource.metadata.type == 'comment' || request.resource.metadata.type == 'chat';
+	return request.resource.metadata.type == 'post' || request.resource.metadata.type == 'comment' || request.resource.metadata.type == 'user' || request.resource.metadata.type == 'chat';
 }
 ```
 
@@ -263,6 +263,9 @@ function checkType() {
 
 - We use Firestore only for `Chat` and `Forum` features since they needs more support on query and search functionalities.
   - All other features should go to realtime database.
+
+- Note that, you need to create your own composite indexes when you build functions that query on fields that are not indexed by fireflutter.
+  - For instance, you make a function for getting posts that have most no of comments on this year. then, you may need to create an composite index with `noOfComments` and `year`.
 
 ### Setting admin on firestore security rules
 
@@ -1112,9 +1115,10 @@ DynamicLinksService.instance.listen((Uri? deepLink) {
     - `month` - the month of a year (1-12)
     - `day` - the day of a month (1-31)
     - `dayOfYear` - the day of a year (1-366)
-    - `weekOfYear` - the week of a year
-    - `quarter` - the quarter of a year (1-4)
-    - `timestamp` - database's server time stamp.
+    - `week` - the week number since epoch ( from Jan 1st, 1970)
+    - `createdAt` - database's server time stamp for the time of document creation.
+    - `updatedAt` - server timestamp for update.
+    Note that, these date properties except `createdAt` and `updatedAt` are optional fields, and added by `PostModel.create()`
 
 ## Comment
 
@@ -1262,7 +1266,8 @@ try {
   - So, you can delete files in storage if
     - they don't have `id` in custom metadata when their `type` is one of `post` or `comment`.
     - the url is no longer being used by the `id` of the post(or comment).
-  - @todo - Firefluter does not provide the delition funtionality, yet. You may delete it by yourself at this time.
+    - their parent (post or comment) has deleted.
+  - @todo - Firefluter does not provide the delition funtionality, yet. You may delete it by yourself at this time. @see https://github.com/withcenter/wonderfulkorea/issues/77
 
 
 

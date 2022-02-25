@@ -15,10 +15,12 @@ class CommentModel with FirestoreMixin, ForumBase {
     this.dislike = 0,
     required this.uid,
     this.deleted = false,
-    required this.timestamp,
+    createdAt,
+    updatedAt,
     required this.data,
     this.files = const [],
-  });
+  })  : createdAt = createdAt ?? Timestamp.now(),
+        updatedAt = updatedAt ?? Timestamp.now();
 
   /// data is the document data object.
   Json data;
@@ -42,7 +44,8 @@ class CommentModel with FirestoreMixin, ForumBase {
 
   List<String> files;
 
-  Timestamp timestamp;
+  Timestamp updatedAt;
+  Timestamp createdAt;
   int depth = 0;
 
   /// Get document data of map and convert it into post model
@@ -60,9 +63,6 @@ class CommentModel with FirestoreMixin, ForumBase {
       _files = new List<String>.from(data['files']);
     }
 
-    var _timestamp = data['timestamp'] ?? Timestamp.now();
-    if (_timestamp is int) _timestamp = Timestamp.fromMillisecondsSinceEpoch(_timestamp);
-
     return CommentModel(
       content: data['content'] ?? '',
       files: _files,
@@ -73,7 +73,8 @@ class CommentModel with FirestoreMixin, ForumBase {
       deleted: data['deleted'] ?? false,
       like: data['like'] ?? 0,
       dislike: data['dislike'] ?? 0,
-      timestamp: _timestamp,
+      createdAt: data['createdAt'],
+      updatedAt: data['updatedAt'],
       data: data,
     );
   }
@@ -88,7 +89,8 @@ class CommentModel with FirestoreMixin, ForumBase {
       parentId: '',
       content: '',
       uid: '',
-      timestamp: Timestamp.now(),
+      createdAt: Timestamp.now(),
+      updatedAt: Timestamp.now(),
       data: {},
     );
   }
@@ -106,7 +108,8 @@ class CommentModel with FirestoreMixin, ForumBase {
       'like': like,
       'dislike': dislike,
       'deleted': deleted,
-      'timestamp': timestamp,
+      'createdAt': createdAt,
+      'updatedAt': updatedAt,
       'data': data,
     };
   }
@@ -120,7 +123,7 @@ class CommentModel with FirestoreMixin, ForumBase {
   //   return {
   //     'content': content,
   //     'uid': UserService.instance.user.uid,
-  //     'timestamp': FieldValue.serverTimestamp(),
+  //     'updatedAt': FieldValue.serverTimestamp(),
   //   };
   // }
 
@@ -146,7 +149,8 @@ class CommentModel with FirestoreMixin, ForumBase {
       'parentId': parentId,
       'content': content,
       'files': files,
-      'timestamp': FieldValue.serverTimestamp(),
+      'createdAt': FieldValue.serverTimestamp(),
+      'updatedAt': FieldValue.serverTimestamp(),
       'uid': FirebaseAuth.instance.currentUser?.uid ?? '',
     });
 
@@ -166,7 +170,7 @@ class CommentModel with FirestoreMixin, ForumBase {
     return commentDoc(id).update({
       'content': content,
       if (files != null) 'files': files,
-      'timestamp': FieldValue.serverTimestamp(),
+      'updatedAt': FieldValue.serverTimestamp(),
     });
   }
 
@@ -175,7 +179,7 @@ class CommentModel with FirestoreMixin, ForumBase {
     return commentDoc(id).update({
       'deleted': true,
       'content': '',
-      'timestamp': FieldValue.serverTimestamp(),
+      'updatedAt': FieldValue.serverTimestamp(),
     });
   }
 

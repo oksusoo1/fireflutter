@@ -46,17 +46,17 @@ service cloud.firestore {
     match /posts/{postId} {
       allow read: if true;
       allow create: if
-        required(['category', 'uid', 'timestamp']) &&
+        required(['category', 'uid', 'createdAt', 'updatedAt']) &&
         categoryExists() &&
         willBeMyPost()
       ;
 
       // Post update rule;
-      // - Fails if timestamp is missing
+      // - Fails if updatedAt is missing
       // - Success if nothing changes. if request.resource.data is same as resource.data
       // - Success if 'viewCounter' is updated only.
       allow update: if
-        (isMyPost() && willBeMyPost() && mustUpdating(['timestamp']))
+        (isMyPost() && willBeMyPost() && mustUpdating(['updatedAt']) && notUpdating(['createdAt']))
         ||
         onlyUpdating(['viewCounter', 'like', 'dislike', 'noOfComments'])
       ;
@@ -68,7 +68,7 @@ service cloud.firestore {
     match /comments/{commentId} {
       allow read: if true;
       allow create: if
-        required(['parentId', 'postId', 'timestamp', 'uid'])
+        required(['parentId', 'postId', 'uid', 'createdAt', 'updatedAt'])
         &&
         postExists(request.resource.data.postId)
         &&
@@ -83,26 +83,28 @@ service cloud.firestore {
         willBeMyDoc('uid');
 
       // Security Rule Condition #C1:
-      // Timestamp must be changed on update, and if the data is { timestamp: 1 },
-      //  - {timestamp: 1} will succeed,
-      //  - {timestamp: 2} will also succeed.
+      // updatedAt must be changed on update, and if the data is { updatedAt: 1 },
+      //  - {updatedAt: 1} will succeed,
+      //  - {updatedAt: 2} will also succeed.
       // Why?
       //  - If only one of 'like', 'dislike' are changed or **none of them changed**,
       //    it will succeed.
-      //  - when {timestamp: 1} submitted, timestamp didn't change and 'like', 'dislike' didn't changed,
+      //  - when {updatedAt: 1} submitted, updatedAt didn't change and 'like', 'dislike' didn't changed,
       //    so, it will succeed.
-      //  - If {timestamp: 1, content: 'abc'} submitted, timestamp didn't changed, and something else aside from 'like' and 'dislike' changed,
+      //  - If {updatedAt: 1, content: 'abc'} submitted, updatedAt didn't changed, and something else aside from 'like' and 'dislike' changed,
       //    so, it will fail.
-      // For the test, see "Comment - update - timestamp & like" in test.js
+      // For the test, see "Comment - update - updatedAt & like" in test.js
       allow update: if
-        // #C1: If timestamp does not change, it will be deny here.
+        // #C1: If updatedAt does not change, it will be deny here.
         // C11
         (
             isMyDoc('uid')
             &&
-            mustUpdating(['timestamp'])
+            willBeMyDoc('uid')
             &&
-            notUpdating(['parentId', 'postId', 'uid'])
+            mustUpdating(['updatedAt'])
+            &&
+            notUpdating(['parentId', 'postId', 'uid', 'createdAt'])
         )
         ||
         // C1: But it will succeed here since time stmap does not change.
@@ -274,7 +276,7 @@ function willBeMyPost() {
 // ```
 // allow update: if notUpdating(['a', 'b', 'c']);
 // ```
-// Fields that are not listen in the fields parameters may change.
+// Fields that are not in the `fields` parameters may change.
 function notUpdating(fields) {
   return request.resource.data.diff(resource.data).unchangedKeys().hasAll(fields);
 }
