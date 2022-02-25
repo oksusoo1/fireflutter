@@ -117,38 +117,38 @@ class _IndexSettingFormState extends State<IndexSettingForm> with FirestoreMixin
     }
   }
 
-  // deleteIndexDocuments() async {
-  //   try {
-  //     final conf = await confirm('Confirm', 'Delete ${widget.indexUid} index documents?');
-  //     if (!conf) return;
-
-  //     await SearchService.instance.deleteAllDocuments(widget.indexUid);
-
-  //     if (widget.onDeleted != null) widget.onDeleted!();
-  //   } catch (e) {
-  //     error(e);
-  //   }
-  // }
-
-  /// TODO: Index documents.
-  reIndexDocuments() async {
+  deleteIndexDocuments() async {
     try {
-      final conf = await confirm('Confirm', 'Re-index documents under ${widget.indexUid}?');
+      final conf = await confirm('Confirm', 'Delete ${widget.indexUid} index documents?');
       if (!conf) return;
 
-      final snap = await postCol.get();
-      List<Map<String, dynamic>> docs = snap.docs.map((doc) {
-        final data = doc.data() as Json;
-        data['id'] = doc.id;
-        return data;
-      }).toList();
+      await SearchService.instance.deleteAllDocuments(widget.indexUid);
 
-      print(docs);
-      // await SearchService.instance.indexDocuments(widget.indexUid, docs);
+      if (widget.onDeleted != null) widget.onDeleted!();
     } catch (e) {
       error(e);
     }
   }
+
+  /// TODO: Index documents.
+  // reIndexDocuments() async {
+  //   try {
+  //     final conf = await confirm('Confirm', 'Re-index documents under ${widget.indexUid}?');
+  //     if (!conf) return;
+
+  //     final snap = await postCol.get();
+  //     List<Map<String, dynamic>> docs = snap.docs.map((doc) {
+  //       final data = doc.data() as Json;
+  //       data['id'] = doc.id;
+  //       return data;
+  //     }).toList();
+
+  //     print(docs);
+  //     // await SearchService.instance.indexDocuments(widget.indexUid, docs);
+  //   } catch (e) {
+  //     error(e);
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -171,8 +171,8 @@ class _IndexSettingFormState extends State<IndexSettingForm> with FirestoreMixin
           TextFormField(controller: sortersController),
           SizedBox(height: 10),
           ElevatedButton(onPressed: updateIndexSettings, child: Text('UPDATE')),
-          // ElevatedButton(onPressed: deleteIndexDocuments, child: Text('DELETE INDEX DOCUMENTS')),
-          ElevatedButton(onPressed: reIndexDocuments, child: Text('RE-INDEX DOCUMENTS')),
+          ElevatedButton(onPressed: deleteIndexDocuments, child: Text('DELETE INDEX DOCUMENTS')),
+          // ElevatedButton(onPressed: reIndexDocuments, child: Text('RE-INDEX DOCUMENTS')),
         ],
       ),
     );

@@ -107,20 +107,20 @@ class SearchService {
 
   /// Deletes all documents of an index.
   ///
-  // Future deleteAllDocuments(String uid) async {
-  //   /// if (!UserService.instance.user.isAdmin) throw 'YOU_ARE_NOT_ADMIN';
-  //   return client.index(uid).deleteAllDocuments();
-  // }
+  Future deleteAllDocuments(String uid) async {
+    /// if (!UserService.instance.user.isAdmin) throw 'YOU_ARE_NOT_ADMIN';
+    return client.index(uid).deleteAllDocuments();
+  }
 
   ///
   ///
-  Future indexDocuments(
-    String index,
-    List<Map<String, dynamic>> documents, [
-    String? primaryKey,
-  ]) async {
-    return client.index(uid).addDocuments(documents, primaryKey: primaryKey);
-  }
+  // Future indexDocuments(
+  //   String index,
+  //   List<Map<String, dynamic>> documents, [
+  //   String? primaryKey,
+  // ]) async {
+  //   return client.index(uid).addDocuments(documents, primaryKey: primaryKey);
+  // }
 
   resetFilters({String index = ''}) {
     uid = '';
