@@ -77,16 +77,6 @@ class PostModel with FirestoreMixin, ForumBase {
 
   /// Get document data of map and convert it into post model
   factory PostModel.fromJson(Json data, String id) {
-    List<String> _files = <String>[];
-
-    if (data['files'] is String && data['files'] != '') {
-      _files = data['files'].split(', ');
-    }
-
-    if (data['files'] is List) {
-      _files = new List<String>.from(data['files']);
-    }
-
     String content = data['content'] ?? '';
 
     /// Check if the content has any html tag.
@@ -101,14 +91,6 @@ class PostModel with FirestoreMixin, ForumBase {
       html = true;
     }
 
-    /// `deleted` can either be bool or String.
-    ///   bool if data came from firebase
-    ///   String if data came from meilisearch index
-    dynamic _deleted = data['deleted'] ?? false;
-    if (data['deleted'] is String) {
-      _deleted = data['deleted'] == 'Y';
-    }
-
     return PostModel(
       id: id,
       category: data['category'] ?? '',
@@ -117,8 +99,8 @@ class PostModel with FirestoreMixin, ForumBase {
       isHtmlContent: html,
       noOfComments: data['noOfComments'] ?? 0,
       hasPhoto: data['hasPhoto'] ?? false,
-      files: _files,
-      deleted: _deleted,
+      files: new List<String>.from(data['files']),
+      deleted: data['deleted'] ?? false,
       uid: data['uid'] ?? '',
       like: data['like'] ?? 0,
       dislike: data['dislike'] ?? 0,
@@ -132,8 +114,16 @@ class PostModel with FirestoreMixin, ForumBase {
     );
   }
 
-  /// Get document data of map and convert it into post model
+  /// Get indexed document data from meilisearch of map and convert it into post model
   factory PostModel.fromMeili(Json data, String id) {
+    final _createdAt = data['createdAt'] ?? 0;
+    final _updatedAt = data['updatedAt'] ?? 0;
+
+    dynamic _deleted = data['deleted'] ?? false;
+    if (data['deleted'] is String) {
+      _deleted = data['deleted'] == 'Y';
+    }
+
     return PostModel(
       id: id,
       category: data['category'] ?? '',
@@ -142,8 +132,9 @@ class PostModel with FirestoreMixin, ForumBase {
       uid: data['uid'] ?? '',
       like: data['like'] ?? 0,
       dislike: data['dislike'] ?? 0,
-      createdAt: Timestamp.fromMillisecondsSinceEpoch(data['createdAt'] * 1000),
-      updatedAt: Timestamp.fromMillisecondsSinceEpoch(data['updatedAt'] * 1000),
+      deleted: _deleted,
+      createdAt: Timestamp.fromMillisecondsSinceEpoch(_createdAt * 1000),
+      updatedAt: Timestamp.fromMillisecondsSinceEpoch(_updatedAt * 1000),
       data: data,
     );
   }
