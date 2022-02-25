@@ -468,7 +468,7 @@ function prePayload(query) {
       title: query.title ? query.title : "",
       body: query.body ? query.title : "",
       clickAction: "FLUTTER_NOTIFICATION_CLICK",
-      sound: "defaultSound.wav",
+      sound: "defaultSoundwav",
       channel: "PUSH_NOTIFICATION",
     },
     data: {
