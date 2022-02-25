@@ -19,15 +19,6 @@ const rdb = admin.database();
 const delay = (time) => new Promise((res) => setTimeout(res, time));
 
 /**
- * Returns unix timestamp
- *
- * @return int unix timestamp
- */
-function timestamp() {
-  return Math.round(new Date().getTime() / 1000);
-}
-
-/**
  * Returns category referrence
  *
  * @param {*} id Category id
@@ -83,7 +74,7 @@ async function getSizeOfCategories() {
 async function createCategory(data) {
   const id = data.id;
   // delete data.id; // call-by-reference. it will causes error after this method.
-  data.timestamp = timestamp();
+  data.timestamp = lib.getTimestamp();
   await categoryDoc(id).set(data, { merge: true });
   return categoryDoc(id);
 }
@@ -223,9 +214,10 @@ async function indexPostDocument(id, data) {
     title: data.title ?? "",
     category: data.category,
     content: data.content ?? "",
-    timestamp: timestamp(),
     files: data.files && data.files.length ? data.files.join(",") : "",
     deleted: data.deleted ? "Y" : "N",
+    createdAt: lib.getTimestamp(data.createdAt),
+    updatedAt: lib.getTimestamp(data.updatedAt),
   };
 
   const promises = [];
@@ -246,8 +238,9 @@ async function indexCommentDocument(id, data) {
     postId: data.postId,
     parentId: data.parentId,
     content: data.content,
-    timestamp: timestamp(),
     files: data.files && data.files.length ? data.files.join(",") : "",
+    createdAt: lib.getTimestamp(data.createdAt),
+    updatedAt: lib.getTimestamp(data.updatedAt),
   };
 
   const promises = [];
