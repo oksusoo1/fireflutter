@@ -26,16 +26,15 @@ exports.sendMessageOnPostCreate = functions
     .firestore.document("/posts/{postId}")
     .onCreate((snapshot, context) => {
       const category = snapshot.data().category;
-      
+
       const payload = lib.topicPayload("posts_" + category, {
         title: snapshot.data().title ? snapshot.data().title : "",
         body: snapshot.data().content ? snapshot.data().content : "",
         postId: context.params.postId,
         type: "post",
         sender_uid: snapshot.data().uid,
-      });      
+      });
       return admin.messaging().send(payload);
-
     });
 
 // sendMessageOnCommentCreate({
@@ -62,9 +61,9 @@ exports.sendMessageOnCommentCreate = functions
         type: "post",
         sender_uid: snapshot.data().uid,
       };
-
+      const topic ="comments_" + post.data().category;
       // send push notification to topics
-      await admin.messaging().send(lib.topicPayload("comments_" + post.data().category, messageData));
+      await admin.messaging().send(lib.topicPayload(topic, messageData));
 
       // get comment ancestors
       const ancestorsUid = await lib.getCommentAncestors(

@@ -325,7 +325,6 @@ function topicPayload(topic, query) {
   const payload = preMessagePayload(query);
   payload["topic"] = "/topics/" + topic;
   return payload;
-
 }
 
 function preMessagePayload(query) {
