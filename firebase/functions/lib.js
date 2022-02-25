@@ -206,12 +206,12 @@ function error(errorCode, errorMessage) {
 
 async function sendMessageToTopic(query) {
   const payload = preMessagePayload(query);
-  payload['topic'] = "/topics/" + query.topic;
+  payload["topic"] = "/topics/" + query.topic;
   try {
     const res = await admin
         .messaging()
         .send(payload);
-        // .sendToTopic("/topics/" + query.topic, payload);
+    // .sendToTopic("/topics/" + query.topic, payload);
     return {code: "success", result: res};
   } catch (e) {
     return {code: "error", message: e};
@@ -258,14 +258,14 @@ async function sendingMessageToTokens(tokens, payload) {
   // the request will fail with a messaging/invalid-recipient error.
 
 
-  /// sendMulticast supports 500 token per batch only.
+  // / sendMulticast supports 500 token per batch only.
   const chunks = chunk(tokens, 500);
 
   const sendToDevicePromise = [];
   for (const c of chunks) {
     // Send notifications to all tokens.
-    let newPayload = payload;
-    newPayload['tokens'] = c;
+    const newPayload = payload;
+    newPayload["tokens"] = c;
     sendToDevicePromise.push(admin.messaging().sendMulticast(payload));
     // sendToDevicePromise.push(admin.messaging().sendToDevice(c, payload));
   }
@@ -280,7 +280,7 @@ async function sendingMessageToTokens(tokens, payload) {
 
     // For each message check if there was an error.
     // res.results.forEach((result, index) => { // sendToDevice response
-    
+
     res.responses.forEach((result, index) => {
       const error = result.error;
       if (error) {
@@ -338,7 +338,7 @@ function preMessagePayload(query) {
         channelId: "PUSH_NOTIFICATION",
         clickAction: "FLUTTER_NOTIFICATION_CLICK",
         sound: "defaultSound.wav",
-      }
+      },
     },
     apns: {
       payload: {
@@ -348,9 +348,9 @@ function preMessagePayload(query) {
             body: query.body ? query.title : "",
           },
           sound: "defaultSound.wav",
-        }
-      }
-    }
+        },
+      },
+    },
   };
 }
 
