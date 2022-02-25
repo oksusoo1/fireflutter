@@ -59,7 +59,7 @@ exports.sendMessageOnCommentCreate = functions
         body: snapshot.data().content,
         postId: snapshot.data().postId,
         type: "post",
-        sender_uid: snapshot.data().uid,
+        uid: snapshot.data().uid,
       };
       const topic ="comments_" + post.data().category;
       // send push notification to topics
