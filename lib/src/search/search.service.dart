@@ -68,6 +68,8 @@ class SearchService {
 
       _posts = res.hits!;
       _hits = res.nbHits ?? 0;
+
+      ///
       resultList.addAll(_posts);
       offset = limit * page;
       page += 1;

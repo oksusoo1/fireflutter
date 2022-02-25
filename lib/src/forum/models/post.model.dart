@@ -19,24 +19,20 @@ class PostModel with FirestoreMixin, ForumBase {
     this.like = 0,
     this.dislike = 0,
     this.deleted = false,
+    this.year = 0,
+    this.month = 0,
+    this.day = 0,
+    this.week = 0,
     createdAt,
     updatedAt,
-    this.data_,
+    data,
     this.isHtmlContent = false,
-  })  : createdAt = createdAt == null
-            ? Timestamp.now()
-            : createdAt is int
-                ? Timestamp.fromMillisecondsSinceEpoch(createdAt * 1000)
-                : createdAt,
-        updatedAt = updatedAt == null
-            ? Timestamp.now()
-            : createdAt is int
-                ? Timestamp.fromMillisecondsSinceEpoch(createdAt * 1000)
-                : updatedAt;
+  })  : data = data ?? {},
+        createdAt = createdAt ?? Timestamp.now(),
+        updatedAt = updatedAt ?? Timestamp.now();
 
   /// data is the document data object.
-  Json? data_;
-  Json get data => data_ ?? const {};
+  Json data;
 
   String id;
   String get path => postDoc(id).path;
@@ -70,6 +66,11 @@ class PostModel with FirestoreMixin, ForumBase {
 
   int like;
   int dislike;
+
+  int year;
+  int month;
+  int day;
+  int week;
 
   Timestamp createdAt;
   Timestamp updatedAt;
@@ -121,9 +122,29 @@ class PostModel with FirestoreMixin, ForumBase {
       uid: data['uid'] ?? '',
       like: data['like'] ?? 0,
       dislike: data['dislike'] ?? 0,
+      year: data['year'] ?? 0,
+      month: data['month'] ?? 0,
+      day: data['day'] ?? 0,
+      week: data['week'] ?? 0,
       createdAt: data['createdAt'],
       updatedAt: data['updatedAt'],
-      data_: data,
+      data: data,
+    );
+  }
+
+  /// Get document data of map and convert it into post model
+  factory PostModel.fromMeili(Json data, String id) {
+    return PostModel(
+      id: id,
+      category: data['category'] ?? '',
+      title: data['title'] ?? '',
+      content: data['content'] ?? '',
+      uid: data['uid'] ?? '',
+      like: data['like'] ?? 0,
+      dislike: data['dislike'] ?? 0,
+      createdAt: Timestamp.fromMillisecondsSinceEpoch(data['createdAt'] * 1000),
+      updatedAt: Timestamp.fromMillisecondsSinceEpoch(data['updatedAt'] * 1000),
+      data: data,
     );
   }
 
@@ -141,6 +162,10 @@ class PostModel with FirestoreMixin, ForumBase {
       'uid': uid,
       'like': like,
       'dislike': dislike,
+      'year': year,
+      'month': month,
+      'day': day,
+      'week': week,
       'createdAt': createdAt,
       'updatedAt': updatedAt,
       'data': data,
