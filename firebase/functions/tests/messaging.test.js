@@ -19,6 +19,8 @@ if (!admin.apps.length) {
   });
 }
 // This must come after initlization
+
+const test = require("../test");
 const lib = require("../lib");
 
 // get firestore
@@ -26,7 +28,7 @@ const db = admin.firestore();
 
 describe("Messaging ~~~~~~~~~~~~~~~~", () => {
   it("get comment anscestor uid", async () => {
-    await lib.createComment({
+    await test.createComment({
       category: {
         id: "test",
       },
@@ -45,7 +47,7 @@ describe("Messaging ~~~~~~~~~~~~~~~~", () => {
     });
 
 
-    await lib.createComment({
+    await test.createComment({
       comment: {
         id: "Cid-2",
         postId: "Pid-1",
@@ -61,7 +63,7 @@ describe("Messaging ~~~~~~~~~~~~~~~~", () => {
 
     // expect ok. res.length == 1
     // Add a comment with same author uid.
-    await lib.createComment({
+    await test.createComment({
       comment: {
         id: "Cid-3",
         postId: "Pid-1",
@@ -76,7 +78,7 @@ describe("Messaging ~~~~~~~~~~~~~~~~", () => {
     // expect ok. res.length == 1.
     // Add a comment with different author, but still result is 1 since the current
     // comment is excluded.
-    await lib.createComment({
+    await test.createComment({
       comment: {
         id: "Cid-4",
         postId: "Pid-1",
@@ -89,7 +91,7 @@ describe("Messaging ~~~~~~~~~~~~~~~~", () => {
 
     // expect ok. res.length == 2.
     // Add a comment with different author
-    await lib.createComment({
+    await test.createComment({
       comment: {
         id: "Cid-5",
         postId: "Pid-1",
@@ -113,7 +115,7 @@ describe("Messaging ~~~~~~~~~~~~~~~~", () => {
   it("Sending messages of 1002 tokens", async () => {
     const userA = "userA";
     const userB = "userB";
-    await lib.createTestUser(userA);
+    await test.createTestUser(userA);
     await admin.database().ref("user-settings").child(userA).child("topic").set({
       newCommentUnderMyPostOrCOmment: true,
     });
@@ -121,7 +123,7 @@ describe("Messaging ~~~~~~~~~~~~~~~~", () => {
     await admin.database().ref("user-settings").child(userB).child("topic").set({
       newCommentUnderMyPostOrCOmment: false,
     });
-    await lib.createTestUser(userB);
+    await test.createTestUser(userB);
     const validToken1 = "eiG6CUPQS66swAIEOakM60:APA91bGj4tjLswDzSAWz72onE_Tv50TYrI2I3hRXu-0RDJOa2c71elDDnL5gfrcZY5PfppRgbl2hC_R2A4SzstPu___yR9DzB1YoIDnJ-IITVxoqIJ_2gBLQOl9MGJ7_vRFZNmUfIVHD";
     const validToken2 = "ecw_jCq6TV273wlDMeaQRY:APA91bF8GUuxtjlpBf7xI9M4dv6MD74rb40tpDedeoJ9w1TYi-9TmGCrt862Qcrj4nQifRBrxS60AiBSQW8ynYQFVj9Hkrd3p-w9UyDscLncNdwdZNXpqRgBR-LmSeZIcNBejvxjtfW4";
 
@@ -141,7 +143,7 @@ describe("Messaging ~~~~~~~~~~~~~~~~", () => {
 
     // userA create parent post
     const postTestId = "postTestId";
-    await lib.createPost({
+    await test.createPost({
       category: {id: "test"},
       post: {
         title: userA + "messaging test title",
@@ -154,7 +156,7 @@ describe("Messaging ~~~~~~~~~~~~~~~~", () => {
     const timestamp = (new Date).getTime();
     // userB create comment under userA post
     const commentTest1Id = "commentTest1Id";
-    await lib.createComment({
+    await test.createComment({
       comment: {
         id: commentTest1Id + timestamp,
         postId: postTestId,
@@ -176,7 +178,7 @@ describe("Messaging ~~~~~~~~~~~~~~~~", () => {
     await Promise.all(UserBtokenUpdates);
 
     const commentTest2Id = "commentTest2Id";
-    await lib.createComment({
+    await test.createComment({
       comment: {
         id: commentTest2Id + timestamp,
         postId: postTestId,
@@ -194,7 +196,7 @@ describe("Messaging ~~~~~~~~~~~~~~~~", () => {
     });
 
     const commentTest3Id = "commentTest3Id";
-    await lib.createComment({
+    await test.createComment({
       comment: {
         id: commentTest3Id + timestamp,
         postId: postTestId,
@@ -216,10 +218,10 @@ describe("Messaging ~~~~~~~~~~~~~~~~", () => {
     const userC = "subscriberTestUserC";
     const userD = "subscriberTestUserD";
     const topic = "subscriberTopicTest";
-    await lib.createTestUser(userA);
-    await lib.createTestUser(userB);
-    await lib.createTestUser(userC);
-    await lib.createTestUser(userD);
+    await test.createTestUser(userA);
+    await test.createTestUser(userB);
+    await test.createTestUser(userC);
+    await test.createTestUser(userD);
     await admin.database().ref("user-settings").child(userA).child("topic").set({
       newCommentUnderMyPostOrCOmment: true,
     });

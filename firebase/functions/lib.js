@@ -205,8 +205,7 @@ function error(errorCode, errorMessage) {
 }
 
 async function sendMessageToTopic(query) {
-  const payload = preMessagePayload(query);
-  payload["topic"] = "/topics/" + query.topic;
+  const payload = topicPayload(query);
   try {
     const res = await admin
         .messaging()
@@ -322,6 +321,13 @@ async function sendingMessageToTokens(tokens, payload) {
 //   };
 // }
 
+function topicPayload(topic, query) {
+  const payload = preMessagePayload(query);
+  payload["topic"] = "/topics/" + topic;
+  return payload;
+
+}
+
 function preMessagePayload(query) {
   return {
     data: {
@@ -408,6 +414,7 @@ exports.sendMessageToTopic = sendMessageToTopic;
 exports.sendMessageToTokens = sendMessageToTokens;
 exports.sendMessageToUsers = sendMessageToUsers;
 exports.preMessagePayload = preMessagePayload;
+exports.topicPayload = topicPayload;
 
 exports.sendingMessageToTokens = sendingMessageToTokens;
 

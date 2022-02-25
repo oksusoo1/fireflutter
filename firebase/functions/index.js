@@ -26,31 +26,16 @@ exports.sendMessageOnPostCreate = functions
     .firestore.document("/posts/{postId}")
     .onCreate((snapshot, context) => {
       const category = snapshot.data().category;
-      // const payload = {
-      //   notification: {
-      //     title: snapshot.data().title ? snapshot.data().title : "",
-      //     body: snapshot.data().content ? snapshot.data().content : "",
-      //     clickAction: "FLUTTER_NOTIFICATION_CLICK",
-      //   },
-      //   data: {
-      //     id: context.params.postId,
-      //     type: "post",
-      //     sender_uid: snapshot.data().uid,
-      //   },
-      // };
-      const payload = lib.preMessagePayload({
+      
+      const payload = lib.topicPayload("posts_" + category, {
         title: snapshot.data().title ? snapshot.data().title : "",
         body: snapshot.data().content ? snapshot.data().content : "",
         postId: context.params.postId,
         type: "post",
         sender_uid: snapshot.data().uid,
       });      
-      payload["topic"] = "/topics/" + category;
       return admin.messaging().send(payload);
 
-      // const topic = "posts_" + category;
-      // console.info("topic; ", topic);
-      // return admin.messaging().sendToTopic(topic, payload);
     });
 
 // sendMessageOnCommentCreate({
@@ -70,33 +55,16 @@ exports.sendMessageOnCommentCreate = functions
           .doc(snapshot.data().postId)
           .get();
 
-      // prepare notification
-      // const payload = {
-      //   notification: {
-      //     title: "New Comment: " + post.data().title ? post.data().title : "",
-      //     body: snapshot.data().content,
-      //     clickAction: "FLUTTER_NOTIFICATION_CLICK",
-      //   },
-      //   data: {
-      //     id: snapshot.data().postId,
-      //     type: "post",
-      //     sender_uid: snapshot.data().uid,
-      //   },
-      // };
-
-      const payload = lib.preMessagePayload({
+      const messageData = {
         title: "New Comment: " + post.data().title ? post.data().title : "",
         body: snapshot.data().content,
         postId: snapshot.data().postId,
         type: "post",
         sender_uid: snapshot.data().uid,
-      })
-
-      // comment topic
-      const topic = "comments_" + post.data().category;
+      };
 
       // send push notification to topics
-      await admin.messaging().sendToTopic(topic, payload);
+      await admin.messaging().send(lib.topicPayload("comments_" + post.data().category, messageData));
 
       // get comment ancestors
       const ancestorsUid = await lib.getCommentAncestors(
@@ -121,7 +89,7 @@ exports.sendMessageOnCommentCreate = functions
       // get users tokens
       const tokens = await lib.getTokensFromUids(userUids);
 
-      return lib.sendingMessageToDevice(tokens, payload);
+      return lib.sendingMessageToTokens(tokens, lib.preMessagePayload(messageData));
     });
 
 // Indexes a post document when it is created.
