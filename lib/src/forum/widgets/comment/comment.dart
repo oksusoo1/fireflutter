@@ -101,44 +101,47 @@ class _CommentState extends State<Comment> with FirestoreMixin {
 
   @override
   Widget build(BuildContext context) {
-    return ListView(
+    return ListView.builder(
       physics: NeverScrollableScrollPhysics(),
       shrinkWrap: true,
-      children: [
-        for (final CommentModel comment in comments)
-          Container(
-            margin: EdgeInsets.only(left: comment.depth * 16, bottom: 16),
-            decoration: BoxDecoration(
-              color: Colors.grey[200],
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Text('Comment Id: ${comment.id}'),
-                _commentHeader(comment),
-                _contentBuilder(comment),
-                ImageList(
-                  files: comment.files,
-                  onImageTap: (i) => widget.onImageTap(i, comment.files),
-                ),
-                ButtonBase(
-                  uid: comment.uid,
-                  isPost: false,
-                  onReply: () => widget.onReply(widget.post, comment),
-                  onReport: () => widget.onReport(comment),
-                  onEdit: () => widget.onEdit(comment),
-                  onDelete: () => widget.onDelete(comment),
-                  onLike: () => widget.onLike(comment),
-                  onDislike: () => widget.onDislike(comment),
-                  buttonBuilder: widget.buttonBuilder,
-                  likeCount: comment.like,
-                  dislikeCount: comment.dislike,
-                ),
-              ],
-            ),
+      itemCount: comments.length,
+      itemBuilder: (ctx, i) {
+        final CommentModel comment = comments[i];
+
+        return Container(
+          key: ValueKey(comment.id),
+          margin: EdgeInsets.only(left: comment.depth * 16, bottom: 16),
+          decoration: BoxDecoration(
+            color: Colors.grey[200],
+            borderRadius: BorderRadius.circular(8),
           ),
-      ],
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Text('Comment Id: ${comment.id}'),
+              _commentHeader(comment),
+              _contentBuilder(comment),
+              ImageList(
+                files: comment.files,
+                onImageTap: (i) => widget.onImageTap(i, comment.files),
+              ),
+              ButtonBase(
+                uid: comment.uid,
+                isPost: false,
+                onReply: () => widget.onReply(widget.post, comment),
+                onReport: () => widget.onReport(comment),
+                onEdit: () => widget.onEdit(comment),
+                onDelete: () => widget.onDelete(comment),
+                onLike: () => widget.onLike(comment),
+                onDislike: () => widget.onDislike(comment),
+                buttonBuilder: widget.buttonBuilder,
+                likeCount: comment.like,
+                dislikeCount: comment.dislike,
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 
