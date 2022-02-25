@@ -23,8 +23,16 @@ class PostModel with FirestoreMixin, ForumBase {
     updatedAt,
     this.data_,
     this.isHtmlContent = false,
-  })  : createdAt = createdAt ?? Timestamp.now(),
-        updatedAt = updatedAt ?? Timestamp.now();
+  })  : createdAt = createdAt == null
+            ? Timestamp.now()
+            : createdAt is int
+                ? Timestamp.fromMillisecondsSinceEpoch(createdAt * 1000)
+                : createdAt,
+        updatedAt = updatedAt == null
+            ? Timestamp.now()
+            : createdAt is int
+                ? Timestamp.fromMillisecondsSinceEpoch(createdAt * 1000)
+                : updatedAt;
 
   /// data is the document data object.
   Json? data_;
@@ -92,6 +100,14 @@ class PostModel with FirestoreMixin, ForumBase {
       html = true;
     }
 
+    /// `deleted` can either be bool or String.
+    ///   bool if data came from firebase
+    ///   String if data came from meilisearch index
+    dynamic _deleted = data['deleted'] ?? false;
+    if (data['deleted'] is String) {
+      _deleted = data['deleted'] == 'Y';
+    }
+
     return PostModel(
       id: id,
       category: data['category'] ?? '',
@@ -101,7 +117,7 @@ class PostModel with FirestoreMixin, ForumBase {
       noOfComments: data['noOfComments'] ?? 0,
       hasPhoto: data['hasPhoto'] ?? false,
       files: _files,
-      deleted: data['deleted'] ?? false,
+      deleted: _deleted,
       uid: data['uid'] ?? '',
       like: data['like'] ?? 0,
       dislike: data['dislike'] ?? 0,
