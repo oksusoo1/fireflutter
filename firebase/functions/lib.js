@@ -47,7 +47,7 @@ async function getSizeOfCategories() {
  * @returns Returns the post document data
  */
 function getPost(id) {
-  return admin.firestore().collection("posts").doc(snapshot.data().postId).get();
+  return admin.firestore().collection("posts").doc(id).get();
 }
 
 /**
@@ -171,7 +171,7 @@ async function getCommentNotifyeeWithoutTopicSubscriber(uids, topic) {
     if (!result[i]) continue;
     const subscriptions = result[i].val();
     // / Get anscestors who subscribed to 'comment notification' and didn't subscribe to the topic.
-    if (v[CommentNotification] && !subscriptions[topic]) {
+    if (subscriptions[CommentNotification] && !subscriptions[topic]) {
       _uids.push(uids[i]);
     }
   }
