@@ -47,12 +47,9 @@ exports.sendMessageOnCommentCreate = functions
     .region("asia-northeast3")
     .firestore.document("/comments/{commentId}")
     .onCreate(async (snapshot, context) => {
-    // get root post
-      const post = await admin
-          .firestore()
-          .collection("posts")
-          .doc(snapshot.data().postId)
-          .get();
+      const data = snapshot.data();
+      // get root post
+      const post = await lib.getPost(data.postId);
 
       const messageData = {
         title: "New Comment: " + post.data().title ? post.data().title : "",
@@ -61,7 +58,7 @@ exports.sendMessageOnCommentCreate = functions
         type: "post",
         sender_uid: snapshot.data().uid,
       };
-      const topic ="comments_" + post.data().category;
+      const topic = "comments_" + post.data().category;
       // send push notification to topics
       await admin.messaging().send(lib.topicPayload(topic, messageData));
 
@@ -72,18 +69,13 @@ exports.sendMessageOnCommentCreate = functions
       );
 
       // add the post uid if the comment author is not the post author
-      if (
-        post.data().uid != snapshot.data().uid &&
-      !ancestorsUid.includes(post.data().uid)
-      ) {
+      if (post.data().uid != snapshot.data().uid && !ancestorsUid.includes(post.data().uid)) {
         ancestorsUid.push(post.data().uid);
       }
 
-      // remove subcriber uid but want to get notification under their post/comment
-      const userUids = await lib.removeTopicAndForumAncestorsSubscriber(
-          ancestorsUid,
-          topic,
-      );
+      // Don't send the same message twice to topic subscribers and comment notifyees.
+      //
+      const userUids = await lib.getCommentNotifyeeWithoutTopicSubscriber(ancestorsUid, topic);
 
       // get users tokens
       const tokens = await lib.getTokensFromUids(userUids);
@@ -175,13 +167,11 @@ exports.updateCommentIndex = functions
       }
     });
 
-exports.sendMessageToAll = functions
-    .region("asia-northeast3")
-    .https.onRequest(async (req, res) => {
-      const query = req.query;
-      query["topic"] = "defaultTopic";
-      res.status(200).send(await lib.sendMessageToTopic(query));
-    });
+exports.sendMessageToAll = functions.region("asia-northeast3").https.onRequest(async (req, res) => {
+  const query = req.query;
+  query["topic"] = "defaultTopic";
+  res.status(200).send(await lib.sendMessageToTopic(query));
+});
 
 exports.sendMessageToTopic = functions
     .region("asia-northeast3")
@@ -201,25 +191,16 @@ exports.sendMessageToUsers = functions
       res.status(200).send(await lib.sendMessageToUsers(req.query));
     });
 
-
 exports.updateFileParentIdForPost = functions
     .region("asia-northeast3")
-    .firestore
-    .document("/posts/{postId}")
+    .firestore.document("/posts/{postId}")
     .onWrite((change, context) => {
-      return lib.updateFileParentId(
-          context.params.postId,
-          change.after.data(),
-      );
+      return lib.updateFileParentId(context.params.postId, change.after.data());
     });
 
 exports.updateFileParentIdForComment = functions
     .region("asia-northeast3")
-    .firestore
-    .document("/comments/{commentId}")
+    .firestore.document("/comments/{commentId}")
     .onWrite((change, context) => {
-      return lib.updateFileParentId(
-          context.params.commentId,
-          change.after.data(),
-      );
+      return lib.updateFileParentId(context.params.commentId, change.after.data());
     });

@@ -1142,7 +1142,11 @@ DynamicLinksService.instance.listen((Uri? deepLink) {
 
 ## terms
 
-- `new comment topic` is an option to get notification whenever a new comment had posted under his post or comment.
+- `comment notification` is an option to get notification whenever a new comment had posted under his post or comment.
+  - `comment notifyee` is a user who will get notification when there is a comment under his post or comment.
+
+
+
 
 
 ## How push notification wokr.

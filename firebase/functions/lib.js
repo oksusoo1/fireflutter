@@ -19,6 +19,8 @@ const rdb = admin.database();
 
 const delay = (time) => new Promise((res) => setTimeout(res, time));
 
+const CommentNotification = "newCommentUnderMyPostOrCOmment";
+
 /**
  * Returns a query of getting all categories.
  *
@@ -36,6 +38,16 @@ function getCategories() {
 async function getSizeOfCategories() {
   const snapshot = await getCategories();
   return snapshot.size;
+}
+
+/**
+ * Returns post data
+ *
+ * @param {*} id post id
+ * @returns Returns the post document data
+ */
+function getPost(id) {
+  return admin.firestore().collection("posts").doc(snapshot.data().postId).get();
 }
 
 /**
@@ -141,23 +153,25 @@ async function getCommentAncestors(id, authorUid) {
 }
 
 // check the uids if they are subscribe to topic and also want to get notification under their post/comment
-async function removeTopicAndForumAncestorsSubscriber(uids, topic) {
+/**
+ * Get ancestors who subscribed to 'comment notification' but removing those who subscribed to the topic.
+ * @param {*} uids ancestors
+ * @param {*} topic topic
+ * @returns UIDs of ancestors.
+ */
+async function getCommentNotifyeeWithoutTopicSubscriber(uids, topic) {
   const _uids = [];
   const getTopicsPromise = [];
   for (const uid of uids) {
     getTopicsPromise.push(rdb.ref("user-settings").child(uid).child("topic").get());
-    // getTopicsPromise.push( admin.database().ref('user-settings').child(uid).child('topic').once('value'));  // same result above
   }
   const result = await Promise.all(getTopicsPromise);
 
   for (const i in result) {
     if (!result[i]) continue;
-    const v = result[i].val();
-    if (
-      v["newCommentUnderMyPostOrCOmment"] != null &&
-      v["newCommentUnderMyPostOrCOmment"] == true &&
-      (v[topic] == null || v[topic] == false)
-    ) {
+    const subscriptions = result[i].val();
+    // / Get anscestors who subscribed to 'comment notification' and didn't subscribe to the topic.
+    if (v[CommentNotification] && !subscriptions[topic]) {
       _uids.push(uids[i]);
     }
   }
@@ -207,9 +221,7 @@ function error(errorCode, errorMessage) {
 async function sendMessageToTopic(query) {
   const payload = topicPayload(query);
   try {
-    const res = await admin
-        .messaging()
-        .send(payload);
+    const res = await admin.messaging().send(payload);
     // .sendToTopic("/topics/" + query.topic, payload);
     return {code: "success", result: res};
   } catch (e) {
@@ -255,7 +267,6 @@ async function sendingMessageToTokens(tokens, payload) {
   // You can send messages to up to 1000 devices in a single request.
   // If you provide an array with over 1000 registration tokens,
   // the request will fail with a messaging/invalid-recipient error.
-
 
   // / sendMulticast supports 500 token per batch only.
   const chunks = chunk(tokens, 500);
@@ -304,23 +315,6 @@ async function sendingMessageToTokens(tokens, payload) {
   return {success: successCount, error: errorCount};
 }
 
-// function prePayload(query) {
-//   return {
-//     notification: {
-//       title: query.title ? query.title : "",
-//       body: query.body ? query.title : "",
-//       clickAction: "FLUTTER_NOTIFICATION_CLICK",
-//       sound: "defaultSound.wav",
-//       channel: "PUSH_NOTIFICATION",
-//     },
-//     data: {
-//       id: query.postId ? query.postId : "",
-//       type: query.postId ? query.postId : "",
-//       sender_uid: query.uid ? query.uid : "",
-//     },
-//   };
-// }
-
 function topicPayload(topic, query) {
   const payload = preMessagePayload(query);
   payload["topic"] = "/topics/" + topic;
@@ -342,17 +336,13 @@ function preMessagePayload(query) {
       notification: {
         channelId: "PUSH_NOTIFICATION",
         clickAction: "FLUTTER_NOTIFICATION_CLICK",
-        sound: "defaultSound.wav",
+        sound: "default_sound.wav",
       },
     },
     apns: {
       payload: {
         aps: {
-          alert: {
-            title: query.title ? query.title : "",
-            body: query.body ? query.title : "",
-          },
-          sound: "defaultSound.wav",
+          sound: "default_sound.wav",
         },
       },
     },
@@ -396,6 +386,8 @@ exports.delay = delay;
 exports.getSizeOfCategories = getSizeOfCategories;
 exports.getCategories = getCategories;
 
+exports.getPost = getPost;
+
 exports.indexComment = indexCommentDocument;
 exports.indexPost = indexPostDocument;
 
@@ -403,7 +395,7 @@ exports.deleteIndexedPost = deleteIndexedPostDocument;
 exports.deleteIndexedComment = deleteIndexedCommentDocument;
 
 exports.getCommentAncestors = getCommentAncestors;
-exports.removeTopicAndForumAncestorsSubscriber = removeTopicAndForumAncestorsSubscriber;
+exports.getCommentNotifyeeWithoutTopicSubscriber = getCommentNotifyeeWithoutTopicSubscriber;
 exports.getTokensFromUids = getTokensFromUids;
 exports.chunk = chunk;
 
