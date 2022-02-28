@@ -78,6 +78,9 @@ class PostModel with FirestoreMixin, ForumBase {
   Timestamp createdAt;
   Timestamp updatedAt;
 
+  /// To open the post data. Use this to display post content or not on post list screen.
+  bool open = false;
+
   /// Get document data of map and convert it into post model
   factory PostModel.fromJson(Json data, String id) {
     String content = data['content'] ?? '';

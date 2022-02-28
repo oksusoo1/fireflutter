@@ -32,7 +32,7 @@ class UserProfilePhoto extends StatelessWidget {
                 ? UploadedImage(url: user.photoUrl)
                 : Icon(
                     Icons.person,
-                    color: Colors.black,
+                    color: Color.fromARGB(255, 111, 111, 111),
                     size: iconSize,
                   ),
           ),
