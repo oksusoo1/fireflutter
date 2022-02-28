@@ -18,11 +18,11 @@ class TranslationService with DatabaseMixin {
   BehaviorSubject<Map<String, Map<String, String>>> changes = BehaviorSubject.seeded({});
 
   TranslationService() {
-    debugPrint('===> TranslationService::constructor;');
+    // debugPrint('===> TranslationService::constructor;');
     translationDoc.onValue.listen((event) {
       if (event.snapshot.exists) {
         convertData(event.snapshot.value);
-        print('onValue; exists; $texts');
+        // print('onValue; exists; $texts');
         changes.add(texts);
       }
     });

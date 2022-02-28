@@ -181,7 +181,7 @@ class UserService with FirestoreMixin, DatabaseMixin {
   Future<UserModel> getOtherUserDoc(String uid) async {
     if (uid == '') return UserModel();
     if (others[uid] != null) {
-      print('--> reuse uid; $uid');
+      // print('--> reuse uid; $uid');
       return others[uid]!;
     }
 
