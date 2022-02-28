@@ -31,7 +31,7 @@ class UserSettingsService with DatabaseMixin {
     initAuthChanges();
   }
 
-  List<String> topicsDontNeedSubscription = ['newCommentUnderMyPostOrCOmment'];
+  List<String> topicsDontNeedSubscription = ['newCommentUnderMyPostOrComment'];
 
   /// User auth changes
   ///

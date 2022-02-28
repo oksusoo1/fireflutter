@@ -26,7 +26,7 @@ mixin FirestoreMixin {
   CollectionReference get reportCol => db.collection('reports');
   CollectionReference get feedCol => db.collection('feeds');
 
-  CollectionReference get messageTokensCol => db.collection('message-tokens');
+  // CollectionReference get messageTokensCol => db.collection('message-tokens');
 
   DocumentReference get adminsDoc => settingDoc.doc('admins');
 
@@ -61,7 +61,7 @@ mixin FirestoreMixin {
 
   /// ************** Common Methods ***********************
   ///
-  /// These are the mehods that are used in multiple places
+  /// These are the methods that are used in multiple places
   ///
   /// *****************************************************
   Future<void> createReport({
@@ -74,7 +74,7 @@ mixin FirestoreMixin {
     try {
       await reportCol.doc(id).get();
 
-      /// If document exists, then already reporetd
+      /// If document exists, then already reported
       throw ERROR_ALREADY_REPORTED;
     } catch (e) {
       /// If already reporeted, throw exception and move out.

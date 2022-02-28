@@ -26,6 +26,8 @@ const lib = require("../lib");
 // get firestore
 const db = admin.firestore();
 
+const commentNotification = "newCommentUnderMyPostOrComment";
+
 describe("Messaging ~~~~~~~~~~~~~~~~", () => {
   it("get comment anscestor uid", async () => {
     await test.createComment({
@@ -117,11 +119,11 @@ describe("Messaging ~~~~~~~~~~~~~~~~", () => {
     const userB = "userB";
     await test.createTestUser(userA);
     await admin.database().ref("user-settings").child(userA).child("topic").set({
-      newCommentUnderMyPostOrCOmment: true,
+      [commentNotification]: true,
     });
 
     await admin.database().ref("user-settings").child(userB).child("topic").set({
-      newCommentUnderMyPostOrCOmment: false,
+      [commentNotification]: false,
     });
     await test.createTestUser(userB);
     const validToken1 = "eiG6CUPQS66swAIEOakM60:APA91bGj4tjLswDzSAWz72onE_Tv50TYrI2I3hRXu-0RDJOa2c71elDDnL5gfrcZY5PfppRgbl2hC_R2A4SzstPu___yR9DzB1YoIDnJ-IITVxoqIJ_2gBLQOl9MGJ7_vRFZNmUfIVHD";
@@ -192,7 +194,7 @@ describe("Messaging ~~~~~~~~~~~~~~~~", () => {
     const userBTokenCount = await db.collection("message-tokens").where("uid", "==", userB).get();
     assert.ok( userBTokenCount.size == 5, "must have 5 tokens, got: " + userBTokenCount.size);
     await admin.database().ref("user-settings").child(userB).child("topic").set({
-      newCommentUnderMyPostOrCOmment: true,
+      [commentNotification]: true,
     });
 
     const commentTest3Id = "commentTest3Id";
@@ -223,18 +225,18 @@ describe("Messaging ~~~~~~~~~~~~~~~~", () => {
     await test.createTestUser(userC);
     await test.createTestUser(userD);
     await admin.database().ref("user-settings").child(userA).child("topic").set({
-      newCommentUnderMyPostOrCOmment: true,
+      [commentNotification]: true,
     });
     await admin.database().ref("user-settings").child(userB).child("topic").set({
-      newCommentUnderMyPostOrCOmment: true,
+      [commentNotification]: true,
       [topic]: true,
     });
     await admin.database().ref("user-settings").child(userC).child("topic").set({
-      newCommentUnderMyPostOrCOmment: false,
+      [commentNotification]: false,
       [topic]: true,
     });
     await admin.database().ref("user-settings").child(userD).child("topic").set({
-      newCommentUnderMyPostOrCOmment: true,
+      [commentNotification]: true,
       [topic]: false,
     });
 
@@ -254,7 +256,7 @@ describe("Messaging ~~~~~~~~~~~~~~~~", () => {
     assert.ok( res.includes(userA) && res.includes(userD));
 
     await admin.database().ref("user-settings").child(userC).child("topic").set({
-      newCommentUnderMyPostOrCOmment: true,
+      [commentNotification]: true,
       [topic]: false,
     });
     res = await lib.removeTopicAndForumAncestorsSubscriber(usersUid, topic);
