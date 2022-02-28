@@ -127,11 +127,10 @@ class MessagingService with FirestoreMixin, DatabaseMixin {
     this.token = token;
     if (this.token == '') return;
 
-    messageTokensCol.doc(token).set(
+    messageTokensRef.child(token).set(
       {
         'uid': UserService.instance.uid,
       },
-      SetOptions(merge: true),
     );
 
     subscribeToDefaultTopic();

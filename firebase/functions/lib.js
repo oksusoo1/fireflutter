@@ -19,7 +19,7 @@ const rdb = admin.database();
 
 const delay = (time) => new Promise((res) => setTimeout(res, time));
 
-const CommentNotification = "newCommentUnderMyPostOrCOmment";
+const commentNotification = "newCommentUnderMyPostOrComment";
 
 /**
  * Returns a query of getting all categories.
@@ -171,7 +171,7 @@ async function getCommentNotifyeeWithoutTopicSubscriber(uids, topic) {
     if (!result[i]) continue;
     const subscriptions = result[i].val();
     // / Get anscestors who subscribed to 'comment notification' and didn't subscribe to the topic.
-    if (subscriptions[CommentNotification] && !subscriptions[topic]) {
+    if (subscriptions[commentNotification] && !subscriptions[topic]) {
       _uids.push(uids[i]);
     }
   }
@@ -191,17 +191,20 @@ async function getTokensFromUids(uids) {
   const getTokensPromise = [];
   for (const u of _uids) {
     getTokensPromise.push(
-        admin.firestore().collection("message-tokens").where("uid", "==", u).get(),
+        rdb.ref("message-tokens").orderByChild("uid").equalTo(u).get(),
     );
   }
 
   const result = await Promise.all(getTokensPromise);
-  for (const tokens of result) {
-    if (tokens.size == 0) continue;
-    for (const doc of tokens.docs) {
-      _tokens.push(doc.id);
+  for (const i in result) {
+    if (!result[i]) continue;
+    const tokens = result[i].val();
+    for (const token in tokens ) {
+      if (!token) continue;
+      _tokens.push(token);
     }
   }
+
   return _tokens;
 }
 
@@ -222,7 +225,6 @@ async function sendMessageToTopic(query) {
   const payload = topicPayload(query);
   try {
     const res = await admin.messaging().send(payload);
-    // .sendToTopic("/topics/" + query.topic, payload);
     return {code: "success", result: res};
   } catch (e) {
     return {code: "error", message: e};
@@ -305,7 +307,7 @@ async function sendingMessageToTokens(tokens, payload) {
           error.code === "messaging/registration-token-not-registered"
         ) {
           tokensToRemove.push(
-              admin.firestore().collection("message-tokens").doc(chunks[i][index]).delete(),
+              rdb.ref("message-tokens").child(chunks[i][index]).remove(),
           );
         }
       }
