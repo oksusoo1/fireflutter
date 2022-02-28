@@ -18,6 +18,7 @@ class Post extends StatelessWidget {
     required this.onImageTap,
     this.onHide,
     required this.onSendPushNotification,
+    this.padding,
   }) : super(key: key);
 
   // final Function(PostModel)? contentBuilder;
@@ -34,6 +35,7 @@ class Post extends StatelessWidget {
   final Function()? onHide;
   final Function(PostModel post) onSendPushNotification;
   final Function(int index, List<String> fileList) onImageTap;
+  final EdgeInsets? padding;
 
   @override
   Widget build(BuildContext context) {
@@ -45,7 +47,27 @@ class Post extends StatelessWidget {
           onImageTapped: (url) {
             onImageTap(post.files.indexWhere((u) => url == u), post.files);
           },
+          padding: padding,
         ),
+        if (post.summary != '')
+          Container(
+            padding: EdgeInsets.all(16),
+            color: Colors.grey.shade200,
+            width: double.infinity,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Summary',
+                  style: TextStyle(fontWeight: FontWeight.bold, color: Colors.grey),
+                ),
+                Text(
+                  post.summary,
+                  style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
+                ),
+              ],
+            ),
+          ),
         if (post.isHtmlContent == false)
           ImageList(
             files: post.files,

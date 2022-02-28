@@ -70,7 +70,7 @@ class _PostListScreenState extends State<PostListScreen> with FirestoreMixin, Fo
               children: [
                 UserDoc(
                   uid: post.uid,
-                  builder: (user) => user.exists ? Text('By: ${user.nickname} ') : Text('NO-USER '),
+                  builder: (user) => Text('By: ${user.displayName} '),
                 ),
                 ShortDate(post.createdAt.millisecondsSinceEpoch),
               ],

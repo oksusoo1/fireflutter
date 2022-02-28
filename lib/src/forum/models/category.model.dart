@@ -19,6 +19,7 @@ class CategoryModel with FirestoreMixin {
   String foregroundColor;
   int order;
 
+  factory CategoryModel.emtpy() => CategoryModel.fromJson({}, '');
   factory CategoryModel.fromJson(dynamic data, String id) {
     return CategoryModel(
       id: id,

@@ -22,6 +22,7 @@ class ShortDate extends StatelessWidget {
       re = false;
     }
 
-    return Text(re ? DateFormat.jm().format(date) : DateFormat.yMd().format(date), style: style);
+    return Text(re ? DateFormat.jm().format(date).toLowerCase() : DateFormat.yMd().format(date),
+        style: style);
   }
 }

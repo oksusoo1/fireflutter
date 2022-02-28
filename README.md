@@ -1120,6 +1120,14 @@ DynamicLinksService.instance.listen((Uri? deepLink) {
     - `updatedAt` - server timestamp for update.
     Note that, these date properties except `createdAt` and `updatedAt` are optional fields, and added by `PostModel.create()`
 
+- When admin creates a post, he can specify the document id. With this, posts can be managed easily.
+  - For instance, admin puts `welcome` as document id, and he design the app that when user press on welcome button, the app read the post document of `welcome` and display it to the user.
+  - Document id is easy to remember and easy to manage.
+
+- `summary` field is used for the short description for the post.
+  - `summary` should not be seen or searched as part of the post. But it can be dispalyed as short description on widget, or anywhere.
+  - It's not part of security rule, so if you want, to use it or not.
+
 ## Comment
 
 - Comments are saved in `/comments` so it is better to be search. If it is saved under `/posts/(postId)/comments/`, then it is not easy to search.
