@@ -16,7 +16,8 @@ class PostListScreen extends StatefulWidget {
   State<PostListScreen> createState() => _PostListScreenState();
 }
 
-class _PostListScreenState extends State<PostListScreen> with FirestoreMixin, ForumMixin {
+class _PostListScreenState extends State<PostListScreen>
+    with FirestoreMixin, ForumMixin {
   late final String category;
   String? newPostId;
   @override
@@ -38,7 +39,8 @@ class _PostListScreenState extends State<PostListScreen> with FirestoreMixin, Fo
           ),
           IconButton(
             onPressed: () async {
-              newPostId = await AppService.instance.openPostForm(category: category);
+              newPostId =
+                  await AppService.instance.openPostForm(category: category);
               if (mounted) setState(() {});
             },
             icon: Icon(
@@ -70,7 +72,9 @@ class _PostListScreenState extends State<PostListScreen> with FirestoreMixin, Fo
               children: [
                 UserDoc(
                   uid: post.uid,
-                  builder: (user) => user.exists ? Text('By: ${user.nickname} ') : Text('NO-USER '),
+                  builder: (user) => user.exists
+                      ? Text('By: ${user.nickname} ')
+                      : Text('NO-USER '),
                 ),
                 ShortDate(post.createdAt.millisecondsSinceEpoch),
               ],
@@ -92,9 +96,10 @@ class _PostListScreenState extends State<PostListScreen> with FirestoreMixin, Fo
                 onLike: onLike,
                 onDislike: onDislike,
                 onHide: () {},
-                onChat: (post) {},
-                onSendPushNotification: (post) => AppService.instance
-                    .open(PushNotificationScreen.routeName, arguments: {'postId': post.id}),
+                onChat: (post) => AppService.instance.openChatRoom(post.uid),
+                onSendPushNotification: (post) => AppService.instance.open(
+                    PushNotificationScreen.routeName,
+                    arguments: {'postId': post.id}),
               ),
               Divider(color: Colors.red),
               Comment(
