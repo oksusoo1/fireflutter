@@ -196,4 +196,21 @@ class UserService with FirestoreMixin, DatabaseMixin {
     others[uid] = other;
     return others[uid]!;
   }
+
+  String get profileError {
+    if (photoUrl == '') return ERROR_NO_PROFILE_PHOTO;
+    if (email == '') return ERROR_NO_EMAIL;
+    if (user.firstName == '') return ERROR_NO_FIRST_NAEM;
+    if (user.lastName == '') return ERROR_NO_LAST_NAME;
+    if (user.gender == '') return ERROR_NO_GENER;
+    if (user.birthday == 0) return ERROR_NO_BIRTHDAY;
+    return '';
+  }
+
+  bool get profileReady {
+    if (profileError == '')
+      return true;
+    else
+      return false;
+  }
 }

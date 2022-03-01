@@ -12,6 +12,7 @@ class PostModel with FirestoreMixin, ForumBase {
     this.category = '',
     this.title = '',
     this.content = '',
+    this.summary = '',
     this.uid = '',
     this.noOfComments = 0,
     this.hasPhoto = false,
@@ -52,6 +53,8 @@ class PostModel with FirestoreMixin, ForumBase {
     return deleted ? 'post-content-deleted' : content;
   }
 
+  String summary;
+
   bool deleted;
 
   String uid;
@@ -75,6 +78,9 @@ class PostModel with FirestoreMixin, ForumBase {
   Timestamp createdAt;
   Timestamp updatedAt;
 
+  /// To open the post data. Use this to display post content or not on post list screen.
+  bool open = false;
+
   /// Get document data of map and convert it into post model
   factory PostModel.fromJson(Json data, String id) {
     String content = data['content'] ?? '';
@@ -96,6 +102,7 @@ class PostModel with FirestoreMixin, ForumBase {
       category: data['category'] ?? '',
       title: data['title'] ?? '',
       content: content,
+      summary: data['summary'] ?? '',
       isHtmlContent: html,
       noOfComments: data['noOfComments'] ?? 0,
       hasPhoto: data['hasPhoto'] ?? false,
@@ -140,6 +147,7 @@ class PostModel with FirestoreMixin, ForumBase {
       'category': category,
       'title': title,
       'content': content,
+      'summary': summary,
       'isHtmlContent': isHtmlContent,
       'noOfComments': noOfComments,
       'hasPhoto': hasPhoto,
@@ -174,6 +182,8 @@ class PostModel with FirestoreMixin, ForumBase {
 
   /// Create a post with extra data
   ///
+  /// [documentId] is the document id to create with. Read readme for details.
+  ///
   /// ```dart
   /// final ref = await PostModel(
   ///   category: Get.arguments['category'],
@@ -188,11 +198,14 @@ class PostModel with FirestoreMixin, ForumBase {
     required String category,
     required String title,
     required String content,
+    String? documentId,
     List<String>? files,
+    String? summary,
     Json extra = const {},
   }) {
     if (signedIn == false) throw ERROR_SIGN_IN;
     if (UserService.instance.user.exists == false) throw ERROR_USER_DOCUMENT_NOT_EXISTS;
+    if (UserService.instance.profileReady == false) throw UserService.instance.profileError;
 
     final j = Jiffy();
     int week = ((j.unix() - 345600) / 604800).floor();
@@ -200,6 +213,7 @@ class PostModel with FirestoreMixin, ForumBase {
       'category': category,
       'title': title,
       'content': content,
+      if (summary != null && summary != '') 'summary': summary,
       if (files != null) 'files': files,
       'uid': UserService.instance.user.uid,
       'hasPhoto': (files == null || files.length == 0) ? false : true,
@@ -213,13 +227,20 @@ class PostModel with FirestoreMixin, ForumBase {
       'createdAt': FieldValue.serverTimestamp(),
       'updatedAt': FieldValue.serverTimestamp(),
     };
-    return postCol.add({...createData, ...extra});
+    if (documentId != null && documentId != '') {
+      return postCol
+          .doc(documentId)
+          .set({...createData, ...extra}).then((value) => postCol.doc(documentId));
+    } else {
+      return postCol.add({...createData, ...extra});
+    }
   }
 
   Future<void> update({
     required String title,
     required String content,
     List<String>? files,
+    String? summary,
     Json extra = const {},
   }) {
     if (deleted) throw ERROR_ALREADY_DELETED;
@@ -228,6 +249,7 @@ class PostModel with FirestoreMixin, ForumBase {
         'title': title,
         'content': content,
         if (files != null) 'files': files,
+        if (summary != null) 'summary': summary,
         'hasPhoto': (files == null || files.length == 0) ? false : true,
         'updatedAt': FieldValue.serverTimestamp(),
       },
@@ -246,6 +268,7 @@ class PostModel with FirestoreMixin, ForumBase {
     return postDoc(id).update({
       'deleted': true,
       'content': '',
+      'summary': '',
       'title': '',
       'updatedAt': FieldValue.serverTimestamp(),
     });

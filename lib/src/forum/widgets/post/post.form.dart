@@ -33,10 +33,15 @@ class PostForm extends StatefulWidget {
 class _PostFormState extends State<PostForm> {
   final title = TextEditingController();
   final content = TextEditingController();
+  final documentId = TextEditingController();
+  final summary = TextEditingController();
 
   late List<String> files = [];
 
   double uploadProgress = 0;
+
+  bool get isCreate => widget.post == null || widget.post?.id == '';
+  bool get isUpdate => !isCreate;
 
   @override
   void initState() {
@@ -44,6 +49,7 @@ class _PostFormState extends State<PostForm> {
     setState(() {
       title.text = widget.post?.title ?? '';
       content.text = widget.post?.content ?? '';
+      summary.text = widget.post?.summary ?? '';
       files = widget.post?.files ?? [];
     });
   }
@@ -59,8 +65,7 @@ class _PostFormState extends State<PostForm> {
 
     final submitButton = widget.submitButtonBuilder != null
         ? widget.submitButtonBuilder!(onSubmit)
-        : ElevatedButton(
-            onPressed: () => onSubmit(), child: const Text('SUBMIT'));
+        : ElevatedButton(onPressed: () => onSubmit(), child: const Text('SUBMIT'));
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -89,6 +94,33 @@ class _PostFormState extends State<PostForm> {
           ],
         ),
         ImageListEdit(files: files, onError: widget.onError),
+        if (UserService.instance.user.isAdmin)
+          Container(
+            margin: EdgeInsets.only(top: 16),
+            padding: EdgeInsets.all(16),
+            width: double.infinity,
+            color: Colors.grey.shade200,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Admin menu'),
+                Divider(color: Colors.grey),
+                Text('Document Id'),
+                isCreate
+                    ? TextField(controller: documentId)
+                    : Text(
+                        widget.post!.id,
+                        style: TextStyle(
+                          color: Colors.blue.shade900,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                SizedBox(height: 16),
+                Text('Summary'),
+                TextField(controller: summary),
+              ],
+            ),
+          )
       ],
     );
   }
@@ -97,9 +129,11 @@ class _PostFormState extends State<PostForm> {
     try {
       if (widget.category != null && widget.category!.isNotEmpty) {
         final ref = await PostModel().create(
+          documentId: documentId.text,
           category: widget.category!,
           title: title.text,
           content: content.text,
+          summary: summary.text,
           files: files,
         );
         widget.onCreate(ref.id);
@@ -108,6 +142,7 @@ class _PostFormState extends State<PostForm> {
           title: title.text,
           content: content.text,
           files: files,
+          summary: summary.text,
         );
         widget.onUpdate(widget.post!.id);
       }

@@ -54,10 +54,14 @@ class UserModel with FirestoreMixin, DatabaseMixin {
     if (firstName != '') return firstName;
     if (FirebaseAuth.instance.currentUser?.displayName != null)
       return FirebaseAuth.instance.currentUser!.displayName!;
-    return 'NO-NAME';
+    return '';
   }
 
+  bool get hasDisplayName => displayName != '';
+
   String photoUrl;
+
+  /// default is 0 if it's not set.
   int birthday;
   String gender;
 
