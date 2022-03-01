@@ -1128,6 +1128,13 @@ DynamicLinksService.instance.listen((Uri? deepLink) {
   - `summary` should not be seen or searched as part of the post. But it can be dispalyed as short description on widget, or anywhere.
   - It's not part of security rule, so if you want, to use it or not.
 
+
+- In the source code, `documentId` is being used to create a post with named document id. And this gives an easy way of managing posts since the named document id is easy to remember.
+  - On the sample code, admin can input document id when he creates a post.
+  - Then, the document id can be used to view the post or get the post.
+    - App can display a banner and when user taps, app can redirect to post view screen by give the `named-document-id`.
+
+
 ## Comment
 
 - Comments are saved in `/comments` so it is better to be search. If it is saved under `/posts/(postId)/comments/`, then it is not easy to search.
