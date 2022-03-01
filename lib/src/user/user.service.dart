@@ -30,6 +30,7 @@ class UserService with FirestoreMixin, DatabaseMixin {
   String get uid => FirebaseAuth.instance.currentUser?.uid ?? '';
   String get phoneNumber => currentUser?.phoneNumber ?? '';
   String get email => currentUser?.email ?? '';
+  bool get emailIsVerified => currentUser?.emailVerified ?? false;
 
   /// To display email on screen, use this.
   String get displayEmail => email == '' ? 'NO-EMAIL' : email;

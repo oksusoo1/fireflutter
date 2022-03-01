@@ -97,7 +97,7 @@ class _EmailVerificationState extends State<EmailVerification> {
         ),
         SizedBox(height: 8),
         loading
-            ? Center(child: const CircularProgressIndicator.adaptive())
+            ? Center(child: const LinearProgressIndicator())
             : Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
