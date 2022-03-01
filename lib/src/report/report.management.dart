@@ -39,25 +39,33 @@ class ReportManagement extends StatelessWidget with FirestoreMixin {
           title: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Source: ' + report.target),
               UserDoc(
                 uid: report.reporterUid,
                 builder: (user) {
-                  return Text('Reporter: ' + (user.nickname != '' ? user.nickname : 'no_name'));
+                  return Text('Reporter: ' + (user.nickname != '' ? user.nickname : 'no_name'),
+                      style: TextStyle(fontSize: 14));
                 },
               ),
               UserDoc(
                 uid: report.reporteeUid,
                 builder: (user) {
-                  return Text('Reportee: ' + user.nickname);
+                  return Text('Reportee: ' + user.nickname, style: TextStyle(fontSize: 14));
                 },
               ),
-              Text(report.reason != '' ? report.reason : 'no_reason'),
+              if (target == null)
+                Text(
+                  'Target: ' + report.target,
+                  style: TextStyle(fontSize: 14),
+                ),
             ],
           ),
+          subtitle: Text(report.reason != '' ? 'Reason: ' + report.reason : 'no_reason'),
           trailing: IconButton(
             onPressed: () => onPressed(report),
-            icon: Icon(Icons.open_in_new),
+            icon: Icon(
+              Icons.open_in_new,
+              size: 18,
+            ),
           ),
         );
       },
