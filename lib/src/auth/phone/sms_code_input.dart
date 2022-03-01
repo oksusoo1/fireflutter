@@ -40,9 +40,9 @@ class _SmsCodeInputState extends State<SmsCodeInput> {
         widget.submitTitle,
         Row(
           children: [
-            widget.submitButton(submit),
+            if (widget.cancelButton != null) widget.cancelButton!(),
             Spacer(),
-            if (widget.cancelButton != null) widget.cancelButton!()
+            widget.submitButton(submit),
           ],
         ),
       ],
