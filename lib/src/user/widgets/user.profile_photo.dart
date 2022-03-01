@@ -16,6 +16,7 @@ class UserProfilePhoto extends StatelessWidget {
     this.size = 40,
     this.iconSize = 24,
     this.onTap,
+    this.boxShadow = const BoxShadow(color: Colors.white, blurRadius: 1.0, spreadRadius: 1.0),
     Key? key,
   }) : super(key: key);
 
@@ -23,6 +24,7 @@ class UserProfilePhoto extends StatelessWidget {
   final double size;
   final double iconSize;
   final Function()? onTap;
+  final BoxShadow boxShadow;
 
   @override
   Widget build(BuildContext context) {
@@ -41,9 +43,7 @@ class UserProfilePhoto extends StatelessWidget {
           decoration: BoxDecoration(
             shape: BoxShape.circle,
             color: user.photoUrl == '' ? Colors.grey.shade300 : Colors.white,
-            boxShadow: [
-              BoxShadow(color: Colors.white, blurRadius: 1.0, spreadRadius: 1.0),
-            ],
+            boxShadow: [boxShadow],
           ),
         );
     return uid == null

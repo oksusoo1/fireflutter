@@ -60,6 +60,8 @@ class UserModel with FirestoreMixin, DatabaseMixin {
   bool get hasDisplayName => displayName != '';
 
   String photoUrl;
+
+  /// default is 0 if it's not set.
   int birthday;
   String gender;
 
