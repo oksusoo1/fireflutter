@@ -353,7 +353,8 @@ $ npm run shell
     - `gender`
     - `firstName`, `middleName`, `lastName`, `nickname`
     - `photoUrl`
-    - `timestamp_registered`
+    - `registeredAt`
+    - `updatedAt`
       And think over again if it is really needed when you are trying to add another field.
   - Don't put user's setting data in `/users/<uid>`. Use may use `UserModel.updateSettings()` and `UserModel.readSettings()` to manage user's setting.
 
