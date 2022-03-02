@@ -26,7 +26,9 @@ class _UserDocState extends State<UserDoc> with DatabaseMixin {
   void initState() {
     super.initState();
 
-    UserService.instance.getOtherUserDoc(widget.uid).then((v) => setState(() => user = v));
+    UserService.instance.getOtherUserDoc(widget.uid).then((v) {
+      if (mounted) setState(() => user = v);
+    });
   }
 
   @override

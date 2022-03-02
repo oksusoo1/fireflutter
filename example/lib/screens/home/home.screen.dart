@@ -76,7 +76,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           builder: (UserModel u) {
                             return Wrap(
                               children: [
-                                Text('Profile name: ${u.nickname}'),
+                                Text('Profile name: ${u.displayName}'),
                                 Text(', photo: ${u.photoUrl}'),
                               ],
                             );

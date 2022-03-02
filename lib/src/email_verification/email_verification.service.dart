@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:firebase_auth/firebase_auth.dart';
+import '../../fireflutter.dart';
 
 class EmailVerificationService {
   static EmailVerificationService? _instance;
@@ -101,6 +102,7 @@ class EmailVerificationService {
           _t.cancel();
           timer = null;
           _onVerified();
+          UserService.instance.user.updateUpdatedAt();
         }
       },
     );

@@ -65,14 +65,14 @@ class ButtonBase extends StatelessWidget {
           ),
           initialValue: '',
           itemBuilder: (BuildContext context) => [
-            if (isMine) ...[
+            if (isMine)
               PopupMenuItem<String>(value: 'edit', child: Text('Edit')),
+            if (isMine || isAdmin)
               PopupMenuItem<String>(
                 value: 'delete',
                 child: Text('Delete', style: TextStyle(color: Colors.red)),
               ),
-              PopupMenuDivider(),
-            ],
+            PopupMenuDivider(),
             PopupMenuItem<String>(
               value: 'report',
               child: Text('Report', style: TextStyle(color: Colors.red)),
@@ -85,7 +85,8 @@ class ButtonBase extends StatelessWidget {
                 ),
               ),
             if (isPost && onHide != null)
-              PopupMenuItem<String>(value: 'hide_post', child: Text('Hide Post')),
+              PopupMenuItem<String>(
+                  value: 'hide_post', child: Text('Hide Post')),
             PopupMenuItem<String>(value: 'close_menu', child: Text('Close')),
           ],
           onSelected: (String value) async {

@@ -20,7 +20,7 @@ async function createCategory(data) {
   const id = data.id;
   // delete data.id; // call-by-reference. it will causes error after this method.
   data.timestamp = utils.getTimestamp();
-  await ref.categoryDoc(id).set(data, {merge: true});
+  await ref.categoryDoc(id).set(data, { merge: true });
   return ref.categoryDoc(id);
 }
 
@@ -71,7 +71,7 @@ async function createPost(data) {
       postData.deleted = true;
     }
 
-    await ref.postDoc(data.post.id).set(postData), {merge: true};
+    await ref.postDoc(data.post.id).set(postData), { merge: true };
     return ref.postDoc(data.post.id);
   } else {
     return db.collection("posts").add(postData);
@@ -159,12 +159,12 @@ async function createComment(data) {
 async function createTestUser(uid) {
   const timestamp = new Date().getTime();
   await rdb
-      .ref("users")
-      .child(uid)
-      .set({
-        nickname: "testUser" + timestamp,
-        timestamp_registered: timestamp,
-      });
+    .ref("users")
+    .child(uid)
+    .set({
+      nickname: "testUser" + timestamp,
+      registeredAt: timestamp,
+    });
   return rdb.ref("users").child(uid);
 }
 

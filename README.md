@@ -353,7 +353,8 @@ $ npm run shell
     - `gender`
     - `firstName`, `middleName`, `lastName`, `nickname`
     - `photoUrl`
-    - `timestamp_registered`
+    - `registeredAt`
+    - `updatedAt`
       And think over again if it is really needed when you are trying to add another field.
   - Don't put user's setting data in `/users/<uid>`. Use may use `UserModel.updateSettings()` and `UserModel.readSettings()` to manage user's setting.
 
@@ -1127,6 +1128,13 @@ DynamicLinksService.instance.listen((Uri? deepLink) {
 - `summary` field is used for the short description for the post.
   - `summary` should not be seen or searched as part of the post. But it can be dispalyed as short description on widget, or anywhere.
   - It's not part of security rule, so if you want, to use it or not.
+
+
+- In the source code, `documentId` is being used to create a post with named document id. And this gives an easy way of managing posts since the named document id is easy to remember.
+  - On the sample code, admin can input document id when he creates a post.
+  - Then, the document id can be used to view the post or get the post.
+    - App can display a banner and when user taps, app can redirect to post view screen by give the `named-document-id`.
+
 
 ## Comment
 
