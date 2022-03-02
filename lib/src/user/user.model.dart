@@ -16,6 +16,7 @@ class UserModel with FirestoreMixin, DatabaseMixin {
     this.photoUrl = '',
     this.birthday = 0,
     this.gender = '',
+    this.profileReady = false,
     this.isAdmin = false,
   });
 
@@ -27,6 +28,7 @@ class UserModel with FirestoreMixin, DatabaseMixin {
     'photoUrl',
     'birthday',
     'gender',
+    'profileReady',
     'isAdmin',
   ];
 
@@ -64,6 +66,9 @@ class UserModel with FirestoreMixin, DatabaseMixin {
   /// default is 0 if it's not set.
   int birthday;
   String gender;
+
+  /// It becomes true when the user's profile is ready.
+  bool profileReady;
 
   bool get signedIn => FirebaseAuth.instance.currentUser != null;
   bool get signedOut => signedIn == false;
