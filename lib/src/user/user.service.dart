@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_database/firebase_database.dart';
 import 'package:rxdart/subjects.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../fireflutter.dart';
@@ -76,6 +75,7 @@ class UserService with FirestoreMixin, DatabaseMixin {
                 'User sign-in as Anonymous; Warning! Fireflutter does not user anonymous account.');
             changes.add(user);
           } else {
+            resetTopicSubscription();
             final doc = userDoc(_user.uid);
             userSubscription = doc.onValue.listen((event) {
               // if user doc does not exists, create one.
@@ -85,14 +85,16 @@ class UserService with FirestoreMixin, DatabaseMixin {
                 /// User profile information has been updated.
                 user = UserModel.fromJson(event.snapshot.value, _user.uid);
                 changes.add(user);
+
                 if (profileReady) {
-                  if (user.profileReady != true) {
+                  if (user.profileReady == false) {
                     user.update(field: 'profileReady', value: true);
                   }
+                } else {
+                  if (user.profileReady) {
+                    user.update(field: 'profileReady', value: false);
+                  }
                 }
-
-                /// @TODO: this must be here? shouldn't it be somewhere user sign in, not here in updating user chage?
-                resetTopicSubscription();
               }
             }, onError: (e) {
               print('UserDoc listening error; $e');
@@ -103,8 +105,12 @@ class UserService with FirestoreMixin, DatabaseMixin {
     );
   }
 
-  /// when user Sign-in, the app need to unsubscribe previous subscription
-  /// then new user topics need to subscribe
+  /// Subscribe topics for newly sign-in user.
+  ///
+  /// This method will run the code only one time even if the user signed-in multiple times.
+  ///
+  /// when a user Sign-in, the app need to unsubscribe previous subscription
+  /// then app needs to subscribe the sign-in user topics.
   /// `isUserLoggedIn` is set true when the user signed-in.
   /// this can be use to check if the user is already loggedIn even the app was closed and reopen.
   /// so it will not reset every time the app is relaunch.

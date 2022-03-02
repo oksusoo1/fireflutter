@@ -89,6 +89,7 @@ class UserModel with FirestoreMixin, DatabaseMixin {
       photoUrl: data['photoUrl'] ?? '',
       birthday: data['birthday'] ?? 0,
       gender: data['gender'] ?? '',
+      profileReady: data['profileReady'] ?? false,
     );
   }
 
@@ -120,7 +121,10 @@ class UserModel with FirestoreMixin, DatabaseMixin {
 
   ///
   Future<void> create() {
-    return _userDoc.set({'timestamp_registered': ServerValue.timestamp});
+    return _userDoc.set({
+      'registeredAt': ServerValue.timestamp,
+      'updatedAt': ServerValue.timestamp,
+    });
   }
 
   /// Update login user's document on `/users/{userDoc}` in realtime database.
@@ -133,7 +137,19 @@ class UserModel with FirestoreMixin, DatabaseMixin {
       // throw Exception(ERROR_NOT_SUPPORTED_FIELD_ON_USER_UPDATE);
       throw ERROR_NOT_SUPPORTED_FIELD_ON_USER_UPDATE;
     }
-    return _userDoc.update({field: value});
+    return _userDoc.update({
+      field: value,
+      'updatedAt': ServerValue.timestamp,
+    });
+  }
+
+  /// Updating `updatedAt` field.
+  ///
+  /// Use this method to update user document, so it can trigger any listening callbacks.
+  Future<void> updateUpdatedAt() {
+    return _userDoc.update({
+      'updatedAt': ServerValue.timestamp,
+    });
   }
 
   /// Update nickname
