@@ -29,7 +29,7 @@ describe("Meilisearch test", () => {
     host: "http://wonderfulkorea.kr:7700",
   });
 
-  // / Post test data.
+  // Post test data.
   const categoryData = {id: "index-test"};
   const originalPostTitle = "post-" + timestamp;
   const newPostTitle = originalPostTitle + " ...(2)";
@@ -38,7 +38,7 @@ describe("Meilisearch test", () => {
     title: originalPostTitle,
   };
 
-  // / Comment test data.
+  // Comment test data.
   const originalCommentContent = "comment-" + timestamp;
   const newCommentContent = originalCommentContent + " ... (2)";
   const commentData = {
@@ -47,6 +47,15 @@ describe("Meilisearch test", () => {
     parentId: postData.id,
     content: originalCommentContent,
   };
+
+  // User test data.
+  const userId = 'user_aaa';
+  const originalFirstName = 'User A'
+  const userData = {
+    id: userId,
+    firstName: '',
+    lastName: 'Lastname A',
+  }
 
   // ------ Prep
 

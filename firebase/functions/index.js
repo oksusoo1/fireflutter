@@ -100,23 +100,6 @@ exports.createUserIndex = functions
       // console.log('user data', context.params.userId, snapshot.val());
       return lib.indexUser(context.params.userId, snapshot.val());
     });
-
-/**
- * Deletes indexing whenever a user document is deleted.
- * 
- * deleteUserIndex({ 
- *   firstName: '...'
- *  }, {
- *   params: { userId: '...' }
- * })
- */
-exports.deleteUserIndex = functions
-    .region("asia-northeast3")
-    .database.ref('/users/{userId}')
-    .onDelete((snapshot, context) => {
-      // console.log('onDelete : user data', context.params.userId, snapshot.val());
-      return lib.deleteIndexedUser(context.params.userId);
-    });
     
 /**
  * Updates a user document index.
@@ -136,6 +119,23 @@ exports.updateUserIndex = functions
       //  console.log('user data change after', context.params.userId, data);
       return lib.indexUser(context.params.userId, data);
     });
+
+/**
+ * Deletes indexing whenever a user document is deleted.
+ * 
+ * deleteUserIndex({ 
+ *   firstName: '...'
+ *  }, {
+ *   params: { userId: '...' }
+ * })
+ */
+ exports.deleteUserIndex = functions
+ .region("asia-northeast3")
+ .database.ref('/users/{userId}')
+ .onDelete((snapshot, context) => {
+   // console.log('onDelete : user data', context.params.userId, snapshot.val());
+   return lib.deleteIndexedUser(context.params.userId);
+ });
 
 /**
  * Indexes a post document when it is created.
