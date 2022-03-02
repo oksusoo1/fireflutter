@@ -73,6 +73,16 @@ function getPost(id) {
 }
 
 /**
+ * Deletes user document index.
+ * 
+ * @param {*} id user id to delete.
+ * @returns promise
+ */
+async function deleteIndexedUserDocument(id) {
+  return Axios.delete("http://wonderfulkorea.kr:7700/indexes/users/documents/" + id);
+}
+
+/**
  * Indexes a post
  *
  * @param {*} id post id
@@ -436,3 +446,4 @@ exports.sendingMessageToTokens = sendingMessageToTokens;
 exports.updateFileParentId = updateFileParentId;
 
 exports.indexUser = indexUserDocument;
+exports.deleteIndexedUser = deleteIndexedUserDocument;

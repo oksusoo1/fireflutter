@@ -20,7 +20,7 @@ if (!admin.apps.length) {
 // This must come after initlization
 const lib = require("../lib");
 
-
+// TODO: User index (create, update, delete)
 describe("Meilisearch test", () => {
   const timestamp = (new Date).getTime();
   console.log("timestamp; ", timestamp);
