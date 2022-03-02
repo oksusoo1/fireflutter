@@ -208,7 +208,7 @@ class UserService with FirestoreMixin, DatabaseMixin {
 
   String get profileError {
     if (photoUrl == '') return ERROR_NO_PROFILE_PHOTO;
-    // if (email == '') return ERROR_NO_EMAIL;
+    if (email == '') return ERROR_NO_EMAIL;
     if (user.firstName == '') return ERROR_NO_FIRST_NAEM;
     if (user.lastName == '') return ERROR_NO_LAST_NAME;
     if (user.gender == '') return ERROR_NO_GENER;

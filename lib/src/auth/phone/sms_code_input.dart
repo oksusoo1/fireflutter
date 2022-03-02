@@ -6,17 +6,15 @@ class SmsCodeInput extends StatefulWidget {
     required this.success,
     required this.error,
     this.submitTitle = const SizedBox.shrink(),
-    required this.submitButton,
+    required this.buttons,
     this.smsCodeInputDecoration = const InputDecoration(),
     this.smsCodeInputTextStyle = const TextStyle(),
-    this.cancelButton,
     Key? key,
   }) : super(key: key);
   final VoidCallback success;
   final ErrorCallback error;
 
-  final Widget Function(VoidNullableCallback submit) submitButton;
-  final Widget Function()? cancelButton;
+  final Widget Function(VoidNullableCallback submit) buttons;
   final Widget submitTitle;
 
   final InputDecoration smsCodeInputDecoration;
@@ -38,13 +36,7 @@ class _SmsCodeInputState extends State<SmsCodeInput> {
           decoration: widget.smsCodeInputDecoration,
         ),
         widget.submitTitle,
-        Row(
-          children: [
-            if (widget.cancelButton != null) widget.cancelButton!(),
-            Spacer(),
-            widget.submitButton(submit),
-          ],
-        ),
+        widget.buttons(submit),
       ],
     );
   }
