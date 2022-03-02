@@ -76,7 +76,7 @@ class _SmsCodeUIScreenState extends State<SmsCodeUIScreen> {
               /// submits the code to verify.
               ///
               ///  You can customize the UI like below.
-              submitButton: (submit) => Row(
+              buttons: (submit) => Row(
                 children: [
                   PhoneService.instance.verifySentProgress
                       ? const CircularProgressIndicator.adaptive()

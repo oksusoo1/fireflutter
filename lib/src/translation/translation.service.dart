@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:rxdart/subjects.dart';
-
+import 'dart:ui' as ui;
 import '../../fireflutter.dart';
 
 /// TranslationService
@@ -28,6 +28,11 @@ class TranslationService with DatabaseMixin {
     });
   }
 
+  String tr(String code) {
+    final ln = ui.window.locale.languageCode;
+    return texts[code]?[ln] ?? code;
+  }
+
   Future get() async {
     final snapshot = await translationDoc.get();
     if (snapshot.exists) {
@@ -51,9 +56,6 @@ class TranslationService with DatabaseMixin {
     return texts;
   }
 
-  /// @TODO: 여기서부터... 생성과 수정은 타이틀바와, 각 라인에 표시.
-  /// @TODO: 저장 할 때, 모든 code 와 en, ko 를 하나의 문서에 업데이트한다.
-  /// @TODO: 보여 줄 때, 하나의 문서를 읽어, 모두에 보여준다.
   showForm(BuildContext context, [String? updateCode]) {
     final code = TextEditingController(text: updateCode ?? '');
     final en = TextEditingController(text: texts[updateCode]?['en'] ?? '');

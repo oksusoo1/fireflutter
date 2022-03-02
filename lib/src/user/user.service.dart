@@ -37,7 +37,7 @@ class UserService with FirestoreMixin, DatabaseMixin {
 
   String get photoUrl => user.photoUrl;
 
-  DatabaseReference get _myDoc => FirebaseDatabase.instance.ref('users').child(uid);
+  // DatabaseReference get _myDoc => FirebaseDatabase.instance.ref('users').child(uid);
 
   StreamSubscription? userSubscription;
 
@@ -82,8 +82,16 @@ class UserService with FirestoreMixin, DatabaseMixin {
               if (event.snapshot.exists == false) {
                 create();
               } else {
+                /// User profile information has been updated.
                 user = UserModel.fromJson(event.snapshot.value, _user.uid);
                 changes.add(user);
+                if (profileReady) {
+                  if (user.profileReady != true) {
+                    user.update(field: 'profileReady', value: true);
+                  }
+                }
+
+                /// @TODO: this must be here? shouldn't it be somewhere user sign in, not here in updating user chage?
                 resetTopicSubscription();
               }
             }, onError: (e) {
@@ -147,16 +155,16 @@ class UserService with FirestoreMixin, DatabaseMixin {
     return user.updatePhotoUrl(url);
   }
 
-  @Deprecated('This is useless method.')
-  Future<UserModel> get() async {
-    final doc = await _myDoc.get();
-    if (doc.exists) {
-      final user = UserModel.fromJson(doc.value, doc.key!);
-      return user;
-    } else {
-      return UserModel(uid: currentUser?.uid ?? '');
-    }
-  }
+  // @Deprecated('This is useless method.')
+  // Future<UserModel> get() async {
+  //   final doc = await _myDoc.get();
+  //   if (doc.exists) {
+  //     final user = UserModel.fromJson(doc.value, doc.key!);
+  //     return user;
+  //   } else {
+  //     return UserModel(uid: currentUser?.uid ?? '');
+  //   }
+  // }
 
   /// Update wether if the user is an admin or not.
   /// Refer readme for details
