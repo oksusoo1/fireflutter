@@ -83,6 +83,7 @@ Table of contents
 - [Test](#test)
   - [Test method](#test-method)
   - [Local test on firestore security rules](#local-test-on-firestore-security-rules)
+- [Sample code](#sample-code)
 - [Issues](#issues)
   - [firebase_database/permission-denied](#firebase_databasepermission-denied)
   - [Firebase realtime database is not working](#firebase-realtime-database-is-not-working)
@@ -920,6 +921,12 @@ InformService.instance.inform(widget.room.otherUid, {
 - To deploy,
   - open `<root>/firebase/.firebaserc` and update `projects.default` to your firebase project id.
   - run `$ firebase deploy --only firestore`
+
+
+# Sample code
+
+- See all tests code.
+- `./firebase/lab` folder has some sample code.
 
 # Issues
 

@@ -11,5 +11,8 @@
   "license": "ISC",
   "dependencies": {
     "firebase-admin": "^10.0.2"
+  },
+  "devDependencies": {
+    "@faker-js/faker": "^6.0.0-alpha.7"
   }
 }
