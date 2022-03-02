@@ -50,6 +50,28 @@ function getPost(id) {
   return admin.firestore().collection("posts").doc(id).get();
 }
 
+
+/**
+ * Creates or update a user document index.
+ * 
+ * @param {*} id user id.
+ * @param {*} data user data to index.
+ * @returns promise
+ */
+ async function indexUserDocument(id, data) {
+  const _data = {
+    id: id,
+    firstname: data.firstName ?? '',
+    middlename: data.middleName ?? '',
+    lastname: data.lastName ?? '',
+    photoUrl: data.photoUrl ?? '',
+    registered: data.timestamp_registered,
+  };
+
+  // return Axios.post("https://wonderfulkorea.kr:4431/index.php?api=post/record", _data)
+  return Axios.post("http://wonderfulkorea.kr:7700/indexes/users/documents", _data)
+}
+
 /**
  * Indexes a post
  *
@@ -412,3 +434,5 @@ exports.topicPayload = topicPayload;
 exports.sendingMessageToTokens = sendingMessageToTokens;
 
 exports.updateFileParentId = updateFileParentId;
+
+exports.indexUser = indexUserDocument;

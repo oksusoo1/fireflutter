@@ -83,14 +83,53 @@ exports.sendMessageOnCommentCreate = functions
       return lib.sendingMessageToTokens(tokens, lib.preMessagePayload(messageData));
     });
 
-// Indexes a post document when it is created.
-//
-// createPostIndex({
-//  uid: 'user_ccc',
-//  category: 'discussion',
-//  title: 'I post on discussion',
-//  content: 'Discussion'
-// })
+
+/**
+ * Indexes a user document whenever it is created.
+ * 
+ * createUserIndex({ 
+ *   firstName: '...'  
+ *  }, { 
+ *   params: { userId: '...' }
+ * })
+ */
+exports.createUserIndex = functions
+    .region("asia-northeast3")
+    .database.ref('/users/{userId}')
+    .onCreate((snapshot, context) => {
+      // console.log('user data', context.params.userId, snapshot.val());
+      return lib.indexUser(context.params.userId, snapshot.val());
+    });
+    
+/**
+ * Updates a user document index.
+ * 
+ * updateUserIndex({
+ *   before: {},
+ *   after: { firstName: '...'  }
+ *  }, { 
+ *   params: { userId: '...' }
+ * })
+ */
+exports.updateUserIndex = functions
+    .region("asia-northeast3")
+    .database.ref('/users/{userId}')
+    .onUpdate((change, context) => {
+      const data = change.after.val();
+      //  console.log('user data change after', context.params.userId, data);
+      return lib.indexUser(context.params.userId, data);
+    });
+
+/**
+ * Indexes a post document when it is created.
+ *
+ * createPostIndex({
+ *  uid: 'user_ccc',
+ *  category: 'discussion',
+ *  title: 'I post on discussion',
+ *  content: 'Discussion' 
+ * })
+ */
 exports.createPostIndex = functions
     .region("asia-northeast3")
     .firestore.document("/posts/{postId}")
@@ -98,26 +137,28 @@ exports.createPostIndex = functions
       return lib.indexPost(context.params.postId, snap.data());
     });
 
-// Updates or delete the indexed document when a post is updated or deleted.
-//
-// Update:
-// updatePostIndex({
-//  before: {},
-//  after: {
-//   uid: 'user_ccc',
-//   category: 'discussion',
-//   title: 'I post on discussion (update)',
-//   content: 'Discussion 2'
-//   }},
-//   { params: { postId: 'postId2' }
-//  })
-//
-// Delete:
-// updatePostIndex({
-//  before: {},
-//  after: { deleted: true }},
-//  { params: { postId: 'psot-id' }
-// })
+/**
+ * Updates or delete the indexed document when a post is updated or deleted.
+ * 
+ * Update:
+ *  updatePostIndex({
+ *   before: {},
+ *   after: {
+ *    uid: 'user_ccc',
+ *    category: 'discussion',
+ *    title: 'I post on discussion (update)',
+ *    content: 'Discussion 2'
+ *    }},
+ *    { params: { postId: 'postId2' }
+ *   })
+ * 
+ *  Delete:
+ *  updatePostIndex({
+ *   before: {},
+ *   after: { deleted: true }},
+ *   { params: { postId: 'psot-id' }
+ *  })
+ */
 exports.updatePostIndex = functions
     .region("asia-northeast3")
     .firestore.document("/posts/{postId}")
