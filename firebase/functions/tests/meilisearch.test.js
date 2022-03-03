@@ -198,18 +198,18 @@ describe("Meilisearch test", () => {
   });
 
   
-  // ------ User test
+  // TODO ------ User test
 
   // it("tests user create indexing", async () => {
-  //   await test.createTestUser();
+  // ...
+  // });
 
-  //   await lib.delay(4000);
-  //   const search = await client
-  //       .index("comments")
-  //       .search("", {filter: ["id = " + commentData.id]});
+  // it("tests user update indexing", async () => {
+  // ...
+  // });
 
-  //   assert.ok( search.hits.length > 0 );
-  //   assert.ok( search.hits[0].content == commentData.content );
+  // it("tests user delete indexing", async () => {
+  // ...
   // });
 });
 
