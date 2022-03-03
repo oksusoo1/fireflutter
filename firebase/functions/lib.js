@@ -385,7 +385,6 @@ async function updateFileParentId(id, data) {
 async function isAdmin(context) {
   const doc = await db.collection("settings").doc("admins").get();
   const admins = doc.data();
-  
   if (!admins[context.auth.uid]) return false;
   return true;
 }
