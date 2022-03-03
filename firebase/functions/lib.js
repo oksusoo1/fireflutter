@@ -55,12 +55,12 @@ function getPost(id) {
 
 /**
  * Creates or update a user document index.
- * 
+ *
  * @param {*} id user id.
  * @param {*} data user data to index.
  * @returns promise
  */
- async function indexUserDocument(uid, data) {
+async function indexUserDocument(uid, data) {
   const _data = {
     uid: uid,
     gender: data.gender ?? '',
@@ -73,12 +73,12 @@ function getPost(id) {
   };
 
   // return Axios.post("https://wonderfulkorea.kr:4431/index.php?api=post/record", _data)
-  return Axios.post("http://wonderfulkorea.kr:7700/indexes/users/documents", _data)
+  return Axios.post("http://wonderfulkorea.kr:7700/indexes/users/documents", _data);
 }
 
 /**
  * Deletes user document index.
- * 
+ *
  * @param {*} id user id to delete.
  * @returns promise
  */
@@ -419,6 +419,7 @@ async function updateFileParentId(id, data) {
 async function isAdmin(context) {
   const doc = await db.collection("settings").doc("admins").get();
   const admins = doc.data();
+  if (!context) return false;
   if (!context.auth) return false;
   if (!context.auth.uid) return false;
   if (!admins[context.auth.uid]) return false;

@@ -197,7 +197,7 @@ describe("Meilisearch test", () => {
     assert.ok( search.hits.length == 0 );
   });
 
-  
+
   // TODO ------ User test
 
   // it("tests user create indexing", async () => {
