@@ -52,7 +52,6 @@ function getPost(id) {
   return admin.firestore().collection("posts").doc(id).get();
 }
 
-
 /**
  * Creates or update a user document index.
  *
@@ -68,11 +67,9 @@ async function indexUserDocument(id, data) {
     middlename: data.middleName ?? "",
     lastname: data.lastName ?? "",
     photoUrl: data.photoUrl ?? "",
-    // registeredAt: utils.getTimestamp(data.registeredAt),
-    // updatedAt: utils.getTimestamp(data.updatedAt),
+    // registeredAt: data.registeredAt ?? 0,
+    // updatedAt: data.updatedAt ?? 0,
   };
-
-  // return Axios.post("https://wonderfulkorea.kr:4431/index.php?api=post/record", _data)
   return Axios.post("http://wonderfulkorea.kr:7700/indexes/users/documents", _data);
 }
 
@@ -148,9 +145,9 @@ function indexForumDocument(data) {
 async function deleteIndexedPostDocument(id) {
   const promises = [];
   promises.push(
-      Axios.post("https://wonderfulkorea.kr:4431/index.php?api=post/delete", {
-        id: id,
-      }),
+    Axios.post("https://wonderfulkorea.kr:4431/index.php?api=post/delete", {
+      id: id,
+    })
   );
   promises.push(Axios.delete("http://wonderfulkorea.kr:7700/indexes/posts/documents/" + id));
   promises.push(deleteIndexedForumDocument(id));
@@ -160,9 +157,9 @@ async function deleteIndexedPostDocument(id) {
 async function deleteIndexedCommentDocument(id) {
   const promises = [];
   promises.push(
-      Axios.post("https://wonderfulkorea.kr:4431/index.php?api=post/delete", {
-        id: id,
-      }),
+    Axios.post("https://wonderfulkorea.kr:4431/index.php?api=post/delete", {
+      id: id,
+    })
   );
   promises.push(Axios.delete("http://wonderfulkorea.kr:7700/indexes/comments/documents/" + id));
   promises.push(deleteIndexedForumDocument(id));
@@ -259,9 +256,9 @@ async function sendMessageToTopic(query) {
   const payload = topicPayload(query);
   try {
     const res = await admin.messaging().send(payload);
-    return {code: "success", result: res};
+    return { code: "success", result: res };
   } catch (e) {
-    return {code: "error", message: e};
+    return { code: "error", message: e };
   }
 }
 
@@ -277,9 +274,9 @@ async function sendMessageToTokens(query) {
 
   try {
     const res = await sendingMessageToTokens(_tokens, payload);
-    return {code: "success", result: res};
+    return { code: "success", result: res };
   } catch (e) {
-    return {code: "error", message: e};
+    return { code: "error", message: e };
   }
 }
 
@@ -289,9 +286,9 @@ async function sendMessageToUsers(query) {
   // console.log(tokens);
   try {
     const res = await sendingMessageToTokens(tokens, payload);
-    return {code: "success", result: res};
+    return { code: "success", result: res };
   } catch (e) {
-    return {code: "error", message: e};
+    return { code: "error", message: e };
   }
 }
 
@@ -346,7 +343,7 @@ async function sendingMessageToTokens(tokens, payload) {
     });
   });
   await Promise.all(tokensToRemove);
-  return {success: successCount, error: errorCount};
+  return { success: successCount, error: errorCount };
 }
 
 function topicPayload(topic, query) {
@@ -433,8 +430,8 @@ async function enableUser(data, context) {
       message: "To manage user, you need to sign-in as an admin.",
     };
   }
-  await rdb.ref("users").child(data.uid).update({disabled: false});
-  return auth.updateUser(data.uid, {disabled: false});
+  await rdb.ref("users").child(data.uid).update({ disabled: false });
+  return auth.updateUser(data.uid, { disabled: false });
 }
 
 async function disableUser(data, context) {
@@ -445,8 +442,8 @@ async function disableUser(data, context) {
       message: "To manage user, you need to sign-in as an admin.",
     };
   }
-  await rdb.ref("users").child(data.uid).update({disabled: true});
-  return auth.updateUser(data.uid, {disabled: true});
+  await rdb.ref("users").child(data.uid).update({ disabled: true });
+  return auth.updateUser(data.uid, { disabled: true });
 }
 
 exports.delay = delay;
@@ -479,5 +476,5 @@ exports.sendingMessageToTokens = sendingMessageToTokens;
 exports.updateFileParentId = updateFileParentId;
 exports.enableUser = enableUser;
 exports.disableUser = disableUser;
-exports.indexUser = indexUserDocument;
+exports.indexUserDocument = indexUserDocument;
 exports.deleteIndexedUser = deleteIndexedUserDocument;

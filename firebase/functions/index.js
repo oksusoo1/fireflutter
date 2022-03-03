@@ -83,7 +83,6 @@ exports.sendMessageOnCommentCreate = functions
       return lib.sendingMessageToTokens(tokens, lib.preMessagePayload(messageData));
     });
 
-
 /**
  * Indexes a user document whenever it is created.
  *
@@ -97,7 +96,7 @@ exports.createUserIndex = functions
     .region("asia-northeast3")
     .database.ref("/users/{userId}")
     .onCreate((snapshot, context) => {
-      // console.log('user data', context.params.userId, snapshot.val());
+    // console.log('user data', context.params.userId, snapshot.val());
       return lib.indexUser(context.params.userId, snapshot.val());
     });
 
@@ -133,7 +132,7 @@ exports.deleteUserIndex = functions
     .region("asia-northeast3")
     .database.ref("/users/{userId}")
     .onDelete((snapshot, context) => {
-      // console.log('onDelete : user data', context.params.userId, snapshot.val());
+    // console.log('onDelete : user data', context.params.userId, snapshot.val());
       return lib.deleteIndexedUser(context.params.userId);
     });
 

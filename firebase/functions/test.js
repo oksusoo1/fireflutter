@@ -154,7 +154,7 @@ async function createComment(data) {
  * Create a user for test
  *
  * @param {*} uid
- * @returns
+ * @returns - reference.
  */
 async function createTestUser(uid) {
   const timestamp = new Date().getTime();
@@ -164,6 +164,8 @@ async function createTestUser(uid) {
       .child(uid)
       .set({
         nickname: "testUser" + timestamp,
+        firstName: "firstName" + timestamp,
+        lastName: "lastName" + timestamp,
         registeredAt: timestamp,
       });
   return rdb.ref("users").child(uid);
