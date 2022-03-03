@@ -60,9 +60,9 @@ function getPost(id) {
  * @param {*} data user data to index.
  * @returns promise
  */
- async function indexUserDocument(id, data) {
+ async function indexUserDocument(uid, data) {
   const _data = {
-    id: id,
+    uid: uid,
     gender: data.gender ?? '',
     firstname: data.firstName ?? '',
     middlename: data.middleName ?? '',
@@ -82,8 +82,8 @@ function getPost(id) {
  * @param {*} id user id to delete.
  * @returns promise
  */
-async function deleteIndexedUserDocument(id) {
-  return Axios.delete("http://wonderfulkorea.kr:7700/indexes/users/documents/" + id);
+async function deleteIndexedUserDocument(uid) {
+  return Axios.delete("http://wonderfulkorea.kr:7700/indexes/users/documents/" + uid);
 }
 
 /**

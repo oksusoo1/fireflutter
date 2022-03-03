@@ -159,15 +159,13 @@ async function createComment(data) {
 async function createTestUser(uid) {
   const timestamp = new Date().getTime();
 
-  const userData = {
-    nickname: "testUser" + timestamp,
-    registeredAt: timestamp,
-  }
-
   await rdb
       .ref("users")
       .child(uid)
-      .set(userData);
+      .set({
+        nickname: "testUser" + timestamp,
+        registeredAt: timestamp,
+      });
   return rdb.ref("users").child(uid);
 }
 

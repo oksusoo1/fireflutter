@@ -87,6 +87,19 @@ describe("Meilisearch test", () => {
           .index("comments")
           .updateFilterableAttributes(commentFilters);
     }
+
+    const userFilters = await client
+        .index("users")
+        .getFilterableAttributes();
+
+    console.log("User filterables: ", userFilters);
+    if (!userFilters.includes("id")) {
+      userFilters.push("id");
+      console.log("Updating user filterables: ", userFilters);
+      await client
+          .index("users")
+          .updateFilterableAttributes(userFilters);
+    }
   });
 
   // ------ Post test
