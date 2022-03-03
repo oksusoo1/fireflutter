@@ -68,8 +68,8 @@ function getPost(id) {
     middlename: data.middleName ?? '',
     lastname: data.lastName ?? '',
     photoUrl: data.photoUrl ?? '',
-    registeredAt: utils.getTimestamp(data.registeredAt),
-    updatedAt: utils.getTimestamp(data.updatedAt),
+    // registeredAt: utils.getTimestamp(data.registeredAt),
+    // updatedAt: utils.getTimestamp(data.updatedAt),
   };
 
   // return Axios.post("https://wonderfulkorea.kr:4431/index.php?api=post/record", _data)
