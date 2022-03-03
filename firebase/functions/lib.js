@@ -52,6 +52,40 @@ function getPost(id) {
   return admin.firestore().collection("posts").doc(id).get();
 }
 
+
+/**
+ * Creates or update a user document index.
+ * 
+ * @param {*} id user id.
+ * @param {*} data user data to index.
+ * @returns promise
+ */
+ async function indexUserDocument(uid, data) {
+  const _data = {
+    uid: uid,
+    gender: data.gender ?? '',
+    firstname: data.firstName ?? '',
+    middlename: data.middleName ?? '',
+    lastname: data.lastName ?? '',
+    photoUrl: data.photoUrl ?? '',
+    registeredAt: utils.getTimestamp(data.registeredAt),
+    updatedAt: utils.getTimestamp(data.updatedAt),
+  };
+
+  // return Axios.post("https://wonderfulkorea.kr:4431/index.php?api=post/record", _data)
+  return Axios.post("http://wonderfulkorea.kr:7700/indexes/users/documents", _data)
+}
+
+/**
+ * Deletes user document index.
+ * 
+ * @param {*} id user id to delete.
+ * @returns promise
+ */
+async function deleteIndexedUserDocument(uid) {
+  return Axios.delete("http://wonderfulkorea.kr:7700/indexes/users/documents/" + uid);
+}
+
 /**
  * Indexes a post
  *
@@ -445,3 +479,5 @@ exports.sendingMessageToTokens = sendingMessageToTokens;
 exports.updateFileParentId = updateFileParentId;
 exports.enableUser = enableUser;
 exports.disableUser = disableUser;
+exports.indexUser = indexUserDocument;
+exports.deleteIndexedUser = deleteIndexedUserDocument;

@@ -71,7 +71,7 @@ async function createPost(data) {
       postData.deleted = true;
     }
 
-    await ref.postDoc(data.post.id).set(postData), {merge: true};
+    await ref.postDoc(data.post.id).set(postData, {merge: true});
     return ref.postDoc(data.post.id);
   } else {
     return db.collection("posts").add(postData);
@@ -158,6 +158,7 @@ async function createComment(data) {
  */
 async function createTestUser(uid) {
   const timestamp = new Date().getTime();
+
   await rdb
       .ref("users")
       .child(uid)
