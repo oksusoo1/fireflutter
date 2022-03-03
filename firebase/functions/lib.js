@@ -60,14 +60,14 @@ function getPost(id) {
  * @param {*} data user data to index.
  * @returns promise
  */
-async function indexUserDocument(uid, data) {
+async function indexUserDocument(id, data) {
   const _data = {
-    uid: uid,
-    gender: data.gender ?? '',
-    firstname: data.firstName ?? '',
-    middlename: data.middleName ?? '',
-    lastname: data.lastName ?? '',
-    photoUrl: data.photoUrl ?? '',
+    uid: id,
+    gender: data.gender ?? "",
+    firstname: data.firstName ?? "",
+    middlename: data.middleName ?? "",
+    lastname: data.lastName ?? "",
+    photoUrl: data.photoUrl ?? "",
     // registeredAt: utils.getTimestamp(data.registeredAt),
     // updatedAt: utils.getTimestamp(data.updatedAt),
   };
@@ -82,8 +82,8 @@ async function indexUserDocument(uid, data) {
  * @param {*} id user id to delete.
  * @returns promise
  */
-async function deleteIndexedUserDocument(uid) {
-  return Axios.delete("http://wonderfulkorea.kr:7700/indexes/users/documents/" + uid);
+async function deleteIndexedUserDocument(id) {
+  return Axios.delete("http://wonderfulkorea.kr:7700/indexes/users/documents/" + id);
 }
 
 /**
