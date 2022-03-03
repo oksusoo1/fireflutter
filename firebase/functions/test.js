@@ -71,7 +71,7 @@ async function createPost(data) {
       postData.deleted = true;
     }
 
-    await ref.postDoc(data.post.id).set(postData), {merge: true};
+    await ref.postDoc(data.post.id).set(postData, {merge: true});
     return ref.postDoc(data.post.id);
   } else {
     return db.collection("posts").add(postData);
@@ -158,13 +158,16 @@ async function createComment(data) {
  */
 async function createTestUser(uid) {
   const timestamp = new Date().getTime();
+
+  const userData = {
+    nickname: "testUser" + timestamp,
+    registeredAt: timestamp,
+  }
+
   await rdb
       .ref("users")
       .child(uid)
-      .set({
-        nickname: "testUser" + timestamp,
-        registeredAt: timestamp,
-      });
+      .set(userData);
   return rdb.ref("users").child(uid);
 }
 

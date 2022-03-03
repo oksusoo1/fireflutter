@@ -19,6 +19,7 @@ if (!admin.apps.length) {
 }
 // This must come after initlization
 const lib = require("../lib");
+const test = require("../test");
 
 // TODO: User index (create, update, delete)
 describe("Meilisearch test", () => {
@@ -51,9 +52,10 @@ describe("Meilisearch test", () => {
   // User test data.
   const userId = 'user_aaa';
   const originalFirstName = 'User A'
+  const newFirstName = 'User A (Updated)'
   const userData = {
     id: userId,
-    firstName: '',
+    firstName: originalFirstName,
     lastName: 'Lastname A',
   }
 
@@ -90,7 +92,7 @@ describe("Meilisearch test", () => {
   // ------ Post test
 
   it("tests post create indexing", async () => {
-    await lib.createPost({
+    await test.createPost({
       category: categoryData,
       post: postData,
     });
@@ -106,7 +108,7 @@ describe("Meilisearch test", () => {
 
   it("tests post update indexing", async () => {
     postData.title = newPostTitle;
-    await lib.createPost({
+    await test.createPost({
       category: categoryData,
       post: postData,
     });
@@ -122,7 +124,7 @@ describe("Meilisearch test", () => {
   it("tests post delete indexing", async () => {
     postData.title = "";
     postData.deleted = true;
-    await lib.createPost({
+    await test.createPost({
       category: categoryData,
       post: postData,
     });
@@ -139,7 +141,7 @@ describe("Meilisearch test", () => {
   // ------ Comment test
 
   it("tests comment create indexing", async () => {
-    await lib.createComment({
+    await test.createComment({
       comment: commentData,
     });
 
@@ -154,7 +156,7 @@ describe("Meilisearch test", () => {
 
   it("tests comment update indexing", async () => {
     commentData.content = newCommentContent;
-    await lib.createComment({
+    await test.createComment({
       comment: commentData,
     });
 
@@ -170,7 +172,7 @@ describe("Meilisearch test", () => {
   it("tests comment delete indexing", async () => {
     commentData.content = "";
     commentData.deleted = true;
-    await lib.createComment({
+    await test.createComment({
       comment: commentData,
     });
 
@@ -181,6 +183,21 @@ describe("Meilisearch test", () => {
 
     assert.ok( search.hits.length == 0 );
   });
+
+  
+  // ------ User test
+
+  // it("tests user create indexing", async () => {
+  //   await test.createTestUser();
+
+  //   await lib.delay(4000);
+  //   const search = await client
+  //       .index("comments")
+  //       .search("", {filter: ["id = " + commentData.id]});
+
+  //   assert.ok( search.hits.length > 0 );
+  //   assert.ok( search.hits[0].content == commentData.content );
+  // });
 });
 
 
