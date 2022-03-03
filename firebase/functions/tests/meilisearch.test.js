@@ -50,14 +50,14 @@ describe("Meilisearch test", () => {
   };
 
   // User test data.
-  const userId = "user_aaa";
-  const originalFirstName = "User A";
-  const newFirstName = "User A (Updated)";
-  const userData = {
-    id: userId,
-    firstName: originalFirstName,
-    lastName: "Lastname A",
-  };
+  // const userId = 'user_aaa';
+  // const originalFirstName = 'User A'
+  // const newFirstName = 'User A (Updated)'
+  // const userData = {
+  //   id: userId,
+  //   firstName: originalFirstName,
+  //   lastName: 'Lastname A',
+  // }
 
   // ------ Prep
 
