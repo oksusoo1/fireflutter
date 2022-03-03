@@ -148,9 +148,9 @@ function indexForumDocument(data) {
 async function deleteIndexedPostDocument(id) {
   const promises = [];
   promises.push(
-    Axios.post("https://wonderfulkorea.kr:4431/index.php?api=post/delete", {
-      id: id,
-    })
+      Axios.post("https://wonderfulkorea.kr:4431/index.php?api=post/delete", {
+        id: id,
+      }),
   );
   promises.push(Axios.delete("http://wonderfulkorea.kr:7700/indexes/posts/documents/" + id));
   promises.push(deleteIndexedForumDocument(id));
@@ -160,9 +160,9 @@ async function deleteIndexedPostDocument(id) {
 async function deleteIndexedCommentDocument(id) {
   const promises = [];
   promises.push(
-    Axios.post("https://wonderfulkorea.kr:4431/index.php?api=post/delete", {
-      id: id,
-    })
+      Axios.post("https://wonderfulkorea.kr:4431/index.php?api=post/delete", {
+        id: id,
+      }),
   );
   promises.push(Axios.delete("http://wonderfulkorea.kr:7700/indexes/comments/documents/" + id));
   promises.push(deleteIndexedForumDocument(id));
@@ -259,9 +259,9 @@ async function sendMessageToTopic(query) {
   const payload = topicPayload(query);
   try {
     const res = await admin.messaging().send(payload);
-    return { code: "success", result: res };
+    return {code: "success", result: res};
   } catch (e) {
-    return { code: "error", message: e };
+    return {code: "error", message: e};
   }
 }
 
@@ -277,9 +277,9 @@ async function sendMessageToTokens(query) {
 
   try {
     const res = await sendingMessageToTokens(_tokens, payload);
-    return { code: "success", result: res };
+    return {code: "success", result: res};
   } catch (e) {
-    return { code: "error", message: e };
+    return {code: "error", message: e};
   }
 }
 
@@ -289,9 +289,9 @@ async function sendMessageToUsers(query) {
   // console.log(tokens);
   try {
     const res = await sendingMessageToTokens(tokens, payload);
-    return { code: "success", result: res };
+    return {code: "success", result: res};
   } catch (e) {
-    return { code: "error", message: e };
+    return {code: "error", message: e};
   }
 }
 
@@ -346,7 +346,7 @@ async function sendingMessageToTokens(tokens, payload) {
     });
   });
   await Promise.all(tokensToRemove);
-  return { success: successCount, error: errorCount };
+  return {success: successCount, error: errorCount};
 }
 
 function topicPayload(topic, query) {
@@ -419,29 +419,33 @@ async function updateFileParentId(id, data) {
 async function isAdmin(context) {
   const doc = await db.collection("settings").doc("admins").get();
   const admins = doc.data();
-  
+  if (!context.auth) return false;
+  if (!context.auth.uid) return false;
   if (!admins[context.auth.uid]) return false;
   return true;
 }
 
 async function enableUser(data, context) {
-  if(!isAdmin(context))
-  return {
-    code: "ERROR_YOU_ARE_NOT_ADMIN",
-    message: "To manage user, you need to sign-in as an admin.",
-  };
-  await rdb.ref('users').child(context.auth.uid).update({ disabled: true })
-  return auth.updateUser(data.uid, { disabled: true });
+  if (!isAdmin(context)) {
+    return {
+      code: "ERROR_YOU_ARE_NOT_ADMIN",
+      message: "To manage user, you need to sign-in as an admin.",
+    };
+  }
+  await rdb.ref("users").child(data.uid).update({disabled: false});
+  return auth.updateUser(data.uid, {disabled: false});
 }
 
 async function disableUser(data, context) {
-  if(!isAdmin(context))
-  return {
-    code: "ERROR_YOU_ARE_NOT_ADMIN",
-    message: "To manage user, you need to sign-in as an admin.",
-  };
-  await rdb.ref('users').child(context.auth.uid).update({ disabled: false })
-  return auth.updateUser(data.uid, { disabled: false });
+  const admin = await isAdmin(context);
+  if (!admin) {
+    return {
+      code: "ERROR_YOU_ARE_NOT_ADMIN",
+      message: "To manage user, you need to sign-in as an admin.",
+    };
+  }
+  await rdb.ref("users").child(data.uid).update({disabled: true});
+  return auth.updateUser(data.uid, {disabled: true});
 }
 
 exports.delay = delay;
