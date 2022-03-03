@@ -17,6 +17,8 @@ const db = admin.firestore();
 // get real time database
 const rdb = admin.database();
 
+const auth = admin.auth();
+
 const delay = (time) => new Promise((res) => setTimeout(res, time));
 
 const commentNotification = "newCommentUnderMyPostOrComment";
@@ -144,9 +146,9 @@ function indexForumDocument(data) {
 async function deleteIndexedPostDocument(id) {
   const promises = [];
   promises.push(
-      Axios.post("https://wonderfulkorea.kr:4431/index.php?api=post/delete", {
-        id: id,
-      }),
+    Axios.post("https://wonderfulkorea.kr:4431/index.php?api=post/delete", {
+      id: id,
+    })
   );
   promises.push(Axios.delete("http://wonderfulkorea.kr:7700/indexes/posts/documents/" + id));
   promises.push(deleteIndexedForumDocument(id));
@@ -156,9 +158,9 @@ async function deleteIndexedPostDocument(id) {
 async function deleteIndexedCommentDocument(id) {
   const promises = [];
   promises.push(
-      Axios.post("https://wonderfulkorea.kr:4431/index.php?api=post/delete", {
-        id: id,
-      }),
+    Axios.post("https://wonderfulkorea.kr:4431/index.php?api=post/delete", {
+      id: id,
+    })
   );
   promises.push(Axios.delete("http://wonderfulkorea.kr:7700/indexes/comments/documents/" + id));
   promises.push(deleteIndexedForumDocument(id));
@@ -222,16 +224,14 @@ async function getTokensFromUids(uids) {
   const _tokens = [];
   const getTokensPromise = [];
   for (const u of _uids) {
-    getTokensPromise.push(
-        rdb.ref("message-tokens").orderByChild("uid").equalTo(u).get(),
-    );
+    getTokensPromise.push(rdb.ref("message-tokens").orderByChild("uid").equalTo(u).get());
   }
 
   const result = await Promise.all(getTokensPromise);
   for (const i in result) {
     if (!result[i]) continue;
     const tokens = result[i].val();
-    for (const token in tokens ) {
+    for (const token in tokens) {
       if (!token) continue;
       _tokens.push(token);
     }
@@ -257,9 +257,9 @@ async function sendMessageToTopic(query) {
   const payload = topicPayload(query);
   try {
     const res = await admin.messaging().send(payload);
-    return {code: "success", result: res};
+    return { code: "success", result: res };
   } catch (e) {
-    return {code: "error", message: e};
+    return { code: "error", message: e };
   }
 }
 
@@ -275,9 +275,9 @@ async function sendMessageToTokens(query) {
 
   try {
     const res = await sendingMessageToTokens(_tokens, payload);
-    return {code: "success", result: res};
+    return { code: "success", result: res };
   } catch (e) {
-    return {code: "error", message: e};
+    return { code: "error", message: e };
   }
 }
 
@@ -287,9 +287,9 @@ async function sendMessageToUsers(query) {
   // console.log(tokens);
   try {
     const res = await sendingMessageToTokens(tokens, payload);
-    return {code: "success", result: res};
+    return { code: "success", result: res };
   } catch (e) {
-    return {code: "error", message: e};
+    return { code: "error", message: e };
   }
 }
 
@@ -338,15 +338,13 @@ async function sendingMessageToTokens(tokens, payload) {
           error.code === "messaging/invalid-registration-token" ||
           error.code === "messaging/registration-token-not-registered"
         ) {
-          tokensToRemove.push(
-              rdb.ref("message-tokens").child(chunks[i][index]).remove(),
-          );
+          tokensToRemove.push(rdb.ref("message-tokens").child(chunks[i][index]).remove());
         }
       }
     });
   });
   await Promise.all(tokensToRemove);
-  return {success: successCount, error: errorCount};
+  return { success: successCount, error: errorCount };
 }
 
 function topicPayload(topic, query) {
@@ -416,6 +414,23 @@ async function updateFileParentId(id, data) {
   }
 }
 
+async function isAdmin() {}
+
+async function enableUser(data, contex) {
+  const doc = await db.collection("settings").doc("admins").get();
+  const admins = doc.data();
+  if (!admins[context.auth.uid])
+    return {
+      code: "ERROR_YOU_ARE_NOT_ADMIN",
+      message: "To manage user, you need to sign-in as an admin.",
+    };
+  return auth.updateUser(data.uid, { disabled: true });
+}
+
+async function disableUser(data, contex) {
+  return auth.updateUser(data.uid, { disabled: false });
+}
+
 exports.delay = delay;
 exports.getSizeOfCategories = getSizeOfCategories;
 exports.getCategories = getCategories;
@@ -444,6 +459,7 @@ exports.topicPayload = topicPayload;
 exports.sendingMessageToTokens = sendingMessageToTokens;
 
 exports.updateFileParentId = updateFileParentId;
-
+exports.enableUser = enableUser;
+exports.disableUser = disableUser;
 exports.indexUser = indexUserDocument;
 exports.deleteIndexedUser = deleteIndexedUserDocument;

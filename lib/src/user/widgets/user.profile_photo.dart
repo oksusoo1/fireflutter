@@ -17,6 +17,8 @@ class UserProfilePhoto extends StatelessWidget {
     this.iconSize = 24,
     this.onTap,
     this.boxShadow = const BoxShadow(color: Colors.white, blurRadius: 1.0, spreadRadius: 1.0),
+    this.padding,
+    this.margin,
     Key? key,
   }) : super(key: key);
 
@@ -26,9 +28,14 @@ class UserProfilePhoto extends StatelessWidget {
   final Function()? onTap;
   final BoxShadow boxShadow;
 
+  final EdgeInsets? padding;
+  final EdgeInsets? margin;
+
   @override
   Widget build(BuildContext context) {
     final builder = (UserModel user) => Container(
+          padding: padding,
+          margin: margin,
           child: ClipOval(
             child: user.photoUrl != ''
                 ? UploadedImage(url: user.photoUrl)
@@ -46,11 +53,18 @@ class UserProfilePhoto extends StatelessWidget {
             boxShadow: [boxShadow],
           ),
         );
-    return uid == null
+
+    final child = uid == null
         ? MyDoc(builder: builder)
         : UserDoc(
             uid: uid!,
             builder: builder,
           );
+    if (onTap == null) return child;
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: onTap,
+      child: child,
+    );
   }
 }
