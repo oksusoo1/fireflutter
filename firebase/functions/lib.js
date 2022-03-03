@@ -445,5 +445,3 @@ exports.sendingMessageToTokens = sendingMessageToTokens;
 exports.updateFileParentId = updateFileParentId;
 exports.enableUser = enableUser;
 exports.disableUser = disableUser;
-exports.indexUser = indexUserDocument;
-exports.deleteIndexedUser = deleteIndexedUserDocument;
