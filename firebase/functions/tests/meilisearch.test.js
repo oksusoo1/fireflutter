@@ -50,14 +50,14 @@ describe("Meilisearch test", () => {
   };
 
   // User test data.
-  const userId = 'user_aaa';
-  const originalFirstName = 'User A'
-  const newFirstName = 'User A (Updated)'
+  const userId = "user_aaa";
+  const originalFirstName = "User A";
+  const newFirstName = "User A (Updated)";
   const userData = {
     id: userId,
     firstName: originalFirstName,
-    lastName: 'Lastname A',
-  }
+    lastName: "Lastname A",
+  };
 
   // ------ Prep
 
@@ -197,7 +197,7 @@ describe("Meilisearch test", () => {
     assert.ok( search.hits.length == 0 );
   });
 
-  
+
   // TODO ------ User test
 
   // it("tests user create indexing", async () => {
