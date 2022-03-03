@@ -49,16 +49,6 @@ describe("Meilisearch test", () => {
     content: originalCommentContent,
   };
 
-  // User test data.
-  // const userId = 'user_aaa';
-  // const originalFirstName = 'User A'
-  // const newFirstName = 'User A (Updated)'
-  // const userData = {
-  //   id: userId,
-  //   firstName: originalFirstName,
-  //   lastName: 'Lastname A',
-  // }
-
   // ------ Prep
 
   it("prepares test", async () => {
@@ -196,21 +186,6 @@ describe("Meilisearch test", () => {
 
     assert.ok( search.hits.length == 0 );
   });
-
-
-  // TODO ------ User test
-
-  // it("tests user create indexing", async () => {
-  // ...
-  // });
-
-  // it("tests user update indexing", async () => {
-  // ...
-  // });
-
-  // it("tests user delete indexing", async () => {
-  // ...
-  // });
 });
 
 
