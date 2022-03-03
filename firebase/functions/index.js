@@ -264,8 +264,8 @@ exports.updateFileParentIdForComment = functions
   });
 
 exports.disableUser = functions.region("asia-northeast3").https.onCall(async (data, context) => {
-  res.status(200).send(await lib.enableUser(data, context));
+  return await lib.enableUser(data, context);
 });
 exports.enableUser = functions.region("asia-northeast3").https.onCall(async (data, context) => {
-  res.status(200).send(await lib.disableUser(data, contex));
+  return await lib.disableUser(data, context);
 });

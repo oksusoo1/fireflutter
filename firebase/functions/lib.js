@@ -414,20 +414,31 @@ async function updateFileParentId(id, data) {
   }
 }
 
-async function isAdmin() {}
-
-async function enableUser(data, contex) {
+async function isAdmin(context) {
   const doc = await db.collection("settings").doc("admins").get();
   const admins = doc.data();
-  if (!admins[context.auth.uid])
-    return {
-      code: "ERROR_YOU_ARE_NOT_ADMIN",
-      message: "To manage user, you need to sign-in as an admin.",
-    };
+  
+  if (!admins[context.auth.uid]) return false;
+  return true;
+}
+
+async function enableUser(data, context) {
+  if(!isAdmin(context))
+  return {
+    code: "ERROR_YOU_ARE_NOT_ADMIN",
+    message: "To manage user, you need to sign-in as an admin.",
+  };
+  await rdb.ref('users').child(context.auth.uid).update({ disabled: true })
   return auth.updateUser(data.uid, { disabled: true });
 }
 
-async function disableUser(data, contex) {
+async function disableUser(data, context) {
+  if(!isAdmin(context))
+  return {
+    code: "ERROR_YOU_ARE_NOT_ADMIN",
+    message: "To manage user, you need to sign-in as an admin.",
+  };
+  await rdb.ref('users').child(context.auth.uid).update({ disabled: false })
   return auth.updateUser(data.uid, { disabled: false });
 }
 
