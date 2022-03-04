@@ -98,7 +98,7 @@ class PostModel with FirestoreMixin, ForumBase {
       html = true;
     }
 
-    return PostModel(
+    final post = PostModel(
       id: id,
       category: data['category'] ?? '',
       title: data['title'] ?? '',
@@ -120,6 +120,21 @@ class PostModel with FirestoreMixin, ForumBase {
       updatedAt: data['updatedAt'],
       data: data,
     );
+
+    /// If the post is opened, then maintain the status.
+    /// If the [open] property is not maintained,
+    /// every time the document had updated, `PostModel.fromJson` will be called again
+    /// and [open] becomes false, and the post may be closed.
+    /// For instance, when user likes the post and the post closes on post list.
+    if (PostService.instance.posts[post.id] != null) {
+      final p = PostService.instance.posts[post.id]!;
+      post.open = p.open;
+    }
+
+    /// Keep loaded post into memory.
+    PostService.instance.posts[post.id] = post;
+
+    return post;
   }
 
   /// Get indexed document data from meilisearch of map and convert it into post model

@@ -13,7 +13,7 @@ class Post extends StatelessWidget {
     required this.onEdit,
     required this.onDelete,
     required this.onLike,
-    required this.onDislike,
+    this.onDislike,
     required this.onChat,
     required this.onImageTap,
     this.onHide,
@@ -30,7 +30,7 @@ class Post extends StatelessWidget {
   final Function(PostModel post) onEdit;
   final Function(PostModel post) onDelete;
   final Function(PostModel post) onLike;
-  final Function(PostModel post) onDislike;
+  final Function(PostModel post)? onDislike;
   final Function(PostModel post) onChat;
   final Function()? onHide;
   final Function(PostModel post) onSendPushNotification;
@@ -39,6 +39,7 @@ class Post extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final _onDislike = onDislike == null ? null : () => onDislike!(post);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -81,7 +82,7 @@ class Post extends StatelessWidget {
           onEdit: () => onEdit(post),
           onDelete: () => onDelete(post),
           onLike: () => onLike(post),
-          onDislike: () => onDislike(post),
+          onDislike: _onDislike,
           onChat: () => onChat(post),
           onHide: onHide,
           buttonBuilder: buttonBuilder,
