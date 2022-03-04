@@ -63,9 +63,9 @@ async function indexUserDocument(id, data) {
   const _data = {
     id: id,
     gender: data.gender ?? "",
-    firstname: data.firstName ?? "",
-    middlename: data.middleName ?? "",
-    lastname: data.lastName ?? "",
+    firstName: data.firstName ?? "",
+    middleName: data.middleName ?? "",
+    lastName: data.lastName ?? "",
     photoUrl: data.photoUrl ?? "",
     // registeredAt: data.registeredAt ?? 0,
     // updatedAt: data.updatedAt ?? 0,

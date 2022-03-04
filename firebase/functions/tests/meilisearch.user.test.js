@@ -33,7 +33,7 @@ describe("Meilisearch test", () => {
   // User test data.
   const userId = "user_" + timestamp;
   const originalFirstName = "User " + timestamp;
-  // const newFirstName = originalFirstName + " (Update)";
+  const newFirstName = originalFirstName + " (Update)";
   const userData = {
     id: userId,
     firstName: originalFirstName,
@@ -52,27 +52,27 @@ describe("Meilisearch test", () => {
 
   // User test
 
-  // it("test creating and deleting index functions", async () => {
-  //   var res = await lib.indexUserDocument(userData.id, userData);
-  //   await lib.delay(3000);
-  //   // console.log("something; ", res.status, res.statusText, res);
+  it("test creating and deleting index functions", async () => {
+    var res = await lib.indexUserDocument(userData.id, userData);
+    await lib.delay(3000);
+    // console.log("something; ", res.status, res.statusText, res);
 
-  //   // It can pass, but data may still not be indexed on meilisearch.
-  //   assert.ok(res.status == 202, 'Status error: it should be 202 (Accepted)');
+    // It can pass, but data may still not be indexed on meilisearch.
+    assert.ok(res.status == 202, 'Status error: it should be 202 (Accepted)');
 
-  //   var search = await client.index("users").search("", {filter: ["id = " + userData.id]});
-  //   // console.log(search);
+    var search = await client.index("users").search("", {filter: ["id = " + userData.id]});
+    // console.log(search);
 
-  //   assert.ok(search.hits.length > 0, 'Search result must not be empty.');
-  //   assert.ok(search.hits[0].id == userData.id, 'Search result item must include test post.');
+    assert.ok(search.hits.length > 0, 'Search result must not be empty.');
+    assert.ok(search.hits[0].id == userData.id, 'Search result item must include test post.');
 
-  //   await lib.deleteIndexedUser(userData.id);
-  //   await lib.delay(3000);
+    await lib.deleteIndexedUserDocument(userData.id);
+    await lib.delay(3000);
 
-  //   search = await client.index("users").search("", {filter: ["id = " + userData.id]});
+    search = await client.index("users").search("", {filter: ["id = " + userData.id]});
 
-  //   assert.ok(search.hits.length == 0, 'Search result must be empty.');
-  // });
+    assert.ok(search.hits.length == 0, 'Search result must be empty.');
+  });
 
   it("tests user create indexing", async () => {
     await test.createTestUser(userData.id, userData);
@@ -82,6 +82,17 @@ describe("Meilisearch test", () => {
 
     assert.ok(search.hits.length > 0, "Search result must not be empty.");
     assert.ok(search.hits[0].id == userData.id, "Search result item must include test post.");
+  });
+
+  it("tests user update indexing", async () => {
+    userData.firstName = newFirstName;
+    await test.createTestUser(userData.id, userData);
+    await lib.delay(4000);
+
+    const search = await client.index("users").search("", {filter: ["id = " + userData.id]});
+
+    assert.ok(search.hits.length > 0, "Search result must not be empty.");
+    assert.ok(search.hits[0].firstName == newFirstName, "User firstname must be updated");
   });
 
   it("tests user delete indexing", async () => {
