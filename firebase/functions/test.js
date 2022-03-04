@@ -156,22 +156,41 @@ async function createComment(data) {
  * @param {*} uid
  * @returns - reference.
  */
-async function createTestUser(uid) {
+async function createTestUser(uid, data = null) {
   const timestamp = new Date().getTime();
+
+  let userData = {
+    nickname: "testUser" + timestamp,
+    firstName: "firstName" + timestamp,
+    lastName: "lastName" + timestamp,
+    registeredAt: timestamp,
+  };
+
+  if (data !== null) {
+    userData = data;
+  }
 
   await rdb
       .ref("users")
       .child(uid)
-      .set({
-        nickname: "testUser" + timestamp,
-        firstName: "firstName" + timestamp,
-        lastName: "lastName" + timestamp,
-        registeredAt: timestamp,
-      });
+      .set(userData);
   return rdb.ref("users").child(uid);
+}
+
+/**
+ * delets a test user from realtime database.
+ *
+ * @param {*} uid
+ * @returns - reference.
+ */
+async function deleteTestUser(uid) {
+  return rdb
+      .ref("users")
+      .child(uid).remove();
 }
 
 exports.createCategory = createCategory;
 exports.createPost = createPost;
 exports.createComment = createComment;
 exports.createTestUser = createTestUser;
+exports.deleteTestUser = deleteTestUser;

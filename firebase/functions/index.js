@@ -97,7 +97,7 @@ exports.createUserIndex = functions
     .database.ref("/users/{userId}")
     .onCreate((snapshot, context) => {
     // console.log('user data', context.params.userId, snapshot.val());
-      return lib.indexUser(context.params.userId, snapshot.val());
+      return lib.indexUserDocument(context.params.userId, snapshot.val());
     });
 
 /**
@@ -116,7 +116,7 @@ exports.updateUserIndex = functions
     .onUpdate((change, context) => {
       const data = change.after.val();
       //  console.log('user data change after', context.params.userId, data);
-      return lib.indexUser(context.params.userId, data);
+      return lib.indexUserDocument(context.params.userId, data);
     });
 
 /**
@@ -133,7 +133,7 @@ exports.deleteUserIndex = functions
     .database.ref("/users/{userId}")
     .onDelete((snapshot, context) => {
     // console.log('onDelete : user data', context.params.userId, snapshot.val());
-      return lib.deleteIndexedUser(context.params.userId);
+      return lib.deleteIndexedUserDocument(context.params.userId);
     });
 
 /**
