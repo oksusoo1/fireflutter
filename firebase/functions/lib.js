@@ -61,7 +61,7 @@ function getPost(id) {
  */
 async function indexUserDocument(id, data) {
   const _data = {
-    uid: id,
+    id: id,
     gender: data.gender ?? "",
     firstname: data.firstName ?? "",
     middlename: data.middleName ?? "",

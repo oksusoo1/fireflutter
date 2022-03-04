@@ -49,16 +49,6 @@ describe("Meilisearch test", () => {
     content: originalCommentContent,
   };
 
-  // User test data.
-  // const userId = 'user_aaa';
-  // const originalFirstName = 'User A'
-  // const newFirstName = 'User A (Updated)'
-  // const userData = {
-  //   id: userId,
-  //   firstName: originalFirstName,
-  //   lastName: 'Lastname A',
-  // }
-
   // ------ Prep
 
   it("prepares test", async () => {
@@ -78,15 +68,6 @@ describe("Meilisearch test", () => {
       commentFilters.push("id");
       console.log("Updating comment filterables: ", commentFilters);
       await client.index("comments").updateFilterableAttributes(commentFilters);
-    }
-
-    const userFilters = await client.index("users").getFilterableAttributes();
-
-    console.log("User filterables: ", userFilters);
-    if (!userFilters.includes("id")) {
-      userFilters.push("id");
-      console.log("Updating user filterables: ", userFilters);
-      await client.index("users").updateFilterableAttributes(userFilters);
     }
   });
 

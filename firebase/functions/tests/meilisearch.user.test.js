@@ -4,9 +4,9 @@ const mocha = require("mocha");
 const describe = mocha.describe;
 const it = mocha.it;
 
-// const assert = require("assert");
+const assert = require("assert");
 const admin = require("firebase-admin");
-// const {MeiliSearch} = require("meilisearch");
+const {MeiliSearch} = require("meilisearch");
 
 // initialize the firebase
 if (!admin.apps.length) {
@@ -23,25 +23,60 @@ const test = require("../test");
 
 // TODO: User index (create, update, delete)
 describe("Meilisearch test", () => {
-  //   const client = new MeiliSearch({
-  //     host: "http://wonderfulkorea.kr:7700",
-  //   });
+  const timestamp = new Date().getTime();
+  console.log("timestamp; ", timestamp);
 
-  // TODO ------ User test
-
-  it("test index", async () => {
-    const res = await lib.indexUserDocument("user-4-yo", {
-      firstName: "three-yo-first-name",
-      lastName: "Song",
-    });
-    if (res.status == 202) {
-      // assert ok
-    }
-    console.log("something; ", res.status, res.statusText, res);
+  const client = new MeiliSearch({
+    host: "http://wonderfulkorea.kr:7700",
   });
 
-  //   it("tests user create indexing", async () => {
-  //     const ref = await test.createTestUser("user-b-2");
-  //     console.log((await ref.get()).val());
-  //   });
+  // User test data.
+  const userId = 'user_' + timestamp;
+  const originalFirstName = 'User ' + timestamp;
+  const newFirstName = originalFirstName + ' (Update)';
+  const userData = {
+    id: userId,
+    firstName: originalFirstName,
+    lastName: 'Lastname A',
+  }
+
+  it("prepares filterables", async () => {
+    const userFilters = await client.index("users").getFilterableAttributes();
+
+    console.log("User filterables: ", userFilters);
+    if (!userFilters.includes("id")) {
+      userFilters.push("id");
+      console.log("Updating user filterables: ", userFilters);
+      await client.index("users").updateFilterableAttributes(userFilters);
+    }
+  });
+
+  // User test
+
+  it("test creating and deleting index functions", async () => {
+    var res = await lib.indexUserDocument(userData.id, userData);
+    await lib.delay(3000);
+    // console.log("something; ", res.status, res.statusText, res);
+
+    // It can pass, but data may still not be indexed on meilisearch.
+    assert.ok(res.status == 202, 'Status error: it should be 202 (Accepted)');
+
+    var search = await client.index("users").search("", {filter: ["id = " + userData.id]});
+    // console.log(search);
+
+    assert.ok(search.hits.length > 0, 'Search result must not be empty.');
+    assert.ok(search.hits[0].id == userData.id, 'Search result item must include test post.');
+
+    await lib.deleteIndexedUser(userData.id);
+    await lib.delay(3000);
+
+    search = await client.index("users").search("", {filter: ["id = " + userData.id]});
+
+    assert.ok(search.hits.length == 0, 'Search result must be empty.');
+  });
+
+    // it("tests user create indexing", async () => {
+    //   const ref = await test.createTestUser("user-b-2");
+    //   console.log((await ref.get()).val());
+    // });
 });
