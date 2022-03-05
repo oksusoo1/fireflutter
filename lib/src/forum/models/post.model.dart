@@ -308,6 +308,10 @@ class PostModel with FirestoreMixin, ForumBase {
     return FirestoreMixin.postDocument(postId).update({'noOfComments': FieldValue.increment(1)});
   }
 
+  static Future<void> decreaseNoOfComments(postId) {
+    return FirestoreMixin.postDocument(postId).update({'noOfComments': FieldValue.increment(-1)});
+  }
+
   ///
   Future feedLike() {
     return feed(path, 'like');

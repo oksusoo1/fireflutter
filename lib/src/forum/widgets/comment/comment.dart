@@ -48,6 +48,8 @@ class _CommentState extends State<Comment> with FirestoreMixin {
 
   loadComments() {
     sub?.cancel();
+
+    /// It is listening any changes of the docs.
     commentCol
         .where('postId', isEqualTo: widget.post.id)
         .orderBy('createdAt')
