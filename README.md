@@ -1147,6 +1147,11 @@ DynamicLinksService.instance.listen((Uri? deepLink) {
     - App can display a banner and when user taps, app can redirect to post view screen by give the `named-document-id`.
 
 
+- Update at Mar 5, 2022 - `noOfComments` is required to create a post. The value must be 0.
+- Update at Mar 5, 2022 - `deleted` is required to create a post and the value must be `false`.
+  - App can search posts with `deleted=false`.
+
+
 ## Comment
 
 - Comments are saved in `/comments` so it is better to be search. If it is saved under `/posts/(postId)/comments/`, then it is not easy to search.

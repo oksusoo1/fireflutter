@@ -19,7 +19,7 @@ class PostListScreen extends StatefulWidget {
 class _PostListScreenState extends State<PostListScreen>
     with FirestoreMixin, ForumMixin {
   late final String category;
-  String? newPostId;
+  String newPostId = '';
   @override
   void initState() {
     super.initState();
@@ -50,7 +50,7 @@ class _PostListScreenState extends State<PostListScreen>
         ],
       ),
       body: FirestoreListView(
-        key: ValueKey(newPostId),
+        key: ValueKey(newPostId + 'FirestoreListView'),
         query: postCol.where('category', isEqualTo: category).orderBy(
               'createdAt',
               descending: true,
@@ -85,6 +85,7 @@ class _PostListScreenState extends State<PostListScreen>
             children: [
               // Text('Post Id: ${post.id}'),
               Post(
+                key: ValueKey(post.id),
                 post: post,
                 onReply: (post) => onReply(context, post),
                 onReport: onReport,
