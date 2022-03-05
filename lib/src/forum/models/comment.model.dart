@@ -190,11 +190,13 @@ class CommentModel with FirestoreMixin, ForumBase {
 
   Future<void> delete() {
     if (deleted) throw ERROR_ALREADY_DELETED;
-    return commentDoc(id).update({
+    commentDoc(id).update({
       'deleted': true,
       'content': '',
       'updatedAt': FieldValue.serverTimestamp(),
     });
+
+    return PostModel.decreaseNoOfComments(postId);
   }
 
   Future<void> report(String? reason) {

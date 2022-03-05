@@ -1150,8 +1150,9 @@ DynamicLinksService.instance.listen((Uri? deepLink) {
 
 
 - Update at Mar 5, 2022 - `noOfComments` is required to create a post. The value must be 0.
+  - By this, app can search posts with `.where('noOfComments', isEqualTo: 0)`.
 - Update at Mar 5, 2022 - `deleted` is required to create a post and the value must be `false`.
-  - App can search posts with `deleted=false`.
+  - By this, app can search posts with `.where('deleted', isEqualTo: false)`.
 
 
 ## Comment
