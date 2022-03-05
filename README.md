@@ -929,6 +929,8 @@ InformService.instance.inform(widget.room.otherUid, {
 
 - See all tests code.
 - `./firebase/lab` folder has some sample code.
+  - `post.add-missing-properties.js` is for adding `noOfComments` and `deleted` fields on missing fields.
+  - `create.test.user.js` is for creating test user accounts.
 
 # Issues
 
