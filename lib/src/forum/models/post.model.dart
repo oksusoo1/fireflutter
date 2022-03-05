@@ -87,16 +87,7 @@ class PostModel with FirestoreMixin, ForumBase {
     String content = data['content'] ?? '';
 
     /// Check if the content has any html tag.
-    bool html = false;
-    if (content.indexOf('</p>') > -1 ||
-        content.indexOf('</span') > -1 ||
-        content.indexOf('</em>') > -1 ||
-        content.indexOf('</strong>') > -1 ||
-        content.indexOf('<br>') > -1 ||
-        content.indexOf('<img') > -1 ||
-        content.indexOf('style="') > -1) {
-      html = true;
-    }
+    bool html = _isHtml(content);
 
     final post = PostModel(
       id: id,
@@ -278,8 +269,11 @@ class PostModel with FirestoreMixin, ForumBase {
     return PostModel.fromJson(snapshot.data() as Json, snapshot.id);
   }
 
+  /// See readme.
   Future<void> delete() {
     if (deleted) throw ERROR_ALREADY_DELETED;
+
+    if (noOfComments == 0) return postDoc(id).delete();
 
     return postDoc(id).update({
       'deleted': true,
@@ -337,5 +331,34 @@ class PostModel with FirestoreMixin, ForumBase {
       re = false;
     }
     return re ? DateFormat.jm().format(date).toLowerCase() : DateFormat.yMd().format(date);
+  }
+
+  /// Returns true if the text is HTML.
+  static bool _isHtml(String t) {
+    t = t.toLowerCase();
+
+    if (t.contains('</h1>')) return true;
+    if (t.contains('</h2>')) return true;
+    if (t.contains('</h3>')) return true;
+    if (t.contains('</h4>')) return true;
+    if (t.contains('</h5>')) return true;
+    if (t.contains('</h6>')) return true;
+    if (t.contains('</hr>')) return true;
+    if (t.contains('</li>')) return true;
+    if (t.contains('<br>')) return true;
+    if (t.contains('<br/>')) return true;
+    if (t.contains('<br />')) return true;
+    if (t.contains('<p>')) return true;
+    if (t.contains('</div>')) return true;
+    if (t.contains('</span>')) return true;
+    if (t.contains('<img')) return true;
+    if (t.contains('</em>')) return true;
+    if (t.contains('</b>')) return true;
+    if (t.contains('</u>')) return true;
+    if (t.contains('</strong>')) return true;
+    if (t.contains('</a>')) return true;
+    if (t.contains('</i>')) return true;
+
+    return false;
   }
 }

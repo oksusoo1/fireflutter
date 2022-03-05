@@ -564,6 +564,8 @@ UserPresence(
   - It listens `UserService.instance.changes` event which only read one time on every user document change.
   - By doing this, `MyDoc` may be used for the replacement of state management.
 
+- `MyDoc` displays nothing when the user is not signed in.
+
 ```dart
 MyDoc(
   builder: (UserModel u) {
@@ -1101,7 +1103,9 @@ DynamicLinksService.instance.listen((Uri? deepLink) {
 
 - `PostModel` has methods like create, update, delete, like, dislike, and so on.
 
-- When user deletes a post, the document is marked as deleted, instead of remove it from the database. And user may update the document even if the post is marked as deleted. Editing post of delete mark is banned by security rule. This is by design and is not harmful. So, there should be some code to inform user not to edit deleted post. This goes the same to comment delete.
+- When user deletes a post,
+  - If the post has no comment, then the post document will be deleted.
+  - If the post has comment, then the document is marked as deleted, instead of deleting the document from the database. And user may update the document even if the post is marked as deleted. Editing post of delete mark is banned by security rule. This is by design and is not harmful. So, there should be some code to inform user not to edit deleted post. This goes the same to comment delete.
 
 - `hasPhoto` becomes true if the post has a photo.
 
