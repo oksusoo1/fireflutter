@@ -11,6 +11,7 @@ import 'package:fe/screens/admin/report.post.management.screen.dart';
 import 'package:fe/screens/admin/report.screen.dart';
 import 'package:fe/screens/admin/send.push.notification.dart';
 import 'package:fe/screens/admin/translatoins.screen.dart';
+import 'package:fe/screens/forum/forum.list.screen.dart';
 import 'package:fe/screens/forum/post.list.screen.dart';
 import 'package:fe/screens/forum/post.form.screen.dart';
 import 'package:fe/screens/forum/post.view.screen.dart';
@@ -84,6 +85,8 @@ final Map<String, RouteFunction> routes = {
       PushNotificationScreen(arguments: arguments),
   PostViewScreen.routeName: (context, arguments) =>
       PostViewScreen(arguments: arguments),
+  ForumListScreen.routeName: (context, arguments) =>
+      ForumListScreen(arguments: arguments),
 };
 
 void main() async {
@@ -124,15 +127,18 @@ class _MainAppState extends State<MainApp> {
     SendPushNotificationService.instance.init(
         serverUrl:
             'https://asia-northeast3-withcenter-test-project.cloudfunctions.net');
-
+    Timer(
+        const Duration(milliseconds: 200),
+        () => AppService.instance
+            .open(ForumListScreen.routeName, arguments: {'category': 'qna'}));
     // Timer(const Duration(milliseconds: 200), () => Get.toNamed('/email-verify'));
     // Timer(const Duration(milliseconds: 200), AppController.of.openCategory);
-    Timer(
-      const Duration(milliseconds: 200),
-      () => AppService.instance.open(PostListScreen.routeName, arguments: {
-        'category': 'qna',
-      }),
-    );
+    // Timer(
+    //   const Duration(milliseconds: 200),
+    //   () => AppService.instance.open(PostListScreen.routeName, arguments: {
+    //     'category': 'qna',
+    //   }),
+    // );
     // Timer(const Duration(milliseconds: 200),
     //     () => AppService.instance.open(TranslationsScreen.routeName));
 
