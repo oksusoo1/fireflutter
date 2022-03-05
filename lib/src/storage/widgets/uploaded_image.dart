@@ -4,6 +4,8 @@ import '../../../fireflutter.dart';
 
 /// UploadedImage
 ///
+/// Use this widget to display images that are uploaded into firebase storage.
+///
 /// [url] is always the original image. Not thumbnail image.
 ///
 /// When [useThumbnail] is set to true, it will look for thumbnail image, first.
@@ -11,6 +13,14 @@ import '../../../fireflutter.dart';
 ///     and if original image does not exists, then it will display error widget.
 /// When [useThumbnail] is set to false, it will display original image.
 ///   - and if original image does not exists then it will display error widget.
+///
+/// When thumbnail does not exists, it may produce this error. See readme for details.
+/// ```text
+/// ════════ Exception caught by image resource service ════════════════════════════
+/// The following HttpExceptionWithStatus was thrown resolving an image codec:
+/// HttpException: Invalid statusCode: 403, uri = https://firebasestorage.googleapis.com/v0/b/wonderful-korea.appspot.com/o/test%2F6_200x200.webp?alt=media
+/// ```
+
 class UploadedImage extends StatelessWidget {
   UploadedImage({
     Key? key,

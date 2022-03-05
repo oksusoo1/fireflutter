@@ -19,8 +19,9 @@ if (!admin.apps.length) {
 }
 // This must come after initlization
 const lib = require("../lib");
+const test = require("../test");
 
-
+// TODO: User index (create, update, delete)
 describe("Meilisearch test", () => {
   const timestamp = (new Date).getTime();
   console.log("timestamp; ", timestamp);
@@ -29,7 +30,7 @@ describe("Meilisearch test", () => {
     host: "http://wonderfulkorea.kr:7700",
   });
 
-  // / Post test data.
+  // Post test data.
   const categoryData = {id: "index-test"};
   const originalPostTitle = "post-" + timestamp;
   const newPostTitle = originalPostTitle + " ...(2)";
@@ -38,7 +39,7 @@ describe("Meilisearch test", () => {
     title: originalPostTitle,
   };
 
-  // / Comment test data.
+  // Comment test data.
   const originalCommentContent = "comment-" + timestamp;
   const newCommentContent = originalCommentContent + " ... (2)";
   const commentData = {
@@ -76,12 +77,25 @@ describe("Meilisearch test", () => {
           .index("comments")
           .updateFilterableAttributes(commentFilters);
     }
+
+    const userFilters = await client
+        .index("users")
+        .getFilterableAttributes();
+
+    console.log("User filterables: ", userFilters);
+    if (!userFilters.includes("id")) {
+      userFilters.push("id");
+      console.log("Updating user filterables: ", userFilters);
+      await client
+          .index("users")
+          .updateFilterableAttributes(userFilters);
+    }
   });
 
   // ------ Post test
 
   it("tests post create indexing", async () => {
-    await lib.createPost({
+    await test.createPost({
       category: categoryData,
       post: postData,
     });
@@ -97,7 +111,7 @@ describe("Meilisearch test", () => {
 
   it("tests post update indexing", async () => {
     postData.title = newPostTitle;
-    await lib.createPost({
+    await test.createPost({
       category: categoryData,
       post: postData,
     });
@@ -113,7 +127,7 @@ describe("Meilisearch test", () => {
   it("tests post delete indexing", async () => {
     postData.title = "";
     postData.deleted = true;
-    await lib.createPost({
+    await test.createPost({
       category: categoryData,
       post: postData,
     });
@@ -130,7 +144,7 @@ describe("Meilisearch test", () => {
   // ------ Comment test
 
   it("tests comment create indexing", async () => {
-    await lib.createComment({
+    await test.createComment({
       comment: commentData,
     });
 
@@ -145,7 +159,7 @@ describe("Meilisearch test", () => {
 
   it("tests comment update indexing", async () => {
     commentData.content = newCommentContent;
-    await lib.createComment({
+    await test.createComment({
       comment: commentData,
     });
 
@@ -161,7 +175,7 @@ describe("Meilisearch test", () => {
   it("tests comment delete indexing", async () => {
     commentData.content = "";
     commentData.deleted = true;
-    await lib.createComment({
+    await test.createComment({
       comment: commentData,
     });
 

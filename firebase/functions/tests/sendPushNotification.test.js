@@ -5,14 +5,6 @@ const it = mocha.it;
 
 const assert = require("assert");
 const admin = require("firebase-admin");
-
-// get firestore
-const db = admin.firestore();
-
-const validToken1 = "eiG6CUPQS66swAIEOakM60:APA91bGj4tjLswDzSAWz72onE_Tv50TYrI2I3hRXu-0RDJOa2c71elDDnL5gfrcZY5PfppRgbl2hC_R2A4SzstPu___yR9DzB1YoIDnJ-IITVxoqIJ_2gBLQOl9MGJ7_vRFZNmUfIVHD";
-const validToken2 = "ecw_jCq6TV273wlDMeaQRY:APA91bF8GUuxtjlpBf7xI9M4dv6MD74rb40tpDedeoJ9w1TYi-9TmGCrt862Qcrj4nQifRBrxS60AiBSQW8ynYQFVj9Hkrd3p-w9UyDscLncNdwdZNXpqRgBR-LmSeZIcNBejvxjtfW4";
-
-
 // initialize the firebase
 if (!admin.apps.length) {
   const serviceAccount = require("../../withcenter-test-project.adminKey.json");
@@ -22,7 +14,17 @@ if (!admin.apps.length) {
   });
 }
 
+
+// get firestore
+const db = admin.firestore();
+
+const validToken1 = "eiG6CUPQS66swAIEOakM60:APA91bGj4tjLswDzSAWz72onE_Tv50TYrI2I3hRXu-0RDJOa2c71elDDnL5gfrcZY5PfppRgbl2hC_R2A4SzstPu___yR9DzB1YoIDnJ-IITVxoqIJ_2gBLQOl9MGJ7_vRFZNmUfIVHD";
+const validToken2 = "ecw_jCq6TV273wlDMeaQRY:APA91bF8GUuxtjlpBf7xI9M4dv6MD74rb40tpDedeoJ9w1TYi-9TmGCrt862Qcrj4nQifRBrxS60AiBSQW8ynYQFVj9Hkrd3p-w9UyDscLncNdwdZNXpqRgBR-LmSeZIcNBejvxjtfW4";
+
+
 // This must come after initlization
+
+const test = require("../test");
 const lib = require("../lib");
 
 describe("SendPushNotification test  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~", () => {
@@ -38,8 +40,8 @@ describe("SendPushNotification test  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~", () => {
       });
       if ( re.code == "success") {
         assert.ok("sending push notification was success.");
-        assert.ok(re.result.messageId != null, "messageId must exist");
-      } else assert.fail("failed on seding messaing to default topic");
+        assert.ok(re.result != null, "messageId must exist");
+      } else assert.fail("failed on sending message to default topic");
     } catch (e) {
       assert.fail("send push notification should succeed.");
     }
@@ -65,10 +67,11 @@ describe("SendPushNotification test  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~", () => {
         body: "push body test via token 1",
       });
       if ( re.code == "success") assert.ok("sending push notification was success.");
-      else assert.fail("failed on seding messaing to topic");
+      else assert.fail("failed on sending message to topic");
     } catch (e) {
-      assert.fail("send push notification should succeed.");
+      assert.fail("send push notification should succeed::." + e);
     }
+
 
     try {
       const re = await lib.sendMessageToTokens({
@@ -80,7 +83,22 @@ describe("SendPushNotification test  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~", () => {
         assert.ok("sending push notification was success.");
         assert.ok(re.result.success == 2);
         assert.ok(re.result.error == 1);
-      } else assert.fail("failed on seding messaing to default topic");
+      } else assert.fail("failed on sending messaging to list token");
+    } catch (e) {
+      assert.fail("send push notification should succeed.");
+    }
+
+    try {
+      const re = await lib.sendMessageToTokens({
+        tokens: validToken1 + "," + validToken2 + "," + "invalidtoken",
+        title: "push title test via multiple tokens as string",
+        body: "push body test via multiple tokens  as string",
+      });
+      if ( re.code == "success") {
+        assert.ok("sending push notification was success.");
+        assert.ok(re.result.success == 2);
+        assert.ok(re.result.error == 1);
+      } else assert.fail("failed on sending message to string tokens");
     } catch (e) {
       assert.fail("send push notification should succeed.");
     }
@@ -90,8 +108,8 @@ describe("SendPushNotification test  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~", () => {
   it("send message to user", async () => {
     const userA = "sendMessaegUserA";
     const userB = "sendMessaegUserB";
-    await lib.createTestUser(userA);
-    await lib.createTestUser(userB);
+    await test.createTestUser(userA);
+    await test.createTestUser(userB);
 
     const tokenUpdates = [];
     tokenUpdates.push( db.collection("message-tokens").doc(validToken1).set({uid: userA}));
@@ -104,20 +122,39 @@ describe("SendPushNotification test  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~", () => {
         body: "push body 1",
       });
       if ( re.code == "success") assert.ok("sending push notification was success.");
-      else assert.fail("failed on seding messaing to default topic");
+      else assert.fail("failed on sending message to default topic");
     } catch (e) {
       assert.fail("send push notification should succeed.");
     }
+
     try {
       const re = await lib.sendMessageToUsers({
-        tokens: [userA, userA],
+        uids: [userA, userB],
         title: "push title 1",
         body: "push body 1",
       });
-      if ( re.code == "success") assert.ok("sending push notification was success.");
-      else assert.fail("failed on seding messaing to default topic");
+      if ( re.code == "success") {
+        assert.ok("sending push notification was success.");
+        assert.ok(re.result.success == 2, "sending push notification was success.");
+      } else assert.fail("failed on sending message to default topic");
+    } catch (e) {
+      assert.fail("send push notification should succeed.");
+    }
+
+    try {
+      const re = await lib.sendMessageToUsers({
+        uids: userA + "," + userB + "," + "abcd",
+        title: "push title 1",
+        body: "push body 1",
+      });
+      if ( re.code == "success") {
+        assert.ok("sending push notification was success.");
+        assert.ok(re.result.success == 2, "sending push notification 2 success.");
+        assert.ok(re.result.error == 0, "sending push notification 0 error.");
+      } else assert.fail("failed on sending message to default topic");
     } catch (e) {
       assert.fail("send push notification should succeed.");
     }
   });
 });
+

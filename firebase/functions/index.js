@@ -26,21 +26,15 @@ exports.sendMessageOnPostCreate = functions
     .firestore.document("/posts/{postId}")
     .onCreate((snapshot, context) => {
       const category = snapshot.data().category;
-      const payload = {
-        notification: {
-          title: snapshot.data().title ? snapshot.data().title : "",
-          body: snapshot.data().content ? snapshot.data().content : "",
-          clickAction: "FLUTTER_NOTIFICATION_CLICK",
-        },
-        data: {
-          id: context.params.postId,
-          type: "post",
-          sender_uid: snapshot.data().uid,
-        },
-      };
-      const topic = "posts_" + category;
-      console.info("topic; ", topic);
-      return admin.messaging().sendToTopic(topic, payload);
+
+      const payload = lib.topicPayload("posts_" + category, {
+        title: snapshot.data().title ? snapshot.data().title : "",
+        body: snapshot.data().content ? snapshot.data().content : "",
+        postId: context.params.postId,
+        type: "post",
+        uid: snapshot.data().uid,
+      });
+      return admin.messaging().send(payload);
     });
 
 // sendMessageOnCommentCreate({
@@ -53,32 +47,20 @@ exports.sendMessageOnCommentCreate = functions
     .region("asia-northeast3")
     .firestore.document("/comments/{commentId}")
     .onCreate(async (snapshot, context) => {
-    // get root post
-      const post = await admin
-          .firestore()
-          .collection("posts")
-          .doc(snapshot.data().postId)
-          .get();
+      const data = snapshot.data();
+      // get root post
+      const post = await lib.getPost(data.postId);
 
-      // prepare notification
-      const payload = {
-        notification: {
-          title: "New Comment: " + post.data().title ? post.data().title : "",
-          body: snapshot.data().content,
-          clickAction: "FLUTTER_NOTIFICATION_CLICK",
-        },
-        data: {
-          id: snapshot.data().postId,
-          type: "post",
-          sender_uid: snapshot.data().uid,
-        },
+      const messageData = {
+        title: "New Comment: " + post.data().title ? post.data().title : "",
+        body: snapshot.data().content,
+        postId: snapshot.data().postId,
+        type: "post",
+        uid: snapshot.data().uid,
       };
-
-      // comment topic
       const topic = "comments_" + post.data().category;
-
       // send push notification to topics
-      await admin.messaging().sendToTopic(topic, payload);
+      await admin.messaging().send(lib.topicPayload(topic, messageData));
 
       // get comment ancestors
       const ancestorsUid = await lib.getCommentAncestors(
@@ -87,33 +69,30 @@ exports.sendMessageOnCommentCreate = functions
       );
 
       // add the post uid if the comment author is not the post author
-      if (
-        post.data().uid != snapshot.data().uid &&
-      !ancestorsUid.includes(post.data().uid)
-      ) {
+      if (post.data().uid != snapshot.data().uid && !ancestorsUid.includes(post.data().uid)) {
         ancestorsUid.push(post.data().uid);
       }
 
-      // remove subcriber uid but want to get notification under their post/comment
-      const userUids = await lib.removeTopicAndForumAncestorsSubscriber(
-          ancestorsUid,
-          topic,
-      );
+      // Don't send the same message twice to topic subscribers and comment notifyees.
+      //
+      const userUids = await lib.getCommentNotifyeeWithoutTopicSubscriber(ancestorsUid, topic);
 
       // get users tokens
       const tokens = await lib.getTokensFromUids(userUids);
 
-      return lib.sendingMessageToDevice(tokens, payload);
+      return lib.sendingMessageToTokens(tokens, lib.preMessagePayload(messageData));
     });
 
-// Indexes a post document when it is created.
-//
-// createPostIndex({
-//  uid: 'user_ccc',
-//  category: 'discussion',
-//  title: 'I post on discussion',
-//  content: 'Discussion'
-// })
+/**
+ * Indexes a post document when it is created.
+ *
+ * createPostIndex({
+ *  uid: 'user_ccc',
+ *  category: 'discussion',
+ *  title: 'I post on discussion',
+ *  content: 'Discussion'
+ * })
+ */
 exports.createPostIndex = functions
     .region("asia-northeast3")
     .firestore.document("/posts/{postId}")
@@ -121,26 +100,28 @@ exports.createPostIndex = functions
       return lib.indexPost(context.params.postId, snap.data());
     });
 
-// Updates or delete the indexed document when a post is updated or deleted.
-//
-// Update:
-// updatePostIndex({
-//  before: {},
-//  after: {
-//   uid: 'user_ccc',
-//   category: 'discussion',
-//   title: 'I post on discussion (update)',
-//   content: 'Discussion 2'
-//   }},
-//   { params: { postId: 'postId2' }
-//  })
-//
-// Delete:
-// updatePostIndex({
-//  before: {},
-//  after: { deleted: true }},
-//  { params: { postId: 'psot-id' }
-// })
+/**
+ * Updates or delete the indexed document when a post is updated or deleted.
+ *
+ * Update:
+ *  updatePostIndex({
+ *   before: {},
+ *   after: {
+ *    uid: 'user_ccc',
+ *    category: 'discussion',
+ *    title: 'I post on discussion (update)',
+ *    content: 'Discussion 2'
+ *    }},
+ *    { params: { postId: 'postId2' }
+ *   })
+ *
+ *  Delete:
+ *  updatePostIndex({
+ *   before: {},
+ *   after: { deleted: true }},
+ *   { params: { postId: 'psot-id' }
+ *  })
+ */
 exports.updatePostIndex = functions
     .region("asia-northeast3")
     .firestore.document("/posts/{postId}")
@@ -190,6 +171,12 @@ exports.updateCommentIndex = functions
       }
     });
 
+exports.sendMessageToAll = functions.region("asia-northeast3").https.onRequest(async (req, res) => {
+  const query = req.query;
+  query["topic"] = "defaultTopic";
+  res.status(200).send(await lib.sendMessageToTopic(query));
+});
+
 exports.sendMessageToTopic = functions
     .region("asia-northeast3")
     .https.onRequest(async (req, res) => {
@@ -208,25 +195,23 @@ exports.sendMessageToUsers = functions
       res.status(200).send(await lib.sendMessageToUsers(req.query));
     });
 
-
 exports.updateFileParentIdForPost = functions
     .region("asia-northeast3")
-    .firestore
-    .document("/posts/{postId}")
+    .firestore.document("/posts/{postId}")
     .onWrite((change, context) => {
-      return lib.updateFileParentId(
-          context.params.postId,
-          change.after.data(),
-      );
+      return lib.updateFileParentId(context.params.postId, change.after.data());
     });
 
 exports.updateFileParentIdForComment = functions
     .region("asia-northeast3")
-    .firestore
-    .document("/comments/{commentId}")
+    .firestore.document("/comments/{commentId}")
     .onWrite((change, context) => {
-      return lib.updateFileParentId(
-          context.params.commentId,
-          change.after.data(),
-      );
+      return lib.updateFileParentId(context.params.commentId, change.after.data());
     });
+
+exports.disableUser = functions.region("asia-northeast3").https.onCall(async (data, context) => {
+  return await lib.enableUser(data, context);
+});
+exports.enableUser = functions.region("asia-northeast3").https.onCall(async (data, context) => {
+  return await lib.disableUser(data, context);
+});

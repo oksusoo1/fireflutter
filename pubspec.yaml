@@ -19,7 +19,6 @@ dependencies:
   firebase_dynamic_links: ^4.0.5
   firebase_storage: ^10.2.6
   firebase_messaging: ^11.2.6
-  cloud_functions: ^3.2.7
 
   # Firebase UI.
   flutterfire_ui: ^0.3.2
@@ -74,7 +73,9 @@ dependencies:
 
   # for post & comment
   flutter_linkify: ^5.0.2
-  
+
+  # where does it be used?
+  dio: ^4.0.4
 
 dev_dependencies:
   flutter_test:
@@ -82,4 +83,3 @@ dev_dependencies:
 
 
 flutter:
-

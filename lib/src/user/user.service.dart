@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_database/firebase_database.dart';
 import 'package:rxdart/subjects.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../fireflutter.dart';
@@ -30,14 +29,14 @@ class UserService with FirestoreMixin, DatabaseMixin {
   String get uid => FirebaseAuth.instance.currentUser?.uid ?? '';
   String get phoneNumber => currentUser?.phoneNumber ?? '';
   String get email => currentUser?.email ?? '';
+  bool get emailIsVerified => currentUser?.emailVerified ?? false;
 
   /// To display email on screen, use this.
   String get displayEmail => email == '' ? 'NO-EMAIL' : email;
 
   String get photoUrl => user.photoUrl;
 
-  DatabaseReference get _myDoc =>
-      FirebaseDatabase.instance.ref('users').child(uid);
+  // DatabaseReference get _myDoc => FirebaseDatabase.instance.ref('users').child(uid);
 
   StreamSubscription? userSubscription;
 
@@ -63,27 +62,39 @@ class UserService with FirestoreMixin, DatabaseMixin {
     FirebaseAuth.instance.authStateChanges().listen(
       (_user) async {
         userSubscription?.cancel();
-        user = UserModel();
         if (_user == null) {
+          user = UserModel();
           debugPrint('User signed-out');
           changes.add(user);
           onSignedOut();
         } else {
+          user = UserModel(uid: uid);
           if (_user.isAnonymous) {
             /// Note, anonymous sigin-in is not supported by fireflutter.
             debugPrint(
                 'User sign-in as Anonymous; Warning! Fireflutter does not user anonymous account.');
             changes.add(user);
           } else {
+            resetTopicSubscription();
             final doc = userDoc(_user.uid);
             userSubscription = doc.onValue.listen((event) {
               // if user doc does not exists, create one.
               if (event.snapshot.exists == false) {
                 create();
               } else {
+                /// User profile information has been updated.
                 user = UserModel.fromJson(event.snapshot.value, _user.uid);
                 changes.add(user);
-                resetTopicSubscription();
+
+                if (profileReady) {
+                  if (user.profileReady == false) {
+                    user.update(field: 'profileReady', value: true);
+                  }
+                } else {
+                  if (user.profileReady) {
+                    user.update(field: 'profileReady', value: false);
+                  }
+                }
               }
             }, onError: (e) {
               print('UserDoc listening error; $e');
@@ -94,8 +105,12 @@ class UserService with FirestoreMixin, DatabaseMixin {
     );
   }
 
-  /// when user Sign-in, the app need to unsubscribe previous subscription
-  /// then new user topics need to subscribe
+  /// Subscribe topics for newly sign-in user.
+  ///
+  /// This method will run the code only one time even if the user signed-in multiple times.
+  ///
+  /// when a user Sign-in, the app need to unsubscribe previous subscription
+  /// then app needs to subscribe the sign-in user topics.
   /// `isUserLoggedIn` is set true when the user signed-in.
   /// this can be use to check if the user is already loggedIn even the app was closed and reopen.
   /// so it will not reset every time the app is relaunch.
@@ -146,16 +161,16 @@ class UserService with FirestoreMixin, DatabaseMixin {
     return user.updatePhotoUrl(url);
   }
 
-  @Deprecated('This is useless method.')
-  Future<UserModel> get() async {
-    final doc = await _myDoc.get();
-    if (doc.exists) {
-      final user = UserModel.fromJson(doc.value, doc.key!);
-      return user;
-    } else {
-      return UserModel(uid: currentUser?.uid ?? '');
-    }
-  }
+  // @Deprecated('This is useless method.')
+  // Future<UserModel> get() async {
+  //   final doc = await _myDoc.get();
+  //   if (doc.exists) {
+  //     final user = UserModel.fromJson(doc.value, doc.key!);
+  //     return user;
+  //   } else {
+  //     return UserModel(uid: currentUser?.uid ?? '');
+  //   }
+  // }
 
   /// Update wether if the user is an admin or not.
   /// Refer readme for details
@@ -181,7 +196,7 @@ class UserService with FirestoreMixin, DatabaseMixin {
   Future<UserModel> getOtherUserDoc(String uid) async {
     if (uid == '') return UserModel();
     if (others[uid] != null) {
-      print('--> reuse uid; $uid');
+      // print('--> reuse uid; $uid');
       return others[uid]!;
     }
 
@@ -195,5 +210,22 @@ class UserService with FirestoreMixin, DatabaseMixin {
 
     others[uid] = other;
     return others[uid]!;
+  }
+
+  String get profileError {
+    if (photoUrl == '') return ERROR_NO_PROFILE_PHOTO;
+    if (email == '') return ERROR_NO_EMAIL;
+    if (user.firstName == '') return ERROR_NO_FIRST_NAEM;
+    if (user.lastName == '') return ERROR_NO_LAST_NAME;
+    if (user.gender == '') return ERROR_NO_GENER;
+    if (user.birthday == 0) return ERROR_NO_BIRTHDAY;
+    return '';
+  }
+
+  bool get profileReady {
+    if (profileError == '')
+      return true;
+    else
+      return false;
   }
 }

@@ -83,6 +83,7 @@ Table of contents
 - [Test](#test)
   - [Test method](#test-method)
   - [Local test on firestore security rules](#local-test-on-firestore-security-rules)
+- [Sample code](#sample-code)
 - [Issues](#issues)
   - [firebase_database/permission-denied](#firebase_databasepermission-denied)
   - [Firebase realtime database is not working](#firebase-realtime-database-is-not-working)
@@ -247,7 +248,7 @@ function lessThan(n) {
 }
 
 function checkType() {
-	return request.resource.metadata.type == 'post' || request.resource.metadata.type == 'comment' || request.resource.metadata.type == 'chat';
+	return request.resource.metadata.type == 'post' || request.resource.metadata.type == 'comment' || request.resource.metadata.type == 'user' || request.resource.metadata.type == 'chat';
 }
 ```
 
@@ -263,6 +264,9 @@ function checkType() {
 
 - We use Firestore only for `Chat` and `Forum` features since they needs more support on query and search functionalities.
   - All other features should go to realtime database.
+
+- Note that, you need to create your own composite indexes when you build functions that query on fields that are not indexed by fireflutter.
+  - For instance, you make a function for getting posts that have most no of comments on this year. then, you may need to create an composite index with `noOfComments` and `year`.
 
 ### Setting admin on firestore security rules
 
@@ -350,7 +354,8 @@ $ npm run shell
     - `gender`
     - `firstName`, `middleName`, `lastName`, `nickname`
     - `photoUrl`
-    - `timestamp_registered`
+    - `registeredAt`
+    - `updatedAt`
       And think over again if it is really needed when you are trying to add another field.
   - Don't put user's setting data in `/users/<uid>`. Use may use `UserModel.updateSettings()` and `UserModel.readSettings()` to manage user's setting.
 
@@ -558,6 +563,8 @@ UserPresence(
 - For the efficiency, `MyDoc` does not listen to the realtime database document change on every instance, since reading the document over and over again may cost a lot of money if it is used in many places.
   - It listens `UserService.instance.changes` event which only read one time on every user document change.
   - By doing this, `MyDoc` may be used for the replacement of state management.
+
+- `MyDoc` displays nothing when the user is not signed in.
 
 ```dart
 MyDoc(
@@ -917,6 +924,12 @@ InformService.instance.inform(widget.room.otherUid, {
   - open `<root>/firebase/.firebaserc` and update `projects.default` to your firebase project id.
   - run `$ firebase deploy --only firestore`
 
+
+# Sample code
+
+- See all tests code.
+- `./firebase/lab` folder has some sample code.
+
 # Issues
 
 - These are the common issues you may encount working this package.
@@ -1090,7 +1103,9 @@ DynamicLinksService.instance.listen((Uri? deepLink) {
 
 - `PostModel` has methods like create, update, delete, like, dislike, and so on.
 
-- When user deletes a post, the document is marked as deleted, instead of remove it from the database. And user may update the document even if the post is marked as deleted. Editing post of delete mark is banned by security rule. This is by design and is not harmful. So, there should be some code to inform user not to edit deleted post. This goes the same to comment delete.
+- When user deletes a post,
+  - If the post has no comment, then the post document will be deleted.
+  - If the post has comment, then the document is marked as deleted, instead of deleting the document from the database. And user may update the document even if the post is marked as deleted. Editing post of delete mark is banned by security rule. This is by design and is not harmful. So, there should be some code to inform user not to edit deleted post. This goes the same to comment delete.
 
 - `hasPhoto` becomes true if the post has a photo.
 
@@ -1112,9 +1127,25 @@ DynamicLinksService.instance.listen((Uri? deepLink) {
     - `month` - the month of a year (1-12)
     - `day` - the day of a month (1-31)
     - `dayOfYear` - the day of a year (1-366)
-    - `weekOfYear` - the week of a year
-    - `quarter` - the quarter of a year (1-4)
-    - `timestamp` - database's server time stamp.
+    - `week` - the week number since epoch ( from Jan 1st, 1970)
+    - `createdAt` - database's server time stamp for the time of document creation.
+    - `updatedAt` - server timestamp for update.
+    Note that, these date properties except `createdAt` and `updatedAt` are optional fields, and added by `PostModel.create()`
+
+- When admin creates a post, he can specify the document id. With this, posts can be managed easily.
+  - For instance, admin puts `welcome` as document id, and he design the app that when user press on welcome button, the app read the post document of `welcome` and display it to the user.
+  - Document id is easy to remember and easy to manage.
+
+- `summary` field is used for the short description for the post.
+  - `summary` should not be seen or searched as part of the post. But it can be dispalyed as short description on widget, or anywhere.
+  - It's not part of security rule, so if you want, to use it or not.
+
+
+- In the source code, `documentId` is being used to create a post with named document id. And this gives an easy way of managing posts since the named document id is easy to remember.
+  - On the sample code, admin can input document id when he creates a post.
+  - Then, the document id can be used to view the post or get the post.
+    - App can display a banner and when user taps, app can redirect to post view screen by give the `named-document-id`.
+
 
 ## Comment
 
@@ -1138,7 +1169,11 @@ DynamicLinksService.instance.listen((Uri? deepLink) {
 
 ## terms
 
-- `new comment topic` is an option to get notification whenever a new comment had posted under his post or comment.
+- `comment notification` is an option to get notification whenever a new comment had posted under his post or comment.
+  - `comment notifyee` is a user who will get notification when there is a comment under his post or comment.
+
+
+
 
 
 ## How push notification wokr.
@@ -1247,6 +1282,13 @@ try {
     - then, it will try to display original image. If it fails to dsipaly original image,
       - then it will display the error widget.
 
+- Errors with `UploadedImage`.
+  When thumbnail does not exists, the error message below may appear. And this is not a critical error. Thumbnails are generated automatically by the cloud function. And sometimes, very rarely happens when there is no thumbnail generated.
+```text
+════════ Exception caught by image resource service ════════════════════════════
+The following HttpExceptionWithStatus was thrown resolving an image codec:
+HttpException: Invalid statusCode: 403, uri = https://firebasestorage.googleapis.com/v0/b/wonderful-korea.appspot.com/o/test%2F6_200x200.webp?alt=media
+```
 
 ## Uploaded file management
 
@@ -1262,7 +1304,8 @@ try {
   - So, you can delete files in storage if
     - they don't have `id` in custom metadata when their `type` is one of `post` or `comment`.
     - the url is no longer being used by the `id` of the post(or comment).
-  - @todo - Firefluter does not provide the delition funtionality, yet. You may delete it by yourself at this time.
+    - their parent (post or comment) has deleted.
+  - @todo - Firefluter does not provide the delition funtionality, yet. You may delete it by yourself at this time. @see https://github.com/withcenter/wonderfulkorea/issues/77
 
 
 

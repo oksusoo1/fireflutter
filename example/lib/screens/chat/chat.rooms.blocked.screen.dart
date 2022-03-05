@@ -81,7 +81,7 @@ class _ChatRoomsBlockUserState extends State<ChatRoomsBlockUser> {
                         children: [
                           Expanded(
                             child: Text(
-                              '${user.nickname} ',
+                              '${user.displayName} ',
                               style: const TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.w600,

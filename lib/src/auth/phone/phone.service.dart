@@ -36,6 +36,7 @@ class PhoneService {
   String phoneNumber = '';
   String verificationId = '';
   String smsCode = '';
+  int? resendToken;
 
   /// Get complete phone number in standard format.
   // String get completePhoneNumber => selectedCode!.dialCode! + phoneNumber;
@@ -51,6 +52,7 @@ class PhoneService {
     smsCode = '';
     codeSentProgress = false;
     verifySentProgress = false;
+    resendToken = null;
   }
 
   /// This method is invoked when user submit sms code, then it will begin
@@ -121,14 +123,16 @@ class PhoneService {
           print(e);
           error(e);
         },
-        codeSent: (String verificationId, i) {
+        codeSent: (String verificationId, resendToken) {
           this.verificationId = verificationId;
+          this.resendToken = resendToken;
           codeSent(verificationId);
         },
         codeAutoRetrievalTimeout: (String verificationId) {
           if (verified) return;
           codeAutoRetrievalTimeout(this.verificationId);
         },
+        forceResendingToken: resendToken,
       );
     } catch (e) {
       error(e);

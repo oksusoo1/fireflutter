@@ -36,6 +36,7 @@ class _MyDocState extends State<MyDoc> with DatabaseMixin {
   @override
   Widget build(BuildContext context) {
     if (user == null) return Center(child: CircularProgressIndicator.adaptive());
+    if (user!.signedOut) return SizedBox.shrink();
     return widget.builder(user!);
   }
 }

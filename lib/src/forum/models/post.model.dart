@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:jiffy/jiffy.dart';
+import 'package:intl/intl.dart';
 import '../../../fireflutter.dart';
 
 /// PostModel
@@ -12,6 +13,7 @@ class PostModel with FirestoreMixin, ForumBase {
     this.category = '',
     this.title = '',
     this.content = '',
+    this.summary = '',
     this.uid = '',
     this.noOfComments = 0,
     this.hasPhoto = false,
@@ -19,14 +21,20 @@ class PostModel with FirestoreMixin, ForumBase {
     this.like = 0,
     this.dislike = 0,
     this.deleted = false,
-    this.timestamp_,
-    this.data_,
+    this.year = 0,
+    this.month = 0,
+    this.day = 0,
+    this.week = 0,
+    createdAt,
+    updatedAt,
+    data,
     this.isHtmlContent = false,
-  });
+  })  : data = data ?? {},
+        createdAt = createdAt ?? Timestamp.now(),
+        updatedAt = updatedAt ?? Timestamp.now();
 
   /// data is the document data object.
-  Json? data_;
-  Json get data => data_ ?? const {};
+  Json data;
 
   String id;
   String get path => postDoc(id).path;
@@ -46,6 +54,8 @@ class PostModel with FirestoreMixin, ForumBase {
     return deleted ? 'post-content-deleted' : content;
   }
 
+  String summary;
+
   bool deleted;
 
   String uid;
@@ -61,53 +71,80 @@ class PostModel with FirestoreMixin, ForumBase {
   int like;
   int dislike;
 
-  Timestamp? timestamp_;
-  Timestamp get timestamp => timestamp_ ?? Timestamp.now();
+  int year;
+  int month;
+  int day;
+  int week;
+
+  Timestamp createdAt;
+  Timestamp updatedAt;
+
+  /// To open the post data. Use this to display post content or not on post list screen.
+  bool open = false;
 
   /// Get document data of map and convert it into post model
   factory PostModel.fromJson(Json data, String id) {
-    List<String> _files = <String>[];
-
-    if (data['files'] is String && data['files'] != '') {
-      _files = data['files'].split(', ');
-    }
-
-    if (data['files'] is List) {
-      _files = new List<String>.from(data['files']);
-    }
-
-    var _timestamp = data['timestamp'] ?? Timestamp.now();
-    if (_timestamp is int) _timestamp = Timestamp.fromMillisecondsSinceEpoch(_timestamp);
-
     String content = data['content'] ?? '';
 
     /// Check if the content has any html tag.
-    bool html = false;
-    if (content.indexOf('</p>') > -1 ||
-        content.indexOf('</span') > -1 ||
-        content.indexOf('</em>') > -1 ||
-        content.indexOf('</strong>') > -1 ||
-        content.indexOf('<br>') > -1 ||
-        content.indexOf('<img') > -1 ||
-        content.indexOf('style="') > -1) {
-      html = true;
+    bool html = _isHtml(content);
+
+    final post = PostModel(
+      id: id,
+      category: data['category'] ?? '',
+      title: data['title'] ?? '',
+      content: content,
+      summary: data['summary'] ?? '',
+      isHtmlContent: html,
+      noOfComments: data['noOfComments'] ?? 0,
+      hasPhoto: data['hasPhoto'] ?? false,
+      files: new List<String>.from(data['files']),
+      deleted: data['deleted'] ?? false,
+      uid: data['uid'] ?? '',
+      like: data['like'] ?? 0,
+      dislike: data['dislike'] ?? 0,
+      year: data['year'] ?? 0,
+      month: data['month'] ?? 0,
+      day: data['day'] ?? 0,
+      week: data['week'] ?? 0,
+      createdAt: data['createdAt'],
+      updatedAt: data['updatedAt'],
+      data: data,
+    );
+
+    /// If the post is opened, then maintain the status.
+    /// If the [open] property is not maintained,
+    /// every time the document had updated, `PostModel.fromJson` will be called again
+    /// and [open] becomes false, and the post may be closed.
+    /// For instance, when user likes the post and the post closes on post list.
+    if (PostService.instance.posts[post.id] != null) {
+      final p = PostService.instance.posts[post.id]!;
+      post.open = p.open;
     }
+
+    /// Keep loaded post into memory.
+    PostService.instance.posts[post.id] = post;
+
+    return post;
+  }
+
+  /// Get indexed document data from meilisearch of map and convert it into post model
+  factory PostModel.fromMeili(Json data, String id) {
+    final _createdAt = data['createdAt'] ?? 0;
+    final _updatedAt = data['updatedAt'] ?? 0;
 
     return PostModel(
       id: id,
       category: data['category'] ?? '',
       title: data['title'] ?? '',
-      content: content,
-      isHtmlContent: html,
-      noOfComments: data['noOfComments'] ?? 0,
-      hasPhoto: data['hasPhoto'] ?? false,
-      files: _files,
-      deleted: data['deleted'] ?? false,
+      content: data['content'] ?? '',
       uid: data['uid'] ?? '',
       like: data['like'] ?? 0,
       dislike: data['dislike'] ?? 0,
-      timestamp_: _timestamp,
-      data_: data,
+      deleted: data.containsKey('deleted') ? data['deleted'] == 'Y' : false,
+      createdAt: Timestamp.fromMillisecondsSinceEpoch(_createdAt * 1000),
+      updatedAt: Timestamp.fromMillisecondsSinceEpoch(_updatedAt * 1000),
+      data: data,
     );
   }
 
@@ -117,6 +154,7 @@ class PostModel with FirestoreMixin, ForumBase {
       'category': category,
       'title': title,
       'content': content,
+      'summary': summary,
       'isHtmlContent': isHtmlContent,
       'noOfComments': noOfComments,
       'hasPhoto': hasPhoto,
@@ -125,7 +163,12 @@ class PostModel with FirestoreMixin, ForumBase {
       'uid': uid,
       'like': like,
       'dislike': dislike,
-      'timestamp': timestamp,
+      'year': year,
+      'month': month,
+      'day': day,
+      'week': week,
+      'createdAt': createdAt,
+      'updatedAt': updatedAt,
       'data': data,
     };
   }
@@ -146,6 +189,8 @@ class PostModel with FirestoreMixin, ForumBase {
 
   /// Create a post with extra data
   ///
+  /// [documentId] is the document id to create with. Read readme for details.
+  ///
   /// ```dart
   /// final ref = await PostModel(
   ///   category: Get.arguments['category'],
@@ -160,36 +205,49 @@ class PostModel with FirestoreMixin, ForumBase {
     required String category,
     required String title,
     required String content,
+    String? documentId,
     List<String>? files,
+    String? summary,
     Json extra = const {},
   }) {
     if (signedIn == false) throw ERROR_SIGN_IN;
     if (UserService.instance.user.exists == false) throw ERROR_USER_DOCUMENT_NOT_EXISTS;
+    if (UserService.instance.profileReady == false) throw UserService.instance.profileError;
 
     final j = Jiffy();
+    int week = ((j.unix() - 345600) / 604800).floor();
     final createData = {
       'category': category,
       'title': title,
       'content': content,
+      if (summary != null && summary != '') 'summary': summary,
       if (files != null) 'files': files,
       'uid': UserService.instance.user.uid,
       'hasPhoto': (files == null || files.length == 0) ? false : true,
+      'deleted': false,
       'noOfComments': 0,
       'year': j.year,
       'month': j.month,
       'day': j.date,
       'dayOfYear': j.dayOfYear,
-      'weekOfYear': j.week,
-      'quarter': j.quarter,
-      'timestamp': FieldValue.serverTimestamp(),
+      'week': week,
+      'createdAt': FieldValue.serverTimestamp(),
+      'updatedAt': FieldValue.serverTimestamp(),
     };
-    return postCol.add({...createData, ...extra});
+    if (documentId != null && documentId != '') {
+      return postCol
+          .doc(documentId)
+          .set({...createData, ...extra}).then((value) => postCol.doc(documentId));
+    } else {
+      return postCol.add({...createData, ...extra});
+    }
   }
 
   Future<void> update({
     required String title,
     required String content,
     List<String>? files,
+    String? summary,
     Json extra = const {},
   }) {
     if (deleted) throw ERROR_ALREADY_DELETED;
@@ -198,8 +256,9 @@ class PostModel with FirestoreMixin, ForumBase {
         'title': title,
         'content': content,
         if (files != null) 'files': files,
+        if (summary != null) 'summary': summary,
         'hasPhoto': (files == null || files.length == 0) ? false : true,
-        'timestamp': FieldValue.serverTimestamp(),
+        'updatedAt': FieldValue.serverTimestamp(),
       },
       ...extra
     });
@@ -210,13 +269,18 @@ class PostModel with FirestoreMixin, ForumBase {
     return PostModel.fromJson(snapshot.data() as Json, snapshot.id);
   }
 
+  /// See readme.
   Future<void> delete() {
     if (deleted) throw ERROR_ALREADY_DELETED;
+
+    if (noOfComments == 0) return postDoc(id).delete();
+
     return postDoc(id).update({
       'deleted': true,
       'content': '',
+      'summary': '',
       'title': '',
-      'timestamp': FieldValue.serverTimestamp(),
+      'updatedAt': FieldValue.serverTimestamp(),
     });
   }
 
@@ -252,5 +316,49 @@ class PostModel with FirestoreMixin, ForumBase {
   ///
   Future feedDislike() {
     return feed(path, 'dislike');
+  }
+
+  /// Returns short date time string.
+  ///
+  /// It returns one of 'MM/DD/YYYY' or 'HH:MM AA' format.
+  String get shortDateTime {
+    final date = DateTime.fromMillisecondsSinceEpoch(createdAt.millisecondsSinceEpoch);
+    final today = DateTime.now();
+    bool re;
+    if (date.year == today.year && date.month == today.month && date.day == today.day) {
+      re = true;
+    } else {
+      re = false;
+    }
+    return re ? DateFormat.jm().format(date).toLowerCase() : DateFormat.yMd().format(date);
+  }
+
+  /// Returns true if the text is HTML.
+  static bool _isHtml(String t) {
+    t = t.toLowerCase();
+
+    if (t.contains('</h1>')) return true;
+    if (t.contains('</h2>')) return true;
+    if (t.contains('</h3>')) return true;
+    if (t.contains('</h4>')) return true;
+    if (t.contains('</h5>')) return true;
+    if (t.contains('</h6>')) return true;
+    if (t.contains('</hr>')) return true;
+    if (t.contains('</li>')) return true;
+    if (t.contains('<br>')) return true;
+    if (t.contains('<br/>')) return true;
+    if (t.contains('<br />')) return true;
+    if (t.contains('<p>')) return true;
+    if (t.contains('</div>')) return true;
+    if (t.contains('</span>')) return true;
+    if (t.contains('<img')) return true;
+    if (t.contains('</em>')) return true;
+    if (t.contains('</b>')) return true;
+    if (t.contains('</u>')) return true;
+    if (t.contains('</strong>')) return true;
+    if (t.contains('</a>')) return true;
+    if (t.contains('</i>')) return true;
+
+    return false;
   }
 }

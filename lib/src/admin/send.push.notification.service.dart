@@ -1,4 +1,4 @@
-import 'package:cloud_functions/cloud_functions.dart';
+import 'package:dio/dio.dart';
 
 class SendPushNotificationService {
   static SendPushNotificationService? _instance;
@@ -7,8 +7,37 @@ class SendPushNotificationService {
     return _instance!;
   }
 
-  sendToToken(Map<String, dynamic>? data) async {}
-  sendToTopic(Map<String, dynamic>? data) async {}
+  late String _serverUrl;
 
-  sendToUsers(Map<String, dynamic>? data) async {}
+  init({required String serverUrl}) {
+    _serverUrl = serverUrl;
+  }
+
+  sendToAll(Map<String, dynamic>? data) async {
+    return Dio().get(
+      _serverUrl + '/sendMessageToAll',
+      queryParameters: data,
+    );
+  }
+
+  sendToToken(Map<String, dynamic>? data) async {
+    return Dio().get(
+      _serverUrl + '/sendMessageToTokens',
+      queryParameters: data,
+    );
+  }
+
+  sendToTopic(Map<String, dynamic>? data) async {
+    return Dio().get(
+      _serverUrl + '/sendMessageToTopic',
+      queryParameters: data,
+    );
+  }
+
+  sendToUsers(Map<String, dynamic>? data) async {
+    return Dio().get(
+      _serverUrl + '/sendMessageToUsers',
+      queryParameters: data,
+    );
+  }
 }

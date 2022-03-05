@@ -1,4 +1,5 @@
 import 'package:extended/extended.dart';
+import 'package:fe/screens/admin/send.push.notification.dart';
 import 'package:fe/screens/forum/forum.mixin.dart';
 import 'package:fe/service/app.service.dart';
 import 'package:fireflutter/fireflutter.dart';
@@ -15,7 +16,8 @@ class PostListScreen extends StatefulWidget {
   State<PostListScreen> createState() => _PostListScreenState();
 }
 
-class _PostListScreenState extends State<PostListScreen> with FirestoreMixin, ForumMixin {
+class _PostListScreenState extends State<PostListScreen>
+    with FirestoreMixin, ForumMixin {
   late final String category;
   String? newPostId;
   @override
@@ -37,7 +39,8 @@ class _PostListScreenState extends State<PostListScreen> with FirestoreMixin, Fo
           ),
           IconButton(
             onPressed: () async {
-              newPostId = await AppService.instance.openPostForm(category: category);
+              newPostId =
+                  await AppService.instance.openPostForm(category: category);
               if (mounted) setState(() {});
             },
             icon: Icon(
@@ -49,7 +52,7 @@ class _PostListScreenState extends State<PostListScreen> with FirestoreMixin, Fo
       body: FirestoreListView(
         key: ValueKey(newPostId),
         query: postCol.where('category', isEqualTo: category).orderBy(
-              'timestamp',
+              'createdAt',
               descending: true,
             ),
         itemBuilder: (context, snapshot) {
@@ -69,9 +72,9 @@ class _PostListScreenState extends State<PostListScreen> with FirestoreMixin, Fo
               children: [
                 UserDoc(
                   uid: post.uid,
-                  builder: (user) => user.exists ? Text('By: ${user.nickname} ') : Text('NO-USER '),
+                  builder: (user) => Text('By: ${user.displayName} '),
                 ),
-                ShortDate(post.timestamp.millisecondsSinceEpoch),
+                ShortDate(post.createdAt.millisecondsSinceEpoch),
               ],
             ),
             onExpansionChanged: (value) {
@@ -91,7 +94,10 @@ class _PostListScreenState extends State<PostListScreen> with FirestoreMixin, Fo
                 onLike: onLike,
                 onDislike: onDislike,
                 onHide: () {},
-                onChat: (post) {},
+                onChat: (post) => AppService.instance.openChatRoom(post.uid),
+                onSendPushNotification: (post) => AppService.instance.open(
+                    PushNotificationScreen.routeName,
+                    arguments: {'postId': post.id}),
               ),
               Divider(color: Colors.red),
               Comment(

@@ -13,6 +13,8 @@ class NotificationSetting extends StatefulWidget {
 }
 
 class _NotificationSettingState extends State<NotificationSetting> {
+  final commentNotification = "newCommentUnderMyPostOrComment";
+
   @override
   void initState() {
     super.initState();
@@ -43,15 +45,15 @@ class _NotificationSettingState extends State<NotificationSetting> {
               ),
               CheckboxListTile(
                 value: UserSettingsService.instance
-                    .hasSubscription('newCommentUnderMyPostOrCOmment'),
+                    .hasSubscription(commentNotification),
                 onChanged: (b) {
                   if (b == true) {
                     UserSettingsService.instance
-                        .subscribe('newCommentUnderMyPostOrCOmment')
+                        .subscribe(commentNotification)
                         .catchError(widget.onError);
                   } else {
                     UserSettingsService.instance
-                        .unsubscribe('newCommentUnderMyPostOrCOmment')
+                        .unsubscribe(commentNotification)
                         .catchError(widget.onError);
                   }
                 },

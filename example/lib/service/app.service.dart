@@ -3,6 +3,7 @@ import 'package:fe/screens/admin/category.screen.dart';
 import 'package:fe/screens/admin/report.post.management.screen.dart';
 import 'package:fe/screens/admin/report.screen.dart';
 import 'package:fe/screens/admin/translatoins.screen.dart';
+import 'package:fe/screens/chat/chat.room.screen.dart';
 import 'package:fe/screens/forum/post.form.screen.dart';
 import 'package:fe/screens/forum/post.list.screen.dart';
 import 'package:fe/screens/forum/post.view.screen.dart';
@@ -88,6 +89,10 @@ class AppService {
 
   Future<void> openReport([String? target]) async {
     return open(ReportScreen.routeName, arguments: {'target': target});
+  }
+
+  Future<void> openChatRoom(String uid) async {
+    return open(ChatRoomScreen.routeName, arguments: {'uid': uid});
   }
 
   Future<void> openReportForumMangement(String target, String id) async {

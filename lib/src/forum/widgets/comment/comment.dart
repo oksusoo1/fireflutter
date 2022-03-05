@@ -50,13 +50,12 @@ class _CommentState extends State<Comment> with FirestoreMixin {
     sub?.cancel();
     commentCol
         .where('postId', isEqualTo: widget.post.id)
-        .orderBy('timestamp')
+        .orderBy('createdAt')
         .snapshots()
         .listen((QuerySnapshot snapshots) {
       snapshots.docs.forEach((QueryDocumentSnapshot snapshot) {
         /// is it immediate child?
-        final CommentModel c =
-            CommentModel.fromJson(snapshot.data() as Json, id: snapshot.id);
+        final CommentModel c = CommentModel.fromJson(snapshot.data() as Json, id: snapshot.id);
         // print(c);
 
         // if exists in array, just update it.
@@ -102,44 +101,47 @@ class _CommentState extends State<Comment> with FirestoreMixin {
 
   @override
   Widget build(BuildContext context) {
-    return ListView(
+    return ListView.builder(
       physics: NeverScrollableScrollPhysics(),
       shrinkWrap: true,
-      children: [
-        for (final CommentModel comment in comments)
-          Container(
-            margin: EdgeInsets.only(left: comment.depth * 16, bottom: 16),
-            decoration: BoxDecoration(
-              color: Colors.grey[200],
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Text('Comment Id: ${comment.id}'),
-                _commentHeader(comment),
-                _contentBuilder(comment),
-                ImageList(
-                  files: comment.files,
-                  onImageTap: (i) => widget.onImageTap(i, comment.files),
-                ),
-                ButtonBase(
-                  uid: comment.uid,
-                  isPost: false,
-                  onReply: () => widget.onReply(widget.post, comment),
-                  onReport: () => widget.onReport(comment),
-                  onEdit: () => widget.onEdit(comment),
-                  onDelete: () => widget.onDelete(comment),
-                  onLike: () => widget.onLike(comment),
-                  onDislike: () => widget.onDislike(comment),
-                  buttonBuilder: widget.buttonBuilder,
-                  likeCount: comment.like,
-                  dislikeCount: comment.dislike,
-                ),
-              ],
-            ),
+      itemCount: comments.length,
+      itemBuilder: (ctx, i) {
+        final CommentModel comment = comments[i];
+
+        return Container(
+          key: ValueKey(comment.id),
+          margin: EdgeInsets.only(left: comment.depth * 16, bottom: 16),
+          decoration: BoxDecoration(
+            color: Colors.grey[200],
+            borderRadius: BorderRadius.circular(8),
           ),
-      ],
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Text('Comment Id: ${comment.id}'),
+              _commentHeader(comment),
+              _contentBuilder(comment),
+              ImageList(
+                files: comment.files,
+                onImageTap: (i) => widget.onImageTap(i, comment.files),
+              ),
+              ButtonBase(
+                uid: comment.uid,
+                isPost: false,
+                onReply: () => widget.onReply(widget.post, comment),
+                onReport: () => widget.onReport(comment),
+                onEdit: () => widget.onEdit(comment),
+                onDelete: () => widget.onDelete(comment),
+                onLike: () => widget.onLike(comment),
+                onDislike: () => widget.onDislike(comment),
+                buttonBuilder: widget.buttonBuilder,
+                likeCount: comment.like,
+                dislikeCount: comment.dislike,
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 
@@ -147,8 +149,7 @@ class _CommentState extends State<Comment> with FirestoreMixin {
     return widget.headerBuilder != null
         ? widget.headerBuilder!(comment)
         : Padding(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
+            padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
             child: UserDoc(
               uid: comment.uid,
               builder: (user) => Row(
@@ -162,11 +163,9 @@ class _CommentState extends State<Comment> with FirestoreMixin {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(user.displayName.isNotEmpty
-                          ? "${user.displayName}"
-                          : "No name"),
+                      Text(user.displayName.isNotEmpty ? "${user.displayName}" : "No name"),
                       SizedBox(height: 8),
-                      ShortDate(comment.timestamp.millisecondsSinceEpoch),
+                      ShortDate(comment.createdAt.millisecondsSinceEpoch),
                     ],
                   ),
                 ],

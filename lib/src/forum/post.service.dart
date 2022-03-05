@@ -12,6 +12,10 @@ class PostService with FirestoreMixin {
 
   Map<String, List<PostModel>> cacheContainer = {};
 
+  /// Post container
+  /// All loaded posts should go here. This is used by `PostModel.fromJson`
+  Map<String, PostModel> posts = {};
+
   /// Gets document from post collection
   ///
   /// if [cacheId] has value, then it will cache the documents in the memory.
@@ -35,7 +39,7 @@ class PostService with FirestoreMixin {
     String? cacheId,
   }) async {
     if (cacheId != null && cacheContainer[cacheId] != null) {
-      debugPrint('-----> Reusing cached posts for; $cacheId');
+      // debugPrint('-----> Reusing cached posts for; $cacheId');
       return cacheContainer[cacheId]!;
     }
     Query q = postCol;
@@ -43,16 +47,24 @@ class PostService with FirestoreMixin {
     if (uid != null) q = q.where('uid', isEqualTo: uid);
     if (hasPhoto != null) q = q.where('hasPhoto', isEqualTo: hasPhoto);
 
-    /// TODO: check if it's working.
+    /// TODO: Check if it's working fine.
     if (within != null) {
-      q = q.where('timestamp',
-          isGreaterThanOrEqualTo: Jiffy().subtract(days: within).format("yyyy-MM-dd"));
+      q = q.where(
+        'createdAt',
+        isGreaterThanOrEqualTo: Jiffy().subtract(days: within).format("yyyy-MM-dd"),
+      );
     }
     q = q.limit(limit);
 
-    q = q.orderBy('timestamp', descending: true);
+    q = q.orderBy('createdAt', descending: true);
 
-    QuerySnapshot snapshot = await q.get();
+    QuerySnapshot snapshot;
+    try {
+      snapshot = await q.get();
+    } on FirebaseException catch (e) {
+      debugPrint("${e.code}, ${e.message ?? ''}");
+      rethrow;
+    }
 
     List<PostModel> posts = [];
     snapshot.docs.forEach((doc) {
@@ -65,5 +77,11 @@ class PostService with FirestoreMixin {
       cacheContainer[cacheId] = posts;
     }
     return posts;
+  }
+
+  Future<PostModel?> load(id) async {
+    DocumentSnapshot doc = await postCol.doc(id).get();
+    if (doc.exists == false) return null;
+    return PostModel.fromJson(doc.data() as Map<String, dynamic>, doc.id);
   }
 }

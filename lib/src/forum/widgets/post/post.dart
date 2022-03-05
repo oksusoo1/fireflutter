@@ -13,10 +13,12 @@ class Post extends StatelessWidget {
     required this.onEdit,
     required this.onDelete,
     required this.onLike,
-    required this.onDislike,
+    this.onDislike,
     required this.onChat,
     required this.onImageTap,
     this.onHide,
+    required this.onSendPushNotification,
+    this.padding,
   }) : super(key: key);
 
   // final Function(PostModel)? contentBuilder;
@@ -28,21 +30,50 @@ class Post extends StatelessWidget {
   final Function(PostModel post) onEdit;
   final Function(PostModel post) onDelete;
   final Function(PostModel post) onLike;
-  final Function(PostModel post) onDislike;
+  final Function(PostModel post)? onDislike;
   final Function(PostModel post) onChat;
   final Function()? onHide;
+  final Function(PostModel post) onSendPushNotification;
   final Function(int index, List<String> fileList) onImageTap;
+  final EdgeInsets? padding;
 
   @override
   Widget build(BuildContext context) {
+    final _onDislike = onDislike == null ? null : () => onDislike!(post);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        PostContent(post),
-        ImageList(
-          files: post.files,
-          onImageTap: (i) => onImageTap(i, post.files),
+        PostContent(
+          post,
+          onImageTapped: (url) {
+            onImageTap(post.files.indexWhere((u) => url == u), post.files);
+          },
+          padding: padding,
         ),
+        if (post.summary != '')
+          Container(
+            padding: EdgeInsets.all(16),
+            color: Colors.grey.shade200,
+            width: double.infinity,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Summary',
+                  style: TextStyle(fontWeight: FontWeight.bold, color: Colors.grey),
+                ),
+                Text(
+                  post.summary,
+                  style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
+                ),
+              ],
+            ),
+          ),
+        if (post.isHtmlContent == false)
+          ImageList(
+            files: post.files,
+            onImageTap: (i) => onImageTap(i, post.files),
+          ),
         ButtonBase(
           uid: post.uid,
           isPost: true,
@@ -51,13 +82,14 @@ class Post extends StatelessWidget {
           onEdit: () => onEdit(post),
           onDelete: () => onDelete(post),
           onLike: () => onLike(post),
-          onDislike: () => onDislike(post),
+          onDislike: _onDislike,
           onChat: () => onChat(post),
           onHide: onHide,
           buttonBuilder: buttonBuilder,
           likeCount: post.like,
           dislikeCount: post.dislike,
           shareButton: shareButton,
+          onSendPushNotification: () => onSendPushNotification(post),
         ),
       ],
     );

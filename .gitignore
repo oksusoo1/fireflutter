@@ -1,4 +1,5 @@
 *.adminKey.json
+*sdk-key.json
 
 # Miscellaneous
 *.class

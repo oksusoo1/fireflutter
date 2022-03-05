@@ -68,6 +68,8 @@ class SearchService {
 
       _posts = res.hits!;
       _hits = res.nbHits ?? 0;
+
+      ///
       resultList.addAll(_posts);
       offset = limit * page;
       page += 1;
@@ -111,6 +113,16 @@ class SearchService {
     /// if (!UserService.instance.user.isAdmin) throw 'YOU_ARE_NOT_ADMIN';
     return client.index(uid).deleteAllDocuments();
   }
+
+  ///
+  ///
+  // Future indexDocuments(
+  //   String index,
+  //   List<Map<String, dynamic>> documents, [
+  //   String? primaryKey,
+  // ]) async {
+  //   return client.index(uid).addDocuments(documents, primaryKey: primaryKey);
+  // }
 
   resetFilters({String index = ''}) {
     uid = '';

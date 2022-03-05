@@ -25,7 +25,7 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
         title: UserDoc(
           uid: widget.arguments['uid'],
           builder: (UserModel user) {
-            return Text(user.nickname);
+            return Text(user.displayName);
           },
         ),
       ),

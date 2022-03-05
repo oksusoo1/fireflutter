@@ -98,7 +98,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                           success: () =>
                               onReAuthenticationSuccess(email).then((value) => callback()),
                           error: error,
-                          submitButton: (callback) => TextButton(
+                          buttons: (callback) => TextButton(
                             child: const Text('Submit'),
                             onPressed: callback,
                           ),

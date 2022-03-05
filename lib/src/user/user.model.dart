@@ -16,6 +16,7 @@ class UserModel with FirestoreMixin, DatabaseMixin {
     this.photoUrl = '',
     this.birthday = 0,
     this.gender = '',
+    this.profileReady = false,
     this.isAdmin = false,
   });
 
@@ -27,6 +28,7 @@ class UserModel with FirestoreMixin, DatabaseMixin {
     'photoUrl',
     'birthday',
     'gender',
+    'profileReady',
     'isAdmin',
   ];
 
@@ -54,18 +56,25 @@ class UserModel with FirestoreMixin, DatabaseMixin {
     if (firstName != '') return firstName;
     if (FirebaseAuth.instance.currentUser?.displayName != null)
       return FirebaseAuth.instance.currentUser!.displayName!;
-    return 'NO-NAME';
+    return '';
   }
 
+  bool get hasDisplayName => displayName != '';
+
   String photoUrl;
+
+  /// default is 0 if it's not set.
   int birthday;
   String gender;
+
+  /// It becomes true when the user's profile is ready.
+  bool profileReady;
 
   bool get signedIn => FirebaseAuth.instance.currentUser != null;
   bool get signedOut => signedIn == false;
 
   ///
-  DatabaseReference get _myDoc => FirebaseDatabase.instance.ref('users').child(uid);
+  DatabaseReference get _userDoc => FirebaseDatabase.instance.ref('users').child(uid);
 
   factory UserModel.fromJson(dynamic data, String uid) {
     if (data == null) return UserModel();
@@ -80,6 +89,7 @@ class UserModel with FirestoreMixin, DatabaseMixin {
       photoUrl: data['photoUrl'] ?? '',
       birthday: data['birthday'] ?? 0,
       gender: data['gender'] ?? '',
+      profileReady: data['profileReady'] ?? false,
     );
   }
 
@@ -111,7 +121,10 @@ class UserModel with FirestoreMixin, DatabaseMixin {
 
   ///
   Future<void> create() {
-    return _myDoc.set({'timestamp_registered': ServerValue.timestamp});
+    return _userDoc.set({
+      'registeredAt': ServerValue.timestamp,
+      'updatedAt': ServerValue.timestamp,
+    });
   }
 
   /// Update login user's document on `/users/{userDoc}` in realtime database.
@@ -124,7 +137,19 @@ class UserModel with FirestoreMixin, DatabaseMixin {
       // throw Exception(ERROR_NOT_SUPPORTED_FIELD_ON_USER_UPDATE);
       throw ERROR_NOT_SUPPORTED_FIELD_ON_USER_UPDATE;
     }
-    return _myDoc.update({field: value});
+    return _userDoc.update({
+      field: value,
+      'updatedAt': ServerValue.timestamp,
+    });
+  }
+
+  /// Updating `updatedAt` field.
+  ///
+  /// Use this method to update user document, so it can trigger any listening callbacks.
+  Future<void> updateUpdatedAt() {
+    return _userDoc.update({
+      'updatedAt': ServerValue.timestamp,
+    });
   }
 
   /// Update nickname
@@ -156,7 +181,7 @@ class UserModel with FirestoreMixin, DatabaseMixin {
   /// Update wether if the user is an admin or not.
   /// Refer readme for details
   Future<void> updateAdminStatus() async {
-    if ( signedOut ) return;
+    if (signedOut) return;
     final DocumentSnapshot doc = await adminsDoc.get();
     if (doc.exists) {
       final data = doc.data()! as Map<String, dynamic>;
