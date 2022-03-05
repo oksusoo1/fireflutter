@@ -313,7 +313,13 @@ describe('Firestore security test', () => {
 
 
     it("Post create failure without category", async () => {
-        await firebase.assertFails(db(authA).collection('posts').add({ category: 'qna' }))
+        await firebase.assertFails(db(authA).collection('posts').add({
+             category: 'qna',
+             timestamp: 1,
+             uid: 'a',
+             noOfComments: 0,
+             deleted: false,
+        }));
     });
 
 
@@ -323,8 +329,22 @@ describe('Firestore security test', () => {
         await admin().collection("categories").doc("qna").set({
             title: 'QnA'
         });
-        await firebase.assertFails(db().collection('posts').add({ category: 'qna' }))
+        await firebase.assertFails(db().collection('posts').add({
+            category: 'qna',
+            timestamp: 1,
+            uid: A,
+            noOfComments: 0,
+            deleted: false,
+        }));
+        await firebase.assertSucceeds(db(authA).collection('posts').add({
+            category: 'qna',
+            timestamp: 1,
+            uid: A,
+            noOfComments: 0,
+            deleted: false,
+        }));
     });
+
 
 
     it("Post create failure - wrong input data - category is missing", async () => {
@@ -335,8 +355,110 @@ describe('Firestore security test', () => {
             uid: A,
             title: '...',
             content: 'content',
-            timestamp: '1',
+            timestamp: 1,
+            noOfComments: 0,
+            deleted: false,
         }));
+        await firebase.assertSucceeds(db(authA).collection('posts').add({
+            category: 'qna',
+            uid: A,
+            title: '...',
+            content: 'content',
+            timestamp: 1,
+            noOfComments: 0,
+            deleted: false,
+        }));
+    });
+
+
+    it("Post create failure - missing property test", async() => {
+        await createCategory('qna');
+
+        // Success
+        await firebase.assertSucceeds(db(authA).collection('posts').add({
+            category: 'qna',
+            uid: A,
+            title: '...',
+            content: 'content',
+            timestamp: '1',
+            noOfComments: 0,
+            deleted: false,
+            anyField: 'anyData',
+        }));
+
+        // Failure - category missing
+        await firebase.assertFails(db(authA).collection('posts').add({
+            // category: 'qna',
+            uid: A,
+            title: '...',
+            content: 'content',
+            timestamp: '1',
+            noOfComments: 0,
+            deleted: false,
+            anyField: 'anyData',
+        }));
+
+        // Failure - uid missing
+        await firebase.assertFails(db(authA).collection('posts').add({
+            category: 'qna',
+            // uid: A,
+            title: '...',
+            content: 'content',
+            timestamp: '1',
+            noOfComments: 0,
+            deleted: false,
+            anyField: 'anyData',
+        }));
+
+
+        // Failure - noOfComment is missing
+        await firebase.assertFails(db(authA).collection('posts').add({
+            category: 'qna',
+            uid: A,
+            title: '...',
+            content: 'content',
+            timestamp: '1',
+            // noOfComments: 0,
+            deleted: false,
+            anyField: 'anyData',
+        }));
+
+        // Failure - noOfComment is not 0
+        await firebase.assertFails(db(authA).collection('posts').add({
+            category: 'qna',
+            uid: A,
+            title: '...',
+            content: 'content',
+            timestamp: '1',
+            noOfComments: 1,
+            deleted: false,
+            anyField: 'anyData',
+        }));
+
+        // Failure - deleted is missing
+        await firebase.assertFails(db(authA).collection('posts').add({
+            category: 'qna',
+            uid: A,
+            title: '...',
+            content: 'content',
+            timestamp: '1',
+            noOfComments: 0,
+            // deleted: false,
+            anyField: 'anyData',
+        }));
+
+        // Failure - deleted is not false
+        await firebase.assertFails(db(authA).collection('posts').add({
+            category: 'qna',
+            uid: A,
+            title: '...',
+            content: 'content',
+            timestamp: '1',
+            noOfComments: 0,
+            deleted: true,
+            anyField: 'anyData',
+        }));
+
     });
 
     it("Post create success - input any data", async () => {
@@ -350,9 +472,12 @@ describe('Firestore security test', () => {
             title: '...',
             content: 'content',
             timestamp: '1',
-            anyField: 'anyData'
+            noOfComments: 0,
+            deleted: false,
+            anyField: 'anyData',
         }));
     });
+
 
     it("Post update - failure", async () => {
         await createCategory('qna');
