@@ -32,7 +32,7 @@ class CommentModel with FirestoreMixin, ForumBase {
 
   String content;
   String get displayContent {
-    return deleted ? 'comment-content-deleted' : content;
+    return deleted ? TranslationService.instance.tr(COMMENT_CONTENT_DELETED) : content;
   }
 
   int like;

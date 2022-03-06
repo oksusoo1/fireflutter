@@ -50,6 +50,7 @@ Table of contents
 - [Admin](#admin-1)
   - [Admin status check & update](#admin-status-check--update)
 - [Translation](#translation)
+  - [Get translated text](#get-translated-text)
   - [Tr](#tr)
 - [User presence](#user-presence)
   - [User presence overview](#user-presence-overview)
@@ -480,6 +481,14 @@ PhoneService.instance.verifyPhoneNumber(
   - And translataion texts are updated immedialy when the `/settings/translations` is changed. And this leads `Tr` widget to re-render.
     - So, when `/settings/translation` changes, it will instantly update the text of `Tr` widget.
 
+## Get translated text
+
+- To get the translated text, do the following.
+
+```dart
+TranslationService.instance.tr('ERROR')
+```
+
 ## Tr
 
 - You can use `Tr` widget to display the translated text.
@@ -488,6 +497,8 @@ PhoneService.instance.verifyPhoneNumber(
 ```dart
 Tr('name', style: ...);
 ```
+
+
 
 
 # User presence

@@ -34,6 +34,7 @@ const ERROR_NO_GENER = 'ERROR_NO_GENER';
 const ERROR_NO_BIRTHDAY = 'ERROR_NO_BIRTHDAY';
 const ERROR_UNKNWON = 'ERROR_UNKNWON';
 
+const COMMENT_CONTENT_DELETED = "COMMENT_CONTENT_DELETED";
+
 /// This happens when the app tries to save(update) a field with data on user information where the field is not supported.
-const ERROR_NOT_SUPPORTED_FIELD_ON_USER_UPDATE =
-    'ERROR_NOT_SUPPORTED_FIELD_ON_USER_UPDATE';
+const ERROR_NOT_SUPPORTED_FIELD_ON_USER_UPDATE = 'ERROR_NOT_SUPPORTED_FIELD_ON_USER_UPDATE';
