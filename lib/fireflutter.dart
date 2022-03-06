@@ -58,7 +58,6 @@ export 'src/forum/widgets/post/post.dart';
 export 'src/forum/widgets/comment/comment.dart';
 export 'src/forum/widgets/post/post.form.dart';
 export 'src/forum/widgets/post/post.content.dart';
-export 'src/forum/widgets/forum.list.dart';
 export 'src/forum/widgets/button.base.dart';
 export 'src/forum/models/category.model.dart';
 export 'src/forum/category.service.dart';

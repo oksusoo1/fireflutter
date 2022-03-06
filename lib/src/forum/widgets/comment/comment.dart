@@ -84,22 +84,29 @@ class _CommentState extends State<Comment> with FirestoreMixin {
             }
           }
         }
-
-        if (mounted) setState(() {});
       });
+
+      if (mounted) setState(() {});
+      // PostService.instance.comments[widget.post.id] = comments;
     });
   }
 
   @override
   void initState() {
     super.initState();
+    // if (PostService.instance.comments[widget.post.id] != null) {
+    //   comments = PostService.instance.comments[widget.post.id]!;
+    // } else {
     loadComments();
+    // }
   }
 
   @override
   void dispose() {
     super.dispose();
     sub?.cancel();
+    print('disposed??');
+    widget.post.open = false;
   }
 
   @override

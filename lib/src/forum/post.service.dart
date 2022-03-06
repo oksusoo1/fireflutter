@@ -13,8 +13,15 @@ class PostService with FirestoreMixin {
   Map<String, List<PostModel>> cacheContainer = {};
 
   /// Post container
-  /// All loaded posts should go here. This is used by `PostModel.fromJson`
+  /// All loaded posts are contained here.
+  /// `PostModel.fromJson` will put all the loaded post into [posts].
   Map<String, PostModel> posts = {};
+
+  /// Comment container for each post.
+  ///
+  /// All the comments of each post are maintained in [comments].
+  /// Comments should be saved in this variable when a post displays comments.
+  // Map<String, List<CommentModel>> comments = {};
 
   /// Gets document from post collection
   ///
@@ -51,7 +58,8 @@ class PostService with FirestoreMixin {
     if (within != null) {
       q = q.where(
         'createdAt',
-        isGreaterThanOrEqualTo: Jiffy().subtract(days: within).format("yyyy-MM-dd"),
+        isGreaterThanOrEqualTo:
+            Jiffy().subtract(days: within).format("yyyy-MM-dd"),
       );
     }
     q = q.limit(limit);
