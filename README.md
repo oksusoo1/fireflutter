@@ -21,6 +21,8 @@ Table of contents
 
 - [Fire Flutter](#fire-flutter)
 - [TODOs](#todos)
+  - [Sample code](#sample-code)
+  - [Full functional code](#full-functional-code)
   - [Bug on security rule](#bug-on-security-rule)
   - [Admin](#admin)
   - [Chat](#chat)
@@ -84,7 +86,7 @@ Table of contents
 - [Test](#test)
   - [Test method](#test-method)
   - [Local test on firestore security rules](#local-test-on-firestore-security-rules)
-- [Sample code](#sample-code)
+- [Sample code](#sample-code-1)
 - [Issues](#issues)
   - [firebase_database/permission-denied](#firebase_databasepermission-denied)
   - [Firebase realtime database is not working](#firebase-realtime-database-is-not-working)
@@ -117,6 +119,19 @@ Table of contents
   - [Meilisearch](#meilisearch)
 
 # TODOs
+
+## Sample code
+
+- Provide more sample code and use cases.
+  - Providing as much as possible code based on official document and firebase code sample, and [cloud funtions sample code](https://github.com/firebase/functions-samples)
+
+
+## Full functional code
+
+- Provide all the functions of firebase.
+  - For instance, provide all the functions of user management from [Firebase document](https://firebase.google.com/docs/auth/admin/manage-users).
+    - Fireflutter may need to use `callable function` to call the function to provide the full admin functionality of authentication.
+    - By doing this, fireflutter can provide user search, update, block, delete etc.
 
 ## Bug on security rule
 
