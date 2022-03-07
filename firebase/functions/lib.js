@@ -8,6 +8,7 @@ const admin = require("firebase-admin");
 const Axios = require("axios");
 const utils = require("./utils");
 const ref = require("./reference");
+const { user } = require("firebase-functions/v1/auth");
 
 // const {MeiliSearch} = require("meilisearch");
 
@@ -432,8 +433,9 @@ async function enableUser(data, context) {
       message: "To manage user, you need to sign-in as an admin.",
     };
   }
-  await rdb.ref("users").child(data.uid).update({disabled: false});
-  return auth.updateUser(data.uid, {disabled: false});
+  const user = await auth.updateUser(data.uid, {disabled: false});
+  if(user.disabled == false) await rdb.ref("users").child(data.uid).update({disabled: false});
+  return user;
 }
 
 async function disableUser(data, context) {
@@ -444,8 +446,9 @@ async function disableUser(data, context) {
       message: "To manage user, you need to sign-in as an admin.",
     };
   }
-  await rdb.ref("users").child(data.uid).update({disabled: true});
-  return auth.updateUser(data.uid, {disabled: true});
+  const user = await auth.updateUser(data.uid, {disabled: true});
+  if(user.disabled == true) await rdb.ref("users").child(data.uid).update({disabled: true});
+  return user;
 }
 
 exports.delay = delay;
