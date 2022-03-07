@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:extended/extended.dart';
 import 'package:fe/screens/admin/admin.search_settings.screen.dart';
 import 'package:fe/screens/chat/chat.rooms.screen.dart';
+import 'package:fe/screens/forum/forum.list.screen.dart';
 import 'package:fe/screens/friend_map/friend_map.screen.dart';
 import 'package:fe/screens/help/help.screen.dart';
 import 'package:fe/screens/phone_sign_in/phone_sign_in.screen.dart';
@@ -224,13 +225,11 @@ class _HomeScreenState extends State<HomeScreen> {
                     onPressed: () => AppService.instance.openPostList(category: 'buyandsell'),
                     child: const Text('Buy & Sell'),
                   ),
-                  // ElevatedButton(
-                  //     style: ElevatedButton.styleFrom(
-                  //         primary: Colors.amber.shade800),
-                  //     onPressed: () => AppService.instance.open(
-                  //         ForumListScreen.routeName,
-                  //         arguments: {'category': 'qna'}),
-                  //     child: Text('QnA with ForumListView')),
+                  ElevatedButton(
+                      style: ElevatedButton.styleFrom(primary: Colors.amber.shade800),
+                      onPressed: () => AppService.instance
+                          .open(ForumListScreen.routeName, arguments: {'category': 'qna'}),
+                      child: Text('QnA with ForumListView')),
                 ],
               ),
               SizedBox(height: 10),
