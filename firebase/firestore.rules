@@ -46,7 +46,9 @@ service cloud.firestore {
     match /posts/{postId} {
       allow read: if true;
       allow create: if
-        required(['category', 'uid', 'createdAt', 'updatedAt']) &&
+        required(['category', 'uid', 'createdAt', 'updatedAt', 'noOfComments', 'deleted']) &&
+        request.resource.data.noOfComments == 0 &&
+        request.resource.data.deleted == false &&
         categoryExists() &&
         willBeMyPost()
       ;
@@ -61,7 +63,7 @@ service cloud.firestore {
         onlyUpdating(['viewCounter', 'like', 'dislike', 'noOfComments'])
       ;
       // Post deletion is not allowed.
-      allow delete: if false;
+      allow delete: if isMyPost() && resource.data.noOfComments == 0;
     }
 
 

@@ -124,7 +124,10 @@ class _MainAppState extends State<MainApp> {
     SendPushNotificationService.instance.init(
         serverUrl:
             'https://asia-northeast3-withcenter-test-project.cloudfunctions.net');
-
+    // Timer(
+    //     const Duration(milliseconds: 200),
+    //     () => AppService.instance
+    //         .open(ForumListScreen.routeName, arguments: {'category': 'qna'}));
     // Timer(const Duration(milliseconds: 200), () => Get.toNamed('/email-verify'));
     // Timer(const Duration(milliseconds: 200), AppController.of.openCategory);
     Timer(

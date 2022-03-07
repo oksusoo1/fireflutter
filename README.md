@@ -21,6 +21,8 @@ Table of contents
 
 - [Fire Flutter](#fire-flutter)
 - [TODOs](#todos)
+  - [Sample code](#sample-code)
+  - [Full functional code](#full-functional-code)
   - [Bug on security rule](#bug-on-security-rule)
   - [Admin](#admin)
   - [Chat](#chat)
@@ -50,6 +52,7 @@ Table of contents
 - [Admin](#admin-1)
   - [Admin status check & update](#admin-status-check--update)
 - [Translation](#translation)
+  - [Get translated text](#get-translated-text)
   - [Tr](#tr)
 - [User presence](#user-presence)
   - [User presence overview](#user-presence-overview)
@@ -83,7 +86,7 @@ Table of contents
 - [Test](#test)
   - [Test method](#test-method)
   - [Local test on firestore security rules](#local-test-on-firestore-security-rules)
-- [Sample code](#sample-code)
+- [Sample code](#sample-code-1)
 - [Issues](#issues)
   - [firebase_database/permission-denied](#firebase_databasepermission-denied)
   - [Firebase realtime database is not working](#firebase-realtime-database-is-not-working)
@@ -116,6 +119,19 @@ Table of contents
   - [Meilisearch](#meilisearch)
 
 # TODOs
+
+## Sample code
+
+- Provide more sample code and use cases.
+  - Providing as much as possible code based on official document and firebase code sample, and [cloud funtions sample code](https://github.com/firebase/functions-samples)
+
+
+## Full functional code
+
+- Provide all the functions of firebase.
+  - For instance, provide all the functions of user management from [Firebase document](https://firebase.google.com/docs/auth/admin/manage-users).
+    - Fireflutter may need to use `callable function` to call the function to provide the full admin functionality of authentication.
+    - By doing this, fireflutter can provide user search, update, block, delete etc.
 
 ## Bug on security rule
 
@@ -480,6 +496,14 @@ PhoneService.instance.verifyPhoneNumber(
   - And translataion texts are updated immedialy when the `/settings/translations` is changed. And this leads `Tr` widget to re-render.
     - So, when `/settings/translation` changes, it will instantly update the text of `Tr` widget.
 
+## Get translated text
+
+- To get the translated text, do the following.
+
+```dart
+TranslationService.instance.tr('ERROR')
+```
+
 ## Tr
 
 - You can use `Tr` widget to display the translated text.
@@ -488,6 +512,8 @@ PhoneService.instance.verifyPhoneNumber(
 ```dart
 Tr('name', style: ...);
 ```
+
+
 
 
 # User presence
@@ -563,6 +589,8 @@ UserPresence(
 - For the efficiency, `MyDoc` does not listen to the realtime database document change on every instance, since reading the document over and over again may cost a lot of money if it is used in many places.
   - It listens `UserService.instance.changes` event which only read one time on every user document change.
   - By doing this, `MyDoc` may be used for the replacement of state management.
+
+- `MyDoc` displays nothing when the user is not signed in.
 
 ```dart
 MyDoc(
@@ -927,6 +955,8 @@ InformService.instance.inform(widget.room.otherUid, {
 
 - See all tests code.
 - `./firebase/lab` folder has some sample code.
+  - `post.add-missing-properties.js` is for adding `noOfComments` and `deleted` fields on missing fields.
+  - `create.test.user.js` is for creating test user accounts.
 
 # Issues
 
@@ -1101,7 +1131,9 @@ DynamicLinksService.instance.listen((Uri? deepLink) {
 
 - `PostModel` has methods like create, update, delete, like, dislike, and so on.
 
-- When user deletes a post, the document is marked as deleted, instead of remove it from the database. And user may update the document even if the post is marked as deleted. Editing post of delete mark is banned by security rule. This is by design and is not harmful. So, there should be some code to inform user not to edit deleted post. This goes the same to comment delete.
+- When user deletes a post,
+  - If the post has no comment, then the post document will be deleted.
+  - If the post has comment, then the document is marked as deleted, instead of deleting the document from the database. And user may update the document even if the post is marked as deleted. Editing post of delete mark is banned by security rule. This is by design and is not harmful. So, there should be some code to inform user not to edit deleted post. This goes the same to comment delete.
 
 - `hasPhoto` becomes true if the post has a photo.
 
@@ -1141,6 +1173,12 @@ DynamicLinksService.instance.listen((Uri? deepLink) {
   - On the sample code, admin can input document id when he creates a post.
   - Then, the document id can be used to view the post or get the post.
     - App can display a banner and when user taps, app can redirect to post view screen by give the `named-document-id`.
+
+
+- Update at Mar 5, 2022 - `noOfComments` is required to create a post. The value must be 0.
+  - By this, app can search posts with `.where('noOfComments', isEqualTo: 0)`.
+- Update at Mar 5, 2022 - `deleted` is required to create a post and the value must be `false`.
+  - By this, app can search posts with `.where('deleted', isEqualTo: false)`.
 
 
 ## Comment

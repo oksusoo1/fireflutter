@@ -1,5 +1,16 @@
 # Change Log
 
+## [0.2.15] - Changes on user, post, cloud function.
+
+- Post properties had changed. `noOfComments`, `deleted`, `createdAt`, `updatedAt`. Its security rules had changed accordingly.
+- Cloud functions for meilisearch had been added.
+- Could functions for post management had been added.
+- Report functionality had been added.
+- Email verification had been added. It's working with dynamic links.
+- Push notification had been added.
+- Admin can manage categories. Sample UI had been added.
+- Multilingual support.
+
 ## [0.2.12] - ReminderEdit widget controller
 
 - Controller had added to `ReminderEdit` widget.

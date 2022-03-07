@@ -48,7 +48,9 @@ class _CommentState extends State<Comment> with FirestoreMixin {
 
   loadComments() {
     sub?.cancel();
-    commentCol
+
+    /// It is listening any changes of the docs.
+    sub = commentCol
         .where('postId', isEqualTo: widget.post.id)
         .orderBy('createdAt')
         .snapshots()
@@ -81,22 +83,32 @@ class _CommentState extends State<Comment> with FirestoreMixin {
             }
           }
         }
-
-        if (mounted) setState(() {});
       });
+
+      if (mounted) setState(() {});
+      // PostService.instance.comments[widget.post.id] = comments;
     });
   }
 
   @override
   void initState() {
     super.initState();
+    // if (PostService.instance.comments[widget.post.id] != null) {
+    //   comments = PostService.instance.comments[widget.post.id]!;
+    // } else {
     loadComments();
+    // }
   }
 
   @override
   void dispose() {
     super.dispose();
     sub?.cancel();
+
+    /// When comment is disposed, it means, the post and all of its comments
+    /// scrolled out of visible area. So, close the post for better scrolling
+    /// experience. Or scroll will not be smooth.
+    widget.post.open = false;
   }
 
   @override
@@ -125,19 +137,20 @@ class _CommentState extends State<Comment> with FirestoreMixin {
                 files: comment.files,
                 onImageTap: (i) => widget.onImageTap(i, comment.files),
               ),
-              ButtonBase(
-                uid: comment.uid,
-                isPost: false,
-                onReply: () => widget.onReply(widget.post, comment),
-                onReport: () => widget.onReport(comment),
-                onEdit: () => widget.onEdit(comment),
-                onDelete: () => widget.onDelete(comment),
-                onLike: () => widget.onLike(comment),
-                onDislike: () => widget.onDislike(comment),
-                buttonBuilder: widget.buttonBuilder,
-                likeCount: comment.like,
-                dislikeCount: comment.dislike,
-              ),
+              if (comment.deleted == false)
+                ButtonBase(
+                  uid: comment.uid,
+                  isPost: false,
+                  onReply: () => widget.onReply(widget.post, comment),
+                  onReport: () => widget.onReport(comment),
+                  onEdit: () => widget.onEdit(comment),
+                  onDelete: () => widget.onDelete(comment),
+                  onLike: () => widget.onLike(comment),
+                  onDislike: () => widget.onDislike(comment),
+                  buttonBuilder: widget.buttonBuilder,
+                  likeCount: comment.like,
+                  dislikeCount: comment.dislike,
+                ),
             ],
           ),
         );
@@ -146,32 +159,31 @@ class _CommentState extends State<Comment> with FirestoreMixin {
   }
 
   Widget _commentHeader(CommentModel comment) {
-    return widget.headerBuilder != null
-        ? widget.headerBuilder!(comment)
-        : Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
-            child: UserDoc(
-              uid: comment.uid,
-              builder: (user) => Row(
-                children: [
-                  ClipOval(
-                    child: user.photoUrl != ''
-                        ? UploadedImage(url: user.photoUrl)
-                        : Icon(Icons.person, color: Colors.black, size: 30),
-                  ),
-                  SizedBox(width: 8),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(user.displayName.isNotEmpty ? "${user.displayName}" : "No name"),
-                      SizedBox(height: 8),
-                      ShortDate(comment.createdAt.millisecondsSinceEpoch),
-                    ],
-                  ),
-                ],
-              ),
+    if (widget.headerBuilder != null) return widget.headerBuilder!(comment);
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
+      child: UserDoc(
+        uid: comment.uid,
+        builder: (user) => Row(
+          children: [
+            ClipOval(
+              child: user.photoUrl != ''
+                  ? UploadedImage(url: user.photoUrl)
+                  : Icon(Icons.person, color: Colors.black, size: 30),
             ),
-          );
+            SizedBox(width: 8),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(user.displayName.isNotEmpty ? "${user.displayName}" : "No name"),
+                SizedBox(height: 8),
+                ShortDate(comment.createdAt.millisecondsSinceEpoch),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   Widget _contentBuilder(CommentModel comment) {
