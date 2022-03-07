@@ -4,7 +4,6 @@ const mocha = require("mocha");
 const describe = mocha.describe;
 const it = mocha.it;
 
-
 const assert = require("assert");
 const admin = require("firebase-admin");
 const {MeiliSearch} = require("meilisearch");
@@ -14,7 +13,8 @@ if (!admin.apps.length) {
   const serviceAccount = require("../../withcenter-test-project.adminKey.json");
   admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
-    databaseURL: "https://withcenter-test-project-default-rtdb.asia-southeast1.firebasedatabase.app/",
+    databaseURL:
+      "https://withcenter-test-project-default-rtdb.asia-southeast1.firebasedatabase.app/",
   });
 }
 // This must come after initlization
@@ -23,7 +23,7 @@ const test = require("../test");
 
 // TODO: User index (create, update, delete)
 describe("Meilisearch test", () => {
-  const timestamp = (new Date).getTime();
+  const timestamp = new Date().getTime();
   console.log("timestamp; ", timestamp);
 
   const client = new MeiliSearch({
@@ -49,56 +49,25 @@ describe("Meilisearch test", () => {
     content: originalCommentContent,
   };
 
-  // User test data.
-  // const userId = 'user_aaa';
-  // const originalFirstName = 'User A'
-  // const newFirstName = 'User A (Updated)'
-  // const userData = {
-  //   id: userId,
-  //   firstName: originalFirstName,
-  //   lastName: 'Lastname A',
-  // }
-
   // ------ Prep
 
   it("prepares test", async () => {
-    const postFilters = await client
-        .index("posts")
-        .getFilterableAttributes();
+    const postFilters = await client.index("posts").getFilterableAttributes();
 
     console.log("Post filterables: ", postFilters);
     if (!postFilters.includes("id")) {
       postFilters.push("id");
       console.log("Updating post filterables: ", postFilters);
-      await client
-          .index("posts")
-          .updateFilterableAttributes(postFilters);
+      await client.index("posts").updateFilterableAttributes(postFilters);
     }
 
-    const commentFilters = await client
-        .index("comments")
-        .getFilterableAttributes();
+    const commentFilters = await client.index("comments").getFilterableAttributes();
 
     console.log("Comment filterables: ", commentFilters);
     if (!commentFilters.includes("id")) {
       commentFilters.push("id");
       console.log("Updating comment filterables: ", commentFilters);
-      await client
-          .index("comments")
-          .updateFilterableAttributes(commentFilters);
-    }
-
-    const userFilters = await client
-        .index("users")
-        .getFilterableAttributes();
-
-    console.log("User filterables: ", userFilters);
-    if (!userFilters.includes("id")) {
-      userFilters.push("id");
-      console.log("Updating user filterables: ", userFilters);
-      await client
-          .index("users")
-          .updateFilterableAttributes(userFilters);
+      await client.index("comments").updateFilterableAttributes(commentFilters);
     }
   });
 
@@ -111,12 +80,10 @@ describe("Meilisearch test", () => {
     });
     await lib.delay(4000);
 
-    const search = await client
-        .index("posts")
-        .search("", {filter: ["id = " + postData.id]});
+    const search = await client.index("posts").search("", {filter: ["id = " + postData.id]});
 
-    assert.ok( search.hits.length > 0 );
-    assert.ok( search.hits[0].title == postData.title );
+    assert.ok(search.hits.length > 0);
+    assert.ok(search.hits[0].title == postData.title);
   });
 
   it("tests post update indexing", async () => {
@@ -127,11 +94,9 @@ describe("Meilisearch test", () => {
     });
 
     await lib.delay(4000);
-    const search = await client
-        .index("posts")
-        .search("", {filter: ["id = " + postData.id]});
-    assert.ok( search.hits.length > 0 );
-    assert.ok( search.hits[0].title == postData.title );
+    const search = await client.index("posts").search("", {filter: ["id = " + postData.id]});
+    assert.ok(search.hits.length > 0);
+    assert.ok(search.hits[0].title == postData.title);
   });
 
   it("tests post delete indexing", async () => {
@@ -143,13 +108,10 @@ describe("Meilisearch test", () => {
     });
 
     await lib.delay(4000);
-    const search = await client
-        .index("posts")
-        .search("", {filter: ["id = " + postData.id]});
+    const search = await client.index("posts").search("", {filter: ["id = " + postData.id]});
 
-    assert.ok( search.hits.length == 0 );
+    assert.ok(search.hits.length == 0);
   });
-
 
   // ------ Comment test
 
@@ -163,8 +125,8 @@ describe("Meilisearch test", () => {
         .index("comments")
         .search("", {filter: ["id = " + commentData.id]});
 
-    assert.ok( search.hits.length > 0 );
-    assert.ok( search.hits[0].content == commentData.content );
+    assert.ok(search.hits.length > 0);
+    assert.ok(search.hits[0].content == commentData.content);
   });
 
   it("tests comment update indexing", async () => {
@@ -178,8 +140,8 @@ describe("Meilisearch test", () => {
         .index("comments")
         .search("", {filter: ["id = " + commentData.id]});
 
-    assert.ok( search.hits.length > 0 );
-    assert.ok( search.hits[0].content == commentData.content );
+    assert.ok(search.hits.length > 0);
+    assert.ok(search.hits[0].content == commentData.content);
   });
 
   it("tests comment delete indexing", async () => {
@@ -194,23 +156,6 @@ describe("Meilisearch test", () => {
         .index("comments")
         .search("", {filter: ["id = " + commentData.id]});
 
-    assert.ok( search.hits.length == 0 );
+    assert.ok(search.hits.length == 0);
   });
-
-
-  // TODO ------ User test
-
-  // it("tests user create indexing", async () => {
-  // ...
-  // });
-
-  // it("tests user update indexing", async () => {
-  // ...
-  // });
-
-  // it("tests user delete indexing", async () => {
-  // ...
-  // });
 });
-
-

@@ -10,7 +10,7 @@ class ButtonBase extends StatelessWidget {
     required this.onEdit,
     required this.onDelete,
     required this.onLike,
-    required this.onDislike,
+    this.onDislike,
     this.onChat,
     this.onHide,
     this.likeCount = 0,
@@ -29,7 +29,7 @@ class ButtonBase extends StatelessWidget {
   final Function() onEdit;
   final Function() onDelete;
   final Function() onLike;
-  final Function() onDislike;
+  final Function()? onDislike;
   final Function()? onChat;
   final Function()? onHide;
   final Widget? shareButton;
@@ -56,7 +56,8 @@ class ButtonBase extends StatelessWidget {
         _button(isPost ? 'Reply' : 'Reply', onReply),
         _button('Report', onReport),
         _button('Like ${likeCount > 0 ? likeCount : ""}', onLike),
-        _button('Dislike ${dislikeCount > 0 ? dislikeCount : ""}', onDislike),
+        if (onDislike != null)
+          _button('Dislike ${dislikeCount > 0 ? dislikeCount : ""}', onDislike!),
         if (isPost && onChat != null) _button('Chat', onChat!),
         if (shareButton != null) shareButton!,
         Spacer(),

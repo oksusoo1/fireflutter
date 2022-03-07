@@ -70,6 +70,26 @@ class UserModel with FirestoreMixin, DatabaseMixin {
   int birthday;
   String gender;
 
+  /// return age.
+  int get age {
+    final String birthdayString = birthday.toString();
+    if (birthdayString.length != 8) return 0;
+
+    final today = new DateTime.now();
+    final birthDate = new DateTime(
+      int.tryParse(birthdayString.substring(0, 4)) ?? 0,
+      int.tryParse(birthdayString.substring(4, 6)) ?? 0,
+      int.tryParse(birthdayString.substring(6, 8)) ?? 0,
+    );
+
+    int age = today.year - birthDate.year;
+    final m = today.month - birthDate.month;
+    if (m < 0 || (m == 0 && today.day < birthDate.day)) {
+      age--;
+    }
+    return age;
+  }
+
   /// It becomes true when the user's profile is ready.
   bool profileReady;
 

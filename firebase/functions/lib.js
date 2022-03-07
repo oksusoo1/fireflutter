@@ -8,6 +8,7 @@ const admin = require("firebase-admin");
 const Axios = require("axios");
 const utils = require("./utils");
 const ref = require("./reference");
+const { user } = require("firebase-functions/v1/auth");
 
 // const {MeiliSearch} = require("meilisearch");
 
@@ -52,7 +53,6 @@ function getPost(id) {
   return admin.firestore().collection("posts").doc(id).get();
 }
 
-
 /**
  * Creates or update a user document index.
  *
@@ -60,19 +60,17 @@ function getPost(id) {
  * @param {*} data user data to index.
  * @returns promise
  */
-async function indexUserDocument(uid, data) {
+async function indexUserDocument(id, data) {
   const _data = {
-    uid: uid,
+    id: id,
     gender: data.gender ?? "",
-    firstname: data.firstName ?? "",
-    middlename: data.middleName ?? "",
-    lastname: data.lastName ?? "",
+    firstName: data.firstName ?? "",
+    middleName: data.middleName ?? "",
+    lastName: data.lastName ?? "",
     photoUrl: data.photoUrl ?? "",
-    registeredAt: utils.getTimestamp(data.registeredAt),
-    updatedAt: utils.getTimestamp(data.updatedAt),
+    // registeredAt: data.registeredAt ?? 0,
+    // updatedAt: data.updatedAt ?? 0,
   };
-
-  // return Axios.post("https://wonderfulkorea.kr:4431/index.php?api=post/record", _data)
   return Axios.post("http://wonderfulkorea.kr:7700/indexes/users/documents", _data);
 }
 
@@ -82,8 +80,8 @@ async function indexUserDocument(uid, data) {
  * @param {*} id user id to delete.
  * @returns promise
  */
-async function deleteIndexedUserDocument(uid) {
-  return Axios.delete("http://wonderfulkorea.kr:7700/indexes/users/documents/" + uid);
+async function deleteIndexedUserDocument(id) {
+  return Axios.delete("http://wonderfulkorea.kr:7700/indexes/users/documents/" + id);
 }
 
 /**
@@ -433,8 +431,9 @@ async function enableUser(data, context) {
       message: "To manage user, you need to sign-in as an admin.",
     };
   }
-  await rdb.ref("users").child(data.uid).update({disabled: false});
-  return auth.updateUser(data.uid, {disabled: false});
+  const user = await auth.updateUser(data.uid, {disabled: false});
+  if(user.disabled == false) await rdb.ref("users").child(data.uid).update({disabled: false});
+  return user;
 }
 
 async function disableUser(data, context) {
@@ -445,8 +444,9 @@ async function disableUser(data, context) {
       message: "To manage user, you need to sign-in as an admin.",
     };
   }
-  await rdb.ref("users").child(data.uid).update({disabled: true});
-  return auth.updateUser(data.uid, {disabled: true});
+  const user = await auth.updateUser(data.uid, {disabled: true});
+  if(user.disabled == true) await rdb.ref("users").child(data.uid).update({disabled: true});
+  return user;
 }
 
 exports.delay = delay;
@@ -479,5 +479,5 @@ exports.sendingMessageToTokens = sendingMessageToTokens;
 exports.updateFileParentId = updateFileParentId;
 exports.enableUser = enableUser;
 exports.disableUser = disableUser;
-exports.indexUser = indexUserDocument;
-exports.deleteIndexedUser = deleteIndexedUserDocument;
+exports.indexUserDocument = indexUserDocument;
+exports.deleteIndexedUserDocument = deleteIndexedUserDocument;

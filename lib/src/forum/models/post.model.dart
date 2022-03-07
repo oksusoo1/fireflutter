@@ -82,23 +82,16 @@ class PostModel with FirestoreMixin, ForumBase {
   /// To open the post data. Use this to display post content or not on post list screen.
   bool open = false;
 
+  List<CommentModel> comments = [];
+
   /// Get document data of map and convert it into post model
   factory PostModel.fromJson(Json data, String id) {
     String content = data['content'] ?? '';
 
     /// Check if the content has any html tag.
-    bool html = false;
-    if (content.indexOf('</p>') > -1 ||
-        content.indexOf('</span') > -1 ||
-        content.indexOf('</em>') > -1 ||
-        content.indexOf('</strong>') > -1 ||
-        content.indexOf('<br>') > -1 ||
-        content.indexOf('<img') > -1 ||
-        content.indexOf('style="') > -1) {
-      html = true;
-    }
+    bool html = _isHtml(content);
 
-    return PostModel(
+    final post = PostModel(
       id: id,
       category: data['category'] ?? '',
       title: data['title'] ?? '',
@@ -120,6 +113,21 @@ class PostModel with FirestoreMixin, ForumBase {
       updatedAt: data['updatedAt'],
       data: data,
     );
+
+    /// If the post is opened, then maintain the status.
+    /// If the [open] property is not maintained,
+    /// every time the document had updated, `PostModel.fromJson` will be called again
+    /// and [open] becomes false, and the post may be closed.
+    /// For instance, when user likes the post and the post closes on post list.
+    if (PostService.instance.posts[post.id] != null) {
+      final p = PostService.instance.posts[post.id]!;
+      post.open = p.open;
+    }
+
+    /// Keep loaded post into memory.
+    PostService.instance.posts[post.id] = post;
+
+    return post;
   }
 
   /// Get indexed document data from meilisearch of map and convert it into post model
@@ -263,9 +271,14 @@ class PostModel with FirestoreMixin, ForumBase {
     return PostModel.fromJson(snapshot.data() as Json, snapshot.id);
   }
 
+  /// See readme.
   Future<void> delete() {
+    /// Delete the post if noOfComments is 0 even if the post is marked as deleted.
+    if (noOfComments == 0) return postDoc(id).delete();
+
     if (deleted) throw ERROR_ALREADY_DELETED;
 
+    /// Once `deleted` is true, then it cannot mark as deleted again.
     return postDoc(id).update({
       'deleted': true,
       'content': '',
@@ -299,6 +312,10 @@ class PostModel with FirestoreMixin, ForumBase {
     return FirestoreMixin.postDocument(postId).update({'noOfComments': FieldValue.increment(1)});
   }
 
+  static Future<void> decreaseNoOfComments(postId) {
+    return FirestoreMixin.postDocument(postId).update({'noOfComments': FieldValue.increment(-1)});
+  }
+
   ///
   Future feedLike() {
     return feed(path, 'like');
@@ -322,5 +339,34 @@ class PostModel with FirestoreMixin, ForumBase {
       re = false;
     }
     return re ? DateFormat.jm().format(date).toLowerCase() : DateFormat.yMd().format(date);
+  }
+
+  /// Returns true if the text is HTML.
+  static bool _isHtml(String t) {
+    t = t.toLowerCase();
+
+    if (t.contains('</h1>')) return true;
+    if (t.contains('</h2>')) return true;
+    if (t.contains('</h3>')) return true;
+    if (t.contains('</h4>')) return true;
+    if (t.contains('</h5>')) return true;
+    if (t.contains('</h6>')) return true;
+    if (t.contains('</hr>')) return true;
+    if (t.contains('</li>')) return true;
+    if (t.contains('<br>')) return true;
+    if (t.contains('<br/>')) return true;
+    if (t.contains('<br />')) return true;
+    if (t.contains('<p>')) return true;
+    if (t.contains('</div>')) return true;
+    if (t.contains('</span>')) return true;
+    if (t.contains('<img')) return true;
+    if (t.contains('</em>')) return true;
+    if (t.contains('</b>')) return true;
+    if (t.contains('</u>')) return true;
+    if (t.contains('</strong>')) return true;
+    if (t.contains('</a>')) return true;
+    if (t.contains('</i>')) return true;
+
+    return false;
   }
 }
