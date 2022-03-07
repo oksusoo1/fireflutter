@@ -18,6 +18,7 @@ class ButtonBase extends StatelessWidget {
     required this.buttonBuilder,
     this.shareButton,
     this.onSendPushNotification,
+    this.onBlockUser,
     Key? key,
   }) : super(key: key);
 
@@ -33,6 +34,7 @@ class ButtonBase extends StatelessWidget {
   final Function()? onHide;
   final Widget? shareButton;
   final Function()? onSendPushNotification;
+  final Function()? onBlockUser;
 
   final Widget Function(String, Function())? buttonBuilder;
 
@@ -65,12 +67,16 @@ class ButtonBase extends StatelessWidget {
           ),
           initialValue: '',
           itemBuilder: (BuildContext context) => [
-            if (isMine)
-              PopupMenuItem<String>(value: 'edit', child: Text('Edit')),
+            if (isMine) PopupMenuItem<String>(value: 'edit', child: Text('Edit')),
             if (isMine || isAdmin)
               PopupMenuItem<String>(
                 value: 'delete',
                 child: Text('Delete', style: TextStyle(color: Colors.red)),
+              ),
+            if (isAdmin)
+              PopupMenuItem<String>(
+                value: 'block',
+                child: Text('Block User', style: TextStyle(color: Colors.red)),
               ),
             PopupMenuDivider(),
             PopupMenuItem<String>(
@@ -85,8 +91,7 @@ class ButtonBase extends StatelessWidget {
                 ),
               ),
             if (isPost && onHide != null)
-              PopupMenuItem<String>(
-                  value: 'hide_post', child: Text('Hide Post')),
+              PopupMenuItem<String>(value: 'hide_post', child: Text('Hide Post')),
             PopupMenuItem<String>(value: 'close_menu', child: Text('Close')),
           ],
           onSelected: (String value) async {
@@ -110,6 +115,11 @@ class ButtonBase extends StatelessWidget {
 
             if (value == 'notification') {
               onSendPushNotification!();
+              return;
+            }
+
+            if (value == 'block') {
+              onBlockUser!();
               return;
             }
           },

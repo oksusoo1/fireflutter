@@ -18,6 +18,7 @@ class UserModel with FirestoreMixin, DatabaseMixin {
     this.gender = '',
     this.profileReady = false,
     this.isAdmin = false,
+    this.disabled = false,
   });
 
   final fields = [
@@ -30,6 +31,7 @@ class UserModel with FirestoreMixin, DatabaseMixin {
     'gender',
     'profileReady',
     'isAdmin',
+    'disabled'
   ];
 
   /// Note, user settings instance is connected to user model. Not user service.
@@ -43,6 +45,7 @@ class UserModel with FirestoreMixin, DatabaseMixin {
   /// If id is empty string, then the model has no user info or the doc of the model does not exists.
   bool get exists => uid != '';
   bool isAdmin;
+  bool disabled;
 
   String firstName;
   String middleName;
@@ -82,6 +85,7 @@ class UserModel with FirestoreMixin, DatabaseMixin {
     return UserModel(
       uid: uid,
       isAdmin: data['isAdmin'] ?? false,
+      disabled: data['disabled'] ?? false,
       firstName: data['firstName'] ?? '',
       middleName: data['middleName'] ?? '',
       lastName: data['lastName'] ?? '',
@@ -103,6 +107,7 @@ class UserModel with FirestoreMixin, DatabaseMixin {
       'photoUrl': photoUrl,
       'birthday': birthday,
       'gender': gender,
+      'disabled': disabled,
     };
   }
 

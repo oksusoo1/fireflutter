@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:rxdart/subjects.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 import '../../fireflutter.dart';
 
 /// UserService
@@ -227,5 +228,15 @@ class UserService with FirestoreMixin, DatabaseMixin {
       return true;
     else
       return false;
+  }
+
+  Future<dynamic> blockedUser(String uid) async {
+    UserModel user = await getOtherUserDoc(uid);
+    if (user.disabled) return ERROR_USER_ALREADY_BLOCKED;
+    HttpsCallable onCallDisableUser = FirebaseFunctions.instance.httpsCallable('disableUser');
+    final res = await onCallDisableUser();
+    print(res);
+    UserModel newUser = UserModel.fromJson(res, uid);
+    return newUser;
   }
 }
