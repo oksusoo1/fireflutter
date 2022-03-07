@@ -49,6 +49,7 @@ class PostContent extends StatelessWidget {
             else
               return SelectableLinkify(
                 text: post.displayContent,
+                style: TextStyle(height: 1.6),
                 onOpen: (link) async {
                   if (await canLaunch(link.url)) {
                     await launch(link.url);

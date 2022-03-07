@@ -12,6 +12,17 @@ class PostService with FirestoreMixin {
 
   Map<String, List<PostModel>> cacheContainer = {};
 
+  /// Post container
+  /// All loaded posts are contained here.
+  /// `PostModel.fromJson` will put all the loaded post into [posts].
+  Map<String, PostModel> posts = {};
+
+  /// Comment container for each post.
+  ///
+  /// All the comments of each post are maintained in [comments].
+  /// Comments should be saved in this variable when a post displays comments.
+  // Map<String, List<CommentModel>> comments = {};
+
   /// Gets document from post collection
   ///
   /// if [cacheId] has value, then it will cache the documents in the memory.
@@ -43,11 +54,12 @@ class PostService with FirestoreMixin {
     if (uid != null) q = q.where('uid', isEqualTo: uid);
     if (hasPhoto != null) q = q.where('hasPhoto', isEqualTo: hasPhoto);
 
-    /// TODO: check if it's working.
+    /// TODO: Check if it's working fine.
     if (within != null) {
       q = q.where(
         'createdAt',
-        isGreaterThanOrEqualTo: Jiffy().subtract(days: within).format("yyyy-MM-dd"),
+        isGreaterThanOrEqualTo:
+            Jiffy().subtract(days: within).format("yyyy-MM-dd"),
       );
     }
     q = q.limit(limit);

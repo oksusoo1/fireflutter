@@ -53,38 +53,35 @@ function getPost(id) {
   return admin.firestore().collection("posts").doc(id).get();
 }
 
-
 /**
  * Creates or update a user document index.
- * 
+ *
  * @param {*} id user id.
  * @param {*} data user data to index.
  * @returns promise
  */
- async function indexUserDocument(uid, data) {
+async function indexUserDocument(id, data) {
   const _data = {
-    uid: uid,
-    gender: data.gender ?? '',
-    firstname: data.firstName ?? '',
-    middlename: data.middleName ?? '',
-    lastname: data.lastName ?? '',
-    photoUrl: data.photoUrl ?? '',
-    registeredAt: utils.getTimestamp(data.registeredAt),
-    updatedAt: utils.getTimestamp(data.updatedAt),
+    id: id,
+    gender: data.gender ?? "",
+    firstName: data.firstName ?? "",
+    middleName: data.middleName ?? "",
+    lastName: data.lastName ?? "",
+    photoUrl: data.photoUrl ?? "",
+    // registeredAt: data.registeredAt ?? 0,
+    // updatedAt: data.updatedAt ?? 0,
   };
-
-  // return Axios.post("https://wonderfulkorea.kr:4431/index.php?api=post/record", _data)
-  return Axios.post("http://wonderfulkorea.kr:7700/indexes/users/documents", _data)
+  return Axios.post("http://wonderfulkorea.kr:7700/indexes/users/documents", _data);
 }
 
 /**
  * Deletes user document index.
- * 
+ *
  * @param {*} id user id to delete.
  * @returns promise
  */
-async function deleteIndexedUserDocument(uid) {
-  return Axios.delete("http://wonderfulkorea.kr:7700/indexes/users/documents/" + uid);
+async function deleteIndexedUserDocument(id) {
+  return Axios.delete("http://wonderfulkorea.kr:7700/indexes/users/documents/" + id);
 }
 
 /**
@@ -420,6 +417,7 @@ async function updateFileParentId(id, data) {
 async function isAdmin(context) {
   const doc = await db.collection("settings").doc("admins").get();
   const admins = doc.data();
+  if (!context) return false;
   if (!context.auth) return false;
   if (!context.auth.uid) return false;
   if (!admins[context.auth.uid]) return false;
@@ -481,5 +479,5 @@ exports.sendingMessageToTokens = sendingMessageToTokens;
 exports.updateFileParentId = updateFileParentId;
 exports.enableUser = enableUser;
 exports.disableUser = disableUser;
-exports.indexUser = indexUserDocument;
-exports.deleteIndexedUser = deleteIndexedUserDocument;
+exports.indexUserDocument = indexUserDocument;
+exports.deleteIndexedUserDocument = deleteIndexedUserDocument;

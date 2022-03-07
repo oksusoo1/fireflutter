@@ -83,59 +83,58 @@ exports.sendMessageOnCommentCreate = functions
       return lib.sendingMessageToTokens(tokens, lib.preMessagePayload(messageData));
     });
 
-
 /**
  * Indexes a user document whenever it is created.
- * 
- * createUserIndex({ 
- *   firstName: '...'  
- *  }, { 
- *   params: { userId: '...' }
- * })
- */
-exports.createUserIndex = functions
-    .region("asia-northeast3")
-    .database.ref('/users/{userId}')
-    .onCreate((snapshot, context) => {
-      // console.log('user data', context.params.userId, snapshot.val());
-      return lib.indexUser(context.params.userId, snapshot.val());
-    });
-    
-/**
- * Updates a user document index.
- * 
- * updateUserIndex({
- *   before: {},
- *   after: { firstName: '...'  }
- *  }, { 
- *   params: { userId: '...' }
- * })
- */
-exports.updateUserIndex = functions
-    .region("asia-northeast3")
-    .database.ref('/users/{userId}')
-    .onUpdate((change, context) => {
-      const data = change.after.val();
-      //  console.log('user data change after', context.params.userId, data);
-      return lib.indexUser(context.params.userId, data);
-    });
-
-/**
- * Deletes indexing whenever a user document is deleted.
- * 
- * deleteUserIndex({ 
+ *
+ * createUserIndex({
  *   firstName: '...'
  *  }, {
  *   params: { userId: '...' }
  * })
  */
- exports.deleteUserIndex = functions
- .region("asia-northeast3")
- .database.ref('/users/{userId}')
- .onDelete((snapshot, context) => {
-   // console.log('onDelete : user data', context.params.userId, snapshot.val());
-   return lib.deleteIndexedUser(context.params.userId);
- });
+exports.createUserIndex = functions
+    .region("asia-northeast3")
+    .database.ref("/users/{userId}")
+    .onCreate((snapshot, context) => {
+    // console.log('user data', context.params.userId, snapshot.val());
+      return lib.indexUserDocument(context.params.userId, snapshot.val());
+    });
+
+/**
+ * Updates a user document index.
+ *
+ * updateUserIndex({
+ *   before: {},
+ *   after: { firstName: '...'  }
+ *  }, {
+ *   params: { userId: '...' }
+ * })
+ */
+exports.updateUserIndex = functions
+    .region("asia-northeast3")
+    .database.ref("/users/{userId}")
+    .onUpdate((change, context) => {
+      const data = change.after.val();
+      //  console.log('user data change after', context.params.userId, data);
+      return lib.indexUserDocument(context.params.userId, data);
+    });
+
+/**
+ * Deletes indexing whenever a user document is deleted.
+ *
+ * deleteUserIndex({
+ *   firstName: '...'
+ *  }, {
+ *   params: { userId: '...' }
+ * })
+ */
+exports.deleteUserIndex = functions
+    .region("asia-northeast3")
+    .database.ref("/users/{userId}")
+    .onDelete((snapshot, context) => {
+    // console.log('onDelete : user data', context.params.userId, snapshot.val());
+      return lib.deleteIndexedUserDocument(context.params.userId);
+    });
 
 /**
  * Indexes a post document when it is created.
@@ -144,7 +143,7 @@ exports.updateUserIndex = functions
  *  uid: 'user_ccc',
  *  category: 'discussion',
  *  title: 'I post on discussion',
- *  content: 'Discussion' 
+ *  content: 'Discussion'
  * })
  */
 exports.createPostIndex = functions
@@ -156,7 +155,7 @@ exports.createPostIndex = functions
 
 /**
  * Updates or delete the indexed document when a post is updated or deleted.
- * 
+ *
  * Update:
  *  updatePostIndex({
  *   before: {},
@@ -168,7 +167,7 @@ exports.createPostIndex = functions
  *    }},
  *    { params: { postId: 'postId2' }
  *   })
- * 
+ *
  *  Delete:
  *  updatePostIndex({
  *   before: {},

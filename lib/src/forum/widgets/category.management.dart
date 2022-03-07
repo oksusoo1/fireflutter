@@ -120,16 +120,25 @@ class _CategoryManagementState extends State<CategoryManagement> with FirestoreM
                                         Text('Title'),
                                         TextField(
                                           controller: TextEditingController()..text = cat.title,
-                                          onChanged: (s) =>
-                                              bounce('t', 500, (x) => cat.update('title', s)),
+                                          onChanged: (s) => bounce(
+                                            't',
+                                            500,
+                                            (x) =>
+                                                cat.update('title', s).catchError(widget.onError),
+                                          ),
                                         ),
                                         Divider(),
                                         Text('Description'),
                                         TextField(
                                           controller: TextEditingController()
                                             ..text = cat.description,
-                                          onChanged: (s) =>
-                                              bounce('d', 500, (x) => cat.update('description', s)),
+                                          onChanged: (s) => bounce(
+                                            'd',
+                                            500,
+                                            (x) => cat
+                                                .update('description', s)
+                                                .catchError(widget.onError),
+                                          ),
                                         ),
                                         Divider(),
                                         Text('Priority of order list'),
@@ -137,10 +146,12 @@ class _CategoryManagementState extends State<CategoryManagement> with FirestoreM
                                           controller: TextEditingController()
                                             ..text = cat.order.toString(),
                                           onChanged: (s) => bounce(
-                                              'd',
-                                              400,
-                                              (x) =>
-                                                  cat.update('order', s == '' ? 0 : int.parse(s))),
+                                            'd',
+                                            400,
+                                            (x) => cat
+                                                .update('order', s == '' ? 0 : int.parse(s))
+                                                .catchError(widget.onError),
+                                          ),
                                         ),
                                       ],
                                     ),

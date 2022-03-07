@@ -43,7 +43,7 @@ export 'src/dynamic_link/dynamic_link.service.dart';
 export 'src/report/report.service.dart';
 export 'src/report/report.post.management.dart';
 
-export 'src/test/test.service.dart';
+// export 'src/test/test.service.dart';
 
 export 'src/firestore.mixin.dart';
 export 'src/database.mixin.dart';
@@ -88,3 +88,6 @@ export 'src/search/search.service.dart';
 
 export 'src/admin/widget/send.push.notification.dart';
 export 'src/admin/send.push.notification.service.dart';
+
+export 'src/user/auth/user.signed_in.dart';
+export 'src/user/auth/user.signed_out.dart';
