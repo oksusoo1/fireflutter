@@ -104,6 +104,7 @@ Table of contents
   - [Category](#category)
   - [Post](#post-1)
   - [Comment](#comment)
+  - [Post & Comment data fetching](#post--comment-data-fetching)
 - [Push notification](#push-notification)
   - [terms](#terms)
   - [How push notification wokr.](#how-push-notification-wokr)
@@ -1190,6 +1191,15 @@ DynamicLinksService.instance.listen((Uri? deepLink) {
   - `parentId` is the post id if the comment is the immediate child coment of the post.Or parent comment id.
   - `uid` is the author id.
   - `timestamp` is the server time.
+
+
+## Post & Comment data fetching
+
+- I feel, somehow, that `FirestoreQueryBuilder` works strangely.
+  - It has something like `final query = widget.query.limit(expectedDocsCount);` in its source code. And it really looks like reading that many documents for post listing. That is because there is no `.startAfter()` thing?
+  - It is also look like to read same document over again when user is scrolling up and down.
+
+- That's why I made a `ForumList`.
 
 # Push notification
 
