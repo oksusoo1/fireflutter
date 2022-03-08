@@ -6,14 +6,15 @@ const it = mocha.it;
 const assert = require("assert");
 const admin = require("firebase-admin");
 
-const {MeiliSearch} = require("meilisearch");
+const { MeiliSearch } = require("meilisearch");
 
 // initialize the firebase
 if (!admin.apps.length) {
-  const serviceAccount = require("../../withcenter-test-project.adminKey.json");
+  const serviceAccount = require("../../firebase-admin-sdk-key.json");
   admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
-    databaseURL: "https://withcenter-test-project-default-rtdb.asia-southeast1.firebasedatabase.app/",
+    databaseURL:
+      "https://withcenter-test-project-default-rtdb.asia-southeast1.firebasedatabase.app/",
   });
 }
 // This must come after initlization
@@ -22,13 +23,11 @@ const lib = require("../lib");
 // get firestore
 // const db = admin.firestore();
 
-
 describe("Categories", () => {
   it("Get categories", async () => {
     const size = await lib.getSizeOfCategories();
-    assert.ok( size > 0);
+    assert.ok(size > 0);
   });
-
 
   it("get comment anscestor uid", async () => {
     await lib.createComment({
@@ -47,7 +46,6 @@ describe("Categories", () => {
       },
     });
 
-
     await lib.createComment({
       comment: {
         id: "Cid-2",
@@ -60,7 +58,7 @@ describe("Categories", () => {
 
     let res = await lib.getCommentAncestors("Cid-2", "C");
 
-    assert.ok( res.length == 1 && res[0] == "B" );
+    assert.ok(res.length == 1 && res[0] == "B");
 
     // expect ok. res.length == 1
     // Add a comment with same author uid.
@@ -73,8 +71,7 @@ describe("Categories", () => {
       },
     });
     res = await lib.getCommentAncestors("Cid-3", "C");
-    assert.ok( res.length == 1 && res[0] == "B" );
-
+    assert.ok(res.length == 1 && res[0] == "B");
 
     // expect ok. res.length == 1.
     // Add a comment with different author,
@@ -89,7 +86,7 @@ describe("Categories", () => {
       },
     });
     res = await lib.getCommentAncestors("Cid-4", "C");
-    assert.ok( res.length == 1 && res[0] == "B" );
+    assert.ok(res.length == 1 && res[0] == "B");
 
     // expect ok. res.length == 2.
     // Add a comment with different author
@@ -102,11 +99,10 @@ describe("Categories", () => {
       },
     });
     res = await lib.getCommentAncestors("Cid-5", "C");
-    assert.ok( res.length == 2 && res[0] == "D" && res[1] == "B" );
+    assert.ok(res.length == 2 && res[0] == "D" && res[1] == "B");
   });
 
-
-  const timestamp = (new Date).getTime();
+  const timestamp = new Date().getTime();
   it("Meilisearch", async () => {
     await lib.createPost({
       category: {
@@ -128,5 +124,3 @@ describe("Categories", () => {
     console.log(search);
   });
 });
-
-

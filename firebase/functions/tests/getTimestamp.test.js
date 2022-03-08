@@ -8,7 +8,7 @@ const admin = require("firebase-admin");
 
 // initialize the firebase
 if (!admin.apps.length) {
-  const serviceAccount = require("../../withcenter-test-project.adminKey.json");
+  const serviceAccount = require("../../firebase-admin-sdk-key.json");
   admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
     databaseURL:

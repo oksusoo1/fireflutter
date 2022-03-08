@@ -4,7 +4,6 @@ const mocha = require("mocha");
 const describe = mocha.describe;
 const it = mocha.it;
 
-
 // const assert = require("assert");
 
 // const functions = require("firebase-functions");
@@ -12,10 +11,11 @@ const admin = require("firebase-admin");
 
 // initialize the firebase
 if (!admin.apps.length) {
-  const serviceAccount = require("../../withcenter-test-project.adminKey.json");
+  const serviceAccount = require("../../firebase-admin-sdk-key.json");
   admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
-    databaseURL: "https://withcenter-test-project-default-rtdb.asia-southeast1.firebasedatabase.app/",
+    databaseURL:
+      "https://withcenter-test-project-default-rtdb.asia-southeast1.firebasedatabase.app/",
   });
 }
 // This must come after initlization
@@ -27,10 +27,8 @@ const test = require("../test");
 // get firestore
 const db = admin.firestore();
 
-
 // get real time database
 const rdb = admin.database();
-
 
 describe("Admin user management ~~~~~~~~~~~~~~~~", () => {
   it("Admin block and unblock user.", async () => {
@@ -42,33 +40,37 @@ describe("Admin user management ~~~~~~~~~~~~~~~~", () => {
     await test.createTestUser(userC);
 
     // set userA as admin
-    await db.collection("settings").doc("admins").set({[userA]: true}, {merge: true});
+    await db
+      .collection("settings")
+      .doc("admins")
+      .set({ [userA]: true }, { merge: true });
     try {
-      const re = await lib.disableUser({uid: userB}, {});
-      if ( re.code == "ERROR_YOU_ARE_NOT_ADMIN") assert.ok("should be error since user not provided");
+      const re = await lib.disableUser({ uid: userB }, {});
+      if (re.code == "ERROR_YOU_ARE_NOT_ADMIN")
+        assert.ok("should be error since user not provided");
       else assert.fail("must be error with ERROR_YOU_ARE_NOT_ADMIN, but got: " + re);
     } catch (e) {
       assert.fail("should be error with ERROR_YOU_ARE_NOT_ADMIN" + e);
     }
 
     try {
-      const re = await lib.disableUser({uid: userB}, {auth: {uid: userC}});
-      if ( re.code == "ERROR_YOU_ARE_NOT_ADMIN") assert.ok("should be error since user is not admin");
+      const re = await lib.disableUser({ uid: userB }, { auth: { uid: userC } });
+      if (re.code == "ERROR_YOU_ARE_NOT_ADMIN")
+        assert.ok("should be error since user is not admin");
       else assert.fail("must be error with ERROR_YOU_ARE_NOT_ADMIN, but got: " + re);
     } catch (e) {
       assert.fail("should be error with ERROR_YOU_ARE_NOT_ADMIN" + e);
     }
 
     try {
-      const re = await lib.disableUser({uid: userB}, {auth: {uid: userA}});
-      const c = await lib.disableUser({uid: userC}, {auth: {uid: userA}});
+      const re = await lib.disableUser({ uid: userB }, { auth: { uid: userA } });
+      const c = await lib.disableUser({ uid: userC }, { auth: { uid: userA } });
       assert.ok(re.uid == userB, "userB uid");
       assert.ok(re.disabled == true, "userB must be disabled true");
       assert.ok(c.disabled == true, "userC must be disabled true");
     } catch (e) {
       assert.fail("must be no error: " + e);
     }
-
 
     try {
       const res = await rdb.ref("users").orderByChild("disabled").equalTo(true).get();
@@ -80,7 +82,6 @@ describe("Admin user management ~~~~~~~~~~~~~~~~", () => {
       assert.fail("query must be no error: " + e);
     }
 
-
     try {
       const res = await rdb.ref("users").child(userB).get();
       const user = res.val();
@@ -90,10 +91,9 @@ describe("Admin user management ~~~~~~~~~~~~~~~~", () => {
       assert.fail("user must exist and marked as disabled but got error: " + e);
     }
 
-
     try {
-      const b = await lib.enableUser({uid: userB}, {auth: {uid: userA}});
-      const c = await lib.enableUser({uid: userC}, {auth: {uid: userA}});
+      const b = await lib.enableUser({ uid: userB }, { auth: { uid: userA } });
+      const c = await lib.enableUser({ uid: userC }, { auth: { uid: userA } });
       assert.ok(b.uid == userB, "userB uid for enabling user");
       assert.ok(b.disabled == false, "userB must be disabled false");
       assert.ok(c.disabled == false, "userC must be disabled false");
@@ -111,7 +111,6 @@ describe("Admin user management ~~~~~~~~~~~~~~~~", () => {
       assert.fail("query must be no error: " + e);
     }
 
-
     try {
       const res = await rdb.ref("users").child(userB).get();
       const user = res.val();
@@ -121,5 +120,3 @@ describe("Admin user management ~~~~~~~~~~~~~~~~", () => {
     }
   });
 });
-
-

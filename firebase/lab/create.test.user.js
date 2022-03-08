@@ -5,7 +5,7 @@ const faker = require("@faker-js/faker").faker;
 
 // initialize the firebase
 if (!admin.apps.length) {
-  const serviceAccount = require("../wonderful-korea-firebase-admin-sdk-key.json");
+  const serviceAccount = require("../firebase-admin-sdk-key.json");
   admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
     databaseURL: "https://wonderful-korea-default-rtdb.asia-southeast1.firebasedatabase.app/",

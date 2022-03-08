@@ -314,7 +314,7 @@ function checkType() {
 $ cd firebase/functions
 $ cd npm i
 $ npm i -g firebase-tools
-$ export GOOGLE_APPLICATION_CREDENTIALS=../withcenter-test-project.adminKey.json
+$ export GOOGLE_APPLICATION_CREDENTIALS=../firebase-admin-sdk-key.json
 $ npm run shell
 ```
 
