@@ -41,30 +41,30 @@ describe("Admin user management ~~~~~~~~~~~~~~~~", () => {
 
     // set userA as admin
     await db
-      .collection("settings")
-      .doc("admins")
-      .set({ [userA]: true }, { merge: true });
+        .collection("settings")
+        .doc("admins")
+        .set({[userA]: true}, {merge: true});
     try {
-      const re = await lib.disableUser({ uid: userB }, {});
-      if (re.code == "ERROR_YOU_ARE_NOT_ADMIN")
+      const re = await lib.disableUser({uid: userB}, {});
+      if (re.code == "ERROR_YOU_ARE_NOT_ADMIN") {
         assert.ok("should be error since user not provided");
-      else assert.fail("must be error with ERROR_YOU_ARE_NOT_ADMIN, but got: " + re);
+      } else assert.fail("must be error with ERROR_YOU_ARE_NOT_ADMIN, but got: " + re);
     } catch (e) {
       assert.fail("should be error with ERROR_YOU_ARE_NOT_ADMIN" + e);
     }
 
     try {
-      const re = await lib.disableUser({ uid: userB }, { auth: { uid: userC } });
-      if (re.code == "ERROR_YOU_ARE_NOT_ADMIN")
+      const re = await lib.disableUser({uid: userB}, {auth: {uid: userC}});
+      if (re.code == "ERROR_YOU_ARE_NOT_ADMIN") {
         assert.ok("should be error since user is not admin");
-      else assert.fail("must be error with ERROR_YOU_ARE_NOT_ADMIN, but got: " + re);
+      } else assert.fail("must be error with ERROR_YOU_ARE_NOT_ADMIN, but got: " + re);
     } catch (e) {
       assert.fail("should be error with ERROR_YOU_ARE_NOT_ADMIN" + e);
     }
 
     try {
-      const re = await lib.disableUser({ uid: userB }, { auth: { uid: userA } });
-      const c = await lib.disableUser({ uid: userC }, { auth: { uid: userA } });
+      const re = await lib.disableUser({uid: userB}, {auth: {uid: userA}});
+      const c = await lib.disableUser({uid: userC}, {auth: {uid: userA}});
       assert.ok(re.uid == userB, "userB uid");
       assert.ok(re.disabled == true, "userB must be disabled true");
       assert.ok(c.disabled == true, "userC must be disabled true");
@@ -92,8 +92,8 @@ describe("Admin user management ~~~~~~~~~~~~~~~~", () => {
     }
 
     try {
-      const b = await lib.enableUser({ uid: userB }, { auth: { uid: userA } });
-      const c = await lib.enableUser({ uid: userC }, { auth: { uid: userA } });
+      const b = await lib.enableUser({uid: userB}, {auth: {uid: userA}});
+      const c = await lib.enableUser({uid: userC}, {auth: {uid: userA}});
       assert.ok(b.uid == userB, "userB uid for enabling user");
       assert.ok(b.disabled == false, "userB must be disabled false");
       assert.ok(c.disabled == false, "userC must be disabled false");

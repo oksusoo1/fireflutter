@@ -8,7 +8,7 @@ const admin = require("firebase-admin");
 const Axios = require("axios");
 const utils = require("./utils");
 const ref = require("./reference");
-const { user } = require("firebase-functions/v1/auth");
+// const {user} = require("firebase-functions/v1/auth");
 
 // const {MeiliSearch} = require("meilisearch");
 
@@ -432,7 +432,7 @@ async function enableUser(data, context) {
     };
   }
   const user = await auth.updateUser(data.uid, {disabled: false});
-  if(user.disabled == false) await rdb.ref("users").child(data.uid).update({disabled: false});
+  if (user.disabled == false) await rdb.ref("users").child(data.uid).update({disabled: false});
   return user;
 }
 
@@ -445,7 +445,7 @@ async function disableUser(data, context) {
     };
   }
   const user = await auth.updateUser(data.uid, {disabled: true});
-  if(user.disabled == true) await rdb.ref("users").child(data.uid).update({disabled: true});
+  if (user.disabled == true) await rdb.ref("users").child(data.uid).update({disabled: true});
   return user;
 }
 
