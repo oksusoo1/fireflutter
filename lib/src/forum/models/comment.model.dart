@@ -48,6 +48,8 @@ class CommentModel with FirestoreMixin, ForumBase {
   Timestamp createdAt;
   int depth = 0;
 
+  bool get isMine => UserService.instance.uid == uid;
+
   /// Get document data of map and convert it into post model
   factory CommentModel.fromJson(
     Json data, {
