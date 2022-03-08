@@ -16,6 +16,7 @@ class Comment extends StatefulWidget {
     required this.onImageTap,
     required this.onLike,
     required this.onDislike,
+    this.onChat,
     this.buttonBuilder,
     this.headerBuilder,
     this.contentBuilder,
@@ -33,6 +34,8 @@ class Comment extends StatefulWidget {
   final Function(CommentModel comment) onLike;
   final Function(CommentModel comment) onDislike;
   final Function(int index, List<String> fileList) onImageTap;
+
+  final Function(CommentModel comment)? onChat;
 
   final Widget Function(String, Function())? buttonBuilder;
   final Widget Function(CommentModel)? headerBuilder;
@@ -150,6 +153,7 @@ class _CommentState extends State<Comment> with FirestoreMixin {
                   buttonBuilder: widget.buttonBuilder,
                   likeCount: comment.like,
                   dislikeCount: comment.dislike,
+                  onChat: (widget.onChat != null) ? () => widget.onChat!(comment) : null,
                 ),
             ],
           ),

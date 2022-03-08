@@ -6,7 +6,7 @@ const it = mocha.it;
 
 const assert = require("assert");
 const admin = require("firebase-admin");
-const { MeiliSearch } = require("meilisearch");
+const {MeiliSearch} = require("meilisearch");
 
 // initialize the firebase
 if (!admin.apps.length) {
@@ -31,7 +31,7 @@ describe("Meilisearch test", () => {
   });
 
   // Post test data.
-  const categoryData = { id: "index-test" };
+  const categoryData = {id: "index-test"};
   const originalPostTitle = "post-" + timestamp;
   const newPostTitle = originalPostTitle + " ...(2)";
   const postData = {
@@ -80,7 +80,7 @@ describe("Meilisearch test", () => {
     });
     await lib.delay(4000);
 
-    const search = await client.index("posts").search("", { filter: ["id = " + postData.id] });
+    const search = await client.index("posts").search("", {filter: ["id = " + postData.id]});
 
     assert.ok(search.hits.length > 0);
     assert.ok(search.hits[0].title == postData.title);
@@ -94,7 +94,7 @@ describe("Meilisearch test", () => {
     });
 
     await lib.delay(4000);
-    const search = await client.index("posts").search("", { filter: ["id = " + postData.id] });
+    const search = await client.index("posts").search("", {filter: ["id = " + postData.id]});
     assert.ok(search.hits.length > 0);
     assert.ok(search.hits[0].title == postData.title);
   });
@@ -108,7 +108,7 @@ describe("Meilisearch test", () => {
     });
 
     await lib.delay(4000);
-    const search = await client.index("posts").search("", { filter: ["id = " + postData.id] });
+    const search = await client.index("posts").search("", {filter: ["id = " + postData.id]});
 
     assert.ok(search.hits.length == 0);
   });
@@ -122,8 +122,8 @@ describe("Meilisearch test", () => {
 
     await lib.delay(4000);
     const search = await client
-      .index("comments")
-      .search("", { filter: ["id = " + commentData.id] });
+        .index("comments")
+        .search("", {filter: ["id = " + commentData.id]});
 
     assert.ok(search.hits.length > 0);
     assert.ok(search.hits[0].content == commentData.content);
@@ -137,8 +137,8 @@ describe("Meilisearch test", () => {
 
     await lib.delay(4000);
     const search = await client
-      .index("comments")
-      .search("", { filter: ["id = " + commentData.id] });
+        .index("comments")
+        .search("", {filter: ["id = " + commentData.id]});
 
     assert.ok(search.hits.length > 0);
     assert.ok(search.hits[0].content == commentData.content);
@@ -153,8 +153,8 @@ describe("Meilisearch test", () => {
 
     await lib.delay(4000);
     const search = await client
-      .index("comments")
-      .search("", { filter: ["id = " + commentData.id] });
+        .index("comments")
+        .search("", {filter: ["id = " + commentData.id]});
 
     assert.ok(search.hits.length == 0);
   });

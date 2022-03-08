@@ -117,22 +117,22 @@ describe("Messaging ~~~~~~~~~~~~~~~~", () => {
     const userB = "userB";
     await test.createTestUser(userA);
     await admin
-      .database()
-      .ref("user-settings")
-      .child(userA)
-      .child("topic")
-      .set({
-        [commentNotification]: true,
-      });
+        .database()
+        .ref("user-settings")
+        .child(userA)
+        .child("topic")
+        .set({
+          [commentNotification]: true,
+        });
 
     await admin
-      .database()
-      .ref("user-settings")
-      .child(userB)
-      .child("topic")
-      .set({
-        [commentNotification]: false,
-      });
+        .database()
+        .ref("user-settings")
+        .child(userB)
+        .child("topic")
+        .set({
+          [commentNotification]: false,
+        });
     await test.createTestUser(userB);
     const validToken1 =
       "eiG6CUPQS66swAIEOakM60:APA91bGj4tjLswDzSAWz72onE_Tv50TYrI2I3hRXu-0RDJOa2c71elDDnL5gfrcZY5PfppRgbl2hC_R2A4SzstPu___yR9DzB1YoIDnJ-IITVxoqIJ_2gBLQOl9MGJ7_vRFZNmUfIVHD";
@@ -141,18 +141,18 @@ describe("Messaging ~~~~~~~~~~~~~~~~", () => {
 
     const tokenUpdates = [];
     // set first valid token
-    tokenUpdates.push(db.collection("message-tokens").doc(validToken1).set({ uid: userA }));
+    tokenUpdates.push(db.collection("message-tokens").doc(validToken1).set({uid: userA}));
     // set 1000 not valid token
     for (let i = 0; i < 1000; i++) {
       tokenUpdates.push(
-        db
-          .collection("message-tokens")
-          .doc("userA-wrong-token-id-" + i)
-          .set({ uid: userA })
+          db
+              .collection("message-tokens")
+              .doc("userA-wrong-token-id-" + i)
+              .set({uid: userA}),
       );
     }
     // set 2nd valid token
-    tokenUpdates.push(db.collection("message-tokens").doc(validToken2).set({ uid: userA }));
+    tokenUpdates.push(db.collection("message-tokens").doc(validToken2).set({uid: userA}));
     await Promise.all(tokenUpdates);
 
     const before = await db.collection("message-tokens").where("uid", "==", userA).get();
@@ -161,7 +161,7 @@ describe("Messaging ~~~~~~~~~~~~~~~~", () => {
     // userA create parent post
     const postTestId = "postTestId";
     await test.createPost({
-      category: { id: "test" },
+      category: {id: "test"},
       post: {
         title: userA + "messaging test title",
         content: "yo",
@@ -191,10 +191,10 @@ describe("Messaging ~~~~~~~~~~~~~~~~", () => {
     // set 5 fake token
     for (let i = 0; i < 5; i++) {
       UserBtokenUpdates.push(
-        db
-          .collection("message-tokens")
-          .doc("userB-wrong-token-id-" + i)
-          .set({ uid: userB })
+          db
+              .collection("message-tokens")
+              .doc("userB-wrong-token-id-" + i)
+              .set({uid: userB}),
       );
     }
     await Promise.all(UserBtokenUpdates);
@@ -214,13 +214,13 @@ describe("Messaging ~~~~~~~~~~~~~~~~", () => {
     const userBTokenCount = await db.collection("message-tokens").where("uid", "==", userB).get();
     assert.ok(userBTokenCount.size == 5, "must have 5 tokens, got: " + userBTokenCount.size);
     await admin
-      .database()
-      .ref("user-settings")
-      .child(userB)
-      .child("topic")
-      .set({
-        [commentNotification]: true,
-      });
+        .database()
+        .ref("user-settings")
+        .child(userB)
+        .child("topic")
+        .set({
+          [commentNotification]: true,
+        });
 
     const commentTest3Id = "commentTest3Id";
     await test.createComment({
@@ -236,8 +236,8 @@ describe("Messaging ~~~~~~~~~~~~~~~~", () => {
     await lib.delay(10000);
     const userBTokenCount2 = await db.collection("message-tokens").where("uid", "==", userB).get();
     assert.ok(
-      userBTokenCount2.size == 0,
-      "must have 0 token by this time, got: " + userBTokenCount2.size
+        userBTokenCount2.size == 0,
+        "must have 0 token by this time, got: " + userBTokenCount2.size,
     );
   });
 
@@ -252,65 +252,65 @@ describe("Messaging ~~~~~~~~~~~~~~~~", () => {
     await test.createTestUser(userC);
     await test.createTestUser(userD);
     await admin
-      .database()
-      .ref("user-settings")
-      .child(userA)
-      .child("topic")
-      .set({
-        [commentNotification]: true,
-      });
+        .database()
+        .ref("user-settings")
+        .child(userA)
+        .child("topic")
+        .set({
+          [commentNotification]: true,
+        });
     await admin
-      .database()
-      .ref("user-settings")
-      .child(userB)
-      .child("topic")
-      .set({
-        [commentNotification]: true,
-        [topic]: true,
-      });
+        .database()
+        .ref("user-settings")
+        .child(userB)
+        .child("topic")
+        .set({
+          [commentNotification]: true,
+          [topic]: true,
+        });
     await admin
-      .database()
-      .ref("user-settings")
-      .child(userC)
-      .child("topic")
-      .set({
-        [commentNotification]: false,
-        [topic]: true,
-      });
+        .database()
+        .ref("user-settings")
+        .child(userC)
+        .child("topic")
+        .set({
+          [commentNotification]: false,
+          [topic]: true,
+        });
     await admin
-      .database()
-      .ref("user-settings")
-      .child(userD)
-      .child("topic")
-      .set({
-        [commentNotification]: true,
-        [topic]: false,
-      });
+        .database()
+        .ref("user-settings")
+        .child(userD)
+        .child("topic")
+        .set({
+          [commentNotification]: true,
+          [topic]: false,
+        });
 
     const setTokens = [];
     setTokens.push(
-      db
-        .collection("message-tokens")
-        .doc(userA + "-wrong-token-id-")
-        .set({ uid: userA })
+        db
+            .collection("message-tokens")
+            .doc(userA + "-wrong-token-id-")
+            .set({uid: userA}),
     );
     setTokens.push(
-      db
-        .collection("message-tokens")
-        .doc(userB + "-wrong-token-id-")
-        .set({ uid: userB })
+        db
+            .collection("message-tokens")
+            .doc(userB + "-wrong-token-id-")
+            .set({uid: userB}),
     );
     setTokens.push(
-      db
-        .collection("message-tokens")
-        .doc(userC + "-wrong-token-id-")
-        .set({ uid: userC })
+        db
+            .collection("message-tokens")
+            .doc(userC + "-wrong-token-id-")
+            .set({uid: userC}),
     );
     setTokens.push(
-      db
-        .collection("message-tokens")
-        .doc(userD + "-wrong-token-id-")
-        .set({ uid: userD })
+        db
+            .collection("message-tokens")
+            .doc(userD + "-wrong-token-id-")
+            .set({uid: userD}),
     );
     await Promise.all(setTokens);
 
@@ -322,14 +322,14 @@ describe("Messaging ~~~~~~~~~~~~~~~~", () => {
     assert.ok(res.includes(userA) && res.includes(userD));
 
     await admin
-      .database()
-      .ref("user-settings")
-      .child(userC)
-      .child("topic")
-      .set({
-        [commentNotification]: true,
-        [topic]: false,
-      });
+        .database()
+        .ref("user-settings")
+        .child(userC)
+        .child("topic")
+        .set({
+          [commentNotification]: true,
+          [topic]: false,
+        });
     res = await lib.removeTopicAndForumAncestorsSubscriber(usersUid, topic);
     assert.ok(res.length == 3, "userA and userD must get notified and userC this time");
     assert.ok(res.includes(userA) && res.includes(userD) && res.includes(userC));
