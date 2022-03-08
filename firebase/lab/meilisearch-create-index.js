@@ -37,7 +37,8 @@ if (indexUid == "users") {
 async function forumIndexing(indexUid) {
   /// Read documents (exclude deleted documents).
   const col = db.collection(indexUid);
-  const docs = await col.where("deleted", "==", false).get();
+
+  const docs = await col.get();
 
   /// Nothing to index.
   if (docs.empty) {
@@ -50,10 +51,13 @@ async function forumIndexing(indexUid) {
   for (const doc of docs.docs) {
     const data = doc.data();
 
+    ///
+    if (data.deleted) continue;
+
     /// Forum index document.
-    console.log("[INDEXING]: " + id);
+    console.log("[INDEXING]: " + doc.id, data.title ?? data.content);
     const _data = {
-      id: id,
+      id: doc.id,
       uid: data.uid,
       content: data.content ?? "",
       files: data.files && data.files.length ? data.files.join(",") : "",
@@ -61,7 +65,7 @@ async function forumIndexing(indexUid) {
       updatedAt: utils.getTimestamp(data.updatedAt),
     };
 
-    if (index == "comments") {
+    if (indexUid == "comments") {
       _data.postId = data.postId;
       _data.parentId = data.parentId;
     }
@@ -72,10 +76,10 @@ async function forumIndexing(indexUid) {
 
     _data.content = utils.removeHtmlTags(_data.content);
     promises.push(
-      Axios.post("http://wonderfulkorea.kr:7700/indexes/" + index + "/documents", _data)
+      Axios.post("http://wonderfulkorea.kr:7700/indexes/" + indexUid + "/documents", _data)
     );
     promises.push(
-      Axios.post("http://wonderfulkorea.kr:7700/indexes/posts-and-comments/documents", data)
+      Axios.post("http://wonderfulkorea.kr:7700/indexes/posts-and-comments/documents", _data)
     );
     await Promise.all(promises);
   }
