@@ -5,19 +5,22 @@ const client = new MeiliSearch({
   apiKey: "",
 });
 
-const indexUid = process.argv[2]; 
+const indexUid = process.argv[2];
 if (!indexUid) {
   console.log("Please provide an index.");
-  return;
+  process.exit(-1);
 }
 
 // // An index is where the documents are stored.
 // const index = client.index("posts");
-client.deleteIndex(indexUid).then((v) => {
-  console.log(indexUid + " index successfully deleted.");
-}).catch((e) => {
-  console.log(e);
-});
+client
+  .deleteIndex(indexUid)
+  .then((v) => {
+    console.log(indexUid + " index successfully deleted.");
+  })
+  .catch((e) => {
+    console.log(e);
+  });
 
 // client.deleteIndex("comments").catch((e) => {
 //   console.log(e);

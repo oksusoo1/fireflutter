@@ -21,16 +21,16 @@ const rdb = admin.database();
 
 const indexUid = process.argv[2];
 if (!indexUid) {
-  console.log('[NOTICE]: Please provide an index. It\'s either posts, comments, users.');
-  return;
+  console.log("[NOTICE]: Please provide an index. It's either posts, comments, users.");
+  process.exit(-1);
 }
 
-if (indexUid == 'posts' || indexUid == 'comments') {
+if (indexUid == "posts" || indexUid == "comments") {
   forumIndexing(indexUid);
-} 
+}
 
 /// User index document
-if (indexUid == 'users') {
+if (indexUid == "users") {
   userIndexing();
 }
 
@@ -61,7 +61,7 @@ async function forumIndexing(indexUid) {
       updatedAt: utils.getTimestamp(data.updatedAt),
     };
 
-    if (index == 'comments') {   
+    if (index == "comments") {
       _data.postId = data.postId;
       _data.parentId = data.parentId;
     }
@@ -71,22 +71,25 @@ async function forumIndexing(indexUid) {
     // promises.push(Axios.post("https://wonderfulkorea.kr:4431/index.php?api=post/record", _data));
 
     _data.content = utils.removeHtmlTags(_data.content);
-    promises.push(Axios.post("http://wonderfulkorea.kr:7700/indexes/" + index + "/documents", _data));
-    promises.push(Axios.post("http://wonderfulkorea.kr:7700/indexes/posts-and-comments/documents", data));
+    promises.push(
+      Axios.post("http://wonderfulkorea.kr:7700/indexes/" + index + "/documents", _data)
+    );
+    promises.push(
+      Axios.post("http://wonderfulkorea.kr:7700/indexes/posts-and-comments/documents", data)
+    );
     await Promise.all(promises);
   }
 }
 
-
 async function userIndexing() {
-  const col = rdb.ref('users');
+  const col = rdb.ref("users");
   const docs = await col.get();
 
   if (!docs.numChildren()) {
     console.log("No user documents to index.");
     return;
-  } 
-  
+  }
+
   console.log("Re-indexing " + docs.numChildren() + " of user documents.");
   for (const [key, value] of Object.entries(docs.val())) {
     const _data = {
