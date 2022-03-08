@@ -4,6 +4,8 @@ import '../../../../fireflutter.dart';
 class PostForm extends StatefulWidget {
   const PostForm({
     this.category,
+    this.subcategory,
+    this.photo,
     this.post,
     required this.onCreate,
     required this.onUpdate,
@@ -17,7 +19,11 @@ class PostForm extends StatefulWidget {
 
   final PostModel? post;
   final String? category;
+  final String? subcategory;
   final double heightBetween;
+
+  /// If [photo] is set to true, then there must a photo in the post.
+  final bool? photo;
 
   final Function(String) onCreate;
   final Function(String) onUpdate;
@@ -126,18 +132,28 @@ class _PostFormState extends State<PostForm> {
   }
 
   Future<void> onSubmit() async {
+    if (widget.photo == true) {
+      if (files.length == 0) {
+        widget.onError(ERROR_NO_PHOTO_ATTACHED);
+        return;
+      }
+    }
     try {
       if (widget.category != null && widget.category!.isNotEmpty) {
+        /// create
         final ref = await PostModel().create(
           documentId: documentId.text,
           category: widget.category!,
+          subcategory: widget.subcategory,
           title: title.text,
           content: content.text,
           summary: summary.text,
           files: files,
         );
+
         widget.onCreate(ref.id);
       } else {
+        /// update
         await widget.post!.update(
           title: title.text,
           content: content.text,
