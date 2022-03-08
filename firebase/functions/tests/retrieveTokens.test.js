@@ -30,10 +30,10 @@ describe("lib retrieveToken test  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~", () => {
     await test.createTestUser(userA);
     await test.createTestUser(userB);
     const tokenUpdates = [];
-    tokenUpdates.push(rdb.ref("message-tokens").child("fakeToken1").set({ uid: userA }));
-    tokenUpdates.push(rdb.ref("message-tokens").child("fakeToken2").set({ uid: userA }));
-    tokenUpdates.push(rdb.ref("message-tokens").child("fakeToken3").set({ uid: userA }));
-    tokenUpdates.push(rdb.ref("message-tokens").child("fakeToken4").set({ uid: userB }));
+    tokenUpdates.push(rdb.ref("message-tokens").child("fakeToken1").set({uid: userA}));
+    tokenUpdates.push(rdb.ref("message-tokens").child("fakeToken2").set({uid: userA}));
+    tokenUpdates.push(rdb.ref("message-tokens").child("fakeToken3").set({uid: userA}));
+    tokenUpdates.push(rdb.ref("message-tokens").child("fakeToken4").set({uid: userB}));
     await Promise.all(tokenUpdates);
 
     try {

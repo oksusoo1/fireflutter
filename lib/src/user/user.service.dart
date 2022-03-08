@@ -230,13 +230,20 @@ class UserService with FirestoreMixin, DatabaseMixin {
       return false;
   }
 
-  Future<dynamic> blockedUser(String uid) async {
+  Future<dynamic> blockUser(String uid) async {
     UserModel user = await getOtherUserDoc(uid);
     if (user.disabled) return ERROR_USER_ALREADY_BLOCKED;
-    HttpsCallable onCallDisableUser = FirebaseFunctions.instance.httpsCallable('disableUser');
-    final res = await onCallDisableUser();
-    print(res);
-    UserModel newUser = UserModel.fromJson(res, uid);
-    return newUser;
+    HttpsCallable onCallDisableUser =
+        FirebaseFunctions.instanceFor(region: 'asia-northeast3').httpsCallable('disableUser');
+    try {
+      final res = await onCallDisableUser.call({'uid': uid});
+      print(res);
+      UserModel newUser = UserModel.fromJson(res, uid); // error test
+      // update other user profile
+      print(newUser);
+      return newUser;
+    } catch (e) {
+      print(e);
+    }
   }
 }
