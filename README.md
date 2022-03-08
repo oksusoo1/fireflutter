@@ -963,7 +963,8 @@ InformService.instance.inform(widget.room.otherUid, {
 # Node.js Utilities
 
 - To run utilities
-  - 
+  - `cd firebase/lab`
+  - `npm i`
 
 - Creating sample users
   - `node lab/create.test.users.js`.
