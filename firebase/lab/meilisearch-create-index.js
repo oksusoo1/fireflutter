@@ -6,11 +6,10 @@ const utils = require("../functions/utils");
 
 // initialize the firebase
 if (!admin.apps.length) {
-  // const serviceAccount = require("../firebase-admin-sdk-key.json");
-  const serviceAccount = require("../withcenter-test-project.adminKey.json");
+  const serviceAccount = require("../firebase-admin-sdk-key.json");
   admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
-    databaseURL: "https://withcenter-test-project-default-rtdb.asia-southeast1.firebasedatabase.app/",
+    databaseURL: "https://wonderful-korea-default-rtdb.asia-southeast1.firebasedatabase.app/",
   });
 }
 
@@ -76,8 +75,6 @@ async function forumIndexing(indexUid) {
     promises.push(Axios.post("http://wonderfulkorea.kr:7700/indexes/posts-and-comments/documents", data));
     await Promise.all(promises);
   }
-
-  return void 0;
 }
 
 
@@ -102,5 +99,4 @@ async function userIndexing() {
     };
     await Axios.post("http://wonderfulkorea.kr:7700/indexes/users/documents", _data);
   }
-  return;
 }
