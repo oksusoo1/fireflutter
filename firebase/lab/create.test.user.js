@@ -8,7 +8,8 @@ if (!admin.apps.length) {
   const serviceAccount = require("../firebase-admin-sdk-key.json");
   admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
-    databaseURL: "https://wonderful-korea-default-rtdb.asia-southeast1.firebasedatabase.app/",
+    databaseURL:
+      "https://withcenter-test-project-default-rtdb.asia-southeast1.firebasedatabase.app/",
   });
 }
 
@@ -39,8 +40,15 @@ const photoUrls = [
 ];
 console.log("\n\n----------> Creating test users\n");
 for (let i = 1; i <= 10; i++) {
-  const uid = "A-test-" + i;
-  const email = "test" + i + "@gmail.com";
+  let email = "";
+  if (i == 1) email = "apple@test.com";
+  else if (i == 2) email = "banana@test.com";
+  else if (i == 3) email = "cherry@test.com";
+  else if (i == 4) email = "durian@test.com";
+  else email = "test" + i + "@gmail.com";
+
+  let uid = email.replace(".", "_");
+
   const firstName = faker.name.firstName();
   const lastName = faker.name.lastName();
   const phoneNumber = faker.phone.phoneNumber("+6391########");
@@ -62,7 +70,13 @@ for (let i = 1; i <= 10; i++) {
       console.log("Successfully created new user:", userRecord.uid);
     })
     .catch((error) => {
-      console.log("Error creating new user:", error);
+      if (error.code == "auth/uid-already-exists") {
+        console.log(email, error.code);
+      } else if (error.code == "auth/email-already-exists") {
+        console.log(email, error.code);
+      } else {
+        console.log("Error creating new user:", error.code);
+      }
     });
 
   rdb

@@ -88,6 +88,9 @@ Table of contents
   - [Local test on firestore security rules](#local-test-on-firestore-security-rules)
 - [Sample code](#sample-code-1)
 - [Node.js Utilities](#nodejs-utilities)
+  - [User utilities](#user-utilities)
+  - [Forum utilities](#forum-utilities)
+    - [Deleting posts, comments, and uploaded files in a category.](#deleting-posts-comments-and-uploaded-files-in-a-category)
 - [Issues](#issues)
   - [firebase_database/permission-denied](#firebase_databasepermission-denied)
   - [Firebase realtime database is not working](#firebase-realtime-database-is-not-working)
@@ -385,8 +388,8 @@ $ npm run shell
 ## Test users
 
 - Create the following four test user accounts with password of `12345a` using email & password sign-in.
-
   - `apple@test.com`, `banana@test.com`, `cherry@test.com`, `durian@test.com`
+  - It is better to create test users with user utility. See [User utility](#user-utilities)
 
 - Create an admin with `admin@test.com` as its email and `12345a` as its password.
   - And set the uid as admin. Read [Setting admin on firestore security rules](#setting-admin-on-firestore-security-rules) to know how to set admin.
@@ -966,8 +969,25 @@ InformService.instance.inform(widget.room.otherUid, {
   - `cd firebase/lab`
   - `npm i`
 
+
+## User utilities
+
 - Creating sample users
-  - `node lab/create.test.users.js`.
+  - `node create.test.users.js`.
+
+## Forum utilities
+
+
+### Deleting posts, comments, and uploaded files in a category.
+
+- Delete posts and its dependencies in a category.
+  - It deletes posts and its uploaded files and comments and its uploaded files.
+  - `node delete-category-data.js [categoryId]`
+    - Example) `node delete-category-data.js discussion`
+    - Warning! once this utility runs, there is no turning back. all posts & comments are deleted for good. You need to backup first before you run this.
+
+- @todo - Note, this utility does not delete uploaded files, yet.
+
 
 # Issues
 
