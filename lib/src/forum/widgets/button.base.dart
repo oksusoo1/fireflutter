@@ -74,7 +74,7 @@ class ButtonBase extends StatelessWidget {
                 value: 'delete',
                 child: Text('Delete', style: TextStyle(color: Colors.red)),
               ),
-            if (isAdmin)
+            if (isAdmin && onBlockUser != null)
               PopupMenuItem<String>(
                 value: 'block',
                 child: Text('Block User', style: TextStyle(color: Colors.red)),
