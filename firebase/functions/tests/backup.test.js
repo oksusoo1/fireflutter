@@ -11,10 +11,11 @@ const admin = require("firebase-admin");
 
 // initialize the firebase
 if (!admin.apps.length) {
-  const serviceAccount = require("../../withcenter-test-project.adminKey.json");
+  const serviceAccount = require("../../firebase-admin-sdk-key.json");
   admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
-    databaseURL: "https://withcenter-test-project-default-rtdb.asia-southeast1.firebasedatabase.app/",
+    databaseURL:
+      "https://withcenter-test-project-default-rtdb.asia-southeast1.firebasedatabase.app/",
   });
 }
 
@@ -33,7 +34,6 @@ describe("Backup test", () => {
     });
   });
 
-
   // it("Backup a post", async () => {
   //   const _data = {
   //     id: 'id',
@@ -49,7 +49,6 @@ describe("Backup test", () => {
   //       ).then((r) => console.log('r; ', r))
   //       .catch((e) => console.log('e;', e));
   // });
-
 
   // it("Create a post in firestore", async() => {
   //   // const re =

@@ -7,20 +7,21 @@ const assert = require("assert");
 const admin = require("firebase-admin");
 // initialize the firebase
 if (!admin.apps.length) {
-  const serviceAccount = require("../../withcenter-test-project.adminKey.json");
+  const serviceAccount = require("../../firebase-admin-sdk-key.json");
   admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
-    databaseURL: "https://withcenter-test-project-default-rtdb.asia-southeast1.firebasedatabase.app/",
+    databaseURL:
+      "https://withcenter-test-project-default-rtdb.asia-southeast1.firebasedatabase.app/",
   });
 }
-
 
 // get firestore
 const db = admin.firestore();
 
-const validToken1 = "eiG6CUPQS66swAIEOakM60:APA91bGj4tjLswDzSAWz72onE_Tv50TYrI2I3hRXu-0RDJOa2c71elDDnL5gfrcZY5PfppRgbl2hC_R2A4SzstPu___yR9DzB1YoIDnJ-IITVxoqIJ_2gBLQOl9MGJ7_vRFZNmUfIVHD";
-const validToken2 = "ecw_jCq6TV273wlDMeaQRY:APA91bF8GUuxtjlpBf7xI9M4dv6MD74rb40tpDedeoJ9w1TYi-9TmGCrt862Qcrj4nQifRBrxS60AiBSQW8ynYQFVj9Hkrd3p-w9UyDscLncNdwdZNXpqRgBR-LmSeZIcNBejvxjtfW4";
-
+const validToken1 =
+  "eiG6CUPQS66swAIEOakM60:APA91bGj4tjLswDzSAWz72onE_Tv50TYrI2I3hRXu-0RDJOa2c71elDDnL5gfrcZY5PfppRgbl2hC_R2A4SzstPu___yR9DzB1YoIDnJ-IITVxoqIJ_2gBLQOl9MGJ7_vRFZNmUfIVHD";
+const validToken2 =
+  "ecw_jCq6TV273wlDMeaQRY:APA91bF8GUuxtjlpBf7xI9M4dv6MD74rb40tpDedeoJ9w1TYi-9TmGCrt862Qcrj4nQifRBrxS60AiBSQW8ynYQFVj9Hkrd3p-w9UyDscLncNdwdZNXpqRgBR-LmSeZIcNBejvxjtfW4";
 
 // This must come after initlization
 
@@ -38,7 +39,7 @@ describe("SendPushNotification test  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~", () => {
         title: "push title test via topic 1",
         body: "push body test via topic 1",
       });
-      if ( re.code == "success") {
+      if (re.code == "success") {
         assert.ok("sending push notification was success.");
         assert.ok(re.result != null, "messageId must exist");
       } else assert.fail("failed on sending message to default topic");
@@ -54,7 +55,7 @@ describe("SendPushNotification test  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~", () => {
         title: "push title test via token 1",
         body: "push body test via token 1",
       });
-      if ( re.code == "success") assert.fail("sending push notification should fail.");
+      if (re.code == "success") assert.fail("sending push notification should fail.");
       else assert.ok("failed on sending message to token");
     } catch (e) {
       assert.ok("send push notification should fail.");
@@ -66,12 +67,11 @@ describe("SendPushNotification test  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~", () => {
         title: "push title test via token 1",
         body: "push body test via token 1",
       });
-      if ( re.code == "success") assert.ok("sending push notification was success.");
+      if (re.code == "success") assert.ok("sending push notification was success.");
       else assert.fail("failed on sending message to topic");
     } catch (e) {
       assert.fail("send push notification should succeed::." + e);
     }
-
 
     try {
       const re = await lib.sendMessageToTokens({
@@ -79,7 +79,7 @@ describe("SendPushNotification test  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~", () => {
         title: "push title test via multiple tokens",
         body: "push body test via multiple tokens",
       });
-      if ( re.code == "success") {
+      if (re.code == "success") {
         assert.ok("sending push notification was success.");
         assert.ok(re.result.success == 2);
         assert.ok(re.result.error == 1);
@@ -94,7 +94,7 @@ describe("SendPushNotification test  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~", () => {
         title: "push title test via multiple tokens as string",
         body: "push body test via multiple tokens  as string",
       });
-      if ( re.code == "success") {
+      if (re.code == "success") {
         assert.ok("sending push notification was success.");
         assert.ok(re.result.success == 2);
         assert.ok(re.result.error == 1);
@@ -104,7 +104,6 @@ describe("SendPushNotification test  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~", () => {
     }
   });
 
-
   it("send message to user", async () => {
     const userA = "sendMessaegUserA";
     const userB = "sendMessaegUserB";
@@ -112,8 +111,8 @@ describe("SendPushNotification test  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~", () => {
     await test.createTestUser(userB);
 
     const tokenUpdates = [];
-    tokenUpdates.push( db.collection("message-tokens").doc(validToken1).set({uid: userA}));
-    tokenUpdates.push( db.collection("message-tokens").doc(validToken2).set({uid: userB}));
+    tokenUpdates.push(db.collection("message-tokens").doc(validToken1).set({ uid: userA }));
+    tokenUpdates.push(db.collection("message-tokens").doc(validToken2).set({ uid: userB }));
     await Promise.all(tokenUpdates);
     try {
       const re = await lib.sendMessageToUsers({
@@ -121,7 +120,7 @@ describe("SendPushNotification test  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~", () => {
         title: "push title 1",
         body: "push body 1",
       });
-      if ( re.code == "success") assert.ok("sending push notification was success.");
+      if (re.code == "success") assert.ok("sending push notification was success.");
       else assert.fail("failed on sending message to default topic");
     } catch (e) {
       assert.fail("send push notification should succeed.");
@@ -133,7 +132,7 @@ describe("SendPushNotification test  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~", () => {
         title: "push title 1",
         body: "push body 1",
       });
-      if ( re.code == "success") {
+      if (re.code == "success") {
         assert.ok("sending push notification was success.");
         assert.ok(re.result.success == 2, "sending push notification was success.");
       } else assert.fail("failed on sending message to default topic");
@@ -147,7 +146,7 @@ describe("SendPushNotification test  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~", () => {
         title: "push title 1",
         body: "push body 1",
       });
-      if ( re.code == "success") {
+      if (re.code == "success") {
         assert.ok("sending push notification was success.");
         assert.ok(re.result.success == 2, "sending push notification 2 success.");
         assert.ok(re.result.error == 0, "sending push notification 0 error.");
@@ -157,4 +156,3 @@ describe("SendPushNotification test  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~", () => {
     }
   });
 });
-
