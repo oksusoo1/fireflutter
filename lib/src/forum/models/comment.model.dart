@@ -192,11 +192,17 @@ class CommentModel with FirestoreMixin, ForumBase {
     });
   }
 
-  Future<void> delete() {
+  Future<void> delete() async {
+    if (files.length > 0) {
+      for (final url in files) {
+        await StorageService.instance.delete(url);
+      }
+    }
     if (deleted) throw ERROR_ALREADY_DELETED;
     commentDoc(id).update({
       'deleted': true,
       'content': '',
+      'files': [],
       'updatedAt': FieldValue.serverTimestamp(),
     });
 

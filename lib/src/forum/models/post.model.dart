@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:intl/intl.dart';
 import '../../../fireflutter.dart';
@@ -274,7 +275,13 @@ class PostModel with FirestoreMixin, ForumBase {
   }
 
   /// See readme.
-  Future<void> delete() {
+  Future<void> delete() async {
+    if (files.length > 0) {
+      for (final url in files) {
+        await StorageService.instance.delete(url);
+      }
+    }
+
     /// Delete the post if noOfComments is 0 even if the post is marked as deleted.
     if (noOfComments == 0) return postDoc(id).delete();
 
@@ -286,6 +293,7 @@ class PostModel with FirestoreMixin, ForumBase {
       'content': '',
       'summary': '',
       'title': '',
+      'files': [],
       'updatedAt': FieldValue.serverTimestamp(),
     });
   }

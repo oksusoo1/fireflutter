@@ -1389,7 +1389,7 @@ HttpException: Invalid statusCode: 403, uri = https://firebasestorage.googleapis
     - they don't have `id` in custom metadata when their `type` is one of `post` or `comment`.
     - the url is no longer being used by the `id` of the post(or comment).
     - their parent (post or comment) has deleted.
-  - @todo - Firefluter does not provide the delition funtionality, yet. You may delete it by yourself at this time. @see https://github.com/withcenter/wonderfulkorea/issues/77
+  - @todo - Firefluter does not provide the deletion funtionality for some cases like user closed the app while posting with some image uploaded. You may delete it by yourself at this time. @see https://github.com/withcenter/wonderfulkorea/issues/77
 
 
 
