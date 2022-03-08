@@ -21,6 +21,7 @@ Table of contents
 
 - [Fire Flutter](#fire-flutter)
 - [TODOs](#todos)
+  - [Display uploaded files](#display-uploaded-files)
   - [Sample code](#sample-code)
   - [Full functional code](#full-functional-code)
   - [Bug on security rule](#bug-on-security-rule)
@@ -123,6 +124,11 @@ Table of contents
   - [Meilisearch](#meilisearch)
 
 # TODOs
+
+
+## Display uploaded files
+
+- The file upload functionality is focused on uploading and display images. what if the uploaded file is not an image?
 
 ## Sample code
 
