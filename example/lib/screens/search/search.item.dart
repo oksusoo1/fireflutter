@@ -27,7 +27,8 @@ class SearchItem extends StatelessWidget {
 
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
-      onTap: () => AppService.instance.openPostView(id: isComment ? item['postId'] : item['id']),
+      onTap: () => AppService.instance
+          .openPostView(id: isComment ? item['postId'] : item['id']),
       child: Container(
         margin: EdgeInsets.only(bottom: xsm),
         padding: EdgeInsets.all(xs),

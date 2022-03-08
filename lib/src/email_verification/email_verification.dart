@@ -46,7 +46,8 @@ class EmailVerification extends StatefulWidget {
 class _EmailVerificationState extends State<EmailVerification> {
   bool emailVerificationCodeSent = false;
   bool emailChanged = false;
-  final email = TextEditingController(text: FirebaseAuth.instance.currentUser!.email);
+  final email =
+      TextEditingController(text: FirebaseAuth.instance.currentUser!.email);
   final String? orgEmail = FirebaseAuth.instance.currentUser?.email;
   bool get emailVerified => FirebaseAuth.instance.currentUser!.emailVerified;
 
@@ -123,9 +124,13 @@ class _EmailVerificationState extends State<EmailVerification> {
                           child: const Text('Re-send'),
                         )
                       : ElevatedButton(
-                          onPressed: (emailChanged || !emailVerified) ? verifyEmail : null,
+                          onPressed: (emailChanged || !emailVerified)
+                              ? verifyEmail
+                              : null,
                           child: Text(
-                            (emailChanged || emailVerified) ? 'Update email' : 'Verify email',
+                            (emailChanged || emailVerified)
+                                ? 'Update email'
+                                : 'Verify email',
                           ),
                         ),
                 ],

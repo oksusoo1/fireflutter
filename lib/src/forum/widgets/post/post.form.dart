@@ -71,7 +71,8 @@ class _PostFormState extends State<PostForm> {
 
     final submitButton = widget.submitButtonBuilder != null
         ? widget.submitButtonBuilder!(onSubmit)
-        : ElevatedButton(onPressed: () => onSubmit(), child: const Text('SUBMIT'));
+        : ElevatedButton(
+            onPressed: () => onSubmit(), child: const Text('SUBMIT'));
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

@@ -25,7 +25,8 @@ class _PostListScreenV2State extends State<PostListScreenV2> {
   bool loading = false;
 
   bool get atBottom {
-    return scrollController.offset > (scrollController.position.maxScrollExtent - 300);
+    return scrollController.offset >
+        (scrollController.position.maxScrollExtent - 300);
   }
 
   Timer? _debounce;
@@ -87,9 +88,11 @@ class _PostListScreenV2State extends State<PostListScreenV2> {
                   hint: Text('Select Index'),
                   value: searchService.index,
                   items: [
-                    DropdownMenuItem(child: Text('All'), value: 'posts-and-comments'),
+                    DropdownMenuItem(
+                        child: Text('All'), value: 'posts-and-comments'),
                     DropdownMenuItem(child: Text('Posts'), value: 'posts'),
-                    DropdownMenuItem(child: Text('Comments'), value: 'comments'),
+                    DropdownMenuItem(
+                        child: Text('Comments'), value: 'comments'),
                   ],
                   onChanged: (value) {
                     if (value != null) searchIndex(value);
@@ -102,7 +105,8 @@ class _PostListScreenV2State extends State<PostListScreenV2> {
                     items: [
                       DropdownMenuItem(child: Text('All'), value: ''),
                       DropdownMenuItem(child: Text('QnA'), value: 'qna'),
-                      DropdownMenuItem(child: Text('Discussion'), value: 'discussion'),
+                      DropdownMenuItem(
+                          child: Text('Discussion'), value: 'discussion'),
                       DropdownMenuItem(child: Text('Job'), value: 'job'),
                     ],
                     onChanged: (value) => searchCategoryPosts(value ?? ''),
@@ -112,9 +116,15 @@ class _PostListScreenV2State extends State<PostListScreenV2> {
                   value: searchService.uid,
                   items: [
                     DropdownMenuItem(child: Text('All'), value: ''),
-                    DropdownMenuItem(child: Text('Current User'), value: UserService.instance.uid),
-                    DropdownMenuItem(child: Text('User A'), value: 'jAXh1SngnafzPikQM0jpzKO3yj73'),
-                    DropdownMenuItem(child: Text('User B'), value: 'Nb1NJ0d0XcQNKVEjbCj0IXN543r2'),
+                    DropdownMenuItem(
+                        child: Text('Current User'),
+                        value: UserService.instance.uid),
+                    DropdownMenuItem(
+                        child: Text('User A'),
+                        value: 'jAXh1SngnafzPikQM0jpzKO3yj73'),
+                    DropdownMenuItem(
+                        child: Text('User B'),
+                        value: 'Nb1NJ0d0XcQNKVEjbCj0IXN543r2'),
                   ],
                   onChanged: (value) => searchUserPosts(value ?? ''),
                 ),
@@ -126,7 +136,8 @@ class _PostListScreenV2State extends State<PostListScreenV2> {
             Expanded(
               child: ListView.builder(
                 shrinkWrap: true,
-                keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+                keyboardDismissBehavior:
+                    ScrollViewKeyboardDismissBehavior.onDrag,
                 itemCount: searchService.resultList.length,
                 controller: scrollController,
                 itemBuilder: (c, i) {

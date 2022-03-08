@@ -1,7 +1,6 @@
 // import 'package:cloud_firestore/cloud_firestore.dart';
 // import 'package:firebase_database/firebase_database.dart';
 
-
 // /// See readme.md
 // class ReportService {
 //   static ReportService? _instance;

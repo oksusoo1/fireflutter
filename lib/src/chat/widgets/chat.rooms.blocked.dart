@@ -37,7 +37,8 @@ class _ChatRoomsBlockedState extends State<ChatRoomsBlocked> {
         );
       },
       // orderBy is compulsory to enable pagination
-      query: ChatService.instance.myRoomsBlockedCol.orderBy('timestamp', descending: true),
+      query: ChatService.instance.myRoomsBlockedCol
+          .orderBy('timestamp', descending: true),
       //Change types accordingly
       itemBuilderType: PaginateBuilderType.listView,
       // To update db data in real time.

@@ -1,5 +1,12 @@
 # Change Log
 
+## [0.2.16] - Minor updates on forum, chat.
+
+- Delete uploade files when post or comment is deleted.
+- Chat room id is formed as `UID__UID`.
+- Meilisearch index management utility added.
+
+
 ## [0.2.15] - Changes on user, post, cloud function.
 
 - Post properties had changed. `noOfComments`, `deleted`, `createdAt`, `updatedAt`. Its security rules had changed accordingly.

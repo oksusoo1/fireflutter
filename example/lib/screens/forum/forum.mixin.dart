@@ -53,7 +53,8 @@ mixin ForumMixin {
               );
               // form.create(postId: post.id, parentId: comment?.id ?? post.id);
               AppService.instance.back();
-              alert('Comment updated', 'You have updated the comment successfully');
+              alert('Comment updated',
+                  'You have updated the comment successfully');
             } catch (e) {
               error(e);
             }
@@ -140,7 +141,8 @@ mixin ForumMixin {
     // return alert('Display original image', 'TODO: display original images with a scaffold.');
     return showDialog(
       context: ctx,
-      builder: (context) => Dialog(child: ImageViewer(files, initialIndex: initialIndex)),
+      builder: (context) =>
+          Dialog(child: ImageViewer(files, initialIndex: initialIndex)),
     );
   }
 }

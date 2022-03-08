@@ -9,7 +9,8 @@ class AdminSearchSettingsScreen extends StatefulWidget {
   static const String routeName = '/searchSettings';
 
   @override
-  _AdminSearchSettingsScreenState createState() => _AdminSearchSettingsScreenState();
+  _AdminSearchSettingsScreenState createState() =>
+      _AdminSearchSettingsScreenState();
 }
 
 class _AdminSearchSettingsScreenState extends State<AdminSearchSettingsScreen> {
@@ -57,7 +58,8 @@ class _AdminSearchSettingsScreenState extends State<AdminSearchSettingsScreen> {
 }
 
 class IndexSettingForm extends StatefulWidget {
-  IndexSettingForm({required this.indexUid, this.onDeleted, Key? key}) : super(key: key);
+  IndexSettingForm({required this.indexUid, this.onDeleted, Key? key})
+      : super(key: key);
 
   final String indexUid;
   final Function()? onDeleted;
@@ -66,7 +68,8 @@ class IndexSettingForm extends StatefulWidget {
   State<IndexSettingForm> createState() => _IndexSettingFormState();
 }
 
-class _IndexSettingFormState extends State<IndexSettingForm> with FirestoreMixin {
+class _IndexSettingFormState extends State<IndexSettingForm>
+    with FirestoreMixin {
   final searchablesController = TextEditingController();
   final filtersController = TextEditingController();
   final sortersController = TextEditingController();
@@ -82,7 +85,9 @@ class _IndexSettingFormState extends State<IndexSettingForm> with FirestoreMixin
 
   initIndexSettings() async {
     try {
-      settings = await SearchService.instance.client.index(widget.indexUid).getSettings();
+      settings = await SearchService.instance.client
+          .index(widget.indexUid)
+          .getSettings();
       if (settings.searchableAttributes != null) {
         searchablesController.text = settings.searchableAttributes!.join(', ');
       }
@@ -119,7 +124,8 @@ class _IndexSettingFormState extends State<IndexSettingForm> with FirestoreMixin
 
   deleteIndexDocuments() async {
     try {
-      final conf = await confirm('Confirm', 'Delete ${widget.indexUid} index documents?');
+      final conf = await confirm(
+          'Confirm', 'Delete ${widget.indexUid} index documents?');
       if (!conf) return;
 
       await SearchService.instance.deleteAllDocuments(widget.indexUid);
@@ -171,7 +177,9 @@ class _IndexSettingFormState extends State<IndexSettingForm> with FirestoreMixin
           TextFormField(controller: sortersController),
           SizedBox(height: 10),
           ElevatedButton(onPressed: updateIndexSettings, child: Text('UPDATE')),
-          ElevatedButton(onPressed: deleteIndexDocuments, child: Text('DELETE INDEX DOCUMENTS')),
+          ElevatedButton(
+              onPressed: deleteIndexDocuments,
+              child: Text('DELETE INDEX DOCUMENTS')),
           // ElevatedButton(onPressed: reIndexDocuments, child: Text('RE-INDEX DOCUMENTS')),
         ],
       ),

@@ -18,7 +18,8 @@ class ReportPostManagement extends StatefulWidget {
   _ReportPostManagementState createState() => _ReportPostManagementState();
 }
 
-class _ReportPostManagementState extends State<ReportPostManagement> with FirestoreMixin {
+class _ReportPostManagementState extends State<ReportPostManagement>
+    with FirestoreMixin {
   PostModel? post;
   @override
   void initState() {
@@ -29,7 +30,8 @@ class _ReportPostManagementState extends State<ReportPostManagement> with Firest
         final event = await postCol.doc(widget.id).get();
 
         if (event.exists) {
-          post = PostModel.fromJson(event.data() as Map<String, dynamic>, event.id);
+          post = PostModel.fromJson(
+              event.data() as Map<String, dynamic>, event.id);
         } else {
           post = PostModel();
         }
@@ -51,7 +53,8 @@ class _ReportPostManagementState extends State<ReportPostManagement> with Firest
 
   @override
   Widget build(BuildContext context) {
-    if (post == null) return Center(child: CircularProgressIndicator.adaptive());
+    if (post == null)
+      return Center(child: CircularProgressIndicator.adaptive());
     return widget.builder(post!);
   }
 }

@@ -6,7 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class TestUser extends StatelessWidget {
-  const TestUser({required this.email, required this.name, required this.uid, Key? key})
+  const TestUser(
+      {required this.email, required this.name, required this.uid, Key? key})
       : super(key: key);
   final String email;
   final String name;
@@ -18,8 +19,8 @@ class TestUser extends StatelessWidget {
       child: Column(
         children: [
           ElevatedButton(
-            onPressed: () =>
-                AppService.instance.open(ChatRoomScreen.routeName, arguments: {'uid': uid}),
+            onPressed: () => AppService.instance
+                .open(ChatRoomScreen.routeName, arguments: {'uid': uid}),
             child: Text(name),
           ),
           UserPresence(
@@ -30,7 +31,9 @@ class TestUser extends StatelessWidget {
                   Icons.circle,
                   color: type == PresenceType.online
                       ? Colors.green
-                      : (type == PresenceType.offline ? Colors.red : Colors.yellow),
+                      : (type == PresenceType.offline
+                          ? Colors.red
+                          : Colors.yellow),
                 ),
                 Text(type.name),
               ],

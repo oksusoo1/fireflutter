@@ -27,7 +27,8 @@ class CategoryService with FirestoreMixin {
 
   /// Loads categories and save it into [categories], and return it.
   Future<List<CategoryModel>> loadCategories() async {
-    final querySnapshot = await categoryCol.orderBy('order', descending: true).get();
+    final querySnapshot =
+        await categoryCol.orderBy('order', descending: true).get();
     if (querySnapshot.size == 0) return [];
 
     categories = [];

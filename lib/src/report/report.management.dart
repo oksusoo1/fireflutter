@@ -33,7 +33,8 @@ class ReportManagement extends StatelessWidget with FirestoreMixin {
     return FirestoreListView(
       query: query,
       itemBuilder: (context, snapshot) {
-        final report = ReportModel.fromJson(snapshot.data() as Json, snapshot.reference);
+        final report =
+            ReportModel.fromJson(snapshot.data() as Json, snapshot.reference);
 
         return ListTile(
           title: Column(
@@ -42,14 +43,17 @@ class ReportManagement extends StatelessWidget with FirestoreMixin {
               UserDoc(
                 uid: report.reporterUid,
                 builder: (user) {
-                  return Text('Reporter: ' + (user.nickname != '' ? user.nickname : 'no_name'),
+                  return Text(
+                      'Reporter: ' +
+                          (user.nickname != '' ? user.nickname : 'no_name'),
                       style: TextStyle(fontSize: 14));
                 },
               ),
               UserDoc(
                 uid: report.reporteeUid,
                 builder: (user) {
-                  return Text('Reportee: ' + user.nickname, style: TextStyle(fontSize: 14));
+                  return Text('Reportee: ' + user.nickname,
+                      style: TextStyle(fontSize: 14));
                 },
               ),
               if (target == null)
@@ -59,7 +63,8 @@ class ReportManagement extends StatelessWidget with FirestoreMixin {
                 ),
             ],
           ),
-          subtitle: Text(report.reason != '' ? 'Reason: ' + report.reason : 'no_reason'),
+          subtitle: Text(
+              report.reason != '' ? 'Reason: ' + report.reason : 'no_reason'),
           trailing: IconButton(
             onPressed: () => onPressed(report),
             icon: Icon(

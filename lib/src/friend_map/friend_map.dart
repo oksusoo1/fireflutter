@@ -67,7 +67,8 @@ class _FriendMapState extends State<FriendMap> with WidgetsBindingObserver {
 
   initPositionListener() {
     positionStream = service.initLocationListener().listen((Position position) {
-      print('position changed: lat ${position.latitude} ; lng ${position.longitude}');
+      print(
+          'position changed: lat ${position.latitude} ; lng ${position.longitude}');
 
       service.updateMarkerPosition(
         MarkerIds.currentLocation,
@@ -100,7 +101,8 @@ class _FriendMapState extends State<FriendMap> with WidgetsBindingObserver {
           zoomControlsEnabled: false,
           myLocationButtonEnabled: false,
           initialCameraPosition: currentLocation,
-          onMapCreated: (GoogleMapController controller) => service.mapController = controller,
+          onMapCreated: (GoogleMapController controller) =>
+              service.mapController = controller,
           markers: Set<Marker>.from(service.markers),
           polylines: Set<Polyline>.of(service.polylines.values),
         ),

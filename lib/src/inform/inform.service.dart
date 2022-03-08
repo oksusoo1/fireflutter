@@ -15,7 +15,8 @@ class InformService {
   }
 
   String get uid => FirebaseAuth.instance.currentUser!.uid;
-  DatabaseReference get myDoc => FirebaseDatabase.instance.ref("inform").child(uid);
+  DatabaseReference get myDoc =>
+      FirebaseDatabase.instance.ref("inform").child(uid);
 
   // ignore: cancel_subscriptions
   StreamSubscription? sub;
@@ -36,7 +37,8 @@ class InformService {
   }
 
   Future inform(String uid, Map<String, dynamic> data) {
-    DatabaseReference otherDoc = FirebaseDatabase.instance.ref("inform").child(uid);
+    DatabaseReference otherDoc =
+        FirebaseDatabase.instance.ref("inform").child(uid);
     return otherDoc.set(data);
   }
 }

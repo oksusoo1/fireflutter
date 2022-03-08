@@ -40,7 +40,8 @@ class MessagingService with FirestoreMixin, DatabaseMixin {
     this.onMessageOpenedFromTermiated = onMessageOpenedFromTermiated;
     this.onMessageOpenedFromBackground = onMessageOpenedFromBackground;
     this.onNotificationPermissionDenied = onNotificationPermissionDenied;
-    this.onNotificationPermissionNotDetermined = onNotificationPermissionNotDetermined;
+    this.onNotificationPermissionNotDetermined =
+        onNotificationPermissionNotDetermined;
     this.onTokenUpdated = onTokenUpdated;
     _init();
   }
@@ -49,7 +50,8 @@ class MessagingService with FirestoreMixin, DatabaseMixin {
   _init() async {
     /// Permission request for iOS only. For Android, the permission is granted by default.
     if (Platform.isIOS) {
-      NotificationSettings settings = await FirebaseMessaging.instance.requestPermission(
+      NotificationSettings settings =
+          await FirebaseMessaging.instance.requestPermission(
         alert: true,
         announcement: false,
         badge: true,
@@ -65,7 +67,8 @@ class MessagingService with FirestoreMixin, DatabaseMixin {
         case AuthorizationStatus.authorized:
           break;
         case AuthorizationStatus.denied:
-          if (onNotificationPermissionDenied != null) onNotificationPermissionDenied!();
+          if (onNotificationPermissionDenied != null)
+            onNotificationPermissionDenied!();
           break;
         case AuthorizationStatus.notDetermined:
           if (onNotificationPermissionNotDetermined != null)
@@ -77,17 +80,21 @@ class MessagingService with FirestoreMixin, DatabaseMixin {
     }
 
     // Handler, when app is on Foreground.
-    if (onForegroundMessage != null) FirebaseMessaging.onMessage.listen(onForegroundMessage!);
+    if (onForegroundMessage != null)
+      FirebaseMessaging.onMessage.listen(onForegroundMessage!);
 
     // Check if app is opened from terminated state and get message data.
-    RemoteMessage? initialMessage = await FirebaseMessaging.instance.getInitialMessage();
+    RemoteMessage? initialMessage =
+        await FirebaseMessaging.instance.getInitialMessage();
     if (initialMessage != null) {
-      if (onMessageOpenedFromTermiated != null) onMessageOpenedFromTermiated!(initialMessage);
+      if (onMessageOpenedFromTermiated != null)
+        onMessageOpenedFromTermiated!(initialMessage);
     }
 
     // Check if the app is opened from the background state.
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-      if (onMessageOpenedFromBackground != null) onMessageOpenedFromBackground!(message);
+      if (onMessageOpenedFromBackground != null)
+        onMessageOpenedFromBackground!(message);
     });
 
     // Get the token each time the application loads and save it to database.

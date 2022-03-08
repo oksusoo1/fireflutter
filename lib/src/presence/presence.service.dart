@@ -28,15 +28,20 @@ class PresenceService {
   late final StreamSubscription connectionSubscription;
   late final StreamSubscription presenceSubscription;
 
-  DatabaseReference connected = FirebaseDatabase.instance.ref(".info/connected");
-  DatabaseReference get presence => FirebaseDatabase.instance.ref("presence").child(uid!);
+  DatabaseReference connected =
+      FirebaseDatabase.instance.ref(".info/connected");
+  DatabaseReference get presence =>
+      FirebaseDatabase.instance.ref("presence").child(uid!);
   activate({required ErrorCallback onError}) {
     this.onError = onError;
     connectionSubscription = connected.onValue.listen((DatabaseEvent event) {
-      setPresence(event.snapshot.value == true ? PresenceStatus.online : PresenceStatus.offline);
+      setPresence(event.snapshot.value == true
+          ? PresenceStatus.online
+          : PresenceStatus.offline);
     });
 
-    presenceSubscription = FirebaseAuth.instance.authStateChanges().listen((user) {
+    presenceSubscription =
+        FirebaseAuth.instance.authStateChanges().listen((user) {
       if (user == null) {
         setPresence(PresenceStatus.offline);
         uid = null;

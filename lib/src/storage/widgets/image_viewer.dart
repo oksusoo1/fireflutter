@@ -47,14 +47,16 @@ class _ImageViewerState extends State<ImageViewer> {
                   heroAttributes: PhotoViewHeroAttributes(tag: widget.files[i]),
                 );
               },
-              loadingBuilder: (context, event) => Center(child: CircularProgressIndicator()),
+              loadingBuilder: (context, event) =>
+                  Center(child: CircularProgressIndicator()),
               pageController: _controller,
               onPageChanged: (i) => setState(() => currentIndex = i),
             ),
           ),
           Container(
             child: IconButton(
-              icon: Icon(Icons.close_rounded, color: Colors.redAccent, size: 28),
+              icon:
+                  Icon(Icons.close_rounded, color: Colors.redAccent, size: 28),
               onPressed: () => Navigator.of(context).pop(),
             ),
           ),

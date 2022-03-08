@@ -16,7 +16,8 @@ class UserProfilePhoto extends StatelessWidget {
     this.size = 40,
     this.iconSize = 24,
     this.onTap,
-    this.boxShadow = const BoxShadow(color: Colors.white, blurRadius: 1.0, spreadRadius: 1.0),
+    this.boxShadow = const BoxShadow(
+        color: Colors.white, blurRadius: 1.0, spreadRadius: 1.0),
     this.padding,
     this.margin,
     Key? key,
@@ -45,8 +46,8 @@ class UserProfilePhoto extends StatelessWidget {
                     size: iconSize,
                   ),
           ),
-          constraints:
-              BoxConstraints(minWidth: size, minHeight: size, maxWidth: size, maxHeight: size),
+          constraints: BoxConstraints(
+              minWidth: size, minHeight: size, maxWidth: size, maxHeight: size),
           decoration: BoxDecoration(
             shape: BoxShape.circle,
             color: user.photoUrl == '' ? Colors.grey.shade300 : Colors.white,

@@ -32,7 +32,9 @@ class CommentModel with FirestoreMixin, ForumBase {
 
   String content;
   String get displayContent {
-    return deleted ? TranslationService.instance.tr(COMMENT_CONTENT_DELETED) : content;
+    return deleted
+        ? TranslationService.instance.tr(COMMENT_CONTENT_DELETED)
+        : content;
   }
 
   int like;
@@ -159,8 +161,10 @@ class CommentModel with FirestoreMixin, ForumBase {
   }) async {
     bool signedIn = FirebaseAuth.instance.currentUser != null;
     if (signedIn == false) throw ERROR_SIGN_IN;
-    if (UserService.instance.user.exists == false) throw ERROR_USER_DOCUMENT_NOT_EXISTS;
-    if (UserService.instance.profileReady == false) throw UserService.instance.profileError;
+    if (UserService.instance.user.exists == false)
+      throw ERROR_USER_DOCUMENT_NOT_EXISTS;
+    if (UserService.instance.profileReady == false)
+      throw UserService.instance.profileError;
     final _ = CommentModel.empty();
     final ref = await _.commentCol.add({
       'postId': postId,

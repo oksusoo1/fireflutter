@@ -18,7 +18,9 @@ class ShortDate extends StatelessWidget {
     final date = DateTime.fromMillisecondsSinceEpoch(timestamp);
     final today = DateTime.now();
     bool re;
-    if (date.year == today.year && date.month == today.month && date.day == today.day) {
+    if (date.year == today.year &&
+        date.month == today.month &&
+        date.day == today.day) {
       re = true;
     } else {
       re = false;
@@ -27,7 +29,9 @@ class ShortDate extends StatelessWidget {
     return Padding(
       padding: padding,
       child: Text(
-        re ? DateFormat.jm().format(date).toLowerCase() : DateFormat.yMd().format(date),
+        re
+            ? DateFormat.jm().format(date).toLowerCase()
+            : DateFormat.yMd().format(date),
         style: style,
       ),
     );
