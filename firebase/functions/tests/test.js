@@ -6,7 +6,7 @@ const it = mocha.it;
 const assert = require("assert");
 const admin = require("firebase-admin");
 
-const { MeiliSearch } = require("meilisearch");
+const {MeiliSearch} = require("meilisearch");
 
 // initialize the firebase
 if (!admin.apps.length) {

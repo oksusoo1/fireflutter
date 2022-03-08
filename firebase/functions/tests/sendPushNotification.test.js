@@ -111,8 +111,8 @@ describe("SendPushNotification test  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~", () => {
     await test.createTestUser(userB);
 
     const tokenUpdates = [];
-    tokenUpdates.push(db.collection("message-tokens").doc(validToken1).set({ uid: userA }));
-    tokenUpdates.push(db.collection("message-tokens").doc(validToken2).set({ uid: userB }));
+    tokenUpdates.push(db.collection("message-tokens").doc(validToken1).set({uid: userA}));
+    tokenUpdates.push(db.collection("message-tokens").doc(validToken2).set({uid: userB}));
     await Promise.all(tokenUpdates);
     try {
       const re = await lib.sendMessageToUsers({

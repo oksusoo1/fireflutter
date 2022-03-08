@@ -60,8 +60,7 @@ class Post extends StatelessWidget {
               children: [
                 Text(
                   'Summary',
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold, color: Colors.grey),
+                  style: TextStyle(fontWeight: FontWeight.bold, color: Colors.grey),
                 ),
                 Text(
                   post.summary,
@@ -91,6 +90,7 @@ class Post extends StatelessWidget {
           dislikeCount: post.dislike,
           shareButton: shareButton,
           onSendPushNotification: () => onSendPushNotification(post),
+          onBlockUser: () => UserService.instance.blockUser(post.uid),
         ),
       ],
     );
