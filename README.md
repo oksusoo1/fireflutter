@@ -87,6 +87,7 @@ Table of contents
   - [Test method](#test-method)
   - [Local test on firestore security rules](#local-test-on-firestore-security-rules)
 - [Sample code](#sample-code-1)
+- [Node.js Utilities](#nodejs-utilities)
 - [Issues](#issues)
   - [firebase_database/permission-denied](#firebase_databasepermission-denied)
   - [Firebase realtime database is not working](#firebase-realtime-database-is-not-working)
@@ -957,6 +958,15 @@ InformService.instance.inform(widget.room.otherUid, {
 - `./firebase/lab` folder has some sample code.
   - `post.add-missing-properties.js` is for adding `noOfComments` and `deleted` fields on missing fields.
   - `create.test.user.js` is for creating test user accounts.
+
+
+# Node.js Utilities
+
+- To run utilities
+  - 
+
+- Creating sample users
+  - `node lab/create.test.users.js`.
 
 # Issues
 
