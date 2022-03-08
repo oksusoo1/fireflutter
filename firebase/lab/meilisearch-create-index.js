@@ -10,7 +10,7 @@ if (!admin.apps.length) {
   // const serviceAccount = require("../withcenter-test-project.adminKey.json");
   admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
-    databaseURL: "https://withcenter-test-project-default-rtdb.asia-southeast1.firebasedatabase.app/",
+    databaseURL: "https://wonderful-korea-default-rtdb.asia-southeast1.firebasedatabase.app/",
   });
 }
 
