@@ -50,6 +50,8 @@ class CommentModel with FirestoreMixin, ForumBase {
 
   bool get isMine => UserService.instance.uid == uid;
 
+  bool get hasPhoto => files.length > 0;
+
   /// Get document data of map and convert it into post model
   factory CommentModel.fromJson(
     Json data, {
