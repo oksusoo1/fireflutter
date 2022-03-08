@@ -7,7 +7,6 @@ const utils = require("../functions/utils");
 // initialize the firebase
 if (!admin.apps.length) {
   const serviceAccount = require("../firebase-admin-sdk-key.json");
-  // const serviceAccount = require("../withcenter-test-project.adminKey.json");
   admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
     databaseURL: "https://wonderful-korea-default-rtdb.asia-southeast1.firebasedatabase.app/",
