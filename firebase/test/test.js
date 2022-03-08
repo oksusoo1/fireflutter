@@ -81,17 +81,12 @@ async function createComment(category, postId, userUid) {
   return re;
 }
 
-
-    /// 테스트 전에, 이전의 데이터를 모두 지운다.
-    beforeEach(async () => {
-        await firebase.clearFirestoreData({ projectId: TEST_PROJECT_ID });
-    });
-  
-
+/// 테스트 전에, 이전의 데이터를 모두 지운다.
+beforeEach(async () => {
+  await firebase.clearFirestoreData({ projectId: TEST_PROJECT_ID });
+});
 
 describe("Firestore security test", () => {
-
-
   it("notUpdating - method test", async () => {
     const doc = db().collection("test").doc("notUpdating").collection("col").doc("doc");
     await doc.set({ a: "Apple", b: "Banana", c: "Cherry" });
@@ -153,7 +148,7 @@ describe("Firestore security test", () => {
     const _noAuth = db()
       .collection("chat")
       .doc("messages")
-      .collection(`${A}-${B}`)
+      .collection(`${A}__${B}`)
       .doc("message-doc-id");
     await firebase.assertFails(_noAuth.get());
 
@@ -161,7 +156,7 @@ describe("Firestore security test", () => {
     const _wrongAuth = db(authC)
       .collection("chat")
       .doc("messages")
-      .collection(`${A}-${B}`)
+      .collection(`${A}__${B}`)
       .doc("message-doc-id");
     await firebase.assertFails(_wrongAuth.get());
   });
@@ -171,7 +166,7 @@ describe("Firestore security test", () => {
     const _rigthA = db(authA)
       .collection("chat")
       .doc("messages")
-      .collection(`${A}-${B}`)
+      .collection(`${A}__${B}`)
       .doc("message-doc-id");
     await firebase.assertSucceeds(_rigthA.get());
 
@@ -179,7 +174,7 @@ describe("Firestore security test", () => {
     const _rigthB = db(authB)
       .collection("chat")
       .doc("messages")
-      .collection(`${A}-${B}`)
+      .collection(`${A}__${B}`)
       .doc("message-doc-id");
     await firebase.assertSucceeds(_rigthB.get());
   });
@@ -189,7 +184,7 @@ describe("Firestore security test", () => {
     const _noAuth = db()
       .collection("chat")
       .doc("messages")
-      .collection(`${A}-${B}`)
+      .collection(`${A}__${B}`)
       .doc("message-doc-id");
     await firebase.assertFails(_noAuth.set({ to: B, from: A, text: "yo", timestamp: 1 }));
 
@@ -197,7 +192,7 @@ describe("Firestore security test", () => {
     const _wrongAuth = db(authC)
       .collection("chat")
       .doc("messages")
-      .collection(`${A}-${B}`)
+      .collection(`${A}__${B}`)
       .doc("message-doc-id");
     await firebase.assertFails(_wrongAuth.set({ to: B, from: A, text: "yo", timestamp: 1 }));
   });
@@ -207,32 +202,36 @@ describe("Firestore security test", () => {
     const _missing = db(authC)
       .collection("chat")
       .doc("messages")
-      .collection(`${A}-${B}`)
+      .collection(`${A}__${B}`)
       .doc("message-doc-id-a");
     await firebase.assertFails(_missing.set({ to: B, from: A, text: "yo", timestamp: 1 }));
 
     const _wrong = db(authA)
       .collection("chat")
       .doc("messages")
-      .collection(`${A}-${B}`)
+      .collection(`${A}__${B}`)
       .doc("message-doc-id-a");
     await firebase.assertFails(_wrong.set({ to: B, from: C, text: "yo", timestamp: 1 }));
 
     const _missingB = db(authB)
       .collection("chat")
       .doc("messages")
-      .collection(`${A}-${B}`)
+      .collection(`${A}__${B}`)
       .doc("message-doc-id-a");
     await firebase.assertFails(_missingB.set({ to: A, from: C, text: "yo", timestamp: 1 }));
   });
 
   it("Chat - message - write - success", async () => {
-    const right = db(authA).collection("chat").doc("messages").collection(`${A}-${B}`).doc("right");
+    const right = db(authA)
+      .collection("chat")
+      .doc("messages")
+      .collection(`${A}__${B}`)
+      .doc("right");
     await firebase.assertSucceeds(right.set({ to: B, from: A, text: "yo", timestamp: 1 }));
   });
 
   it("Chat - message - delete", async () => {
-    await db(authA).collection("chat").doc("messages").collection(`${A}-${B}`).doc("right").set({
+    await db(authA).collection("chat").doc("messages").collection(`${A}__${B}`).doc("right").set({
       to: B,
       from: A,
       text: "yo",
@@ -240,15 +239,15 @@ describe("Firestore security test", () => {
     });
     // Fail - wrong user
     await firebase.assertFails(
-      db(authC).collection("chat").doc("messages").collection(`${A}-${B}`).doc("right").delete()
+      db(authC).collection("chat").doc("messages").collection(`${A}__${B}`).doc("right").delete()
     );
     // Fail - wrong user
     await firebase.assertFails(
-      db(authB).collection("chat").doc("messages").collection(`${A}-${B}`).doc("right").delete()
+      db(authB).collection("chat").doc("messages").collection(`${A}__${B}`).doc("right").delete()
     );
     // Success
     await firebase.assertSucceeds(
-      db(authA).collection("chat").doc("messages").collection(`${A}-${B}`).doc("right").delete()
+      db(authA).collection("chat").doc("messages").collection(`${A}__${B}`).doc("right").delete()
     );
   });
 
@@ -294,20 +293,20 @@ describe("Firestore security test", () => {
     const blockedA = db(authA)
       .collection("chat")
       .doc("messages")
-      .collection(A + "-" + B)
+      .collection(A + "__" + B)
       .doc("any-id");
     await firebase.assertFails(blockedA.set({ from: A, to: B, text: "yo", timestamp: 1 }));
     const blockedB = db(authA)
       .collection("chat")
       .doc("messages")
-      .collection(A + "-" + B)
+      .collection(A + "__" + B)
       .doc("any-id");
     await firebase.assertFails(blockedB.set({ from: B, to: A, text: "yo", timestamp: 1 }));
 
     const blockedBA = db(authA)
       .collection("chat")
       .doc("messages")
-      .collection(B + "-" + A)
+      .collection(B + "__" + A)
       .doc("any-id");
     await firebase.assertFails(blockedBA.set({ from: B, to: A, text: "yo", timestamp: 1 }));
 
@@ -315,7 +314,7 @@ describe("Firestore security test", () => {
     const blockedAC = db(authA)
       .collection("chat")
       .doc("messages")
-      .collection(A + "-" + C)
+      .collection(A + "__" + C)
       .doc("doc-id-ac");
     await firebase.assertSucceeds(blockedAC.set({ from: A, to: C, text: "yo", timestamp: 1 }));
 
@@ -323,7 +322,7 @@ describe("Firestore security test", () => {
     const blockedBC = db(authB)
       .collection("chat")
       .doc("messages")
-      .collection(C + "-" + B)
+      .collection(C + "__" + B)
       .doc("doc-id-bc");
     await firebase.assertSucceeds(blockedBC.set({ from: B, to: C, text: "yo", timestamp: 1 }));
   });
@@ -378,173 +377,194 @@ describe("Firestore security test", () => {
   });
 
   it("Post create failure without category", async () => {
-    await firebase.assertFails(db(authA).collection('posts').add({
-        category: 'qna',
+    await firebase.assertFails(
+      db(authA).collection("posts").add({
+        category: "qna",
         timestamp: 1,
-        uid: 'a',
+        uid: "a",
         noOfComments: 0,
         deleted: false,
-   }));
+      })
+    );
   });
 
   it("Post create failure without sign-in", async () => {
     await admin().collection("categories").doc("qna").set({
       title: "QnA",
     });
-    await firebase.assertFails(db().collection('posts').add({
-        category: 'qna',
+    await firebase.assertFails(
+      db().collection("posts").add({
+        category: "qna",
         createdAt: 1,
         updatedAt: 1,
         uid: A,
         noOfComments: 0,
         deleted: false,
-    }));
-    await firebase.assertSucceeds(db(authA).collection('posts').add({
-        category: 'qna',
+      })
+    );
+    await firebase.assertSucceeds(
+      db(authA).collection("posts").add({
+        category: "qna",
         createdAt: 1,
         updatedAt: 1,
         uid: A,
         noOfComments: 0,
         deleted: false,
-    }));
-    
+      })
+    );
   });
 
   it("Post create failure - wrong input data - category is missing", async () => {
     await admin().collection("categories").doc("qna").set({
       title: "QnA",
     });
-    await firebase.assertFails(db(authA).collection('posts').add({
+    await firebase.assertFails(
+      db(authA).collection("posts").add({
         uid: A,
-        title: '...',
-        content: 'content',
+        title: "...",
+        content: "content",
         createdAt: 1,
         updatedAt: 1,
         noOfComments: 0,
         deleted: false,
-    }));
-    await firebase.assertSucceeds(db(authA).collection('posts').add({
-        category: 'qna',
+      })
+    );
+    await firebase.assertSucceeds(
+      db(authA).collection("posts").add({
+        category: "qna",
         uid: A,
-        title: '...',
-        content: 'content',
+        title: "...",
+        content: "content",
         createdAt: 1,
         updatedAt: 1,
         noOfComments: 0,
         deleted: false,
-    }));
+      })
+    );
   });
 
-
-
-  it("Post create failure - missing property test", async() => {
-    await createCategory('qna');
+  it("Post create failure - missing property test", async () => {
+    await createCategory("qna");
 
     // Success
-    await firebase.assertSucceeds(db(authA).collection('posts').add({
-        category: 'qna',
+    await firebase.assertSucceeds(
+      db(authA).collection("posts").add({
+        category: "qna",
         uid: A,
-        title: '...',
-        content: 'content',
+        title: "...",
+        content: "content",
         createdAt: 1,
         updatedAt: 1,
         noOfComments: 0,
         deleted: false,
-        anyField: 'anyData',
-    }));
+        anyField: "anyData",
+      })
+    );
 
     // Failure - category missing
-    await firebase.assertFails(db(authA).collection('posts').add({
+    await firebase.assertFails(
+      db(authA).collection("posts").add({
         // category: 'qna',
         uid: A,
-        title: '...',
-        content: 'content',
+        title: "...",
+        content: "content",
         createdAt: 1,
         updatedAt: 1,
         noOfComments: 0,
         deleted: false,
-        anyField: 'anyData',
-    }));
+        anyField: "anyData",
+      })
+    );
 
     // Failure - uid missing
-    await firebase.assertFails(db(authA).collection('posts').add({
-        category: 'qna',
+    await firebase.assertFails(
+      db(authA).collection("posts").add({
+        category: "qna",
         // uid: A,
-        title: '...',
-        content: 'content',
-        timestamp: '1',
+        title: "...",
+        content: "content",
+        timestamp: "1",
         noOfComments: 0,
         deleted: false,
-        anyField: 'anyData',
-    }));
-
+        anyField: "anyData",
+      })
+    );
 
     // Failure - noOfComment is missing
-    await firebase.assertFails(db(authA).collection('posts').add({
-        category: 'qna',
+    await firebase.assertFails(
+      db(authA).collection("posts").add({
+        category: "qna",
         uid: A,
-        title: '...',
-        content: 'content',
-        timestamp: '1',
+        title: "...",
+        content: "content",
+        timestamp: "1",
         // noOfComments: 0,
         deleted: false,
-        anyField: 'anyData',
-    }));
+        anyField: "anyData",
+      })
+    );
 
     // Failure - noOfComment is not 0
-    await firebase.assertFails(db(authA).collection('posts').add({
-        category: 'qna',
+    await firebase.assertFails(
+      db(authA).collection("posts").add({
+        category: "qna",
         uid: A,
-        title: '...',
-        content: 'content',
-        timestamp: '1',
+        title: "...",
+        content: "content",
+        timestamp: "1",
         noOfComments: 1,
         deleted: false,
-        anyField: 'anyData',
-    }));
+        anyField: "anyData",
+      })
+    );
 
     // Failure - deleted is missing
-    await firebase.assertFails(db(authA).collection('posts').add({
-        category: 'qna',
+    await firebase.assertFails(
+      db(authA).collection("posts").add({
+        category: "qna",
         uid: A,
-        title: '...',
-        content: 'content',
-        timestamp: '1',
+        title: "...",
+        content: "content",
+        timestamp: "1",
         noOfComments: 0,
         // deleted: false,
-        anyField: 'anyData',
-    }));
+        anyField: "anyData",
+      })
+    );
 
     // Failure - deleted is not false
-    await firebase.assertFails(db(authA).collection('posts').add({
-        category: 'qna',
+    await firebase.assertFails(
+      db(authA).collection("posts").add({
+        category: "qna",
         uid: A,
-        title: '...',
-        content: 'content',
-        timestamp: '1',
+        title: "...",
+        content: "content",
+        timestamp: "1",
         noOfComments: 0,
         deleted: true,
-        anyField: 'anyData',
-    }));
-
-});
-it("Post create success - input any data", async () => {
+        anyField: "anyData",
+      })
+    );
+  });
+  it("Post create success - input any data", async () => {
     // await admin().collection("categories").doc("qna").set({
     //     title: 'QnA'
     // });
-    await createCategory('qna');
-    await firebase.assertSucceeds(db(authA).collection('posts').add({
-        category: 'qna',
+    await createCategory("qna");
+    await firebase.assertSucceeds(
+      db(authA).collection("posts").add({
+        category: "qna",
         uid: A,
-        title: '...',
-        content: 'content',
+        title: "...",
+        content: "content",
         createdAt: 1,
         updatedAt: 1,
         noOfComments: 0,
         deleted: false,
-        anyField: 'anyData',
-    }));
-});
+        anyField: "anyData",
+      })
+    );
+  });
 
   it("Post update - failure", async () => {
     await createCategory("qna");
@@ -663,10 +683,14 @@ it("Post create success - input any data", async () => {
     await createCategory("cat");
     await createPost("cat", "docId", A, "title");
     /// Fail - noOfComment is not 0.
-    await firebase.assertSucceeds(db(authA).collection("posts").doc("docId").update({noOfComments: 3}));
+    await firebase.assertSucceeds(
+      db(authA).collection("posts").doc("docId").update({ noOfComments: 3 })
+    );
     await firebase.assertFails(db(authA).collection("posts").doc("docId").delete());
     /// Fail - noOfComment is not 0.
-    await firebase.assertSucceeds(db(authA).collection("posts").doc("docId").update({noOfComments: 0}));
+    await firebase.assertSucceeds(
+      db(authA).collection("posts").doc("docId").update({ noOfComments: 0 })
+    );
     await firebase.assertSucceeds(db(authA).collection("posts").doc("docId").delete());
   });
 

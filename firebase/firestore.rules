@@ -184,7 +184,7 @@ service cloud.firestore {
 
     // check if 'to', 'from' fiends are part of room id.
     function messageParticipants(roomId) {
-      return request.resource.data.to in roomId.split('-') && request.resource.data.from in roomId.split('-');
+      return request.resource.data.to in roomId.split('__') && request.resource.data.from in roomId.split('__');
     }
 
     function isAdmin() {
@@ -209,7 +209,7 @@ service cloud.firestore {
 
 // Check if roomId contains my Uid.
 function myChatRoom(roomId) {
-  return request.auth.uid in roomId.split('-');
+  return request.auth.uid in roomId.split('__');
 }
 
 // Check if the message is create by me.
