@@ -10,6 +10,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "axios": "^0.26.0",
     "firebase-admin": "^10.0.2",
     "meilisearch": "^0.24.0"
   },
