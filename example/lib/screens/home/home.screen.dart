@@ -225,11 +225,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: const Text('Buy & Sell'),
                   ),
                   // ElevatedButton(
-                  //     style: ElevatedButton.styleFrom(
-                  //         primary: Colors.amber.shade800),
-                  //     onPressed: () => AppService.instance.open(
-                  //         ForumListScreen.routeName,
-                  //         arguments: {'category': 'qna'}),
+                  //     style: ElevatedButton.styleFrom(primary: Colors.amber.shade800),
+                  //     onPressed: () => AppService.instance
+                  //         .open(ForumListScreen.routeName, arguments: {'category': 'qna'}),
                   //     child: Text('QnA with ForumListView')),
                 ],
               ),
