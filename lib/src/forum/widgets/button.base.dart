@@ -58,7 +58,7 @@ class ButtonBase extends StatelessWidget {
         _button('Like ${likeCount > 0 ? likeCount : ""}', onLike),
         if (onDislike != null)
           _button('Dislike ${dislikeCount > 0 ? dislikeCount : ""}', onDislike!),
-        if (isPost && onChat != null) _button('Chat', onChat!),
+        if (!isMine && onChat != null) _button('Chat', onChat!),
         if (shareButton != null) shareButton!,
         Spacer(),
         PopupMenuButton<String>(

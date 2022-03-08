@@ -431,9 +431,13 @@ async function enableUser(data, context) {
       message: "To manage user, you need to sign-in as an admin.",
     };
   }
-  const user = await auth.updateUser(data.uid, {disabled: false});
-  if (user.disabled == false) await rdb.ref("users").child(data.uid).update({disabled: false});
-  return user;
+  try {
+    const user = await auth.updateUser(data.uid, {disabled: false});
+    if (user.disabled == false) await rdb.ref("users").child(data.uid).update({disabled: false});
+    return {code: "success", result: user};
+  } catch(e) {
+    return {code: "error", message: e};
+  }
 }
 
 async function disableUser(data, context) {
@@ -444,9 +448,14 @@ async function disableUser(data, context) {
       message: "To manage user, you need to sign-in as an admin.",
     };
   }
-  const user = await auth.updateUser(data.uid, {disabled: true});
-  if (user.disabled == true) await rdb.ref("users").child(data.uid).update({disabled: true});
-  return user;
+  try {
+    const user = await auth.updateUser(data.uid, {disabled: true});
+    if (user.disabled == true) await rdb.ref("users").child(data.uid).update({disabled: true});
+    return {code: "success", result: user};
+  } catch(e) {
+    return {code: "error", message: e};
+  }
+  
 }
 
 exports.delay = delay;
