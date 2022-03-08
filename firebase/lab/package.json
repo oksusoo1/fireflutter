@@ -10,7 +10,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "firebase-admin": "^10.0.2"
+    "firebase-admin": "^10.0.2",
+    "meilisearch": "^0.24.0"
   },
   "devDependencies": {
     "@faker-js/faker": "^6.0.0-alpha.7"
