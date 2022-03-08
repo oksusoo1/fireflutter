@@ -207,6 +207,7 @@ class PostModel with FirestoreMixin, ForumBase {
     required String category,
     required String title,
     required String content,
+    String? subcategory,
     String? documentId,
     List<String>? files,
     String? summary,
@@ -220,6 +221,7 @@ class PostModel with FirestoreMixin, ForumBase {
     int week = ((j.unix() - 345600) / 604800).floor();
     final createData = {
       'category': category,
+      if (subcategory != null) 'subcategory': subcategory,
       'title': title,
       'content': content,
       if (summary != null && summary != '') 'summary': summary,

@@ -107,6 +107,7 @@ Table of contents
 - [Reports](#reports)
 - [Forum](#forum)
   - [Category](#category)
+    - [Subcategory](#subcategory)
   - [Post](#post-1)
   - [Comment](#comment)
 - [Push notification](#push-notification)
@@ -1158,6 +1159,17 @@ DynamicLinksService.instance.listen((Uri? deepLink) {
 
   - One thing to know is that, when category had deleted, the no of posts and no of comments properties are deleted also. And when category had re-created with same category id, the numbrers are not restored. This may lead a problem.
   - **_@todo so, in the future, if a category has a post, it should not be deleted. And there must be a function to move all the posts from one category to another._**
+
+
+### Subcategory
+
+- `subcategory` field is an optional field. It is not restricted by security rule. It is up to you how you use it.
+  - One use case would be;
+    - You want to make a separate screen(page) for daily log where user can post their daily affairs.
+    - And you want the daily log appears in discussion category.
+    - Then when a user creates daily log, app can set `category` as `discussion` and `subcategory` as `dailylog`.
+    - So, the daily log will appear within `discussion` category and the app can display `subcategory=dailylog` on daily log screen. 
+
 
 ## Post
 
