@@ -140,4 +140,19 @@ class SearchService {
 
     resultList = [];
   }
+
+  /// Returns a total count of documents a user owned in the given index.
+  ///
+  Future<int> count({
+    required String uid,
+    String index = 'posts',
+  }) async {
+    final res = await client.index(index).search(
+      '',
+      filter: ['uid = ' + uid],
+      attributesToRetrieve: ['id'],
+    );
+
+    return res.nbHits ?? 0;
+  }
 }
