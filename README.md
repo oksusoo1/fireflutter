@@ -1189,6 +1189,8 @@ DynamicLinksService.instance.listen((Uri? deepLink) {
   - **_@todo so, in the future, if a category has a post, it should not be deleted. And there must be a function to move all the posts from one category to another._**
 
 
+- If admin set `order` to `-1`, then the app should not display the category in menu. There is no obligation on it. It's just a recommended rule.
+
 ### Subcategory
 
 - `subcategory` field is an optional field. It is not restricted by security rule. It is up to you how you use it.
