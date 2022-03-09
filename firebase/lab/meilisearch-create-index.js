@@ -68,11 +68,11 @@ async function forumIndexing(indexUid) {
     if (indexUid == "comments") {
       _data.postId = data.postId;
       _data.parentId = data.parentId;
+    } else {
+      _data.title = data.title ?? "";
     }
 
     const promises = [];
-
-    // promises.push(Axios.post("https://wonderfulkorea.kr:4431/index.php?api=post/record", _data));
 
     _data.content = utils.removeHtmlTags(_data.content);
     promises.push(
