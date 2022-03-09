@@ -19,7 +19,7 @@ class UserDoc extends StatefulWidget {
   State<UserDoc> createState() => _UserDocState();
 }
 
-class _UserDocState extends State<UserDoc> with DatabaseMixin {
+class _UserDocState extends State<UserDoc> {
   UserModel? user;
 
   @override
