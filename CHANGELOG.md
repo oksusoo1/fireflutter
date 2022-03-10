@@ -1,5 +1,10 @@
 # Change Log
 
+## [0.2.17]
+
+- Add `UserSettingsDoc`.
+- 
+
 ## [0.2.16] - Minor updates on forum, chat.
 
 - Delete uploade files when post or comment is deleted.
