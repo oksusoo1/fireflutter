@@ -14,7 +14,7 @@ class MyDoc extends StatefulWidget {
   State<MyDoc> createState() => _MyDocState();
 }
 
-class _MyDocState extends State<MyDoc> with DatabaseMixin {
+class _MyDocState extends State<MyDoc> {
   UserModel? user;
 
   // ignore: cancel_subscriptions
@@ -35,8 +35,7 @@ class _MyDocState extends State<MyDoc> with DatabaseMixin {
 
   @override
   Widget build(BuildContext context) {
-    if (user == null)
-      return Center(child: CircularProgressIndicator.adaptive());
+    if (user == null) return Center(child: CircularProgressIndicator.adaptive());
     return widget.builder(user!);
   }
 }

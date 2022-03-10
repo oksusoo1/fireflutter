@@ -21,6 +21,7 @@ Table of contents
 
 - [Fire Flutter](#fire-flutter)
 - [TODOs](#todos)
+  - [Friendly Post ID](#friendly-post-id)
   - [Display uploaded files](#display-uploaded-files)
   - [Sample code](#sample-code)
   - [Full functional code](#full-functional-code)
@@ -45,6 +46,7 @@ Table of contents
   - [User installation](#user-installation)
   - [User data and user profile](#user-data-and-user-profile)
   - [UserService](#userservice)
+  - [User setting service](#user-setting-service)
   - [Test users](#test-users)
   - [Phone number sign-in](#phone-number-sign-in)
   - [Email authentication under phone sign-in](#email-authentication-under-phone-sign-in)
@@ -126,6 +128,13 @@ Table of contents
 
 # TODOs
 
+
+## Friendly Post ID
+
+- To make a readable post id,
+  - Get SEO friendly id from post title.
+  - Create that a post with that ID
+    - If exception happens with `same document id exists`, then get another seo friendly id with tagging 1,2,3,....
 
 ## Display uploaded files
 
@@ -391,6 +400,25 @@ $ npm run shell
 ## UserService
 
 - The reason why we need `UserService` is to hold login user's `UserModel` and update it on user document's changes.
+
+
+## User setting service
+
+
+- User settings are saved under `/user-settings/<uid>` in realtime database.
+- `UserSettingService` is handling the update of user setting.
+- `UserSettingService.instance.changes` event is posted whenever user's setting is changed.
+- `UserSettingService` is used in many places.
+  - It` is connected to `UserModel.settings`.
+  - It has methods for handling push notification topics.
+- Best way to use it
+  - Use with `changes` stream to display user setting.
+  - To update, simple call `UserSettingsService.instance.update({ 'key': 'value', 'key': ... })`
+  - Then, to apply the changes anywhere simple use `StreamBuilder(stream: UserSettingsService.instance.changes.stream, ... )`.
+    With this way, app does not need state management.
+
+
+
 
 ## Test users
 
@@ -1160,6 +1188,8 @@ DynamicLinksService.instance.listen((Uri? deepLink) {
   - One thing to know is that, when category had deleted, the no of posts and no of comments properties are deleted also. And when category had re-created with same category id, the numbrers are not restored. This may lead a problem.
   - **_@todo so, in the future, if a category has a post, it should not be deleted. And there must be a function to move all the posts from one category to another._**
 
+
+- If admin set `order` to `-1`, then the app should not display the category in menu. There is no obligation on it. It's just a recommended rule.
 
 ### Subcategory
 

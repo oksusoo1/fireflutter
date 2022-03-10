@@ -16,7 +16,7 @@ class UserSettingsService with DatabaseMixin {
     return _instance!;
   }
 
-  UserSettingsModel settings = UserSettingsModel.empty();
+  UserSettingsModel _settings = UserSettingsModel.empty();
   StreamSubscription? sub;
 
   /// This event will be posted whenever user settings document changes.
@@ -26,7 +26,7 @@ class UserSettingsService with DatabaseMixin {
   );
 
   UserSettingsService() {
-    // debugPrint('UserSettingsService::constructor');
+    // print('UserSettingsService::constructor');
 
     initAuthChanges();
   }
@@ -41,7 +41,7 @@ class UserSettingsService with DatabaseMixin {
     FirebaseAuth.instance.authStateChanges().listen(
       (_user) async {
         sub?.cancel();
-        settings = UserSettingsModel.empty();
+        _settings = UserSettingsModel.empty();
         if (_user == null) {
           ///
         } else {
@@ -53,12 +53,12 @@ class UserSettingsService with DatabaseMixin {
               // if settings doc does not exists, just use default empty setting.
               if (event.snapshot.exists) {
                 print('UserSettingsService; Got new data');
-                settings = UserSettingsModel.fromJson(event.snapshot.value);
+                _settings = UserSettingsModel.fromJson(event.snapshot.value);
               } else {
                 // create the document /user-settings/uid with timestamp to avoid error when saving data with doc/data
                 create();
               }
-              changes.add(settings);
+              changes.add(_settings);
             }, onError: (e) {
               print('====> UserSettingsDoc listening error; $e');
             });
@@ -68,15 +68,22 @@ class UserSettingsService with DatabaseMixin {
     );
   }
 
-  Future<void> update(Json settings) async {
-    final snapshot = await userSettingsDoc.get();
-    if (snapshot.exists) {
-      return userSettingsDoc.update(settings);
-    } else {
-      return userSettingsDoc.set(settings);
-    }
+  /// Returns the value of the key
+  value(String key) {
+    return _settings.data[key];
   }
 
+  Future<void> update(Json settings) async {
+    return _settings.update(settings);
+    // final snapshot = await userSettingsDoc.get();
+    // if (snapshot.exists) {
+    //   return userSettingsDoc.update(settings);
+    // } else {
+    //   return userSettingsDoc.set(settings);
+    // }
+  }
+
+  /// Get user settings doc from realtime database, instread of using [_settings].
   Future<Json> read() async {
     final snapshot = await userSettingsDoc.get();
     if (snapshot.exists) {
@@ -90,7 +97,7 @@ class UserSettingsService with DatabaseMixin {
   /// If user subscribed the topic, that topic name will be saved into user meta in backend
   /// And when user profile is loaded, the subscriptions are saved into [subscriptions]
   bool hasSubscription(String topic) {
-    return settings.topics[topic] ?? false;
+    return _settings.topics[topic] ?? false;
   }
 
   Future<void> subscribe(String topic) {
@@ -102,21 +109,20 @@ class UserSettingsService with DatabaseMixin {
   }
 
   Future<void> create() {
-    return settings.create();
+    return _settings.create();
   }
 
   Future<void> unsubscribeAllTopic() async {
     for (CategoryModel cat in CategoryService.instance.categories) {
       await FirebaseMessaging.instance.unsubscribeFromTopic('posts_${cat.id}');
-      await FirebaseMessaging.instance
-          .unsubscribeFromTopic('comments_${cat.id}');
+      await FirebaseMessaging.instance.unsubscribeFromTopic('comments_${cat.id}');
     }
   }
 
   Future<void> subscribeToUserTopics() async {
-    for (String topic in settings.topics.keys) {
+    for (String topic in _settings.topics.keys) {
       if (topicsDontNeedSubscription.contains(topic)) continue;
-      if (settings.topics[topic] == true) {
+      if (_settings.topics[topic] == true) {
         await FirebaseMessaging.instance.subscribeToTopic(topic);
       }
     }

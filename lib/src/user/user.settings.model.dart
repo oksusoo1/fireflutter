@@ -27,4 +27,20 @@ class UserSettingsModel with DatabaseMixin {
   Future<void> create() {
     return userSettingsDoc.set({'timestamp': ServerValue.timestamp});
   }
+
+  /// update user setting
+  Future<void> update(Json settings) async {
+    ///
+    final snapshot = await userSettingsDoc.get();
+    if (snapshot.exists) {
+      return userSettingsDoc.update(settings);
+    } else {
+      return userSettingsDoc.set(settings);
+    }
+  }
+
+  /// Returns the value of the key
+  value(String key) {
+    return data[key];
+  }
 }
