@@ -144,7 +144,7 @@ service cloud.firestore {
       allow delete: if false;
     }
 
-    // ***** For security test purpose *****
+    // ***** For security test *****
     //
     //
     match /test {
@@ -171,6 +171,22 @@ service cloud.firestore {
         }
       }
     }
+
+
+    // ***************** For Indivisual Project ********************
+    // 
+    // The security rules below are not part of fireflutter.
+    // You need to delete(or ignore) the rules in this section.
+    //
+    //
+    match /quiz-history/{uid} {
+      allow read: if request.auth.uid == uid;
+      allow create: if request.auth.uid == uid;
+      allow update: if request.auth.uid == uid;
+      allow delete: if false;
+    }
+
+    // ***************** End of Indivisual Project ******************
 
 
     // ***** methods ****

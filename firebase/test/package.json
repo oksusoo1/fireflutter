@@ -4,7 +4,8 @@
   "description": "",
   "main": "test.js",
   "scripts": {
-    "test": "mocha --watch"
+    "test": "mocha --watch",
+    "test:quiz": "mocha --watch quiz.test.js"
   },
   "keywords": [],
   "author": "",
