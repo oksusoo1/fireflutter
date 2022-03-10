@@ -24,6 +24,8 @@ const delay = (time) => new Promise((res) => setTimeout(res, time));
 
 const commentNotification = "newCommentUnderMyPostOrComment";
 
+const meilisearchExcludedCategories = ["quiz"];
+
 /**
  * Returns a query of getting all categories.
  *
@@ -109,9 +111,11 @@ async function indexPostDocument(id, data) {
 
   promises.push(Axios.post("https://wonderfulkorea.kr:4431/index.php?api=post/record", _data));
 
-  _data.content = utils.removeHtmlTags(_data.content);
-  promises.push(Axios.post("http://wonderfulkorea.kr:7700/indexes/posts/documents", _data));
-  promises.push(indexForumDocument(_data));
+  if (!meilisearchExcludedCategories.includes(_data.category)) {
+    _data.content = utils.removeHtmlTags(_data.content);
+    promises.push(Axios.post("http://wonderfulkorea.kr:7700/indexes/posts/documents", _data));
+    promises.push(indexForumDocument(_data));
+  }
 
   return Promise.all(promises);
 }
@@ -435,7 +439,7 @@ async function enableUser(data, context) {
     const user = await auth.updateUser(data.uid, {disabled: false});
     if (user.disabled == false) await rdb.ref("users").child(data.uid).update({disabled: false});
     return {code: "success", result: user};
-  } catch(e) {
+  } catch (e) {
     return {code: "error", message: e};
   }
 }
@@ -452,10 +456,9 @@ async function disableUser(data, context) {
     const user = await auth.updateUser(data.uid, {disabled: true});
     if (user.disabled == true) await rdb.ref("users").child(data.uid).update({disabled: true});
     return {code: "success", result: user};
-  } catch(e) {
+  } catch (e) {
     return {code: "error", message: e};
   }
-  
 }
 
 exports.delay = delay;
