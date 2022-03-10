@@ -21,6 +21,7 @@ Table of contents
 
 - [Fire Flutter](#fire-flutter)
 - [TODOs](#todos)
+  - [Creating short samples on DartPad and post it as gist code](#creating-short-samples-on-dartpad-and-post-it-as-gist-code)
   - [Friendly Post ID](#friendly-post-id)
   - [Display uploaded files](#display-uploaded-files)
   - [Sample code](#sample-code)
@@ -127,6 +128,11 @@ Table of contents
   - [Meilisearch](#meilisearch)
 
 # TODOs
+
+## Creating short samples on DartPad and post it as gist code
+
+
+
 
 
 ## Friendly Post ID
