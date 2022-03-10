@@ -17,18 +17,22 @@ class CategoryService with FirestoreMixin {
   /// Note if categories are already fetched, then it will return memory cached
   /// categories, instead of fetcing again.
   ///
+  /// If [hideHiddenCategory] is set to true, then it will not return categories whose order is -1.
+  ///
   /// Note that, this is async call. So, it should be used with `setState`
   /// ```dart
   /// ```
-  Future<List<CategoryModel>> getCategories() async {
-    if (categories.length > 0) return categories;
-    return await loadCategories();
+  Future<List<CategoryModel>> getCategories({bool hideHiddenCategory: false}) async {
+    if (categories.length == 0) await loadCategories();
+    if (hideHiddenCategory)
+      return categories.where((cat) => cat.order != -1).toList();
+    else
+      return categories;
   }
 
   /// Loads categories and save it into [categories], and return it.
   Future<List<CategoryModel>> loadCategories() async {
-    final querySnapshot =
-        await categoryCol.orderBy('order', descending: true).get();
+    final querySnapshot = await categoryCol.orderBy('order', descending: true).get();
     if (querySnapshot.size == 0) return [];
 
     categories = [];
