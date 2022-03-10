@@ -158,4 +158,31 @@ describe("Meilisearch test", () => {
 
     assert.ok(search.hits.length == 0);
   });
+
+  it("tests post indexing functions", async () => {
+    postData.category = 'test';
+    postData.id = 'test-id-' + timestamp;
+    await lib.indexPost(postData.id, postData);
+    
+    await lib.delay(1000);
+    var search = await client.index("posts").search("", {filter: ["id = " + postData.id]});
+    assert.ok(search.hits.length > 0, 'Search result must not be empty.');
+    assert.ok(search.hits[0].id == postData.id, 'Search result must include post.');
+
+    await lib.deleteIndexedPost(postData.id);
+    
+    await lib.delay(1000);
+    search = await client.index("posts").search("", {filter: ["id = " + postData.id]});
+    assert.ok(search.hits.length == 0, 'Post index should be deleted.');
+  });
+
+  it("tests post indexing on quiz category", async () => {
+    postData.category = 'quiz';
+    postData.id = 'quiz-id-' + timestamp;
+    await lib.indexPost(postData.id, postData);
+
+    await lib.delay(2000);
+    const search = await client.index("posts").search("", {filter: ["id = " + postData.id]});
+    assert.ok(search.hits.length == 0, 'Post under quiz category shouldn\'t get indexed.');
+  });
 });
