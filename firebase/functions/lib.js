@@ -209,12 +209,41 @@ async function getCommentNotifyeeWithoutTopicSubscriber(uids, topic) {
     if (!result[i]) continue;
     const subscriptions = result[i].val();
     // / Get anscestors who subscribed to 'comment notification' and didn't subscribe to the topic.
-    if (subscriptions[commentNotification] && !subscriptions[topic]) {
+    if (subscriptions && subscriptions[commentNotification] && !subscriptions[topic]) {
       _uids.push(uids[i]);
     }
   }
 
   return _uids;
+}
+
+async function getTopicSubscriber(uids, topic) {
+  let _uids;
+  if (typeof uids == "string") {
+    _uids = uids.split(",");
+  } else {
+    _uids = uids;
+  }
+
+  const re = [];
+  const getTopicsPromise = [];
+  for (const u of _uids) {
+    getTopicsPromise.push(rdb.ref("user-settings").child(u).child("topic").get());
+  }
+  const result = await Promise.all(getTopicsPromise);
+  for (const i in result) {
+    if (!result[i]) continue;
+    const subscriptions = result[i].val();
+    // / Get user who subscribe to topic
+
+    if (subscriptions && subscriptions[topic] == false) {
+      // skip only if user intentionally off the topic
+    } else {
+      re.push(_uids[i]);
+    }
+  }
+
+  return re;
 }
 
 async function getTokensFromUids(uids) {
@@ -287,8 +316,9 @@ async function sendMessageToTokens(query) {
 
 async function sendMessageToUsers(query) {
   const payload = preMessagePayload(query);
-  const tokens = await getTokensFromUids(query.uids);
-  // console.log(tokens);
+  const uids = await getTopicSubscriber(query.uid, query.subscription);
+  const tokens = await getTokensFromUids(uids);
+
   try {
     const res = await sendingMessageToTokens(tokens, payload);
     return {code: "success", result: res};
@@ -358,9 +388,9 @@ function topicPayload(topic, query) {
 }
 
 function preMessagePayload(query) {
-  return {
+  const res = {
     data: {
-      id: query.postId ? query.postId : "",
+      id: query.postId ? query.postId : query.id ? query.id : "",
       type: query.type ? query.type : "",
       sender_uid: query.uid ? query.uid : "",
     },
@@ -383,6 +413,9 @@ function preMessagePayload(query) {
       },
     },
   };
+
+
+  return res;
 }
 
 /**
@@ -476,6 +509,7 @@ exports.deleteIndexedComment = deleteIndexedCommentDocument;
 exports.getCommentAncestors = getCommentAncestors;
 exports.getCommentNotifyeeWithoutTopicSubscriber = getCommentNotifyeeWithoutTopicSubscriber;
 exports.getTokensFromUids = getTokensFromUids;
+exports.getTopicSubscriber = getTopicSubscriber;
 exports.chunk = chunk;
 
 exports.error = error;
