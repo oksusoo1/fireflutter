@@ -182,7 +182,7 @@ service cloud.firestore {
     match /quiz-history/{uid} {
       allow read: if request.auth.uid == uid;
       allow create: if request.auth.uid == uid;
-      allow update: if request.auth.uid == uid;
+      allow update: if false;
       allow delete: if false;
     }
 

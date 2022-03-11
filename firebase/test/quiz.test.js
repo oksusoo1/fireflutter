@@ -60,7 +60,7 @@ describe("Firestore security test for Quiz", () => {
     );
   });
 
-  it("Expect success - for update", async () => {
+  it("Expect success - cannot update", async () => {
     await createSampleQuestion("quizId");
     await firebase.assertSucceeds(
       db(authA)
@@ -69,18 +69,11 @@ describe("Firestore security test for Quiz", () => {
         .set({ quizId: { answer: "a", result: true } }, { merge: true })
     );
 
-    await firebase.assertSucceeds(
+    await firebase.assertFails(
       db(authA)
         .collection("quiz-history")
         .doc(A)
         .update({ quizId: { answer: "b", result: false } })
-    );
-
-    await firebase.assertSucceeds(
-      db(authA)
-        .collection("quiz-history")
-        .doc(A)
-        .update({ quizId_2: { answer: "d", result: false } })
     );
 
     await firebase.assertSucceeds(db(authA).collection("quiz-history").doc(A).get());
