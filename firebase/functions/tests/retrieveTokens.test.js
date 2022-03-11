@@ -69,7 +69,7 @@ describe("lib retrieveToken test  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~", () => {
       re = await lib.getTopicSubscriber(userA, 'chatNotify' + userA);
       assert.ok(re.length == 1, 'uid not exist anymore');
     } catch (e) {
-      assert.fail("reteieve 3 tokens. error: " + e);
+      assert.fail("error on getTopicSubscriber: " + e);
     }
   });
 });
