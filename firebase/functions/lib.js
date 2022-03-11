@@ -209,7 +209,7 @@ async function getCommentNotifyeeWithoutTopicSubscriber(uids, topic) {
     if (!result[i]) continue;
     const subscriptions = result[i].val();
     // / Get anscestors who subscribed to 'comment notification' and didn't subscribe to the topic.
-    if (subscriptions &&  subscriptions[commentNotification] && !subscriptions[topic]) {
+    if (subscriptions && subscriptions[commentNotification] && !subscriptions[topic]) {
       _uids.push(uids[i]);
     }
   }
@@ -218,7 +218,6 @@ async function getCommentNotifyeeWithoutTopicSubscriber(uids, topic) {
 }
 
 async function getTopicSubscriber(uids, topic) {
-  
   let _uids;
   if (typeof uids == "string") {
     _uids = uids.split(",");
@@ -238,6 +237,7 @@ async function getTopicSubscriber(uids, topic) {
     // / Get user who subscribe to topic
 
     if (subscriptions && subscriptions[topic] == false) {
+      // skip only if user intentionally off the topic
     } else {
       re.push(_uids[i]);
     }
