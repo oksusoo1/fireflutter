@@ -16,8 +16,8 @@ class ChatRoomPushNotificationIcon extends StatefulWidget {
 }
 
 class _ChatRoomPushNotificationIconState extends State<ChatRoomPushNotificationIcon> {
-  bool hasSubscription() {
-    return UserService.instance.user.settings.hasSubscription('chatNotify' + widget.uid);
+  bool hasDisabledSubscription() {
+    return UserService.instance.user.settings.hasDisabledSubscription('chatNotify' + widget.uid);
   }
 
   @override
@@ -25,7 +25,7 @@ class _ChatRoomPushNotificationIconState extends State<ChatRoomPushNotificationI
     return widget.uid != ''
         ? GestureDetector(
             child: Icon(
-              hasSubscription() ? Icons.notifications : Icons.notifications_off,
+              hasDisabledSubscription() ? Icons.notifications_off : Icons.notifications,
               color: Colors.black,
               size: widget.size,
             ),
@@ -46,14 +46,16 @@ class _ChatRoomPushNotificationIconState extends State<ChatRoomPushNotificationI
     }
 
     try {
-      await MessagingService.instance.toggleSubscription('chatNotify' + widget.uid);
+      // await MessagingService.instance.toggleSubscription('chatNotify' + widget.uid);
+      await MessagingService.instance.updateSubscription(
+        'chatNotify' + widget.uid,
+        hasDisabledSubscription(),
+      );
       if (mounted) setState(() {});
     } catch (e) {
       widget.onError(e);
     }
-    String msg = UserService.instance.user.settings.hasSubscription('chatNotify' + widget.uid)
-        ? 'subscribed'
-        : 'unsubscribed';
+    String msg = hasDisabledSubscription() ? 'unsubscribed' : 'subscribed';
     showDialog(
       context: context,
       builder: (c) => AlertDialog(

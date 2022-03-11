@@ -100,6 +100,10 @@ class UserSettingsService with DatabaseMixin {
     return _settings.topics[topic] ?? false;
   }
 
+  bool hasDisabledSubscription(String topic) {
+    return _settings.topics[topic] == false;
+  }
+
   Future<void> subscribe(String topic) {
     return update({'topic/$topic': true});
   }
