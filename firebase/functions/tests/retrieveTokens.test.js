@@ -59,5 +59,17 @@ describe("lib retrieveToken test  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~", () => {
     } catch (e) {
       assert.fail("reteieve 1 tokens. error: " + e);
     }
+    try {
+      const re = await lib.getTopicSubscriber(userA);
+      assert.ok(re.length == 1, 'uid must exist');
+      await rdb.ref("user-settings").child(userA).update({['chatNotify' + userA]: true})
+      re = await lib.getTopicSubscriber(userA, 'chatNotify' + userA);
+      assert.ok(re.length == 1, 'uid must still exist');
+      await rdb.ref("user-settings").child(userA).update({['chatNotify' + userA]: false})
+      re = await lib.getTopicSubscriber(userA, 'chatNotify' + userA);
+      assert.ok(re.length == 1, 'uid not exist anymore');
+    } catch (e) {
+      assert.fail("reteieve 3 tokens. error: " + e);
+    }
   });
 });
