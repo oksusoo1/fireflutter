@@ -71,8 +71,7 @@ class _PostFormState extends State<PostForm> {
 
     final submitButton = widget.submitButtonBuilder != null
         ? widget.submitButtonBuilder!(onSubmit)
-        : ElevatedButton(
-            onPressed: () => onSubmit(), child: const Text('SUBMIT'));
+        : ElevatedButton(onPressed: () => onSubmit(), child: const Text('SUBMIT'));
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -87,6 +86,10 @@ class _PostFormState extends State<PostForm> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             FileUploadButton(
+              child: Icon(
+                Icons.camera_alt,
+                size: 42,
+              ),
               type: 'post',
               onUploaded: (url) {
                 files = [...files, url];
@@ -100,6 +103,7 @@ class _PostFormState extends State<PostForm> {
             submitButton
           ],
         ),
+        SizedBox(height: 16),
         ImageListEdit(files: files, onError: widget.onError),
         if (UserService.instance.user.isAdmin)
           Container(
