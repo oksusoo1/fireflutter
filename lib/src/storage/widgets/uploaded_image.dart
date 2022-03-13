@@ -42,7 +42,7 @@ class UploadedImage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final _finalUrl = useThumbnail ? StorageService.instance.getThumbnailUrl(url) : url;
-    // print('_finalUrl; $_finalUrl');
+    print('_finalUrl; $_finalUrl');
 
     return GestureDetector(
       onTap: onTap,

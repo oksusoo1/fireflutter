@@ -45,7 +45,7 @@ class StorageService {
     /// Compress image. Fix Exif data.
     File file = await _imageCompressor(pickedFile.path, quality);
 
-    return upload(file: file, onProgress: onProgress, type: type);
+    return await upload(file: file, onProgress: onProgress, type: type);
   }
 
   /// Get [File] and return the uploaded url after upload.
