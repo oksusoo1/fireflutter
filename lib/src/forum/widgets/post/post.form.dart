@@ -93,7 +93,10 @@ class _PostFormState extends State<PostForm> {
               type: 'post',
               onUploaded: (url) {
                 files = [...files, url];
-                if (mounted) setState(() {});
+                if (mounted)
+                  setState(() {
+                    uploadProgress = 0;
+                  });
               },
               onProgress: (progress) {
                 if (mounted) setState(() => uploadProgress = progress);
@@ -104,6 +107,15 @@ class _PostFormState extends State<PostForm> {
           ],
         ),
         SizedBox(height: 16),
+        if (uploadProgress > 0)
+          Column(
+            children: [
+              LinearProgressIndicator(
+                value: uploadProgress,
+              ),
+              SizedBox(height: 8)
+            ],
+          ),
         ImageListEdit(files: files, onError: widget.onError),
         if (UserService.instance.user.isAdmin)
           Container(
