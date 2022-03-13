@@ -52,8 +52,7 @@ class SearchService {
 
     List filters = [];
     if (uid.isNotEmpty) filters.add('uid = $uid');
-    if (category.isNotEmpty && index != 'comments')
-      filters.add('category = $category');
+    if (category.isNotEmpty && index != 'comments') filters.add('category = $category');
 
     List<Map<String, dynamic>> _posts = [];
     final SearchResult res = await client.index(index).search(
@@ -83,30 +82,29 @@ class SearchService {
   /// ADMIN FUNCTIONS
   ///
 
-  /// Updates index search settings.
-  ///
-  Future updateIndexSearchSettings({
-    required String index,
-    List<String>? searchables,
-    List<String>? sortables,
-    List<String>? filterables,
-  }) async {
-    /// TODO: check if admin.
-    /// if (!UserService.instance.user.isAdmin) throw 'YOU_ARE_NOT_ADMIN';
+  // /// Updates index search settings.
+  // ///
+  // Future updateIndexSearchSettings({
+  //   required String index,
+  //   List<String>? searchables,
+  //   List<String>? sortables,
+  //   List<String>? filterables,
+  // }) async {
+  //   /// if (!UserService.instance.user.isAdmin) throw 'YOU_ARE_NOT_ADMIN';
 
-    return SearchService.instance.client.index(index).updateSettings(
-          IndexSettings(
-            searchableAttributes: searchables,
-            sortableAttributes: sortables,
-            filterableAttributes: filterables,
-            // rankingRules: [],
-            // distinctAttribute: '', // default to index
-            // displayedAttributes: ['*'], // default to '*' (all)
-            // stopWords: [],
-            // synonyms: { 'word': ['other', 'logan'] },
-          ),
-        );
-  }
+  //   return SearchService.instance.client.index(index).updateSettings(
+  //         IndexSettings(
+  //           searchableAttributes: searchables,
+  //           sortableAttributes: sortables,
+  //           filterableAttributes: filterables,
+  //           // rankingRules: [],
+  //           // distinctAttribute: '', // default to index
+  //           // displayedAttributes: ['*'], // default to '*' (all)
+  //           // stopWords: [],
+  //           // synonyms: { 'word': ['other', 'logan'] },
+  //         ),
+  //       );
+  // }
 
   /// Deletes all documents of an index.
   ///

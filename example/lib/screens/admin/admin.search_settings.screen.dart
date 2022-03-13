@@ -9,8 +9,7 @@ class AdminSearchSettingsScreen extends StatefulWidget {
   static const String routeName = '/searchSettings';
 
   @override
-  _AdminSearchSettingsScreenState createState() =>
-      _AdminSearchSettingsScreenState();
+  _AdminSearchSettingsScreenState createState() => _AdminSearchSettingsScreenState();
 }
 
 class _AdminSearchSettingsScreenState extends State<AdminSearchSettingsScreen> {
@@ -58,8 +57,7 @@ class _AdminSearchSettingsScreenState extends State<AdminSearchSettingsScreen> {
 }
 
 class IndexSettingForm extends StatefulWidget {
-  IndexSettingForm({required this.indexUid, this.onDeleted, Key? key})
-      : super(key: key);
+  IndexSettingForm({required this.indexUid, this.onDeleted, Key? key}) : super(key: key);
 
   final String indexUid;
   final Function()? onDeleted;
@@ -68,8 +66,7 @@ class IndexSettingForm extends StatefulWidget {
   State<IndexSettingForm> createState() => _IndexSettingFormState();
 }
 
-class _IndexSettingFormState extends State<IndexSettingForm>
-    with FirestoreMixin {
+class _IndexSettingFormState extends State<IndexSettingForm> with FirestoreMixin {
   final searchablesController = TextEditingController();
   final filtersController = TextEditingController();
   final sortersController = TextEditingController();
@@ -85,9 +82,7 @@ class _IndexSettingFormState extends State<IndexSettingForm>
 
   initIndexSettings() async {
     try {
-      settings = await SearchService.instance.client
-          .index(widget.indexUid)
-          .getSettings();
+      settings = await SearchService.instance.client.index(widget.indexUid).getSettings();
       if (settings.searchableAttributes != null) {
         searchablesController.text = settings.searchableAttributes!.join(', ');
       }
@@ -104,28 +99,28 @@ class _IndexSettingFormState extends State<IndexSettingForm>
   }
 
   updateIndexSettings() async {
-    try {
-      await SearchService.instance.updateIndexSearchSettings(
-        index: widget.indexUid,
-        searchables: searchablesController.text.split(', '),
-        sortables: sortersController.text.split((', ')),
-        filterables: filtersController.text.split((', ')),
-        // rankingRules: [],
-        // distinctAttribute: '', default to index
-        // displayedAttributes: ['*'], // default to '*' (all)
-        // stopWords: [],
-        // synonyms: { 'word': ['other', 'logan'] },
-      );
-      alert('Success!', 'Index settings updated!');
-    } catch (e) {
-      error(e);
-    }
+    throw 'No more admin indexing. use node.js utility';
+    // try {
+    //   await SearchService.instance.updateIndexSearchSettings(
+    //     index: widget.indexUid,
+    //     searchables: searchablesController.text.split(', '),
+    //     sortables: sortersController.text.split((', ')),
+    //     filterables: filtersController.text.split((', ')),
+    //     // rankingRules: [],
+    //     // distinctAttribute: '', default to index
+    //     // displayedAttributes: ['*'], // default to '*' (all)
+    //     // stopWords: [],
+    //     // synonyms: { 'word': ['other', 'logan'] },
+    //   );
+    //   alert('Success!', 'Index settings updated!');
+    // } catch (e) {
+    //   error(e);
+    // }
   }
 
   deleteIndexDocuments() async {
     try {
-      final conf = await confirm(
-          'Confirm', 'Delete ${widget.indexUid} index documents?');
+      final conf = await confirm('Confirm', 'Delete ${widget.indexUid} index documents?');
       if (!conf) return;
 
       await SearchService.instance.deleteAllDocuments(widget.indexUid);
@@ -135,26 +130,6 @@ class _IndexSettingFormState extends State<IndexSettingForm>
       error(e);
     }
   }
-
-  /// TODO: Index documents.
-  // reIndexDocuments() async {
-  //   try {
-  //     final conf = await confirm('Confirm', 'Re-index documents under ${widget.indexUid}?');
-  //     if (!conf) return;
-
-  //     final snap = await postCol.get();
-  //     List<Map<String, dynamic>> docs = snap.docs.map((doc) {
-  //       final data = doc.data() as Json;
-  //       data['id'] = doc.id;
-  //       return data;
-  //     }).toList();
-
-  //     print(docs);
-  //     // await SearchService.instance.indexDocuments(widget.indexUid, docs);
-  //   } catch (e) {
-  //     error(e);
-  //   }
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -177,9 +152,7 @@ class _IndexSettingFormState extends State<IndexSettingForm>
           TextFormField(controller: sortersController),
           SizedBox(height: 10),
           ElevatedButton(onPressed: updateIndexSettings, child: Text('UPDATE')),
-          ElevatedButton(
-              onPressed: deleteIndexDocuments,
-              child: Text('DELETE INDEX DOCUMENTS')),
+          ElevatedButton(onPressed: deleteIndexDocuments, child: Text('DELETE INDEX DOCUMENTS')),
           // ElevatedButton(onPressed: reIndexDocuments, child: Text('RE-INDEX DOCUMENTS')),
         ],
       ),

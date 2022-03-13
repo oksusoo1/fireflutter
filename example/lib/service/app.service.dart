@@ -40,7 +40,6 @@ class AppService {
     return open(ProfileScreen.routeName);
   }
 
-  /// TODO: remove all the routes from route stack
   Future<void> openHome() async {
     return open(HomeScreen.routeName);
   }

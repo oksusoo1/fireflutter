@@ -28,8 +28,6 @@ class _PostFormScreenState extends State<PostFormScreen> with FirestoreMixin {
             onCreate: (postId) {
               AppService.instance.back(postId);
               alert('Post created', 'Thank you');
-              // TODO: send push notification after create using "posts_category"
-              // MessagingService.instance.sendPostsNotification();
             },
             onUpdate: (postId) {
               AppService.instance.back(postId);

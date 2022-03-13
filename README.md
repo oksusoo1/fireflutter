@@ -73,7 +73,7 @@ Table of contents
     - [Chat logic - block](#chat-logic---block)
 - [Reminder](#reminder)
   - [Reminder code sample](#reminder-code-sample)
-  - [Reminder logic](#reminder-logic)
+  - [Reminder input data & logic](#reminder-input-data--logic)
 - [FriendMap](#friendmap)
   - [FriendMap installation](#friendmap-installation)
   - [FriendMap logic](#friendmap-logic)
@@ -816,10 +816,10 @@ controller.state.imageUrl.text = file.url;
 controller.state.setState(() {});
 ```
 
-## Reminder logic
+## Reminder input data & logic
 
 - There are `title, content, imageUrl, link` fields on the form.
-- One of `title, content, imageUrl` must have value or dialog will not appear.
+- At least, One of `title, content, imageUrl` must have value or dialog will not appear.
 - `link` has the information to which screen the app should move once user pressed on `more info` button. It must not be an empty string.
 
   - When `more info` button is pressed, `ReminderService` saves the link on local storage and calls the callback, then app can move the screen.
@@ -827,9 +827,12 @@ controller.state.setState(() {});
   - When user pressed on `don't show again` button, the link will be saved on local storage and when the app starts again, it will not get the reminder document again from firestore.
   - When `remind me later` button clicked, the app simply closes the dialog and when the app starts again, the app will fetch the reminder doc from firestore and display the reminder dialog again on screen.
   - When backdrop had touched, the app works the same as `remind me later` button pressed.
-  - `link` can have in URL format. For instance, `/post-view?postId=123&option=a`. And when callback is being called `/post-view` parts goes to first parameter, and `{'postId': 123, 'option': a}` goes to next parameter.
+  - `link` can have in URL format. For instance, `/[screenName]?postId=123&option=a&v=1`.
+    - When `more` button had been pressed, the callback function is being called and `[screenName]` parts goes to first parameter, and the rest part - `{'postId': 123, 'option': a, 'v': 1}` goes to next parameter.
+      - So, the app can use these parameters to navigate into other route.
+        - For instance, if `link` is `/otherUserProfile?uid=USERA...`, then when more button is pressed, the app will open the other user's profile screen.
     - If `link` changes, the `ReminderService` considers as a new link had been activated.
-    - So, if you want to display a reminder dialog again with same url, then you may simply change the parameter a little like `/post-view?postId=123&option=b`.
+    - So, if you want to display a reminder dialog again with same url, then you may simply change the parameter a little like `/post-view?postId=123&option=a&v=2`.
   - Once `link` is saved on local storage, `ReminderService` does not get the same document of `link` again from firestore.
 
 - The default dialog UI has three buttons.
