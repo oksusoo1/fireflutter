@@ -87,8 +87,7 @@ bounce(
 
 /// Wait until
 Future<int> waitUntil(bool test(),
-    {final int maxIterations: 100,
-    final Duration step: const Duration(milliseconds: 50)}) async {
+    {final int maxIterations: 100, final Duration step: const Duration(milliseconds: 50)}) async {
   int iterations = 0;
   for (; iterations < maxIterations; iterations++) {
     await Future.delayed(step);
@@ -97,8 +96,7 @@ Future<int> waitUntil(bool test(),
     }
   }
   if (iterations >= maxIterations) {
-    throw TimeoutException(
-        "Condition not reached within ${iterations * step.inMilliseconds}ms");
+    throw TimeoutException("Condition not reached within ${iterations * step.inMilliseconds}ms");
   }
   return iterations;
 }
@@ -153,4 +151,22 @@ Color getColorFromHex(
   } else {
     return defaultColor;
   }
+}
+
+bool isImageUrl(String url) {
+  String t = url.toLowerCase();
+  if (t.endsWith('.jpg')) return true;
+  if (t.endsWith('.jpeg')) return true;
+  if (t.endsWith('.png')) return true;
+  if (t.endsWith('.gif')) return true;
+
+  if (t.startsWith('http') &&
+      (t.contains('.jpg') || t.contains('.jpeg') || t.contains('.png') || t.contains('.gif')))
+    return true;
+  return false;
+}
+
+/// Return true if the message is a URL of uploaded file in Firebase Storage.
+bool isFirebaseStorageUrl(String url) {
+  return url.contains('firebasestorage.googleapis.com');
 }

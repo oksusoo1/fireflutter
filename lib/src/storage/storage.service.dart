@@ -19,10 +19,7 @@ class StorageService {
     return _instance!;
   }
 
-  /// TODO: change on init.
   final String _uploadsPath = 'uploads';
-  // final String _thumbnailSize = '200';
-  // final String _thumbnailType = 'webp';
 
   final storage = FirebaseStorage.instance;
   Reference get uploadsFolder => storage.ref().child(_uploadsPath);
@@ -48,6 +45,15 @@ class StorageService {
     /// Compress image. Fix Exif data.
     File file = await _imageCompressor(pickedFile.path, quality);
 
+    return upload(file: file, onProgress: onProgress, type: type);
+  }
+
+  /// Get [File] and return the uploaded url after upload.
+  upload({
+    required File file,
+    required String type,
+    Function(double)? onProgress,
+  }) async {
     /// Get generated filename.
     final String basename = file.path.split('/').last;
     // final String filename = basename.split('.').first;
@@ -55,6 +61,7 @@ class StorageService {
 
     final filename = "${getRandomString()}.$extension";
     print('filename; $filename');
+
     final ref = uploadsFolder.child(filename);
 
     /// Upload Task
@@ -70,8 +77,7 @@ class StorageService {
     StreamSubscription? _sub;
     if (onProgress != null) {
       _sub = uploadTask.snapshotEvents.listen((event) {
-        double progress =
-            event.bytesTransferred.toDouble() / event.totalBytes.toDouble();
+        double progress = event.bytesTransferred.toDouble() / event.totalBytes.toDouble();
         onProgress(progress);
       });
     }
@@ -96,21 +102,34 @@ class StorageService {
     }
   }
 
-  /// Delete orignal and thumbnail files from storage.
+  Future<FullMetadata> getMetadata(String url) {
+    return ref(url).getMetadata();
+  }
+
+  /// Delete uploaded file.
   ///
-  /// [url] must be the original image url.
+  /// If it's an image, then it will delete the thumbnail image.
+  /// If it's not a file from firebase storage, it does not do anything.
+  ///
+  ///
+  /// If it's an image url, then the [url] must be the original image url.
   /// If [url] does exist on storage, then it will not delete.
   ///
   /// Ignore object-not-found exception.
   Future<void> delete(String url) async {
-    final String thumbnailUrl = getThumbnailUrl(url);
+    // final String thumbnailUrl = getThumbnailUrl(url);
+
+    if (isFirebaseStorageUrl(url) == false) return;
+
     try {
       final re = await exists(url);
       if (re == false) return;
       await Future.wait(
         [
-          if (url.startsWith('http')) ref(url).delete(),
-          if (thumbnailUrl.startsWith('http')) ref(thumbnailUrl).delete(),
+          ref(url).delete(),
+
+          /// Delete thumbnail image if the uploaded file is an image in storage.
+          if (isImageUrl(url)) ref(getThumbnailUrl(url)).delete(),
         ],
       );
     } on FirebaseException catch (e) {
@@ -160,7 +179,6 @@ class StorageService {
     }
     final String basename = _tempUrl.split('/').last;
     final String filename = basename.split('.').first;
-    return _tempUrl.replaceFirst(basename, '${filename}_200x200.webp') +
-        '?alt=media';
+    return _tempUrl.replaceFirst(basename, '${filename}_200x200.webp') + '?alt=media';
   }
 }

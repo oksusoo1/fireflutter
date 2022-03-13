@@ -917,19 +917,21 @@ describe("Firestore security test", () => {
     );
   });
 
-  it("Resports - fail - wrong post id", async () => {
-    await createCategoryPost("cat", "postId", A);
-    // fail - wrong post id
-    await firebase.assertFails(
-      db(authB).collection("reports").add({
-        target: "post",
-        targetId: "wrong-id",
-        reporterUid: B,
-        reporteeUid: A,
-        timestamp: 123,
-      })
-    );
-  });
+  // NOTE: reports can be made even if the post or comment does not exists. (by 2022-03-13)
+  //
+  // it("Resports - fail - wrong post id", async () => {
+  //   await createCategoryPost("cat", "postId", A);
+  //   // fail - wrong post id
+  //   await firebase.assertFails(
+  //     db(authB).collection("reports").add({
+  //       target: "post",
+  //       targetId: "wrong-id",
+  //       reporterUid: B,
+  //       reporteeUid: A,
+  //       timestamp: 123,
+  //     })
+  //   );
+  // });
 
   it("Resports - comments", async () => {
     const commentDoc = await createComment("cat", "postId", A);

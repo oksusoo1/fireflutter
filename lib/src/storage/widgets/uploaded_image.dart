@@ -41,8 +41,7 @@ class UploadedImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final _finalUrl =
-        useThumbnail ? StorageService.instance.getThumbnailUrl(url) : url;
+    final _finalUrl = useThumbnail ? StorageService.instance.getThumbnailUrl(url) : url;
     // print('_finalUrl; $_finalUrl');
 
     return GestureDetector(
@@ -53,8 +52,7 @@ class UploadedImage extends StatelessWidget {
         height: height,
         width: width,
         imageUrl: _finalUrl,
-        placeholder: (context, _recursiveUrl) =>
-            Center(child: CircularProgressIndicator()),
+        placeholder: (context, _recursiveUrl) => Center(child: CircularProgressIndicator()),
         errorWidget: (context, _recursiveUrl, error) {
           /// if it is original image and there is an error, then display error widget.
           if (useThumbnail == false) {

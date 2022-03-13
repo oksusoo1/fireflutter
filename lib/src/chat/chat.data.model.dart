@@ -15,9 +15,7 @@ class ChatMessageModel with ChatMixins {
   String from;
 
   String get time =>
-      DateTime.fromMillisecondsSinceEpoch(timestamp.millisecondsSinceEpoch)
-          .toLocal()
-          .toString();
+      DateTime.fromMillisecondsSinceEpoch(timestamp.millisecondsSinceEpoch).toLocal().toString();
 
   /// Login user's firebase uid.
   String get myUid => FirebaseAuth.instance.currentUser!.uid;
@@ -43,12 +41,18 @@ class ChatMessageModel with ChatMixins {
 
   /// See if the message has image url.
   bool get isImage {
-    String t = text.toLowerCase();
-    if (t.endsWith('.jpg')) return true;
-    if (t.endsWith('.jpeg')) return true;
-    if (t.endsWith('.png')) return true;
-    if (t.endsWith('.gif')) return true;
-    return false;
+    return isImageUrl(text);
+
+    // String t = text.toLowerCase();
+    // if (t.endsWith('.jpg')) return true;
+    // if (t.endsWith('.jpeg')) return true;
+    // if (t.endsWith('.png')) return true;
+    // if (t.endsWith('.gif')) return true;
+
+    // if (t.startsWith('http') &&
+    //     (t.contains('.jpg') || t.contains('.jpeg') || t.contains('.png') || t.contains('.gif')))
+    //   return true;
+    // return false;
   }
 
   /// See if the message is a url.
@@ -56,6 +60,16 @@ class ChatMessageModel with ChatMixins {
   bool get isUrl {
     String t = text.toLowerCase();
     return t.startsWith('http://') || t.startsWith('https://');
+  }
+
+  /// Return true if the text has url link.
+  bool get hasUrl {
+    String t = text.toLowerCase();
+    return t.contains('http://') || t.contains('https://');
+  }
+
+  bool get isFirebaseUpload {
+    return isFirebaseStorageUrl(text);
   }
 
   bool get isProtocol {
@@ -80,8 +94,7 @@ class ChatMessageModel with ChatMixins {
     required this.ref,
   });
 
-  factory ChatMessageModel.fromJson(Map<dynamic, dynamic> json,
-      [DocumentReference? ref]) {
+  factory ChatMessageModel.fromJson(Map<dynamic, dynamic> json, [DocumentReference? ref]) {
     return ChatMessageModel(
       to: json['to'] ?? '',
       from: json['from'] ?? '',
