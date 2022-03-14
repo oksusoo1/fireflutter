@@ -18,6 +18,7 @@
     "test:uploadFileParentId": "mocha --timeout 10000 --watch tests/uploadFileParentId.test.js",
     "test:getTimestamp": "mocha --timeout 10000 --watch tests/getTimestamp.test.js",
     "test:meilisearch:user": "mocha --timeout 10000 --watch tests/meilisearch.user.test.js",
+    "test:testAnswer": "mocha --timeout 10000 --watch tests/testAnswer.test.js",
     "lint:fix": "./node_modules/.bin/eslint . --fix"
   },
   "engines": {

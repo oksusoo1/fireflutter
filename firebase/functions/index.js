@@ -268,3 +268,7 @@ exports.disableUser = functions.region("asia-northeast3").https.onCall(async (da
 exports.enableUser = functions.region("asia-northeast3").https.onCall(async (data, context) => {
   return await lib.enableUser(data, context);
 });
+
+exports.testAnswer = functions.region("asia-northeast3").https.onCall(async (data, context) => {
+  return await lib.testAnswer(data, context);
+});

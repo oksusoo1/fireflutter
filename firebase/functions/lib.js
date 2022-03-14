@@ -418,7 +418,6 @@ function preMessagePayload(query) {
     },
   };
 
-
   return res;
 }
 
@@ -498,6 +497,66 @@ async function disableUser(data, context) {
   }
 }
 
+/**
+ * @logic
+ *  - 1. Get the question and answer
+ *  - 2. Check if the answered correct, or wrong.
+ *  - 3. Check if the user answered same question twice.
+ *  - 4. Save the question.
+ *  - If it's correct, increase user point
+ * @param {*} data document data
+ * @param {*} context context
+ *
+ * @returns
+ *  - `true` if the user answered correctly.
+ *  - `false` if not.
+ */
+async function testAnswer(data, context) {
+  // console.log(context);
+  // console.log(data);
+
+  const quizId = Object.keys(data)[0];
+  const userAnswer = data[quizId].answer;
+  // console.log("quizId; ", quizId, userAnswer);
+
+  // 1.
+  const quizDoc = (await db.collection("/posts/").doc(quizId).get()).data();
+
+  // console.log("quizDoc", quizDoc);
+  if (typeof quizDoc === "undefined") throw Error("ERROR_NO_QUIZ_BY_THAT_ID");
+
+  // 2.
+  const re = quizDoc.answer === userAnswer;
+  // console.log("re; ", re);
+
+  // 3.
+  const userQuizRef = db.collection("quiz-history").doc(context.auth.uid);
+  const userQuizData = await userQuizRef.get();
+  const userQuizDoc = userQuizData.data();
+  if (userQuizData.exists) {
+    // console.log(Object.keys(userQuizDoc));
+
+    if (Object.keys(userQuizDoc).indexOf(quizId) != -1) {
+      throw Error("ERROR_CANNOT_ANSWER_SAME_QUESTION_TWICE");
+    }
+  }
+
+  await userQuizRef.set(
+      {
+        [quizId]: {
+          answer: userAnswer,
+          result: re,
+        },
+      },
+      {merge: true},
+  );
+  return {
+    quizId: quizId,
+    answer: userAnswer,
+    result: re,
+  };
+}
+
 exports.delay = delay;
 exports.getSizeOfCategories = getSizeOfCategories;
 exports.getCategories = getCategories;
@@ -531,3 +590,5 @@ exports.enableUser = enableUser;
 exports.disableUser = disableUser;
 exports.indexUserDocument = indexUserDocument;
 exports.deleteIndexedUserDocument = deleteIndexedUserDocument;
+
+exports.testAnswer = testAnswer;

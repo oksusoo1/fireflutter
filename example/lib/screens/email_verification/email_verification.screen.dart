@@ -12,8 +12,7 @@ class EmailVerificationScreen extends StatefulWidget {
   static const String routeName = '/emailVerification';
 
   @override
-  State<EmailVerificationScreen> createState() =>
-      _EmailVerificationScreenState();
+  State<EmailVerificationScreen> createState() => _EmailVerificationScreenState();
 }
 
 class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
@@ -42,9 +41,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                   onVerified: (re) async {
                     await alert(
                       'Success',
-                      re
-                          ? 'Email verfied.'
-                          : 'Email had been updated and verified.',
+                      re ? 'Email verfied.' : 'Email had been updated and verified.',
                     );
                     AppService.instance.openHome();
                   },
@@ -85,8 +82,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
     } on FirebaseAuthException catch (e) {
       if (e.code == 'requires-recent-login') {
         /// User logged in long time agao. Needs to re-login to update email address.
-        PhoneService.instance.phoneNumber =
-            FirebaseAuth.instance.currentUser!.phoneNumber!;
+        PhoneService.instance.phoneNumber = FirebaseAuth.instance.currentUser!.phoneNumber!;
         await PhoneService.instance.verifyPhoneNumber(
           /// Once verification code is send via SMS, show a dialog input for the code.
           codeSent: (verificationId) async {
@@ -94,20 +90,24 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                 context: context,
                 builder: (c) {
                   return Dialog(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Text("Enter SMS Code to verify it's you."),
-                        SmsCodeInput(
-                          success: () => onReAuthenticationSuccess(email)
-                              .then((value) => callback()),
-                          error: error,
-                          buttons: (callback) => TextButton(
-                            child: const Text('Submit'),
-                            onPressed: callback,
+                    child: Container(
+                      padding: EdgeInsets.all(16),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          SizedBox(height: 16),
+                          const Text("Enter SMS Code to verify it's you."),
+                          SmsCodeInput(
+                            success: () =>
+                                onReAuthenticationSuccess(email).then((value) => callback()),
+                            error: error,
+                            buttons: (callback) => TextButton(
+                              child: const Text('Submit'),
+                              onPressed: callback,
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   );
                 });
@@ -124,8 +124,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
             //   ),
             // );
           },
-          androidAutomaticVerificationSuccess: () =>
-              onReAuthenticationSuccess(email).then(
+          androidAutomaticVerificationSuccess: () => onReAuthenticationSuccess(email).then(
             (value) => callback(),
           ),
           error: error,
@@ -165,7 +164,8 @@ class UserInfo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     User user = FirebaseAuth.instance.currentUser!;
-    return Text('''
+    return Text(
+        '''
 Uid: ${user.uid},
 Phone number: ${user.phoneNumber}
 Email: ${user.email},
