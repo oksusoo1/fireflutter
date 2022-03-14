@@ -1474,6 +1474,9 @@ https://docs.google.com/document/d/1tSJJt8iJsXNl9vcBqYhKPkiRZR5JFo-SQE2SJ90GItA/
 
 ## Firestore backup
 
+- We use `https://www.npmjs.com/package/firestore-export-import` to backup.
+  - It is best to place the backup server in same area(or country) of firebase region.
+
 - To install firebase backup node environment
   - `# apt install npm`
   - `$ npm i`
@@ -1485,5 +1488,9 @@ https://docs.google.com/document/d/1tSJJt8iJsXNl9vcBqYhKPkiRZR5JFo-SQE2SJ90GItA/
 
 
 - To daily backup, put it in cron
-  - 
+  - The cron below will backup fierstore at 10:50 am every day.
 
+
+```txt
+50 10 * * * cd ~/fireflutter/firebase/backup; node index.js
+```
