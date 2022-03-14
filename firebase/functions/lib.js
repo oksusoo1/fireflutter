@@ -208,8 +208,9 @@ async function getCommentNotifyeeWithoutTopicSubscriber(uids, topic) {
   for (const i in result) {
     if (!result[i]) continue;
     const subscriptions = result[i].val();
+    if(!subscriptions) continue;
     // / Get anscestors who subscribed to 'comment notification' and didn't subscribe to the topic.
-    if (subscriptions && subscriptions[commentNotification] && !subscriptions[topic]) {
+    if (subscriptions[commentNotification] && !subscriptions[topic]) {
       _uids.push(uids[i]);
     }
   }
@@ -234,9 +235,9 @@ async function getTopicSubscriber(uids, topic) {
   for (const i in result) {
     if (!result[i]) continue;
     const subscriptions = result[i].val();
+    if(!subscriptions) continue;
     // / Get user who subscribe to topic
-
-    if (subscriptions && subscriptions[topic] == false) {
+    if (subscriptions[topic] == false) {
       // skip only if user intentionally off the topic
     } else {
       re.push(_uids[i]);
@@ -264,6 +265,7 @@ async function getTokensFromUids(uids) {
   for (const i in result) {
     if (!result[i]) continue;
     const tokens = result[i].val();
+    if(!tokens) continue;
     for (const token in tokens) {
       if (!token) continue;
       _tokens.push(token);
@@ -393,6 +395,7 @@ function preMessagePayload(query) {
       id: query.postId ? query.postId : query.id ? query.id : "",
       type: query.type ? query.type : "",
       sender_uid: query.uid ? query.uid : "",
+      badge: query.badge ? query.badge : ""
     },
     notification: {
       title: query.title ? query.title : "",
@@ -409,6 +412,7 @@ function preMessagePayload(query) {
       payload: {
         aps: {
           sound: "default_sound.wav",
+          badge: query.badge ? query.badge : ""
         },
       },
     },
