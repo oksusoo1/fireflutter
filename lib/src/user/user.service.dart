@@ -122,8 +122,8 @@ class UserService with FirestoreMixin, DatabaseMixin {
     final prefs = await SharedPreferences.getInstance();
     if (prefs.getBool('isUserLoggedIn') != null) return;
     prefs.setBool('isUserLoggedIn', true);
-    await UserSettingsService.instance.unsubscribeAllTopic();
-    await UserSettingsService.instance.subscribeToUserTopics();
+    await UserSettingService.instance.unsubscribeAllTopic();
+    await UserSettingService.instance.subscribeToUserTopics();
     await MessagingService.instance.updateSaveToken();
   }
 

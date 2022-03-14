@@ -36,7 +36,7 @@ class UserModel with FirestoreMixin, DatabaseMixin {
 
   /// Note, user settings instance is connected to user model. Not user service.
   /// Note, it is user settings **service**, Not model.
-  UserSettingsService settings = UserSettingsService.instance;
+  UserSettingService settings = UserSettingService.instance;
 
   /// This is the user's document id which is the uid.
   /// If it is empty, the user may not be signed-in
@@ -97,8 +97,7 @@ class UserModel with FirestoreMixin, DatabaseMixin {
   bool get signedOut => signedIn == false;
 
   ///
-  DatabaseReference get _userDoc =>
-      FirebaseDatabase.instance.ref('users').child(uid);
+  DatabaseReference get _userDoc => FirebaseDatabase.instance.ref('users').child(uid);
 
   factory UserModel.fromJson(dynamic data, String uid) {
     if (data == null) return UserModel();

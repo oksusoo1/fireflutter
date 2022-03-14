@@ -26,12 +26,12 @@ class _NotificationSettingState extends State<NotificationSetting> {
     // if (loading) return Center(child: CircularProgressIndicator.adaptive());
     return SingleChildScrollView(
       child: StreamBuilder(
-        stream: UserSettingsService.instance.changes.stream,
+        stream: UserSettingService.instance.changes.stream,
         builder: (context, snapshot) {
           if (snapshot.hasError) return Text('Error');
           if (snapshot.connectionState == ConnectionState.waiting) return SizedBox.shrink();
           if (snapshot.hasData == false) return SizedBox.shrink();
-          // print(UserSettingsService.instance.settings.topics);
+          // print(UserSettingService.instance.settings.topics);
           return Column(
             children: [
               ElevatedButton(
@@ -43,14 +43,14 @@ class _NotificationSettingState extends State<NotificationSetting> {
                 child: Text('Disable all notification'),
               ),
               CheckboxListTile(
-                value: UserSettingsService.instance.hasSubscription(commentNotification),
+                value: UserSettingService.instance.hasSubscription(commentNotification),
                 onChanged: (b) {
                   if (b == true) {
-                    UserSettingsService.instance
+                    UserSettingService.instance
                         .subscribe(commentNotification)
                         .catchError(widget.onError);
                   } else {
-                    UserSettingsService.instance
+                    UserSettingService.instance
                         .unsubscribe(commentNotification)
                         .catchError(widget.onError);
                   }
@@ -61,7 +61,7 @@ class _NotificationSettingState extends State<NotificationSetting> {
               Text('Post notification'),
               for (CategoryModel cat in CategoryService.instance.categories)
                 CheckboxListTile(
-                  value: UserSettingsService.instance.hasSubscription('posts_${cat.id}'),
+                  value: UserSettingService.instance.hasSubscription('posts_${cat.id}'),
                   onChanged: (b) => MessagingService.instance
                       .updateSubscription('posts_${cat.id}', b ?? false)
                       .catchError(widget.onError),
@@ -71,7 +71,7 @@ class _NotificationSettingState extends State<NotificationSetting> {
               Text('Comment notification'),
               for (CategoryModel cat in CategoryService.instance.categories)
                 CheckboxListTile(
-                  value: UserSettingsService.instance.hasSubscription('comments_${cat.id}'),
+                  value: UserSettingService.instance.hasSubscription('comments_${cat.id}'),
                   onChanged: (b) => MessagingService.instance
                       .updateSubscription('comments_${cat.id}', b ?? false)
                       .catchError(widget.onError),

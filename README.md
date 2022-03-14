@@ -412,9 +412,9 @@ $ npm run shell
 
 
 - User settings are saved under `/user-settings/<uid>` in realtime database.
-- `UserSettingService` is handling the update of user setting.
-- `UserSettingService.instance.changes` event is posted whenever user's setting is changed.
-- `UserSettingService` is used in many places.
+- `UserSettinService` is handling the update of user setting.
+- `UserSettinService.instance.changes` event is posted whenever user's setting is changed.
+- `UserSettinService` is used in many places.
   - It` is connected to `UserModel.settings`.
   - It has methods for handling push notification topics.
 - Best way to use it
@@ -424,14 +424,22 @@ $ npm run shell
     With this way, app does not need state management.
 
 
-- Use `UserSettingsDoc` to apply user settgins instread of using `StreamBuilder`.
+- Use `UserSettingDoc` to apply user settgins instread of using `StreamBuilder`.
 
 ```dart
 Widget build(BuildContext context) {
-  return UserSettingsDoc(builder: (settings) {
+  return UserSettingDoc(builder: (settings) {
     final bool selected = settings.value('home-menu-category');
     // ...
   }
+```
+
+```dart
+UserSettingDoc(
+  builder: (settings) {
+    return Text('settings; ${settings.value('forum-top-category')}');
+  },
+)
 ```
 
 

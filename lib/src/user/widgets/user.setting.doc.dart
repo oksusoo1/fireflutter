@@ -3,18 +3,18 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import '../../../fireflutter.dart';
 
-/// UserSettingsDoc
+/// UserSettingDoc
 ///
 ///
-class UserSettingsDoc extends StatefulWidget {
-  const UserSettingsDoc({required this.builder, Key? key}) : super(key: key);
+class UserSettingDoc extends StatefulWidget {
+  const UserSettingDoc({required this.builder, Key? key}) : super(key: key);
   final Widget Function(UserSettingsModel) builder;
 
   @override
-  State<UserSettingsDoc> createState() => _SettingsState();
+  State<UserSettingDoc> createState() => _SettingsState();
 }
 
-class _SettingsState extends State<UserSettingsDoc> {
+class _SettingsState extends State<UserSettingDoc> {
   UserSettingsModel settings = UserSettingsModel.empty();
 
   // ignore: cancel_subscriptions
@@ -24,7 +24,7 @@ class _SettingsState extends State<UserSettingsDoc> {
   void initState() {
     super.initState();
 
-    sub = UserSettingsService.instance.changes.listen((v) => setState(() => settings = v));
+    sub = UserSettingService.instance.changes.listen((v) => setState(() => settings = v));
   }
 
   @override

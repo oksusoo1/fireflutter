@@ -6,13 +6,13 @@ import 'package:rxdart/rxdart.dart';
 
 import '../../fireflutter.dart';
 
-/// UserSettingsService
+/// UserSettingService
 ///
 /// Refer readme.md for details.
-class UserSettingsService with DatabaseMixin {
-  static UserSettingsService? _instance;
-  static UserSettingsService get instance {
-    _instance ??= UserSettingsService();
+class UserSettingService with DatabaseMixin {
+  static UserSettingService? _instance;
+  static UserSettingService get instance {
+    _instance ??= UserSettingService();
     return _instance!;
   }
 
@@ -25,8 +25,8 @@ class UserSettingsService with DatabaseMixin {
     UserSettingsModel.empty(),
   );
 
-  UserSettingsService() {
-    // print('UserSettingsService::constructor');
+  UserSettingService() {
+    // print('UserSettingService::constructor');
 
     initAuthChanges();
   }
@@ -52,7 +52,7 @@ class UserSettingsService with DatabaseMixin {
             sub = userSettingsDoc.onValue.listen((event) {
               // if settings doc does not exists, just use default empty setting.
               if (event.snapshot.exists) {
-                print('UserSettingsService; Got new data');
+                print('UserSettingService; Got new data');
                 _settings = UserSettingsModel.fromJson(event.snapshot.value);
               } else {
                 // create the document /user-settings/uid with timestamp to avoid error when saving data with doc/data
@@ -75,12 +75,6 @@ class UserSettingsService with DatabaseMixin {
 
   Future<void> update(Json settings) async {
     return _settings.update(settings);
-    // final snapshot = await userSettingsDoc.get();
-    // if (snapshot.exists) {
-    //   return userSettingsDoc.update(settings);
-    // } else {
-    //   return userSettingsDoc.set(settings);
-    // }
   }
 
   /// Get user settings doc from realtime database, instread of using [_settings].

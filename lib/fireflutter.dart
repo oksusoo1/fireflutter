@@ -76,7 +76,7 @@ export 'src/widgets/short_date.dart';
 export 'src/setting/notification.setting.dart';
 
 export 'src/user/user.settings.model.dart';
-export 'src/user/user.settings.service.dart';
+export 'src/user/user.setting.service.dart';
 
 export 'src/user/widgets/user.name.dart';
 export 'src/user/widgets/user.profile_photo.dart';
@@ -93,4 +93,4 @@ export 'src/admin/send.push.notification.service.dart';
 export 'src/user/auth/user.signed_in.dart';
 export 'src/user/auth/user.signed_out.dart';
 
-export 'src/user/widgets/user.settings.doc.dart';
+export 'src/user/widgets/user.setting.doc.dart';
