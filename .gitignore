@@ -1,6 +1,9 @@
 *.adminKey.json
 *sdk-key.json
 
+backup.json
+backup*.json
+
 # Miscellaneous
 *.class
 *.log
