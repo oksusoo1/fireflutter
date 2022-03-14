@@ -902,7 +902,7 @@ describe("Firestore security test", () => {
     );
   });
 
-  it("Resports - success", async () => {
+  it("Reports - success", async () => {
     await createCategoryPost("cat", "postId", A);
 
     // success
@@ -919,7 +919,7 @@ describe("Firestore security test", () => {
 
   // NOTE: reports can be made even if the post or comment does not exists. (by 2022-03-13)
   //
-  // it("Resports - fail - wrong post id", async () => {
+  // it("Reports - fail - wrong post id", async () => {
   //   await createCategoryPost("cat", "postId", A);
   //   // fail - wrong post id
   //   await firebase.assertFails(
@@ -933,7 +933,7 @@ describe("Firestore security test", () => {
   //   );
   // });
 
-  it("Resports - comments", async () => {
+  it("Reports - comments", async () => {
     const commentDoc = await createComment("cat", "postId", A);
 
     // success
@@ -947,19 +947,19 @@ describe("Firestore security test", () => {
       })
     );
 
-    // fail - wrong id
-    await firebase.assertFails(
-      db(authB).collection("reports").add({
-        target: "comment",
-        targetId: "wrong id",
-        reporterUid: B,
-        reporteeUid: A,
-        timestamp: 123,
-      })
-    );
+    // // fail - wrong id
+    // await firebase.assertFails(
+    //   db(authB).collection("reports").add({
+    //     target: "comment",
+    //     targetId: "wrong id",
+    //     reporterUid: B,
+    //     reporteeUid: A,
+    //     timestamp: 123,
+    //   })
+    // );
   });
 
-  it("Resports - read", async () => {
+  it("Reports - read", async () => {
     /// success - read by the creator
 
     await createCategoryPost("cat", "postId", C);

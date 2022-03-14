@@ -60,22 +60,59 @@ describe("Firestore security test for Quiz", () => {
     );
   });
 
-  it("Expect success - cannot update", async () => {
-    await createSampleQuestion("quizId");
-    await firebase.assertSucceeds(
-      db(authA)
-        .collection("quiz-history")
-        .doc(A)
-        .set({ quizId: { answer: "a", result: true } }, { merge: true })
-    );
+  // it("Expect success - cannot update document", async () => {
+  //   // await createSampleQuestion("quizId-AAA");
+  //   await firebase.assertSucceeds(
+  //     db(authA)
+  //       .collection("quiz-history")
+  //       .doc(A)
+  //       .set({ ["quizId-AAA"]: { answer: "a", result: true } }, { merge: true })
+  //   );
 
-    await firebase.assertFails(
-      db(authA)
-        .collection("quiz-history")
-        .doc(A)
-        .update({ quizId: { answer: "b", result: false } })
-    );
+  //   await firebase.assertFails(
+  //     db(authA)
+  //       .collection("quiz-history")
+  //       .doc(A)
+  //       .update({ ["quizId-AAA"]: { answer: "b", result: false } })
+  //   );
+  // });
 
-    await firebase.assertSucceeds(db(authA).collection("quiz-history").doc(A).get());
-  });
+  // it("Adding a field - adding an answer to a new question.", async () => {
+  //   /// Create a question
+  //   // await createSampleQuestion("quizId-QID000");
+
+  //   /// Answer that question - ok.
+  //   await firebase.assertSucceeds(
+  //     db(authA)
+  //       .collection("quiz-history")
+  //       .doc(A)
+  //       .set({ ["quizId-QID000"]: { answer: "a", result: true } }, { merge: true })
+  //   );
+
+  //   /// Answer the same question again - fail.
+  //   await firebase.assertFails(
+  //     db(authA)
+  //       .collection("quiz-history")
+  //       .doc(A)
+  //       .update({ ["quizId-QID000"]: { answer: "b", result: false } })
+  //   );
+
+  //   /// Create another question
+  //   // await createSampleQuestion("anotherQuizId----000");
+  //   /// Answer that another question
+  //   await firebase.assertSucceeds(
+  //     db(authA)
+  //       .collection("quiz-history")
+  //       .doc(A)
+  //       .set({ answer1: { answer: "newAnswer", result: false } }, { merge: true })
+  //   );
+
+  //   /// Answer that another question
+  //   await firebase.assertSucceeds(
+  //     db(authA)
+  //       .collection("quiz-history")
+  //       .doc(A)
+  //       .set({ answer2: { answer: "2", result: false } }, { merge: true })
+  //   );
+  // });
 });
