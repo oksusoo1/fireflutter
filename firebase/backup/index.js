@@ -18,6 +18,15 @@ fei
   ])
   .then((data) => {
     const d = new Date();
-    const Ymd = d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate();
+    const Ymd =
+      d.getFullYear() +
+      "-" +
+      (d.getMonth() + 1) +
+      "-" +
+      d.getDate() +
+      "-" +
+      d.getHours() +
+      "-" +
+      d.getMinutes();
     fs.writeFileSync("backup-" + Ymd + ".json", JSON.stringify(data));
   });
