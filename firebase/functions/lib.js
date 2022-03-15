@@ -187,6 +187,7 @@ async function getCommentAncestors(id, authorUid) {
   while (comment.data().postId != comment.data().parentId) {
     // if (comment.data().postId == comment.data().parentId ) break;
     comment = await ref.commentDoc(comment.data().parentId).get();
+    console.log(comment.data().uid);
     if (comment.exists == false) continue;
     if (comment.data().uid == authorUid) continue; // skip the author's uid.
     uids.push(comment.data().uid);
@@ -368,15 +369,18 @@ async function sendingMessageToTokens(tokens, payload) {
     res.responses.forEach((result, index) => {
       const error = result.error;
       if (error) {
-        // console.log(
-        //     "Failure sending notification to",
-        //     chunks[i][index],
-        //     error,
-        // );
+        console.log(
+            "Failure sending notification to",
+            chunks[i][index],
+            error,
+        );
+        // console.log('error.code');
+        // console.log(error.code);
         // Cleanup the tokens who are not registered anymore.
         if (
           error.code === "messaging/invalid-registration-token" ||
-          error.code === "messaging/registration-token-not-registered"
+          error.code === "messaging/registration-token-not-registered" || 
+          error.code === "messaging/invalid-argument"
         ) {
           tokensToRemove.push(rdb.ref("message-tokens").child(chunks[i][index]).remove());
         }
@@ -416,11 +420,14 @@ function preMessagePayload(query) {
       payload: {
         aps: {
           sound: "default_sound.wav",
-          badge: query.badge ? query.badge : "",
         },
       },
     },
   };
+
+  if(query.badge != null) {
+    res.data.apns.payload.aps['badge'] = parseInt(query.badge);
+  }
 
   return res;
 }
@@ -573,42 +580,46 @@ async function testAnswer(data, context) {
 
 
 async function sendMessageOnCommentCreate(commentId, data) {
+  console.log(commentId, data);
  
   // get root post
-  console.log('sendMessageOnCommentCreate~~~~~~~~~~~~~~~~~~~', data);
-  const post = await lib.getPost(data.postId);
-  console.log('getPost~~~~~~~~~~~~~~~~~~~', post);
+  const post = await getPost(data.postId);
+
   const messageData = {
     title: "New Comment: " + post.data().title ? post.data().title : "",
-    body: snapshot.data().content,
-    postId: snapshot.data().postId,
+    body: data.content,
+    postId: data.postId,
     type: "post",
-    uid: snapshot.data().uid,
+    uid: data.uid,
   };
+
   const topic = "comments_" + post.data().category;
   // send push notification to topics
-  await admin.messaging().send(lib.topicPayload(topic, messageData));
+  // const sendToTopicRes = await admin.messaging().send(topicPayload(topic, messageData));
 
   // get comment ancestors
-  const ancestorsUid = await lib.getCommentAncestors(
+  const ancestorsUid = await getCommentAncestors(
       commentId,
-      snapshot.data().uid,
+      data.uid,
   );
-
-
+  console.log('ancestorsUid');
+  console.log(ancestorsUid);
   // add the post uid if the comment author is not the post author
-  if (post.data().uid != snapshot.data().uid && !ancestorsUid.includes(post.data().uid)) {
+  if (post.data().uid != data.uid && !ancestorsUid.includes(post.data().uid)) {
     ancestorsUid.push(post.data().uid);
   }
 
   // Don't send the same message twice to topic subscribers and comment notifyees.
   //
-  const userUids = await lib.getCommentNotifyeeWithoutTopicSubscriber(ancestorsUid, topic);
+  const userUids = await getCommentNotifyeeWithoutTopicSubscriber(ancestorsUid, topic);
 
   // get users tokens
-  const tokens = await lib.getTokensFromUids(userUids);
-
-  return lib.sendingMessageToTokens(tokens, lib.preMessagePayload(messageData));
+  const tokens = await getTokensFromUids(userUids);
+  const sendToTokenRes = await sendingMessageToTokens(tokens, preMessagePayload(messageData));
+  return {
+    // topicResponse: sendToTopicRes,
+    tokenResponse: sendToTokenRes
+  }
 }
 
 exports.delay = delay;

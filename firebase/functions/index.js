@@ -47,10 +47,6 @@ exports.sendMessageOnCommentCreate = functions
     .region("asia-northeast3")
     .firestore.document("/comments/{commentId}")
     .onCreate(async (snapshot, context) => {
-      console.log('snapshot-------');
-      console.log(snapshot);
-      console.log('context--------');
-      console.log(context);
       return lib.sendMessageOnCommentCreate(context.params.commentId, snapshot.data());
     });
 
