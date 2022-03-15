@@ -85,8 +85,8 @@ async function indexUserDocument(uid, data = {}) {
 async function deleteIndexedUserDocument(uid) {
   const promises = [];
   rdb.ref("users").child(uid).exists
-  // promises.push(rdb.ref("users").child(uid).remove());
-  // promises.push(rdb.ref("user-settings").child(uid).remove());
+  promises.push(rdb.ref("users").child(uid).remove());
+  promises.push(rdb.ref("user-settings").child(uid).remove());
   promises.push(Axios.delete("http://wonderfulkorea.kr:7700/indexes/users/documents/" + uid));
   return Promise.all(promises);
 }
