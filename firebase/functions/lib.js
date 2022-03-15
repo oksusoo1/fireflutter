@@ -529,8 +529,9 @@ async function testAnswer(data, context) {
   // console.log("quizDoc", quizDoc);
   if (typeof quizDoc === "undefined") {
     throw new functions.https.HttpsError(
+        "failed-precondition",
         "ERROR_NO_QUIZ_BY_THAT_ID",
-        "The quiz document id does not exists.",
+        // "The quiz document id does not exists.",
     );
   }
 
@@ -547,8 +548,9 @@ async function testAnswer(data, context) {
 
     if (Object.keys(userQuizDoc).indexOf(quizId) != -1) {
       throw new functions.https.HttpsError(
+          "failed-precondition",
           "ERROR_CANNOT_ANSWER_SAME_QUESTION_TWICE",
-          "The quiz document id does not exists.",
+          // "The quiz document id does not exists.",
       );
     }
   }
