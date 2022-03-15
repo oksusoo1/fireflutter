@@ -558,8 +558,8 @@ async function testAnswer(data, context) {
 }
 
 
-async function sendMessageOnCommentCreate(snapshot, context) {
-  const data = snapshot.data();
+async function sendMessageOnCommentCreate(commentId, data) {
+ 
   // get root post
   console.log('sendMessageOnCommentCreate~~~~~~~~~~~~~~~~~~~', data);
   const post = await lib.getPost(data.postId);
@@ -577,7 +577,7 @@ async function sendMessageOnCommentCreate(snapshot, context) {
 
   // get comment ancestors
   const ancestorsUid = await lib.getCommentAncestors(
-      context.params.commentId,
+      commentId,
       snapshot.data().uid,
   );
 

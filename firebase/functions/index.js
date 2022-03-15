@@ -51,7 +51,7 @@ exports.sendMessageOnCommentCreate = functions
       console.log(snapshot);
       console.log('context--------');
       console.log(context);
-      return lib.sendMessageOnCommentCreate(snapshot, context);
+      return lib.sendMessageOnCommentCreate(context.params.commentId, snapshot.data());
     });
 
 /**
