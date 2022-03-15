@@ -47,40 +47,11 @@ exports.sendMessageOnCommentCreate = functions
     .region("asia-northeast3")
     .firestore.document("/comments/{commentId}")
     .onCreate(async (snapshot, context) => {
-      const data = snapshot.data();
-      // get root post
-      const post = await lib.getPost(data.postId);
-
-      const messageData = {
-        title: "New Comment: " + post.data().title ? post.data().title : "",
-        body: snapshot.data().content,
-        postId: snapshot.data().postId,
-        type: "post",
-        uid: snapshot.data().uid,
-      };
-      const topic = "comments_" + post.data().category;
-      // send push notification to topics
-      await admin.messaging().send(lib.topicPayload(topic, messageData));
-
-      // get comment ancestors
-      const ancestorsUid = await lib.getCommentAncestors(
-          context.params.commentId,
-          snapshot.data().uid,
-      );
-
-      // add the post uid if the comment author is not the post author
-      if (post.data().uid != snapshot.data().uid && !ancestorsUid.includes(post.data().uid)) {
-        ancestorsUid.push(post.data().uid);
-      }
-
-      // Don't send the same message twice to topic subscribers and comment notifyees.
-      //
-      const userUids = await lib.getCommentNotifyeeWithoutTopicSubscriber(ancestorsUid, topic);
-
-      // get users tokens
-      const tokens = await lib.getTokensFromUids(userUids);
-
-      return lib.sendingMessageToTokens(tokens, lib.preMessagePayload(messageData));
+      console.log('snapshot-------');
+      console.log(snapshot);
+      console.log('context--------');
+      console.log(context);
+      return lib.sendMessageOnCommentCreate(snapshot, context);
     });
 
 /**

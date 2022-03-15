@@ -10,6 +10,7 @@
     "logs": "firebase functions:log",
     "test:test": "mocha --timeout 5000 --watch tests/test.js",
     "test:messaging": "mocha --timeout 50000 --watch tests/messaging.test.js",
+    "test:post": "mocha --timeout 50000 --watch tests/post.test.js",
     "test:getTokens": "mocha --timeout 50000 --watch tests/retrieveTokens.test.js",
     "test:userManagement": "mocha --timeout 50000 --watch tests/user.management.test.js",
     "test:meilisearch": "mocha --timeout 5000 --watch tests/meilisearch.test.js",
