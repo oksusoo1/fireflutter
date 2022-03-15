@@ -107,12 +107,12 @@ describe("Messaging ~~~~~~~~~~~~~~~~", () => {
   // create UserA and UserB
   // set UserA  user settings to subscribe to get notified if new comment is
   // created under user post or comment
-  // it creates 1000 fake tokens
+  // it creates 500 fake tokens
   // create post for userA
   // userB comment to userA post
   // functions onCommentCreate send push notification and remove invalid tokens
   // userA should only have 2 token(valid) after onCreate
-  it("Sending messages of 1002 tokens", async () => {
+  it("Sending messages of 500 tokens", async () => {
     const userA = "userA";
     const userB = "userB";
     await test.createTestUser(userA);
@@ -135,15 +135,17 @@ describe("Messaging ~~~~~~~~~~~~~~~~", () => {
         });
     await test.createTestUser(userB);
     const validToken1 =
-      "eiG6CUPQS66swAIEOakM60:APA91bGj4tjLswDzSAWz72onE_Tv50TYrI2I3hRXu-0RDJOa2c71elDDnL5gfrcZY5PfppRgbl2hC_R2A4SzstPu___yR9DzB1YoIDnJ-IITVxoqIJ_2gBLQOl9MGJ7_vRFZNmUfIVHD";
+      "djwdebPrQtm_u2N7jIygx3:APA91bHYJo7-bnbxHicRQOtT0kyyN42MRBaCk8WmrUFhsJhlHgI-xqgHzKnSL_ntr8WdvbeZCxwQLovATw972DzRAzlQ0H0Kx_iihU54VdP13cqYfaIX8DQGHnpbpW_OtWHutvD-MqeX";
     const validToken2 =
-      "ecw_jCq6TV273wlDMeaQRY:APA91bF8GUuxtjlpBf7xI9M4dv6MD74rb40tpDedeoJ9w1TYi-9TmGCrt862Qcrj4nQifRBrxS60AiBSQW8ynYQFVj9Hkrd3p-w9UyDscLncNdwdZNXpqRgBR-LmSeZIcNBejvxjtfW4";
+      "dT9S0cPbQ3OSRCbB8EG9li:APA91bHKVGQneklgn1baHTlE4xufYSdNrqt59JB4vRTxPYYjoGyiHhFkxBhYyE2sG6DFOCZ7oWEmne9GLKQje5YYCsLWIevg6W7kLQYl9gDERH6-s1Q_1C5vn5XCZf1mhdBr_KYPVKvX";
 
     const tokenUpdates = [];
+    
+    
     // set first valid token
     tokenUpdates.push(db.collection("message-tokens").doc(validToken1).set({uid: userA}));
-    // set 1000 not valid token
-    for (let i = 0; i < 1000; i++) {
+    // set 500 not valid token
+    for (let i = 0; i < 500; i++) {
       tokenUpdates.push(
           db
               .collection("message-tokens")
@@ -156,7 +158,7 @@ describe("Messaging ~~~~~~~~~~~~~~~~", () => {
     await Promise.all(tokenUpdates);
 
     const before = await db.collection("message-tokens").where("uid", "==", userA).get();
-    assert.ok(before.size == 1002, "should be 1002, got " + before.size);
+    assert.ok(before.size == 502, "should be 502, got:: " + before.size);
 
     // userA create parent post
     const postTestId = "postTestId";
