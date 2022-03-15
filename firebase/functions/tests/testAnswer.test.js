@@ -49,7 +49,7 @@ describe("Test test", () => {
       await lib.testAnswer({wrongQuizId: {answer: "e"}}, {auth: {uid: "userA"}});
       assert.ok(false);
     } catch (e) {
-      assert.ok(e.message === "ERROR_NO_QUIZ_BY_THAT_ID");
+      assert.ok(e.message.indexOf("ERROR_NO_QUIZ_BY_THAT_ID") > -1);
     }
   });
   it("Wrong answer", async () => {
@@ -79,7 +79,7 @@ describe("Test test", () => {
     try {
       await lib.testAnswer({[quizId]: {answer: "a"}}, {auth: {uid: "userA"}});
     } catch (e) {
-      assert.ok(e.message === "ERROR_CANNOT_ANSWER_SAME_QUESTION_TWICE");
+      assert.ok(e.message.indexOf("ERROR_CANNOT_ANSWER_SAME_QUESTION_TWICE"));
     }
   });
 });

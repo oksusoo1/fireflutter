@@ -58,13 +58,13 @@ function getPost(id) {
 /**
  * Creates or update a user document index.
  *
- * @param {*} id user id.
+ * @param {*} uid user id.
  * @param {*} data user data to index.
  * @returns promise
  */
-async function indexUserDocument(id, data) {
+async function indexUserDocument(uid, data = {}) {
   const _data = {
-    id: id,
+    id: uid,
     gender: data.gender ?? "",
     firstName: data.firstName ?? "",
     middleName: data.middleName ?? "",
@@ -77,13 +77,17 @@ async function indexUserDocument(id, data) {
 }
 
 /**
- * Deletes user document index.
+ * Deletes user related documents on realtime database and meilisearch indexing.
  *
- * @param {*} id user id to delete.
+ * @param {*} uid user id to delete.
  * @returns promise
  */
-async function deleteIndexedUserDocument(id) {
-  return Axios.delete("http://wonderfulkorea.kr:7700/indexes/users/documents/" + id);
+async function deleteIndexedUserDocument(uid) {
+  const promises = [];
+  promises.push(rdb.ref("users").child(uid).remove());
+  promises.push(rdb.ref("user-settings").child(uid).remove());
+  promises.push(Axios.delete("http://wonderfulkorea.kr:7700/indexes/users/documents/" + uid));
+  return Promise.all(promises);
 }
 
 /**
@@ -208,7 +212,7 @@ async function getCommentNotifyeeWithoutTopicSubscriber(uids, topic) {
   for (const i in result) {
     if (!result[i]) continue;
     const subscriptions = result[i].val();
-    if(!subscriptions) continue;
+    if (!subscriptions) continue;
     // / Get anscestors who subscribed to 'comment notification' and didn't subscribe to the topic.
     if (subscriptions[commentNotification] && !subscriptions[topic]) {
       _uids.push(uids[i]);
@@ -235,7 +239,7 @@ async function getTopicSubscriber(uids, topic) {
   for (const i in result) {
     if (!result[i]) continue;
     const subscriptions = result[i].val();
-    if(!subscriptions) continue;
+    if (!subscriptions) continue;
     // / Get user who subscribe to topic
     if (subscriptions[topic] == false) {
       // skip only if user intentionally off the topic
@@ -265,7 +269,7 @@ async function getTokensFromUids(uids) {
   for (const i in result) {
     if (!result[i]) continue;
     const tokens = result[i].val();
-    if(!tokens) continue;
+    if (!tokens) continue;
     for (const token in tokens) {
       if (!token) continue;
       _tokens.push(token);
@@ -395,7 +399,7 @@ function preMessagePayload(query) {
       id: query.postId ? query.postId : query.id ? query.id : "",
       type: query.type ? query.type : "",
       sender_uid: query.uid ? query.uid : "",
-      badge: query.badge ? query.badge : ""
+      badge: query.badge ? query.badge : "",
     },
     notification: {
       title: query.title ? query.title : "",
@@ -412,7 +416,7 @@ function preMessagePayload(query) {
       payload: {
         aps: {
           sound: "default_sound.wav",
-          badge: query.badge ? query.badge : ""
+          badge: query.badge ? query.badge : "",
         },
       },
     },
@@ -523,7 +527,12 @@ async function testAnswer(data, context) {
   const quizDoc = (await db.collection("/posts/").doc(quizId).get()).data();
 
   // console.log("quizDoc", quizDoc);
-  if (typeof quizDoc === "undefined") throw Error("ERROR_NO_QUIZ_BY_THAT_ID");
+  if (typeof quizDoc === "undefined") {
+    throw new functions.https.HttpsError(
+        "ERROR_NO_QUIZ_BY_THAT_ID",
+        "The quiz document id does not exists.",
+    );
+  }
 
   // 2.
   const re = quizDoc.answer === userAnswer;
@@ -537,7 +546,10 @@ async function testAnswer(data, context) {
     // console.log(Object.keys(userQuizDoc));
 
     if (Object.keys(userQuizDoc).indexOf(quizId) != -1) {
-      throw Error("ERROR_CANNOT_ANSWER_SAME_QUESTION_TWICE");
+      throw new functions.https.HttpsError(
+          "ERROR_CANNOT_ANSWER_SAME_QUESTION_TWICE",
+          "The quiz document id does not exists.",
+      );
     }
   }
 

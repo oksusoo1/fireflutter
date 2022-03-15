@@ -126,6 +126,8 @@ Table of contents
   - [Uploaded file management](#uploaded-file-management)
 - [Cloud Functions](#cloud-functions)
   - [Meilisearch](#meilisearch)
+- [Backup](#backup)
+  - [Firestore backup](#firestore-backup)
 
 # TODOs
 
@@ -1462,3 +1464,33 @@ HttpException: Invalid statusCode: 403, uri = https://firebasestorage.googleapis
 
 https://docs.google.com/document/d/1tSJJt8iJsXNl9vcBqYhKPkiRZR5JFo-SQE2SJ90GItA/edit#heading=h.g94frts1xgxo
 
+
+
+# Backup
+
+- For `Realtime database`, use built-in backup feature in firebase console.
+
+- For `Firestore`, use `fireflutter/backup/index.js` to backup.
+
+## Firestore backup
+
+- We use `https://www.npmjs.com/package/firestore-export-import` to backup.
+  - It is best to place the backup server in same area(or country) of firebase region.
+
+- To install firebase backup node environment
+  - `# apt install npm`
+  - `$ npm i`
+
+- Make sure the node version is 14.x and above.
+
+- To backup
+  - `$ node index.js`
+
+
+- To daily backup, put it in cron
+  - The cron below will backup fierstore at 10:50 am every day.
+
+
+```txt
+50 10 * * * cd ~/fireflutter/firebase/backup; node index.js
+```

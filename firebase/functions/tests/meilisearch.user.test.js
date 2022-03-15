@@ -94,13 +94,4 @@ describe("Meilisearch test", () => {
     assert.ok(search.hits.length > 0, "Search result must not be empty.");
     assert.ok(search.hits[0].firstName == newFirstName, "User firstname must be updated");
   });
-
-  it("tests user delete indexing", async () => {
-    await test.deleteTestUser(userData.id);
-    await lib.delay(4000);
-
-    const search = await client.index("users").search("", {filter: ["id = " + userData.id]});
-
-    assert.ok(search.hits.length == 0, "Search result must be empty.");
-  });
 });
