@@ -58,7 +58,7 @@ function getPost(id) {
 /**
  * Creates or update a user document index.
  *
- * @param {*} id user id.
+ * @param {*} uid user id.
  * @param {*} data user data to index.
  * @returns promise
  */
@@ -79,7 +79,7 @@ async function indexUserDocument(uid, data = {}) {
 /**
  * Deletes user related documents on realtime database and meilisearch indexing.
  *
- * @param {*} id user id to delete.
+ * @param {*} uid user id to delete.
  * @returns promise
  */
 async function deleteIndexedUserDocument(uid) {
