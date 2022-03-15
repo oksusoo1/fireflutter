@@ -25,9 +25,8 @@ const lib = require("../lib");
 
 describe("Post ~~~~~~~~~~~~~~~~", () => {
   it("Post test", async () => {
-
     const userA = "postTestUserA";
-    
+
     // userA create parent post
     const postTestId = "postTestId";
     await test.createPost({
@@ -41,12 +40,10 @@ describe("Post ~~~~~~~~~~~~~~~~", () => {
     });
 
     try {
-        const post = await lib.getPost(postTestId);
-        assert.ok(post.data().uid == userA, "post create must be success");
+      const post = await lib.getPost(postTestId);
+      assert.ok(post.data().uid == userA, "post create must be success");
     } catch (e) {
-        assert.fail("getting post" + e);
+      assert.fail("getting post" + e);
     }
-
   });
-
 });

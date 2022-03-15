@@ -379,7 +379,7 @@ async function sendingMessageToTokens(tokens, payload) {
         // Cleanup the tokens who are not registered anymore.
         if (
           error.code === "messaging/invalid-registration-token" ||
-          error.code === "messaging/registration-token-not-registered" || 
+          error.code === "messaging/registration-token-not-registered" ||
           error.code === "messaging/invalid-argument"
         ) {
           tokensToRemove.push(rdb.ref("message-tokens").child(chunks[i][index]).remove());
@@ -425,8 +425,8 @@ function preMessagePayload(query) {
     },
   };
 
-  if(query.badge != null) {
-    res.data.apns.payload.aps['badge'] = parseInt(query.badge);
+  if (query.badge != null) {
+    res.data.apns.payload.aps["badge"] = parseInt(query.badge);
   }
 
   return res;
@@ -581,7 +581,8 @@ async function testAnswer(data, context) {
 
 async function sendMessageOnCommentCreate(commentId, data) {
   console.log(commentId, data);
- 
+  await rdb.ref("log").child("sendMessageOnCommentCreate" + commentId).set({"commentId": commentId, "data": data});
+
   // get root post
   const post = await getPost(data.postId);
 
@@ -595,14 +596,14 @@ async function sendMessageOnCommentCreate(commentId, data) {
 
   const topic = "comments_" + post.data().category;
   // send push notification to topics
-  // const sendToTopicRes = await admin.messaging().send(topicPayload(topic, messageData));
+  const sendToTopicRes = await admin.messaging().send(topicPayload(topic, messageData));
 
   // get comment ancestors
   const ancestorsUid = await getCommentAncestors(
       commentId,
       data.uid,
   );
-  console.log('ancestorsUid');
+  console.log("ancestorsUid");
   console.log(ancestorsUid);
   // add the post uid if the comment author is not the post author
   if (post.data().uid != data.uid && !ancestorsUid.includes(post.data().uid)) {
@@ -617,9 +618,9 @@ async function sendMessageOnCommentCreate(commentId, data) {
   const tokens = await getTokensFromUids(userUids);
   const sendToTokenRes = await sendingMessageToTokens(tokens, preMessagePayload(messageData));
   return {
-    // topicResponse: sendToTopicRes,
-    tokenResponse: sendToTokenRes
-  }
+    topicResponse: sendToTopicRes,
+    tokenResponse: sendToTokenRes,
+  };
 }
 
 exports.delay = delay;
