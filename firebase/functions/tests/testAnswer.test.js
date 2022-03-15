@@ -34,19 +34,19 @@ describe("Test test", () => {
     assert.ok(data.registeredAt);
 
     await db.collection("posts").doc("0-quiz-A").set(
-      {
-        title: "question title",
-        answer: "a",
-        a: "apple",
-        b: "banana",
-      },
-      { merge: true }
+        {
+          title: "question title",
+          answer: "a",
+          a: "apple",
+          b: "banana",
+        },
+        {merge: true},
     );
   });
 
   it("Wrong quiz - quiz does not exists by that id", async () => {
     try {
-      await lib.testAnswer({ wrongQuizId: { answer: "e" } }, { auth: { uid: "userA" } });
+      await lib.testAnswer({wrongQuizId: {answer: "e"}}, {auth: {uid: "userA"}});
       assert.ok(false);
     } catch (e) {
       assert.ok(e.message.indexOf("ERROR_NO_QUIZ_BY_THAT_ID") > -1);
@@ -56,7 +56,7 @@ describe("Test test", () => {
     const quizId = "0-quiz-A";
     const userQuizRef = db.collection("quiz-history").doc("userA");
     await userQuizRef.delete();
-    const res = await lib.testAnswer({ [quizId]: { answer: "e" } }, { auth: { uid: "userA" } });
+    const res = await lib.testAnswer({[quizId]: {answer: "e"}}, {auth: {uid: "userA"}});
     const doc = (await userQuizRef.get()).data();
     assert.ok(res.result === false);
     assert.ok(doc[quizId].result == false);
@@ -65,7 +65,7 @@ describe("Test test", () => {
     const quizId = "0-quiz-A";
     const userQuizRef = db.collection("quiz-history").doc("userA");
     await userQuizRef.delete();
-    const res = await lib.testAnswer({ [quizId]: { answer: "a" } }, { auth: { uid: "userA" } });
+    const res = await lib.testAnswer({[quizId]: {answer: "a"}}, {auth: {uid: "userA"}});
     const doc = (await userQuizRef.get()).data();
     assert.ok(res.result === true);
     assert.ok(doc[quizId].result == true);
@@ -74,10 +74,10 @@ describe("Test test", () => {
     const quizId = "0-quiz-A";
     const userQuizRef = db.collection("quiz-history").doc("userA");
     await userQuizRef.delete();
-    await lib.testAnswer({ [quizId]: { answer: "a" } }, { auth: { uid: "userA" } });
+    await lib.testAnswer({[quizId]: {answer: "a"}}, {auth: {uid: "userA"}});
 
     try {
-      await lib.testAnswer({ [quizId]: { answer: "a" } }, { auth: { uid: "userA" } });
+      await lib.testAnswer({[quizId]: {answer: "a"}}, {auth: {uid: "userA"}});
     } catch (e) {
       assert.ok(e.message.indexOf("ERROR_CANNOT_ANSWER_SAME_QUESTION_TWICE"));
     }

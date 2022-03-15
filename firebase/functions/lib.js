@@ -62,9 +62,9 @@ function getPost(id) {
  * @param {*} data user data to index.
  * @returns promise
  */
-async function indexUserDocument(id, data) {
+async function indexUserDocument(uid, data = {}) {
   const _data = {
-    id: id,
+    id: uid,
     gender: data.gender ?? "",
     firstName: data.firstName ?? "",
     middleName: data.middleName ?? "",
@@ -77,13 +77,18 @@ async function indexUserDocument(id, data) {
 }
 
 /**
- * Deletes user document index.
+ * Deletes user related documents on realtime database and meilisearch indexing.
  *
  * @param {*} id user id to delete.
  * @returns promise
  */
-async function deleteIndexedUserDocument(id) {
-  return Axios.delete("http://wonderfulkorea.kr:7700/indexes/users/documents/" + id);
+async function deleteIndexedUserDocument(uid) {
+  const promises = [];
+  rdb.ref("users").child(uid).exists
+  // promises.push(rdb.ref("users").child(uid).remove());
+  // promises.push(rdb.ref("user-settings").child(uid).remove());
+  promises.push(Axios.delete("http://wonderfulkorea.kr:7700/indexes/users/documents/" + uid));
+  return Promise.all(promises);
 }
 
 /**
@@ -150,9 +155,9 @@ function indexForumDocument(data) {
 async function deleteIndexedPostDocument(id) {
   const promises = [];
   promises.push(
-    Axios.post("https://wonderfulkorea.kr:4431/index.php?api=post/delete", {
-      id: id,
-    })
+      Axios.post("https://wonderfulkorea.kr:4431/index.php?api=post/delete", {
+        id: id,
+      }),
   );
   promises.push(Axios.delete("http://wonderfulkorea.kr:7700/indexes/posts/documents/" + id));
   promises.push(deleteIndexedForumDocument(id));
@@ -162,9 +167,9 @@ async function deleteIndexedPostDocument(id) {
 async function deleteIndexedCommentDocument(id) {
   const promises = [];
   promises.push(
-    Axios.post("https://wonderfulkorea.kr:4431/index.php?api=post/delete", {
-      id: id,
-    })
+      Axios.post("https://wonderfulkorea.kr:4431/index.php?api=post/delete", {
+        id: id,
+      }),
   );
   promises.push(Axios.delete("http://wonderfulkorea.kr:7700/indexes/comments/documents/" + id));
   promises.push(deleteIndexedForumDocument(id));
@@ -292,9 +297,9 @@ async function sendMessageToTopic(query) {
   const payload = topicPayload(query);
   try {
     const res = await admin.messaging().send(payload);
-    return { code: "success", result: res };
+    return {code: "success", result: res};
   } catch (e) {
-    return { code: "error", message: e };
+    return {code: "error", message: e};
   }
 }
 
@@ -310,9 +315,9 @@ async function sendMessageToTokens(query) {
 
   try {
     const res = await sendingMessageToTokens(_tokens, payload);
-    return { code: "success", result: res };
+    return {code: "success", result: res};
   } catch (e) {
-    return { code: "error", message: e };
+    return {code: "error", message: e};
   }
 }
 
@@ -323,9 +328,9 @@ async function sendMessageToUsers(query) {
 
   try {
     const res = await sendingMessageToTokens(tokens, payload);
-    return { code: "success", result: res };
+    return {code: "success", result: res};
   } catch (e) {
-    return { code: "error", message: e };
+    return {code: "error", message: e};
   }
 }
 
@@ -380,7 +385,7 @@ async function sendingMessageToTokens(tokens, payload) {
     });
   });
   await Promise.all(tokensToRemove);
-  return { success: successCount, error: errorCount };
+  return {success: successCount, error: errorCount};
 }
 
 function topicPayload(topic, query) {
@@ -472,11 +477,11 @@ async function enableUser(data, context) {
     };
   }
   try {
-    const user = await auth.updateUser(data.uid, { disabled: false });
-    if (user.disabled == false) await rdb.ref("users").child(data.uid).update({ disabled: false });
-    return { code: "success", result: user };
+    const user = await auth.updateUser(data.uid, {disabled: false});
+    if (user.disabled == false) await rdb.ref("users").child(data.uid).update({disabled: false});
+    return {code: "success", result: user};
   } catch (e) {
-    return { code: "error", message: e };
+    return {code: "error", message: e};
   }
 }
 
@@ -489,11 +494,11 @@ async function disableUser(data, context) {
     };
   }
   try {
-    const user = await auth.updateUser(data.uid, { disabled: true });
-    if (user.disabled == true) await rdb.ref("users").child(data.uid).update({ disabled: true });
-    return { code: "success", result: user };
+    const user = await auth.updateUser(data.uid, {disabled: true});
+    if (user.disabled == true) await rdb.ref("users").child(data.uid).update({disabled: true});
+    return {code: "success", result: user};
   } catch (e) {
-    return { code: "error", message: e };
+    return {code: "error", message: e};
   }
 }
 
@@ -525,8 +530,8 @@ async function testAnswer(data, context) {
   // console.log("quizDoc", quizDoc);
   if (typeof quizDoc === "undefined") {
     throw new functions.https.HttpsError(
-      "ERROR_NO_QUIZ_BY_THAT_ID",
-      "The quiz document id does not exists."
+        "ERROR_NO_QUIZ_BY_THAT_ID",
+        "The quiz document id does not exists.",
     );
   }
 
@@ -543,20 +548,20 @@ async function testAnswer(data, context) {
 
     if (Object.keys(userQuizDoc).indexOf(quizId) != -1) {
       throw new functions.https.HttpsError(
-        "ERROR_CANNOT_ANSWER_SAME_QUESTION_TWICE",
-        "The quiz document id does not exists."
+          "ERROR_CANNOT_ANSWER_SAME_QUESTION_TWICE",
+          "The quiz document id does not exists.",
       );
     }
   }
 
   await userQuizRef.set(
-    {
-      [quizId]: {
-        answer: userAnswer,
-        result: re,
+      {
+        [quizId]: {
+          answer: userAnswer,
+          result: re,
+        },
       },
-    },
-    { merge: true }
+      {merge: true},
   );
   return {
     quizId: quizId,

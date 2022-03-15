@@ -84,21 +84,16 @@ exports.sendMessageOnCommentCreate = functions
     });
 
 /**
- * Indexes a user document whenever it is created.
+ * Indexes a user document whenever it is created (someone registered a new account).
  *
  * createUserIndex({
- *   firstName: '...'
- *  }, {
- *   params: { userId: '...' }
+ *  uid: '...',
+ *  ...
  * })
  */
-exports.createUserIndex = functions
-    .region("asia-northeast3")
-    .database.ref("/users/{userId}")
-    .onCreate((snapshot, context) => {
-    // console.log('user data', context.params.userId, snapshot.val());
-      return lib.indexUserDocument(context.params.userId, snapshot.val());
-    });
+exports.createUserIndex = functions.auth.user().onCreate((user) => {
+  return lib.indexUserDocument(user.uid, user);
+});
 
 /**
  * Updates a user document index.
@@ -120,21 +115,15 @@ exports.updateUserIndex = functions
     });
 
 /**
- * Deletes indexing whenever a user document is deleted.
+ * Deletes indexing whenever a user document is deleted (user resignation).
  *
  * deleteUserIndex({
- *   firstName: '...'
- *  }, {
- *   params: { userId: '...' }
+ *  uid: '...'
  * })
  */
-exports.deleteUserIndex = functions
-    .region("asia-northeast3")
-    .database.ref("/users/{userId}")
-    .onDelete((snapshot, context) => {
-    // console.log('onDelete : user data', context.params.userId, snapshot.val());
-      return lib.deleteIndexedUserDocument(context.params.userId);
-    });
+exports.deleteUserIndex = functions.auth.user().onDelete((user) => {
+  return lib.deleteIndexedUserDocument(user.uid);
+});
 
 /**
  * Indexes a post document when it is created.
