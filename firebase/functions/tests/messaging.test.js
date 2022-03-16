@@ -24,7 +24,7 @@ const test = require("../test");
 const lib = require("../lib");
 
 // get firestore
-const db = admin.firestore();
+// const db = admin.firestore();
 
 // get real time database
 const rdb = admin.database();
@@ -243,7 +243,7 @@ describe("Messaging ~~~~~~~~~~~~~~~~", () => {
     await lib.delay(10000);
     const userBTokenCount2 = await rdb.ref("message-tokens").orderByChild("uid").equalTo(userB).get();
     assert.ok(!userBTokenCount2.exists(),
-        "must have 0 token by this time," 
+        "must have 0 token by this time,",
     );
   });
 
