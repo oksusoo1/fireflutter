@@ -24,7 +24,7 @@ const test = require("../test");
 const lib = require("../lib");
 
 // get firestore
-const db = admin.firestore();
+// const db = admin.firestore();
 
 // get real time database
 const rdb = admin.database();

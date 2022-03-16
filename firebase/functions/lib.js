@@ -242,18 +242,17 @@ async function getTopicSubscriber(uids, topic) {
     getTopicsPromise.push(rdb.ref("user-settings").child(u).child("topic").get());
   }
   const result = await Promise.all(getTopicsPromise);
+
   for (const i in result) {
     if (!result[i]) continue;
     const subscriptions = result[i].val();
-    if (!subscriptions) continue;
     // / Get user who subscribe to topic
-    if (subscriptions[topic] == false) {
+    if (subscriptions && subscriptions[topic] == false) {
       // skip only if user intentionally off the topic
     } else {
       re.push(_uids[i]);
     }
   }
-
   return re;
 }
 
@@ -299,7 +298,7 @@ function error(errorCode, errorMessage) {
 }
 
 async function sendMessageToTopic(query) {
-  const payload = topicPayload(query);
+  const payload = topicPayload(query.topic, query);
   try {
     const res = await admin.messaging().send(payload);
     return {code: "success", result: res};
@@ -328,9 +327,8 @@ async function sendMessageToTokens(query) {
 
 async function sendMessageToUsers(query) {
   const payload = preMessagePayload(query);
-  const uids = await getTopicSubscriber(query.uid, query.subscription);
+  const uids = await getTopicSubscriber(query.uids, query.subscription);
   const tokens = await getTokensFromUids(uids);
-
   try {
     const res = await sendingMessageToTokens(tokens, payload);
     return {code: "success", result: res};
@@ -374,11 +372,11 @@ async function sendingMessageToTokens(tokens, payload) {
     res.responses.forEach((result, index) => {
       const error = result.error;
       if (error) {
-        console.log(
-            "Failure sending notification to",
-            chunks[i][index],
-            error,
-        );
+        // console.log(
+        //     "Failure sending notification to",
+        //     chunks[i][index],
+        //     error,
+        // );
         // console.log('error.code');
         // console.log(error.code);
         // Cleanup the tokens who are not registered anymore.
