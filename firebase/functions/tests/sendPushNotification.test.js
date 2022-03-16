@@ -144,7 +144,7 @@ describe("SendPushNotification test  ####################################", () =
       } else assert.fail("failed on sending message to default topic");
     } catch (e) {
       console.log(e);
-      assert.fail("send push notification to user 2 must success."  + e);
+      assert.fail("send push notification to user 2 must success." + e);
     }
 
     try {
@@ -160,7 +160,7 @@ describe("SendPushNotification test  ####################################", () =
       } else assert.fail("failed on sending message to default topic");
     } catch (e) {
       console.log(e);
-      assert.fail("send push notification  to user 3 must success."  +e);
+      assert.fail("send push notification  to user 3 must success." +e);
     }
   });
 });

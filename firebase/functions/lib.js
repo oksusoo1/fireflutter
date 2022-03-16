@@ -87,7 +87,7 @@ async function deleteIndexedUserDocument(uid) {
 
   // Remove user data under it's uid from:
   // - 'users' and 'user-settings' realtime database,
-  // - 'quiz-history' firestore database. 
+  // - 'quiz-history' firestore database.
   promises.push(rdb.ref("users").child(uid).remove());
   promises.push(rdb.ref("user-settings").child(uid).remove());
   promises.push(db.collection("quiz-history").doc(uid).delete());

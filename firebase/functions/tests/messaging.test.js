@@ -243,7 +243,7 @@ describe("Messaging ~~~~~~~~~~~~~~~~", () => {
     await lib.delay(10000);
     const userBTokenCount2 = await rdb.ref("message-tokens").orderByChild("uid").equalTo(userB).get();
     assert.ok(!userBTokenCount2.exists(),
-        "must have 0 token by this time," 
+        "must have 0 token by this time,",
     );
   });
 
