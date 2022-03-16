@@ -84,6 +84,10 @@ class PostModel with FirestoreMixin, ForumBase {
 
   List<CommentModel> comments = [];
 
+  factory PostModel.fromDoc(DocumentSnapshot doc) {
+    return PostModel.fromJson(doc.data() as Json, doc.id);
+  }
+
   /// Get document data of map and convert it into post model
   factory PostModel.fromJson(Json data, String id) {
     String content = data['content'] ?? '';
