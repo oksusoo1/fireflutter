@@ -24,7 +24,13 @@ class _SettingsState extends State<UserSettingDoc> {
   void initState() {
     super.initState();
 
-    sub = UserSettingService.instance.changes.listen((v) => setState(() => settings = v));
+    sub = UserSettingService.instance.changes.listen(
+      (v) => setState(
+        () {
+          settings = v;
+        },
+      ),
+    );
   }
 
   @override
