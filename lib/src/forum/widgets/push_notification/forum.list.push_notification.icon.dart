@@ -7,12 +7,14 @@ class ForumListPushNotificationIcon extends StatefulWidget {
   ForumListPushNotificationIcon(
     this.categoryId, {
     required this.onError,
+    required this.onSigninRequired,
     this.size,
     this.color,
   });
   final String categoryId;
   final double? size;
   final Function onError;
+  final Function onSigninRequired;
   final Color? color;
   @override
   _ForumListPushNotificationIconState createState() => _ForumListPushNotificationIconState();
@@ -98,13 +100,15 @@ class _ForumListPushNotificationIconState extends State<ForumListPushNotificatio
 
   onNotificationSelected(dynamic selection) async {
     if (UserService.instance.user.signedOut) {
-      return showDialog(
-        context: context,
-        builder: (c) => AlertDialog(
-          title: Text('Notifications'),
-          content: Text('Please, sign in first...'),
-        ),
-      );
+      widget.onSigninRequired();
+      return;
+      // return showDialog(
+      //   context: context,
+      //   builder: (c) => AlertDialog(
+      //     title: Text('Notifications'),
+      //     content: Text('Please, sign in first...'),
+      //   ),
+      // );
     }
 
     String topic = '';

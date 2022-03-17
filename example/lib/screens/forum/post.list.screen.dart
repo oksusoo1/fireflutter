@@ -16,8 +16,7 @@ class PostListScreen extends StatefulWidget {
   State<PostListScreen> createState() => _PostListScreenState();
 }
 
-class _PostListScreenState extends State<PostListScreen>
-    with FirestoreMixin, ForumMixin {
+class _PostListScreenState extends State<PostListScreen> with FirestoreMixin, ForumMixin {
   late final String category;
   String? newPostId;
   @override
@@ -35,12 +34,15 @@ class _PostListScreenState extends State<PostListScreen>
           ForumListPushNotificationIcon(
             category,
             onError: error,
+            onSigninRequired: () => alert(
+              'Signin Required',
+              'Please, sign in to subscribe this forum.',
+            ),
             size: 28,
           ),
           IconButton(
             onPressed: () async {
-              newPostId =
-                  await AppService.instance.openPostForm(category: category);
+              newPostId = await AppService.instance.openPostForm(category: category);
               if (mounted) setState(() {});
             },
             icon: Icon(
@@ -109,33 +111,28 @@ class _PostListScreenState extends State<PostListScreen>
                           post: post,
                           onReply: (post) => onReply(context, post),
                           onReport: onReport,
-                          onImageTap: (i, files) =>
-                              onImageTapped(context, i, files),
-                          onEdit: (post) =>
-                              AppService.instance.openPostForm(post: post),
+                          onImageTap: (i, files) => onImageTapped(context, i, files),
+                          onEdit: (post) => AppService.instance.openPostForm(post: post),
                           onDelete: onDelete,
                           onLike: onLike,
                           onDislike: onDislike,
                           onHide: () {},
-                          onChat: (post) =>
-                              AppService.instance.openChatRoom(post.uid),
-                          onSendPushNotification: (post) => AppService.instance
-                              .open(PushNotificationScreen.routeName,
-                                  arguments: {'postId': post.id}),
+                          onChat: (post) => AppService.instance.openChatRoom(post.uid),
+                          onSendPushNotification: (post) => AppService.instance.open(
+                              PushNotificationScreen.routeName,
+                              arguments: {'postId': post.id}),
                         ),
                         Divider(color: Colors.red),
                         Comment(
                           post: post,
                           parentId: post.id,
-                          onReply: (post, comment) =>
-                              onReply(context, post, comment),
+                          onReply: (post, comment) => onReply(context, post, comment),
                           onReport: onReport,
                           onEdit: (comment) => onEdit(context, comment),
                           onDelete: onDelete,
                           onLike: onLike,
                           onDislike: onDislike,
-                          onImageTap: (i, files) =>
-                              onImageTapped(context, i, files),
+                          onImageTap: (i, files) => onImageTapped(context, i, files),
                         ),
                       ],
                     ),
