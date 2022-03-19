@@ -52,7 +52,7 @@ class UserSettingService with DatabaseMixin {
             sub = userSettingsDoc.onValue.listen((event) {
               // if settings doc does not exists, just use default empty setting.
               if (event.snapshot.exists) {
-                print('UserSettingService; Got new data');
+                // print('UserSettingService; Got new data');
                 _settings = UserSettingsModel.fromJson(event.snapshot.value);
               } else {
                 // create the document /user-settings/uid with timestamp to avoid error when saving data with doc/data

@@ -125,7 +125,7 @@ class MessagingService with FirestoreMixin, DatabaseMixin {
     this.token = token;
     if (this.token == '') return;
 
-    print('token; $token');
+    // print('token; $token');
 
     messageTokensRef.child(token).set({
       'uid': UserService.instance.uid,

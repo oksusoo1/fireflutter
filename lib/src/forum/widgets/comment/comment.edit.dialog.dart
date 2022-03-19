@@ -38,7 +38,14 @@ class _CommentEditDialogState extends State<CommentEditDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('Comment Edit'),
+      title: Text(
+        'Comment ' + (widget.comment == null ? 'Create' : 'Update'),
+        style: TextStyle(
+          fontSize: 13,
+          fontStyle: FontStyle.italic,
+          color: Colors.grey,
+        ),
+      ),
       content: Container(
         width: double.maxFinite,
         child: Column(
@@ -47,10 +54,15 @@ class _CommentEditDialogState extends State<CommentEditDialog> {
             TextField(
               controller: content,
               minLines: 1,
-              maxLines: 5,
+              maxLines: 10,
             ),
+            SizedBox(height: 8),
             Row(children: [
               FileUploadButton(
+                child: Icon(
+                  Icons.camera_alt,
+                  size: 28,
+                ),
                 type: 'comment',
                 onUploaded: (url) {
                   files = [...files, url];
@@ -74,8 +86,7 @@ class _CommentEditDialogState extends State<CommentEditDialog> {
                 },
               ),
             ]),
-            if (uploadProgress > 0)
-              LinearProgressIndicator(value: uploadProgress),
+            if (uploadProgress > 0) LinearProgressIndicator(value: uploadProgress),
             ImageListEdit(files: files, onError: widget.onError),
           ],
         ),
