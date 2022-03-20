@@ -15,20 +15,23 @@ class TranslationService with DatabaseMixin {
 
   Map<String, Map<String, String>> texts = {};
   // ignore: close_sinks
-  BehaviorSubject<Map<String, Map<String, String>>> changes =
-      BehaviorSubject.seeded({});
+  BehaviorSubject<Map<String, Map<String, String>>> changes = BehaviorSubject.seeded({});
 
+  /// Load translation texts from Realtime database.
   TranslationService() {
-    // debugPrint('===> TranslationService::constructor;');
     translationDoc.onValue.listen((event) {
       if (event.snapshot.exists) {
         convertData(event.snapshot.value);
-        // print('onValue; exists; $texts');
         changes.add(texts);
       }
     });
   }
 
+  /// Return translated text if exists. Or just return the original text.
+  ///
+  /// ```dart
+  /// TranslationService.instance.tr('code');
+  /// ```
   String tr(String code) {
     final ln = ui.window.locale.languageCode;
     return texts[code]?[ln] ?? code;

@@ -554,11 +554,20 @@ PhoneService.instance.verifyPhoneNumber(
 - Translation texts are saved in `/settings/translations` on realtime database.
   - The format of text field is like below. 
     - `{ name: { en: 'Name', ko: '이름' }, ... }`
-  - The app can provide translation updating form using `TranslationService.instance.showForm`
 
-- The translation texts are loaded on translation service init.
-  - And translataion texts are updated immedialy when the `/settings/translations` is changed. And this leads `Tr` widget to re-render.
-    - So, when `/settings/translation` changes, it will instantly update the text of `Tr` widget.
+
+- There is a sample code for updating translation texts. App can use `TranslationService.instance.showForm` to show the form.
+
+- The translation texts are loaded on the constructor of `TranslationService` and the constructor will be run on first use of `TranslationService.instnace`.
+
+
+- Common fitfall,
+  - When the app use `tr` method for the first time on home screen, the translation text would probably not loaded yet.
+  So, it will simply return the input text instread of translated text.
+    - To solove this problem, it is one way to re-render home screen on `TranslationService.instance.changes` event happens.
+    - Other subsequently loaded pages, (if `tr` method was used on home screen or translated texts are already loaded), `tr` would return translated texts.
+    - Or for home screen, it would be better to use `Tr` widget instead of using `tr()` method.
+
 
 ## Get translated text
 
@@ -568,10 +577,14 @@ PhoneService.instance.verifyPhoneNumber(
 TranslationService.instance.tr('ERROR')
 ```
 
+
 ## Tr
 
 - You can use `Tr` widget to display the translated text.
   - `Tr` widget support all the text properties.
+
+- Since `Tr` widget is a stream builder listenning changes of the text in realtime database, when translataion texts are updated, `Tr` would re-render immedialy.
+    - Meaning, when `/settings/translation` changes, it will instantly update the text of `Tr` widget.
 
 ```dart
 Tr('name', style: ...);
