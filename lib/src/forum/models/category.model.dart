@@ -48,6 +48,12 @@ class CategoryModel with FirestoreMixin {
     return categoryCol.doc(category).set(data);
   }
 
+  /// Update category
+  ///
+  /// ```dart
+  /// final cat = CategoryModel.fromJson({}, 'job');
+  /// cat.update('foregroundColor', 'color').catchError(service.error);
+  /// ```
   Future<void> update(String field, dynamic value) {
     return categoryDoc(id).update({field: value});
   }
