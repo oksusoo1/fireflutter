@@ -429,7 +429,7 @@ function preMessagePayload(query) {
   };
 
   if (query.badge != null) {
-    res.data.apns.payload.aps["badge"] = parseInt(query.badge);
+    res.apns.payload.aps["badge"] = parseInt(query.badge);
   }
 
   return res;
