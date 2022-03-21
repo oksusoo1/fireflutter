@@ -410,7 +410,7 @@ function preMessagePayload(query) {
     },
     notification: {
       title: query.title ? query.title : "",
-      body: query.body ? query.body : "",
+      body: query.body ? query.body : query.content ? query.content : "",
     },
     android: {
       notification: {
