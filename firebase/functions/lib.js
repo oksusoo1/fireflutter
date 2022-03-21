@@ -405,7 +405,7 @@ function preMessagePayload(query) {
     data: {
       id: query.postId ? query.postId : query.id ? query.id : "",
       type: query.type ? query.type : "",
-      sender_uid: query.uid ? query.uid : "",
+      sender_uid: query.sender_uid ? query.sender_uid : query.uid ? query.uid :  "",
       badge: query.badge ? query.badge : "",
     },
     notification: {
