@@ -4,6 +4,7 @@ import '../../../fireflutter.dart';
 class ButtonBase extends StatelessWidget {
   const ButtonBase({
     required this.uid,
+    this.noOfComments = 0,
     required this.isPost,
     required this.onReply,
     required this.onReport,
@@ -24,6 +25,7 @@ class ButtonBase extends StatelessWidget {
 
   final String uid;
   final bool isPost;
+  final int noOfComments;
   final Function() onReply;
   final Function() onReport;
   final Function() onEdit;
@@ -53,7 +55,7 @@ class ButtonBase extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        _button(isPost ? 'Reply' : 'Reply', onReply),
+        _button(isPost ? 'Reply${noOfComments > 0 ? '($noOfComments)' : ''}' : 'Reply', onReply),
         // _button('Report', onReport),
         _button('Like ${likeCount > 0 ? likeCount : ""}', onLike),
         if (onDislike != null)

@@ -60,7 +60,6 @@ class PostContent extends StatelessWidget {
               );
           }(),
         ),
-        Divider(color: Colors.grey),
       ],
     );
   }
