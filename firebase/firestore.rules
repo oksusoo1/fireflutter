@@ -63,7 +63,7 @@ service cloud.firestore {
         onlyUpdating(['viewCounter', 'like', 'dislike', 'noOfComments'])
       ;
       // Post deletion is not allowed.
-      allow delete: if isMyPost() && resource.data.noOfComments == 0;
+      allow delete: if if (isAdmin() || isMyPost()) && resource.data.noOfComments == 0;
     }
 
 

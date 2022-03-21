@@ -2,20 +2,21 @@ import '../../../../fireflutter.dart';
 
 import './forum.list.push_notification.popup_button.dart';
 import 'package:flutter/material.dart';
+import 'dart:math' as math; // import this
 
 class ForumListPushNotificationIcon extends StatefulWidget {
   ForumListPushNotificationIcon(
     this.categoryId, {
     required this.onError,
     required this.onSigninRequired,
+    required this.onChanged,
     this.size,
-    this.color,
   });
   final String categoryId;
   final double? size;
   final Function onError;
   final Function onSigninRequired;
-  final Color? color;
+  final Function(String, bool) onChanged;
   @override
   _ForumListPushNotificationIconState createState() => _ForumListPushNotificationIconState();
 }
@@ -50,47 +51,80 @@ class _ForumListPushNotificationIconState extends State<ForumListPushNotificatio
             ForumListPushNotificationPopUpButton(
               items: [
                 PopupMenuItem(
-                  child: Row(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Icon(
-                        hasPostSubscription ? Icons.notifications_on : Icons.notifications_off,
-                        color: Colors.blue,
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          '${widget.categoryId} Subscriptions',
+                          style: TextStyle(
+                            fontSize: 13,
+                          ),
+                        ),
                       ),
-                      Text('post' + " " + widget.categoryId),
+                      Divider(),
+                      Row(
+                        children: [
+                          Icon(
+                            hasPostSubscription ? Icons.notifications_on : Icons.notifications_off,
+                            color: hasPostSubscription ? Colors.blue : Colors.grey,
+                          ),
+                          Text(
+                            ' Post' + " " + widget.categoryId,
+                            style: TextStyle(
+                              color: hasPostSubscription ? Colors.blue : Colors.grey,
+                            ),
+                          ),
+                        ],
+                      ),
                     ],
                   ),
                   value: 'post',
                 ),
                 PopupMenuItem(
-                    child: Row(
-                      children: [
-                        Icon(
-                          hasCommentSubscription ? Icons.notifications_on : Icons.notifications_off,
-                          color: Colors.blue,
+                  child: Row(
+                    children: [
+                      Icon(
+                        hasCommentSubscription ? Icons.notifications_on : Icons.notifications_off,
+                        color: hasCommentSubscription ? Colors.blue : Colors.grey,
+                      ),
+                      Text(
+                        ' Comment' + " " + widget.categoryId,
+                        style: TextStyle(
+                          color: hasCommentSubscription ? Colors.blue : Colors.grey,
                         ),
-                        Text('comment' + " " + widget.categoryId),
-                      ],
-                    ),
-                    value: 'comment'),
+                      ),
+                    ],
+                  ),
+                  value: 'comment',
+                ),
               ],
               icon: Icon(
                 hasSubscription ? Icons.notifications : Icons.notifications_off,
-                color: widget.color,
+                color: hasSubscription
+                    ? Color.fromARGB(255, 74, 74, 74)
+                    : Color.fromARGB(255, 177, 177, 177),
                 size: widget.size,
               ),
               onSelected: onNotificationSelected,
             ),
             if (hasPostSubscription)
               Positioned(
-                top: 15,
-                left: 5,
-                child: Icon(Icons.comment, size: 12, color: Colors.greenAccent),
+                top: 16,
+                left: 4,
+                child: Transform(
+                  transform: Matrix4.rotationY(math.pi),
+                  alignment: Alignment.center,
+                  child: Icon(Icons.mark_chat_unread,
+                      size: 12, color: Color.fromARGB(255, 255, 132, 0)),
+                ),
               ),
             if (hasCommentSubscription)
               Positioned(
                 top: 15,
-                right: -2,
-                child: Icon(Icons.comment, size: 12, color: Colors.greenAccent),
+                right: 0,
+                child: Icon(Icons.maps_ugc, size: 12, color: Color.fromARGB(255, 225, 0, 4)),
               ),
           ],
         );
@@ -102,13 +136,6 @@ class _ForumListPushNotificationIconState extends State<ForumListPushNotificatio
     if (UserService.instance.user.signedOut) {
       widget.onSigninRequired();
       return;
-      // return showDialog(
-      //   context: context,
-      //   builder: (c) => AlertDialog(
-      //     title: Text('Notifications'),
-      //     content: Text('Please, sign in first...'),
-      //   ),
-      // );
     }
 
     String topic = '';
@@ -126,16 +153,21 @@ class _ForumListPushNotificationIconState extends State<ForumListPushNotificatio
       widget.onError(e);
     }
 
-    String msg =
-        UserService.instance.user.settings.hasSubscription(topic) ? 'subscribed' : 'unsubscribed';
-
-    showDialog(
-      context: context,
-      builder: (c) => AlertDialog(
-        title: Text(title),
-        content: Text(widget.categoryId + " " + msg),
-      ),
+    return widget.onChanged(
+      selection,
+      UserService.instance.user.settings.hasSubscription(topic),
     );
+
+    // String msg =
+    //     UserService.instance.user.settings.hasSubscription(topic) ? 'subscribed' : 'unsubscribed';
+
+    // showDialog(
+    //   context: context,
+    //   builder: (c) => AlertDialog(
+    //     title: Text(title),
+    //     content: Text(widget.categoryId + " " + msg),
+    //   ),
+    // );
   }
 }
 

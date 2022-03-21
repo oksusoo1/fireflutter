@@ -286,7 +286,9 @@ class PostModel with FirestoreMixin, ForumBase {
     }
 
     /// Delete the post if noOfComments is 0 even if the post is marked as deleted.
-    if (noOfComments == 0) return postDoc(id).delete();
+    if (noOfComments == 0) {
+      return postDoc(id).delete();
+    }
 
     if (deleted) throw ERROR_ALREADY_DELETED;
 

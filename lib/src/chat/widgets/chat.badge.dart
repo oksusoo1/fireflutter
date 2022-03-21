@@ -30,7 +30,7 @@ class _ChatBadgeState extends State<ChatBadge> {
       shape: BadgeShape.circle,
       badgeColor: Colors.red,
       elevation: 0,
-      padding: EdgeInsets.all(5.0),
+      padding: EdgeInsets.all(3.0),
       badgeContent: Text(
         no.toString(),
         style: TextStyle(color: Colors.white, fontSize: 11),

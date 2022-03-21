@@ -24,7 +24,7 @@ mixin ForumMixin {
               );
               // form.create(postId: post.id, parentId: comment?.id ?? post.id);
               AppService.instance.back();
-              alert('Comment created', 'Your comment has created successfully');
+              // alert('Comment created', 'Your comment has created successfully');
             } catch (e) {
               error(e);
             }
@@ -50,7 +50,7 @@ mixin ForumMixin {
               );
               // form.create(postId: post.id, parentId: comment?.id ?? post.id);
               AppService.instance.back();
-              alert('Comment updated', 'You have updated the comment successfully');
+              // alert('Comment updated', 'You have updated the comment successfully');
             } catch (e) {
               error(e);
             }

@@ -39,6 +39,9 @@ class _PostListScreenState extends State<PostListScreen> with FirestoreMixin, Fo
               'Please, sign in to subscribe this forum.',
             ),
             size: 28,
+            onChanged: (String selection, bool subscribed) {
+              alert(selection, subscribed ? 'subscribed' : 'unsubscribed');
+            },
           ),
           IconButton(
             onPressed: () async {

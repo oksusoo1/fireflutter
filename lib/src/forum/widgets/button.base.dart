@@ -54,11 +54,10 @@ class ButtonBase extends StatelessWidget {
     return Row(
       children: [
         _button(isPost ? 'Reply' : 'Reply', onReply),
-        _button('Report', onReport),
+        // _button('Report', onReport),
         _button('Like ${likeCount > 0 ? likeCount : ""}', onLike),
         if (onDislike != null)
-          _button(
-              'Dislike ${dislikeCount > 0 ? dislikeCount : ""}', onDislike!),
+          _button('Dislike ${dislikeCount > 0 ? dislikeCount : ""}', onDislike!),
         if (!isMine && onChat != null) _button('Chat', onChat!),
         if (shareButton != null) shareButton!,
         Spacer(),
@@ -69,8 +68,7 @@ class ButtonBase extends StatelessWidget {
           ),
           initialValue: '',
           itemBuilder: (BuildContext context) => [
-            if (isMine)
-              PopupMenuItem<String>(value: 'edit', child: Text('Edit')),
+            if (isMine) PopupMenuItem<String>(value: 'edit', child: Text('Edit')),
             if (isMine || isAdmin)
               PopupMenuItem<String>(
                 value: 'delete',
@@ -81,7 +79,7 @@ class ButtonBase extends StatelessWidget {
                 value: 'block',
                 child: Text('Block User', style: TextStyle(color: Colors.red)),
               ),
-            PopupMenuDivider(),
+            // PopupMenuDivider(),
             PopupMenuItem<String>(
               value: 'report',
               child: Text('Report', style: TextStyle(color: Colors.red)),
@@ -94,8 +92,7 @@ class ButtonBase extends StatelessWidget {
                 ),
               ),
             if (isPost && onHide != null)
-              PopupMenuItem<String>(
-                  value: 'hide_post', child: Text('Hide Post')),
+              PopupMenuItem<String>(value: 'hide_post', child: Text('Hide Post')),
             PopupMenuItem<String>(value: 'close_menu', child: Text('Close')),
           ],
           onSelected: (String value) async {

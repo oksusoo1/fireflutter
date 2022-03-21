@@ -22,22 +22,37 @@ class _ImageListEditState extends State<ImageListEdit> {
 
     return GridView.count(
       shrinkWrap: true,
-      crossAxisCount: 4,
+      crossAxisCount: 3,
       crossAxisSpacing: 4,
       mainAxisSpacing: 4,
       children: [
         for (String fileUrl in widget.files)
           Stack(
             children: [
-              Container(
-                  width: double.infinity, child: UploadedImage(url: fileUrl)),
+              Container(width: double.infinity, child: UploadedImage(url: fileUrl)),
               Positioned(
                 top: 8,
                 left: 8,
                 child: GestureDetector(
                   behavior: HitTestBehavior.opaque,
-                  child: Icon(Icons.delete_forever_rounded,
-                      color: Colors.redAccent),
+                  child: Container(
+                    padding: EdgeInsets.all(1),
+                    child: Icon(
+                      Icons.delete_forever_rounded,
+                      color: Colors.red.shade800,
+                      size: 20,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(25),
+                      boxShadow: [
+                        BoxShadow(
+                          blurRadius: 2.5,
+                          color: Colors.grey,
+                        ),
+                      ],
+                    ),
+                  ),
                   onTap: () async {
                     bool? re = await showDialog<bool?>(
                       context: context,
@@ -45,8 +60,7 @@ class _ImageListEditState extends State<ImageListEdit> {
                         title: Text('Delete file?'),
                         actions: [
                           TextButton(
-                              onPressed: () => Navigator.pop(context),
-                              child: Text('Cancel')),
+                              onPressed: () => Navigator.pop(context), child: Text('Cancel')),
                           TextButton(
                             onPressed: () => Navigator.pop(context, true),
                             child: Text('Yes'),
@@ -58,7 +72,7 @@ class _ImageListEditState extends State<ImageListEdit> {
                     try {
                       await StorageService.instance.delete(fileUrl);
                       widget.files.remove(fileUrl);
-                      print('file deleted $fileUrl');
+                      // print('file deleted $fileUrl');
                       if (mounted) setState(() {});
                     } catch (e) {
                       widget.onError(e);
