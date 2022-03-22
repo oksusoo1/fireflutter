@@ -52,6 +52,7 @@ class UploadedImage extends StatelessWidget {
         height: height,
         width: width,
         imageUrl: _finalUrl,
+        // progressIndicatorBuilder: (c, s, p) => SizedBox.shrink(),
         placeholder: (context, _recursiveUrl) => Center(
           child: Container(
             width: 10,
