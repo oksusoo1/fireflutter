@@ -1,5 +1,10 @@
 # Change Log
 
+## [0.2.18]
+
+- Add `LocationService`.
+
+
 ## [0.2.17]
 
 - Add `UserSettingsDoc`.
