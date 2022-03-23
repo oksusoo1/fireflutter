@@ -428,10 +428,10 @@ function preMessagePayload(query) {
     },
   };
 
-  if( res.notification.body != '' ) utils.removeHtmlTags(res.notification.body);
+  if ( res.notification.body != "" ) res.notification.body = utils.removeHtmlTags(res.notification.body);
 
   if (query.badge != null) res.apns.payload.aps["badge"] = parseInt(query.badge);
-  
+
 
   return res;
 }
