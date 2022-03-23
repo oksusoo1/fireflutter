@@ -284,6 +284,14 @@ async function getTokensFromUids(uids) {
   return _tokens;
 }
 
+/**
+ * Divide an array into many
+ *
+ * @todo move this to utils.js
+ *
+ * @param {*} arr array
+ * @param {*} chunkSize chunk size
+ */
 function chunk(arr, chunkSize) {
   if (chunkSize <= 0) return []; // don't throw here since it will not be catched.
   const R = [];
@@ -428,10 +436,13 @@ function preMessagePayload(query) {
     },
   };
 
-  if ( res.notification.body != "" ) res.notification.body = utils.removeHtmlTags(res.notification.body);
+  if (res.notification.body != "") {
+    res.notification.body = utils.removeHtmlTags(res.notification.body);
+    res.notification.body = utils.decodeHTMLEntities(res.notification.body);
+    res.notification.body = res.notification.body.substring(0, 255);
+  }
 
   if (query.badge != null) res.apns.payload.aps["badge"] = parseInt(query.badge);
-
 
   return res;
 }
@@ -582,10 +593,12 @@ async function testAnswer(data, context) {
   };
 }
 
-
 async function sendMessageOnCommentCreate(commentId, data) {
   console.log(commentId, data);
-  await rdb.ref("log").child("sendMessageOnCommentCreate" + commentId).set({"commentId": commentId, "data": data});
+  await rdb
+      .ref("log")
+      .child("sendMessageOnCommentCreate" + commentId)
+      .set({commentId: commentId, data: data});
 
   // get root post
   const post = await getPost(data.postId);
@@ -603,10 +616,7 @@ async function sendMessageOnCommentCreate(commentId, data) {
   const sendToTopicRes = await admin.messaging().send(topicPayload(topic, messageData));
 
   // get comment ancestors
-  const ancestorsUid = await getCommentAncestors(
-      commentId,
-      data.uid,
-  );
+  const ancestorsUid = await getCommentAncestors(commentId, data.uid);
   console.log("ancestorsUid");
   console.log(ancestorsUid);
   // add the post uid if the comment author is not the post author

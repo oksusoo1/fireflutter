@@ -1,5 +1,34 @@
+/**
+ * It returns string after removing html tags.
+ *
+ * @param {*} content string
+ */
 function removeHtmlTags(content) {
   return content.replace(/<[^>]+>/g, "");
+}
+
+/**
+ * Convert html entities into code.
+ *
+ * @param {*} text HTML string
+ */
+function decodeHTMLEntities(text) {
+  const entities = {
+    "amp": "&",
+    "apos": "'",
+    "#x27": "'",
+    "#x2F": "/",
+    "#39": "'",
+    "#47": "/",
+    "lt": "<",
+    "gt": ">",
+    "nbsp": " ",
+    "quot": "\"",
+    "bull": "•",
+  };
+  return text.replace(/&([^;]+);/gm, function(match, entity) {
+    return entities[entity] || match;
+  });
 }
 
 /**
@@ -18,3 +47,4 @@ function getTimestamp(servertime) {
 
 exports.removeHtmlTags = removeHtmlTags;
 exports.getTimestamp = getTimestamp;
+exports.decodeHTMLEntities = decodeHTMLEntities;
