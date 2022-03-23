@@ -229,18 +229,17 @@ exports.testAnswer = functions.region("asia-northeast3").https.onCall(async (dat
   return await lib.testAnswer(data, context);
 });
 
-// context.app will be undefined 
+// context.app will be undefined
 // if the request doesn't include a valid App Check token.
 exports.testAppCheck = functions.region("asia-northeast3").https.onCall((data, context) => {
-
   if (context.app == undefined) {
     throw new functions.https.HttpsError(
-        'failed-precondition',
-        'The function must be called from an App Check verified app.')
+        "failed-precondition",
+        "The function must be called from an App Check verified app.");
   }
 
   return {
     "data": data,
-    "context": context
-  }
+    "context": context,
+  };
 });
