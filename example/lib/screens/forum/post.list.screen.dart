@@ -112,6 +112,7 @@ class _PostListScreenState extends State<PostListScreen> with FirestoreMixin, Fo
                         Post(
                           key: ValueKey(post.id),
                           post: post,
+                          onProfile: (uid) => alert('Open other user profile', 'uid: $uid'),
                           onReply: (post) => onReply(context, post),
                           onReport: onReport,
                           onImageTap: (i, files) => onImageTapped(context, i, files),
@@ -129,6 +130,7 @@ class _PostListScreenState extends State<PostListScreen> with FirestoreMixin, Fo
                         Comment(
                           post: post,
                           parentId: post.id,
+                          onProfile: (uid) => alert('Open other user profile', 'uid: $uid'),
                           onReply: (post, comment) => onReply(context, post, comment),
                           onReport: onReport,
                           onEdit: (comment) => onEdit(context, comment),

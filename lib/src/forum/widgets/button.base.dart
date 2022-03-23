@@ -6,6 +6,7 @@ class ButtonBase extends StatelessWidget {
     required this.uid,
     this.noOfComments = 0,
     required this.isPost,
+    required this.onProfile,
     required this.onReply,
     required this.onReport,
     required this.onEdit,
@@ -26,6 +27,7 @@ class ButtonBase extends StatelessWidget {
   final String uid;
   final bool isPost;
   final int noOfComments;
+  final Function(String uid) onProfile;
   final Function() onReply;
   final Function() onReport;
   final Function() onEdit;
@@ -70,6 +72,7 @@ class ButtonBase extends StatelessWidget {
           ),
           initialValue: '',
           itemBuilder: (BuildContext context) => [
+            if (!isMine) PopupMenuItem<String>(value: 'profile', child: Text('Profile')),
             if (isMine) PopupMenuItem<String>(value: 'edit', child: Text('Edit')),
             if (isMine || isAdmin)
               PopupMenuItem<String>(
@@ -98,6 +101,10 @@ class ButtonBase extends StatelessWidget {
             PopupMenuItem<String>(value: 'close_menu', child: Text('Close')),
           ],
           onSelected: (String value) async {
+            if (value == 'profile') {
+              return onProfile(uid);
+            }
+
             if (value == 'hide_post') {
               onHide!();
               return;

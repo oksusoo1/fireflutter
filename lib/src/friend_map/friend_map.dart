@@ -8,6 +8,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 class FriendMap extends StatefulWidget {
   const FriendMap({
     required this.googleApiKey,
+    required this.otherUserUid,
     required this.latitude,
     required this.longitude,
     required this.error,
@@ -15,6 +16,7 @@ class FriendMap extends StatefulWidget {
   }) : super(key: key);
 
   final String googleApiKey;
+  final String otherUserUid;
   final double latitude;
   final double longitude;
   final ErrorCallback error;

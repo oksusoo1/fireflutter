@@ -198,4 +198,23 @@ class ChatService with ChatMixins {
     ];
     return Future.wait(futures);
   }
+
+  /// Get number of new messages for a user
+  ///
+  /// ! Warning - This will read many documents. Chat feature is based on firestore at this time and it's expensive.
+  /// ! Warning - Change it to realtime database when time comes.
+  Future<int> getNoOfNewMessages(String otherUid) async {
+    /// Send push notification to the other user.
+    QuerySnapshot querySnapshot = await ChatService.instance
+        .otherRoomsCol(otherUid)
+        .where('newMessages', isGreaterThan: 0)
+        .get();
+
+    int newMessages = 0;
+    querySnapshot.docs.forEach((doc) {
+      ChatMessageModel room = ChatMessageModel.fromJson(doc.data() as Map);
+      newMessages += room.newMessages;
+    });
+    return newMessages;
+  }
 }

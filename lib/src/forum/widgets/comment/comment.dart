@@ -9,6 +9,7 @@ class Comment extends StatefulWidget {
     Key? key,
     required this.post,
     required this.parentId,
+    required this.onProfile,
     required this.onReply,
     required this.onReport,
     required this.onEdit,
@@ -25,8 +26,11 @@ class Comment extends StatefulWidget {
   final PostModel post;
   final String parentId;
 
+  final Function(String uid) onProfile;
+
   /// Callback on reply button pressed. The parameter is the parent comment of
   /// the new comment to be created.
+  ///
   final Function(PostModel post, CommentModel comment) onReply;
   final Function(CommentModel comment) onEdit;
   final Function(CommentModel comment) onReport;
@@ -144,6 +148,7 @@ class _CommentState extends State<Comment> with FirestoreMixin {
                 ButtonBase(
                   uid: comment.uid,
                   isPost: false,
+                  onProfile: widget.onProfile,
                   onReply: () => widget.onReply(widget.post, comment),
                   onReport: () => widget.onReport(comment),
                   onEdit: () => widget.onEdit(comment),
