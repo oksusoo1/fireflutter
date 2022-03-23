@@ -15,19 +15,22 @@ class PostViewScreen extends StatefulWidget {
   State<PostViewScreen> createState() => _PostViewScreenState();
 }
 
-class _PostViewScreenState extends State<PostViewScreen> with FirestoreMixin, ForumMixin {
+class _PostViewScreenState extends State<PostViewScreen>
+    with FirestoreMixin, ForumMixin {
   PostModel post = PostModel();
   @override
   void initState() {
     super.initState();
 
-    final id =
-        widget.arguments['post'] != null ? widget.arguments['post']!.id : widget.arguments['id'];
+    final id = widget.arguments['post'] != null
+        ? widget.arguments['post']!.id
+        : widget.arguments['id'];
 
     postDoc(id).snapshots().listen((event) {
       if (event.exists) {
         setState(() {
-          post = PostModel.fromJson(event.data() as Map<String, dynamic>, event.id);
+          post = PostModel.fromJson(
+              event.data() as Map<String, dynamic>, event.id);
         });
       }
     });
@@ -47,8 +50,9 @@ class _PostViewScreenState extends State<PostViewScreen> with FirestoreMixin, Fo
             children: [
               UserDoc(
                 uid: post.uid,
-                builder: (user) =>
-                    user.exists ? Text('By: ${user.displayName} ') : Text('NO-USER '),
+                builder: (user) => user.exists
+                    ? Text('By: ${user.displayName} ')
+                    : Text('NO-USER '),
               ),
               ShortDate(post.createdAt.millisecondsSinceEpoch),
             ],
@@ -67,8 +71,9 @@ class _PostViewScreenState extends State<PostViewScreen> with FirestoreMixin, Fo
               onDislike: onDislike,
               onHide: () {},
               onChat: (post) => AppService.instance.openChatRoom(post.uid),
-              onSendPushNotification: (post) => AppService.instance
-                  .open(PushNotificationScreen.routeName, arguments: {'postId': post.id}),
+              onSendPushNotification: (post) => AppService.instance.open(
+                  PushNotificationScreen.routeName,
+                  arguments: {'postId': post.id}),
             ),
             Divider(color: Colors.red),
             Comment(

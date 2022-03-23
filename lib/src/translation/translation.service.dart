@@ -15,7 +15,8 @@ class TranslationService with DatabaseMixin {
 
   Map<String, Map<String, String>> texts = {};
   // ignore: close_sinks
-  BehaviorSubject<Map<String, Map<String, String>>> changes = BehaviorSubject.seeded({});
+  BehaviorSubject<Map<String, Map<String, String>>> changes =
+      BehaviorSubject.seeded({});
 
   /// Load translation texts from Realtime database.
   TranslationService() {

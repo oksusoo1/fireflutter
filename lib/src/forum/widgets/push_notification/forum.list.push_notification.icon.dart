@@ -18,10 +18,12 @@ class ForumListPushNotificationIcon extends StatefulWidget {
   final Function onSigninRequired;
   final Function(String, bool) onChanged;
   @override
-  _ForumListPushNotificationIconState createState() => _ForumListPushNotificationIconState();
+  _ForumListPushNotificationIconState createState() =>
+      _ForumListPushNotificationIconState();
 }
 
-class _ForumListPushNotificationIconState extends State<ForumListPushNotificationIcon> {
+class _ForumListPushNotificationIconState
+    extends State<ForumListPushNotificationIcon> {
   bool get hasSubscription {
     return UserService.instance.user.settings
             .hasSubscription(NotificationOptions.post(widget.categoryId)) ||
@@ -67,13 +69,18 @@ class _ForumListPushNotificationIconState extends State<ForumListPushNotificatio
                       Row(
                         children: [
                           Icon(
-                            hasPostSubscription ? Icons.notifications_on : Icons.notifications_off,
-                            color: hasPostSubscription ? Colors.blue : Colors.grey,
+                            hasPostSubscription
+                                ? Icons.notifications_on
+                                : Icons.notifications_off,
+                            color:
+                                hasPostSubscription ? Colors.blue : Colors.grey,
                           ),
                           Text(
                             ' Post' + " " + widget.categoryId,
                             style: TextStyle(
-                              color: hasPostSubscription ? Colors.blue : Colors.grey,
+                              color: hasPostSubscription
+                                  ? Colors.blue
+                                  : Colors.grey,
                             ),
                           ),
                         ],
@@ -86,13 +93,18 @@ class _ForumListPushNotificationIconState extends State<ForumListPushNotificatio
                   child: Row(
                     children: [
                       Icon(
-                        hasCommentSubscription ? Icons.notifications_on : Icons.notifications_off,
-                        color: hasCommentSubscription ? Colors.blue : Colors.grey,
+                        hasCommentSubscription
+                            ? Icons.notifications_on
+                            : Icons.notifications_off,
+                        color:
+                            hasCommentSubscription ? Colors.blue : Colors.grey,
                       ),
                       Text(
                         ' Comment' + " " + widget.categoryId,
                         style: TextStyle(
-                          color: hasCommentSubscription ? Colors.blue : Colors.grey,
+                          color: hasCommentSubscription
+                              ? Colors.blue
+                              : Colors.grey,
                         ),
                       ),
                     ],
@@ -124,7 +136,8 @@ class _ForumListPushNotificationIconState extends State<ForumListPushNotificatio
               Positioned(
                 top: 15,
                 right: 0,
-                child: Icon(Icons.maps_ugc, size: 12, color: Color.fromARGB(255, 225, 0, 4)),
+                child: Icon(Icons.maps_ugc,
+                    size: 12, color: Color.fromARGB(255, 225, 0, 4)),
               ),
           ],
         );

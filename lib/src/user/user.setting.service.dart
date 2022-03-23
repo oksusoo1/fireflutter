@@ -113,7 +113,8 @@ class UserSettingService with DatabaseMixin {
   Future<void> unsubscribeAllTopic() async {
     for (CategoryModel cat in CategoryService.instance.categories) {
       await FirebaseMessaging.instance.unsubscribeFromTopic('posts_${cat.id}');
-      await FirebaseMessaging.instance.unsubscribeFromTopic('comments_${cat.id}');
+      await FirebaseMessaging.instance
+          .unsubscribeFromTopic('comments_${cat.id}');
     }
   }
 

@@ -62,7 +62,8 @@ class Post extends StatelessWidget {
               children: [
                 Text(
                   'Summary',
-                  style: TextStyle(fontWeight: FontWeight.bold, color: Colors.grey),
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold, color: Colors.grey),
                 ),
                 Text(
                   post.summary,

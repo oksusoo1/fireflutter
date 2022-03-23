@@ -102,7 +102,8 @@ class _FriendMapState extends State<FriendMap> with WidgetsBindingObserver {
           zoomControlsEnabled: false,
           myLocationButtonEnabled: false,
           initialCameraPosition: currentLocation,
-          onMapCreated: (GoogleMapController controller) => service.mapController = controller,
+          onMapCreated: (GoogleMapController controller) =>
+              service.mapController = controller,
           markers: Set<Marker>.from(service.markers),
           polylines: Set<Polyline>.of(service.polylines.values),
         ),

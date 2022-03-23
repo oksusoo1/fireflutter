@@ -97,7 +97,8 @@ class UserModel with FirestoreMixin, DatabaseMixin {
   bool get signedOut => signedIn == false;
 
   ///
-  DatabaseReference get _userDoc => FirebaseDatabase.instance.ref('users').child(uid);
+  DatabaseReference get _userDoc =>
+      FirebaseDatabase.instance.ref('users').child(uid);
 
   factory UserModel.fromJson(dynamic data, String uid) {
     if (data == null) return UserModel();

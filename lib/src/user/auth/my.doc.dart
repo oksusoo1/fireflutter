@@ -35,7 +35,8 @@ class _MyDocState extends State<MyDoc> {
 
   @override
   Widget build(BuildContext context) {
-    if (user == null) return Center(child: CircularProgressIndicator.adaptive());
+    if (user == null)
+      return Center(child: CircularProgressIndicator.adaptive());
     return widget.builder(user!);
   }
 }

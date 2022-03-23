@@ -3,7 +3,8 @@
 ## [0.2.17]
 
 - Add `UserSettingsDoc`.
-- 
+- Fix. Push notification on cloud function. Removing html tags and cut into 255 letters if body is too long.
+
 
 ## [0.2.16] - Minor updates on forum, chat.
 

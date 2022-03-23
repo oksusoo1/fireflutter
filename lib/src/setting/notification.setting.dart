@@ -28,14 +28,16 @@ class _NotificationSettingState extends State<NotificationSetting> {
       stream: UserSettingService.instance.changes.stream,
       builder: (context, snapshot) {
         if (snapshot.hasError) return Text('Error');
-        if (snapshot.connectionState == ConnectionState.waiting) return SizedBox.shrink();
+        if (snapshot.connectionState == ConnectionState.waiting)
+          return SizedBox.shrink();
         if (snapshot.hasData == false) return SizedBox.shrink();
         // print(UserSettingService.instance.settings.topics);
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             CheckboxListTile(
-              value: UserSettingService.instance.hasSubscription(commentNotification),
+              value: UserSettingService.instance
+                  .hasSubscription(commentNotification),
               onChanged: (b) {
                 if (b == true) {
                   UserSettingService.instance
@@ -48,7 +50,8 @@ class _NotificationSettingState extends State<NotificationSetting> {
                 }
               },
               title: Text('Comment notifications'),
-              subtitle: Text('Receive notifications of new comments under my posts and comments'),
+              subtitle: Text(
+                  'Receive notifications of new comments under my posts and comments'),
               controlAffinity: ListTileControlAffinity.leading,
             ),
             SizedBox(
@@ -94,7 +97,8 @@ class _NotificationSettingState extends State<NotificationSetting> {
             ),
             for (CategoryModel cat in CategoryService.instance.categories)
               CheckboxListTile(
-                value: UserSettingService.instance.hasSubscription('posts_${cat.id}'),
+                value: UserSettingService.instance
+                    .hasSubscription('posts_${cat.id}'),
                 onChanged: (b) => MessagingService.instance
                     .updateSubscription('posts_${cat.id}', b ?? false)
                     .catchError(widget.onError),
@@ -116,7 +120,8 @@ class _NotificationSettingState extends State<NotificationSetting> {
             ),
             for (CategoryModel cat in CategoryService.instance.categories)
               CheckboxListTile(
-                value: UserSettingService.instance.hasSubscription('comments_${cat.id}'),
+                value: UserSettingService.instance
+                    .hasSubscription('comments_${cat.id}'),
                 onChanged: (b) => MessagingService.instance
                     .updateSubscription('comments_${cat.id}', b ?? false)
                     .catchError(widget.onError),

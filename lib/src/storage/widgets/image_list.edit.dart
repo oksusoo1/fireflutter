@@ -29,7 +29,8 @@ class _ImageListEditState extends State<ImageListEdit> {
         for (String fileUrl in widget.files)
           Stack(
             children: [
-              Container(width: double.infinity, child: UploadedImage(url: fileUrl)),
+              Container(
+                  width: double.infinity, child: UploadedImage(url: fileUrl)),
               Positioned(
                 top: 8,
                 left: 8,
@@ -60,7 +61,8 @@ class _ImageListEditState extends State<ImageListEdit> {
                         title: Text('Delete file?'),
                         actions: [
                           TextButton(
-                              onPressed: () => Navigator.pop(context), child: Text('Cancel')),
+                              onPressed: () => Navigator.pop(context),
+                              child: Text('Cancel')),
                           TextButton(
                             onPressed: () => Navigator.pop(context, true),
                             child: Text('Yes'),
