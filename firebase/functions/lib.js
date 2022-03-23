@@ -159,9 +159,9 @@ function indexForumDocument(data) {
 async function deleteIndexedPostDocument(id) {
   const promises = [];
   promises.push(
-    Axios.post("https://wonderfulkorea.kr:4431/index.php?api=post/delete", {
-      id: id,
-    })
+      Axios.post("https://wonderfulkorea.kr:4431/index.php?api=post/delete", {
+        id: id,
+      }),
   );
   promises.push(Axios.delete("http://wonderfulkorea.kr:7700/indexes/posts/documents/" + id));
   promises.push(deleteIndexedForumDocument(id));
@@ -171,9 +171,9 @@ async function deleteIndexedPostDocument(id) {
 async function deleteIndexedCommentDocument(id) {
   const promises = [];
   promises.push(
-    Axios.post("https://wonderfulkorea.kr:4431/index.php?api=post/delete", {
-      id: id,
-    })
+      Axios.post("https://wonderfulkorea.kr:4431/index.php?api=post/delete", {
+        id: id,
+      }),
   );
   promises.push(Axios.delete("http://wonderfulkorea.kr:7700/indexes/comments/documents/" + id));
   promises.push(deleteIndexedForumDocument(id));
@@ -309,9 +309,9 @@ async function sendMessageToTopic(query) {
   const payload = topicPayload(query.topic, query);
   try {
     const res = await admin.messaging().send(payload);
-    return { code: "success", result: res };
+    return {code: "success", result: res};
   } catch (e) {
-    return { code: "error", message: e };
+    return {code: "error", message: e};
   }
 }
 
@@ -327,9 +327,9 @@ async function sendMessageToTokens(query) {
 
   try {
     const res = await sendingMessageToTokens(_tokens, payload);
-    return { code: "success", result: res };
+    return {code: "success", result: res};
   } catch (e) {
-    return { code: "error", message: e };
+    return {code: "error", message: e};
   }
 }
 
@@ -339,9 +339,9 @@ async function sendMessageToUsers(query) {
   const tokens = await getTokensFromUids(uids);
   try {
     const res = await sendingMessageToTokens(tokens, payload);
-    return { code: "success", result: res };
+    return {code: "success", result: res};
   } catch (e) {
-    return { code: "error", message: e };
+    return {code: "error", message: e};
   }
 }
 
@@ -399,7 +399,7 @@ async function sendingMessageToTokens(tokens, payload) {
     });
   });
   await Promise.all(tokensToRemove);
-  return { success: successCount, error: errorCount };
+  return {success: successCount, error: errorCount};
 }
 
 function topicPayload(topic, query) {
@@ -498,11 +498,11 @@ async function enableUser(data, context) {
     };
   }
   try {
-    const user = await auth.updateUser(data.uid, { disabled: false });
-    if (user.disabled == false) await rdb.ref("users").child(data.uid).update({ disabled: false });
-    return { code: "success", result: user };
+    const user = await auth.updateUser(data.uid, {disabled: false});
+    if (user.disabled == false) await rdb.ref("users").child(data.uid).update({disabled: false});
+    return {code: "success", result: user};
   } catch (e) {
-    return { code: "error", message: e };
+    return {code: "error", message: e};
   }
 }
 
@@ -515,11 +515,11 @@ async function disableUser(data, context) {
     };
   }
   try {
-    const user = await auth.updateUser(data.uid, { disabled: true });
-    if (user.disabled == true) await rdb.ref("users").child(data.uid).update({ disabled: true });
-    return { code: "success", result: user };
+    const user = await auth.updateUser(data.uid, {disabled: true});
+    if (user.disabled == true) await rdb.ref("users").child(data.uid).update({disabled: true});
+    return {code: "success", result: user};
   } catch (e) {
-    return { code: "error", message: e };
+    return {code: "error", message: e};
   }
 }
 
@@ -551,9 +551,9 @@ async function testAnswer(data, context) {
   // console.log("quizDoc", quizDoc);
   if (typeof quizDoc === "undefined") {
     throw new functions.https.HttpsError(
-      "failed-precondition",
-      "ERROR_NO_QUIZ_BY_THAT_ID"
-      // "The quiz document id does not exists.",
+        "failed-precondition",
+        "ERROR_NO_QUIZ_BY_THAT_ID",
+        // "The quiz document id does not exists.",
     );
   }
 
@@ -570,21 +570,21 @@ async function testAnswer(data, context) {
 
     if (Object.keys(userQuizDoc).indexOf(quizId) != -1) {
       throw new functions.https.HttpsError(
-        "failed-precondition",
-        "ERROR_CANNOT_ANSWER_SAME_QUESTION_TWICE"
-        // "The quiz document id does not exists.",
+          "failed-precondition",
+          "ERROR_CANNOT_ANSWER_SAME_QUESTION_TWICE",
+          // "The quiz document id does not exists.",
       );
     }
   }
 
   await userQuizRef.set(
-    {
-      [quizId]: {
-        answer: userAnswer,
-        result: re,
+      {
+        [quizId]: {
+          answer: userAnswer,
+          result: re,
+        },
       },
-    },
-    { merge: true }
+      {merge: true},
   );
   return {
     quizId: quizId,
@@ -596,9 +596,9 @@ async function testAnswer(data, context) {
 async function sendMessageOnCommentCreate(commentId, data) {
   console.log(commentId, data);
   await rdb
-    .ref("log")
-    .child("sendMessageOnCommentCreate" + commentId)
-    .set({ commentId: commentId, data: data });
+      .ref("log")
+      .child("sendMessageOnCommentCreate" + commentId)
+      .set({commentId: commentId, data: data});
 
   // get root post
   const post = await getPost(data.postId);
