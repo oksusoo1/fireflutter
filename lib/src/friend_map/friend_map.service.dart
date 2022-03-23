@@ -23,17 +23,24 @@ class FriendMapService {
     return _instance!;
   }
 
+  /// Initialize
+  ///
+  /// [init] can be called multiple times.
+  /// [latitude] and [longitude] are being used for default markers on the map.
   init({
     required String googleApiKey,
-    required double latitude,
-    required double longitude,
+    double latitude = 0,
+    double longitude = 0,
   }) {
     _apiKey = googleApiKey;
     this.latitude = latitude;
     this.longitude = longitude;
   }
 
+  /// [_locationServiceEnabled] is set to true when the user consent on location service and the app has location service.
   bool _locationServiceEnabled = false;
+
+  /// Use [locationServiceEnabled] to check if the app has location service permission.
   bool get locationServiceEnabled => _locationServiceEnabled;
 
   String _apiKey = '';
@@ -61,8 +68,7 @@ class FriendMapService {
   double get _destinationLongitude => markers.last.position.longitude;
 
   late GoogleMapController _mapController;
-  set mapController(GoogleMapController controller) =>
-      _mapController = controller;
+  set mapController(GoogleMapController controller) => _mapController = controller;
 
   /// Initialize location change listener
   ///
@@ -71,8 +77,7 @@ class FriendMapService {
     LocationAccuracy accuracy = LocationAccuracy.high,
   }) {
     return Geolocator.getPositionStream(
-      locationSettings:
-          LocationSettings(distanceFilter: distanceFilter, accuracy: accuracy),
+      locationSettings: LocationSettings(distanceFilter: distanceFilter, accuracy: accuracy),
     );
   }
 
@@ -83,12 +88,16 @@ class FriendMapService {
     bool serviceEnabled;
     LocationPermission permission;
 
+    /// The location service is available on the phone?
     serviceEnabled = await Geolocator.isLocationServiceEnabled();
+
+    /// If not, then alert user that location service is turned off.
     if (!serviceEnabled) {
       _locationServiceEnabled = false;
       throw MapsErrors.locationServiceDisabled;
     }
 
+    /// When location service is turned on, request permission.
     permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
@@ -98,6 +107,7 @@ class FriendMapService {
       }
     }
 
+    ///
     if (permission == LocationPermission.deniedForever) {
       _locationServiceEnabled = false;
       throw MapsErrors.locationPermissionPermanentlyDenied;
@@ -111,8 +121,7 @@ class FriendMapService {
   ///
   Future<Position> get currentPosition async {
     await checkPermission();
-    return await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high);
+    return await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
   }
 
   /// Marks locations on screen.
@@ -122,8 +131,7 @@ class FriendMapService {
   }) async {
     await checkPermission();
 
-    Position currentUserPosition =
-        await Geolocator.getCurrentPosition(desiredAccuracy: accuracy);
+    Position currentUserPosition = await Geolocator.getCurrentPosition(desiredAccuracy: accuracy);
 
     /// set current address.
     _currentAddress = await getAddressFromCoordinates(
@@ -137,8 +145,7 @@ class FriendMapService {
       currentUserPosition.longitude,
       title: "My Location",
       snippet: _currentAddress,
-      markerType:
-          BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueCyan),
+      markerType: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueCyan),
     );
 
     _otherUsersAddress = await getAddressFromCoordinates(
@@ -208,8 +215,7 @@ class FriendMapService {
   }) {
     if (_markers.isEmpty) return;
     Marker previousMarker = _markers.firstWhere((m) => m.markerId.value == id);
-    if (previousMarker.position.latitude == lat &&
-        previousMarker.position.longitude == lng) {
+    if (previousMarker.position.latitude == lat && previousMarker.position.longitude == lng) {
       /// Do nothing, it's the same coordinates..
     } else {
       Marker marker = Marker(
@@ -278,8 +284,7 @@ class FriendMapService {
   ///
   void moveCameraView(double lat, double lng, {double zoom = 18}) {
     _mapController.animateCamera(
-      CameraUpdate.newCameraPosition(
-          CameraPosition(target: LatLng(lat, lng), zoom: zoom)),
+      CameraUpdate.newCameraPosition(CameraPosition(target: LatLng(lat, lng), zoom: zoom)),
     );
   }
 
@@ -288,23 +293,16 @@ class FriendMapService {
   /// does not need to call "setState()" after calling this function.
   ///
   void adjustCameraViewAndZoom() {
-    double miny = (_startLatitude <= _destinationLatitude)
-        ? _startLatitude
-        : _destinationLatitude;
-    double minx = (_startLongitude <= _destinationLongitude)
-        ? _startLongitude
-        : _destinationLongitude;
-    double maxy = (_startLatitude <= _destinationLatitude)
-        ? _destinationLatitude
-        : _startLatitude;
-    double maxx = (_startLongitude <= _destinationLongitude)
-        ? _destinationLongitude
-        : _startLongitude;
+    double miny = (_startLatitude <= _destinationLatitude) ? _startLatitude : _destinationLatitude;
+    double minx =
+        (_startLongitude <= _destinationLongitude) ? _startLongitude : _destinationLongitude;
+    double maxy = (_startLatitude <= _destinationLatitude) ? _destinationLatitude : _startLatitude;
+    double maxx =
+        (_startLongitude <= _destinationLongitude) ? _destinationLongitude : _startLongitude;
 
     _mapController.animateCamera(
       CameraUpdate.newLatLngBounds(
-        LatLngBounds(
-            northeast: LatLng(maxy, maxx), southwest: LatLng(miny, minx)),
+        LatLngBounds(northeast: LatLng(maxy, maxx), southwest: LatLng(miny, minx)),
         150.0,
       ),
     );

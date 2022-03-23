@@ -67,7 +67,7 @@ class _FriendMapState extends State<FriendMap> with WidgetsBindingObserver {
 
   initPositionListener() {
     positionStream = service.initLocationListener().listen((Position position) {
-      print('position changed: lat ${position.latitude} ; lng ${position.longitude}');
+      // print('position changed: lat ${position.latitude} ; lng ${position.longitude}');
 
       service.updateMarkerPosition(
         MarkerIds.currentLocation,
