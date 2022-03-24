@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:firebase_database/firebase_database.dart';
+
 import '../../fireflutter.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
@@ -25,13 +27,14 @@ class FriendMap extends StatefulWidget {
   _FriendMapState createState() => _FriendMapState();
 }
 
-class _FriendMapState extends State<FriendMap> with WidgetsBindingObserver {
+class _FriendMapState extends State<FriendMap> with WidgetsBindingObserver, DatabaseMixin {
   FriendMapService service = FriendMapService.instance;
   final searchBoxController = TextEditingController();
 
   CameraPosition currentLocation = CameraPosition(target: LatLng(0.0, 0.0));
 
-  StreamSubscription<Position>? positionStream;
+  StreamSubscription<Position>? currentUserPositionStream;
+  StreamSubscription<DatabaseEvent>? otherUserPositionStream;
 
   @override
   void initState() {
@@ -50,7 +53,8 @@ class _FriendMapState extends State<FriendMap> with WidgetsBindingObserver {
   @override
   void dispose() {
     WidgetsBinding.instance?.removeObserver(this);
-    positionStream?.cancel();
+    otherUserPositionStream?.cancel();
+    currentUserPositionStream?.cancel();
     super.dispose();
   }
 
@@ -68,15 +72,41 @@ class _FriendMapState extends State<FriendMap> with WidgetsBindingObserver {
   }
 
   initPositionListener() {
-    positionStream = service.initLocationListener().listen((Position position) {
+    /// Listen to other user's location update on realtime database.
+    otherUserPositionStream =
+        userDoc(widget.otherUserUid).child('location').onValue.listen((event) {
+      print('Other user location update, $event');
+      DataSnapshot snapshot = event.snapshot;
+      final loc = snapshot.value as String?;
+
+      if (loc != null) {
+        service.updateMarkerPosition(
+          MarkerIds.destination,
+          double.parse(loc.split(":").first), // latitude
+          double.parse(loc.split(":").last), // longitude
+        );
+        if (mounted) setState(() {});
+      }
+    });
+
+    currentUserPositionStream = service.initLocationListener().listen((Position position) {
       // print('position changed: lat ${position.latitude} ; lng ${position.longitude}');
 
-      service.updateMarkerPosition(
+      final updated = service.updateMarkerPosition(
         MarkerIds.currentLocation,
         position.latitude,
         position.longitude,
-        adjustCameraView: true,
       );
+
+      if (updated) {
+        /// Update current user location on realtime database
+        userDoc(UserService.instance.uid).update(
+          {'location': '${position.latitude}:${position.longitude}'},
+        );
+
+        if (service.isCameraFocused) service.moveCameraView(position.latitude, position.longitude);
+      }
+
       if (mounted) setState(() {});
     });
   }
@@ -86,7 +116,7 @@ class _FriendMapState extends State<FriendMap> with WidgetsBindingObserver {
     super.didChangeAppLifecycleState(state);
     // print('state $state');
 
-    if (state == AppLifecycleState.resumed && !service.locationServiceEnabled) {
+    if (state == AppLifecycleState.resumed && !LocationService.instance.locationServiceEnabled) {
       markUsersLocations();
     }
   }
@@ -102,8 +132,7 @@ class _FriendMapState extends State<FriendMap> with WidgetsBindingObserver {
           zoomControlsEnabled: false,
           myLocationButtonEnabled: false,
           initialCameraPosition: currentLocation,
-          onMapCreated: (GoogleMapController controller) =>
-              service.mapController = controller,
+          onMapCreated: (GoogleMapController controller) => service.mapController = controller,
           markers: Set<Marker>.from(service.markers),
           polylines: Set<Polyline>.of(service.polylines.values),
         ),
@@ -141,6 +170,31 @@ class _FriendMapState extends State<FriendMap> with WidgetsBindingObserver {
                       onTap: () => service.zoomOut(),
                     ),
                   ),
+                ),
+                SizedBox(height: 20),
+
+                /// Button to enable/disable camera adjustment when moving.
+                ClipOval(
+                  child: Material(
+                    color: FriendMapService.instance.isCameraFocused
+                        ? Colors.green.shade200
+                        : Colors.grey.shade400, // button color
+                    child: InkWell(
+                      splashColor: Colors.blue, // inkwell color
+                      child: SizedBox(
+                        width: 40,
+                        height: 40,
+                        child: Icon(Icons.filter_center_focus),
+                      ),
+                      onTap: () {
+                        if (!FriendMapService.instance.isCameraFocused) {
+                          service.zoomToMe();
+                        }
+                        FriendMapService.instance.isCameraFocused =
+                            !FriendMapService.instance.isCameraFocused;
+                      },
+                    ),
+                  ),
                 )
               ],
             ),
@@ -153,7 +207,7 @@ class _FriendMapState extends State<FriendMap> with WidgetsBindingObserver {
           child: Container(
             color: Colors.white,
             padding: EdgeInsets.all(16),
-            child: service.locationServiceEnabled
+            child: LocationService.instance.locationServiceEnabled
                 ? Column(
                     children: [
                       Row(

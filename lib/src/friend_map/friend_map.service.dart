@@ -3,20 +3,9 @@ import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
+import '../location/location.service.dart';
 
-class MarkerIds {
-  static String currentLocation = 'currentLocation';
-  static String destination = 'destination';
-}
-
-/// TODO - move this code to location service.
-
-class MapsErrors {
-  static String locationServiceDisabled = 'Location services are disabled.';
-  static String locationPermissionDenied = 'Location permissions are denied';
-  static String locationPermissionPermanentlyDenied =
-      'Location permissions are permanently denied, we cannot request permissions.';
-}
+enum MarkerIds { currentLocation, destination }
 
 class FriendMapService {
   static FriendMapService? _instance;
@@ -38,13 +27,6 @@ class FriendMapService {
     this.latitude = latitude;
     this.longitude = longitude;
   }
-
-  /// TODO - move this code to location service.
-  /// [_locationServiceEnabled] is set to true when the user consent on location service and the app has location service.
-  bool _locationServiceEnabled = false;
-
-  /// Use [locationServiceEnabled] to check if the app has location service permission.
-  bool get locationServiceEnabled => _locationServiceEnabled;
 
   String _apiKey = '';
   late double latitude;
@@ -73,6 +55,10 @@ class FriendMapService {
   late GoogleMapController _mapController;
   set mapController(GoogleMapController controller) => _mapController = controller;
 
+  /// If this is enabled, the camera view will follow and focus on the user's location on every changes.
+  ///
+  bool isCameraFocused = false;
+
   /// Initialize location change listener
   ///
   Stream<Position> initLocationListener({
@@ -84,57 +70,12 @@ class FriendMapService {
     );
   }
 
-  /// Checks necessary permission for geolocator.
-  /// Throws error if permission is not granted.
-  ///
-  /// TODO - move this code to location service.
-  Future<dynamic> checkPermission() async {
-    bool serviceEnabled;
-    LocationPermission permission;
-
-    /// The location service is available on the phone?
-    serviceEnabled = await Geolocator.isLocationServiceEnabled();
-
-    /// If not, then alert user that location service is turned off.
-    if (!serviceEnabled) {
-      _locationServiceEnabled = false;
-      throw MapsErrors.locationServiceDisabled;
-    }
-
-    /// When location service is turned on, request permission.
-    permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied) {
-        _locationServiceEnabled = false;
-        throw MapsErrors.locationPermissionDenied;
-      }
-    }
-
-    ///
-    if (permission == LocationPermission.deniedForever) {
-      _locationServiceEnabled = false;
-      throw MapsErrors.locationPermissionPermanentlyDenied;
-    }
-
-    _locationServiceEnabled = true;
-    return _locationServiceEnabled;
-  }
-
-  /// Return current positoin.
-  ///
-  /// TODO - move this code to location service.
-  Future<Position> get currentPosition async {
-    await checkPermission();
-    return await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
-  }
-
   /// Marks locations on screen.
   ///
   Future markUsersLocations({
     LocationAccuracy accuracy = LocationAccuracy.bestForNavigation,
   }) async {
-    await checkPermission();
+    await LocationService.instance.checkPermission();
 
     Position currentUserPosition = await Geolocator.getCurrentPosition(desiredAccuracy: accuracy);
 
@@ -186,7 +127,7 @@ class FriendMapService {
   /// add marker to map.
   ///
   void addMarker(
-    String id,
+    MarkerIds id,
     double lat,
     double lng, {
     String? title,
@@ -204,34 +145,34 @@ class FriendMapService {
     if (_polylines.length > 0) _polylines.clear();
 
     /// prevents multiple marker to show on map.
-    _markers.removeWhere((m) => m.markerId.value == id);
+    _markers.removeWhere((m) => m.markerId.value == id.toString());
 
     _markers.add(marker);
   }
 
   /// Updates the existing marker on the map.
   ///
-  updateMarkerPosition(
-    String id,
+  bool updateMarkerPosition(
+    MarkerIds id,
     double lat,
     double lng, {
-    bool adjustCameraView = false,
     double cameraZoom = 18,
   }) {
-    if (_markers.isEmpty) return;
-    Marker previousMarker = _markers.firstWhere((m) => m.markerId.value == id);
+    if (_markers.isEmpty) return false;
+    Marker previousMarker = _markers.firstWhere((m) => m.markerId.value == id.toString());
     if (previousMarker.position.latitude == lat && previousMarker.position.longitude == lng) {
       /// Do nothing, it's the same coordinates..
+      return false;
     } else {
       Marker marker = Marker(
-        markerId: MarkerId(id),
+        markerId: MarkerId(id.toString()),
         position: LatLng(lat, lng),
         infoWindow: previousMarker.infoWindow,
         icon: previousMarker.icon,
       );
-      _markers.removeWhere((m) => m.markerId.value == id);
+      _markers.removeWhere((m) => m.markerId.value == id.toString());
       _markers.add(marker);
-      if (adjustCameraView) moveCameraView(lat, lng, zoom: cameraZoom);
+      return true;
     }
   }
 
@@ -323,5 +264,12 @@ class FriendMapService {
     _mapController.animateCamera(
       CameraUpdate.zoomOut(),
     );
+  }
+
+  zoomToMe() {
+    Marker myMarker = _markers.firstWhere(
+      (m) => m.markerId.value == MarkerIds.currentLocation.toString(),
+    );
+    moveCameraView(myMarker.position.latitude, myMarker.position.longitude);
   }
 }

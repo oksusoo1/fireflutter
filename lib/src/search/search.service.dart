@@ -52,8 +52,7 @@ class SearchService {
 
     List filters = [];
     if (uid.isNotEmpty) filters.add('uid = $uid');
-    if (category.isNotEmpty && index != 'comments')
-      filters.add('category = $category');
+    if (category.isNotEmpty && index != 'comments') filters.add('category = $category');
 
     List<Map<String, dynamic>> _posts = [];
     final SearchResult res = await client.index(index).search(
@@ -113,16 +112,6 @@ class SearchService {
     /// if (!UserService.instance.user.isAdmin) throw 'YOU_ARE_NOT_ADMIN';
     return client.index(uid).deleteAllDocuments();
   }
-
-  ///
-  ///
-  // Future indexDocuments(
-  //   String index,
-  //   List<Map<String, dynamic>> documents, [
-  //   String? primaryKey,
-  // ]) async {
-  //   return client.index(uid).addDocuments(documents, primaryKey: primaryKey);
-  // }
 
   resetFilters({String index = ''}) {
     uid = '';
