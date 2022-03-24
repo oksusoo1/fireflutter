@@ -235,7 +235,9 @@ exports.testAppCheck = functions.region("asia-northeast3").https.onCall((data, c
   if (context.app == undefined) {
     throw new functions.https.HttpsError(
         "failed-precondition",
-        "The function must be called from an App Check verified app.");
+        "The function must be called from an App Check verified app.",
+        context,
+    );
   }
 
   return {
