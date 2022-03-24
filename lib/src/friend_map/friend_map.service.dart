@@ -9,6 +9,8 @@ class MarkerIds {
   static String destination = 'destination';
 }
 
+/// TODO - move this code to location service.
+
 class MapsErrors {
   static String locationServiceDisabled = 'Location services are disabled.';
   static String locationPermissionDenied = 'Location permissions are denied';
@@ -37,6 +39,7 @@ class FriendMapService {
     this.longitude = longitude;
   }
 
+  /// TODO - move this code to location service.
   /// [_locationServiceEnabled] is set to true when the user consent on location service and the app has location service.
   bool _locationServiceEnabled = false;
 
@@ -84,6 +87,7 @@ class FriendMapService {
   /// Checks necessary permission for geolocator.
   /// Throws error if permission is not granted.
   ///
+  /// TODO - move this code to location service.
   Future<dynamic> checkPermission() async {
     bool serviceEnabled;
     LocationPermission permission;
@@ -119,6 +123,7 @@ class FriendMapService {
 
   /// Return current positoin.
   ///
+  /// TODO - move this code to location service.
   Future<Position> get currentPosition async {
     await checkPermission();
     return await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);

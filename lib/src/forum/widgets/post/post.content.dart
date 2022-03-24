@@ -43,7 +43,8 @@ class PostContent extends StatelessWidget {
                   /// P 태그에 style="margin-top: 0; margin-bottom: 8px;" 와 같이 적용되는데,
                   /// flutter_html 에서 잘 적용이 안되어서, 여기서 따로 적용해 준다.
                   "p": Style(margin: EdgeInsets.only(top: 8, bottom: 8.0)),
-                  "body": Style(margin: EdgeInsets.all(0), padding: EdgeInsets.all(0)),
+                  "body": Style(
+                      margin: EdgeInsets.all(0), padding: EdgeInsets.all(0)),
                 },
               );
             else

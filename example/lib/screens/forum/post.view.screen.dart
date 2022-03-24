@@ -1,3 +1,4 @@
+import 'package:extended/extended.dart';
 import 'package:fe/screens/admin/send.push.notification.dart';
 import 'package:fe/screens/forum/forum.mixin.dart';
 import 'package:fe/service/app.service.dart';
@@ -60,6 +61,7 @@ class _PostViewScreenState extends State<PostViewScreen>
             Text('Post Id: ${post.id}'),
             Post(
               post: post,
+              onProfile: (uid) => alert('Open other user profile', 'uid: $uid'),
               onReply: (post) => onReply(context, post),
               onReport: onReport,
               onImageTap: (i, files) => onImageTapped(context, i, files),
@@ -77,6 +79,7 @@ class _PostViewScreenState extends State<PostViewScreen>
             Comment(
               post: post,
               parentId: post.id,
+              onProfile: (uid) => alert('Open other user profile', 'uid: $uid'),
               onReply: (post, comment) => onReply(context, post, comment),
               onReport: onReport,
               onEdit: (comment) => onEdit(context, comment),

@@ -8,6 +8,7 @@ class Post extends StatelessWidget {
     this.buttonBuilder,
     this.shareButton,
     required this.post,
+    required this.onProfile,
     required this.onReply,
     required this.onReport,
     required this.onEdit,
@@ -25,6 +26,7 @@ class Post extends StatelessWidget {
   final Widget Function(String, Function())? buttonBuilder;
   final Widget? shareButton;
   final PostModel post;
+  final Function(String uid) onProfile;
   final Function(PostModel post) onReport;
   final Function(PostModel post) onReply;
   final Function(PostModel post) onEdit;
@@ -60,7 +62,8 @@ class Post extends StatelessWidget {
               children: [
                 Text(
                   'Summary',
-                  style: TextStyle(fontWeight: FontWeight.bold, color: Colors.grey),
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold, color: Colors.grey),
                 ),
                 Text(
                   post.summary,
@@ -80,6 +83,7 @@ class Post extends StatelessWidget {
             uid: post.uid,
             isPost: true,
             noOfComments: post.noOfComments,
+            onProfile: onProfile,
             onReply: () => onReply(post),
             onReport: () => onReport(post),
             onEdit: () => onEdit(post),

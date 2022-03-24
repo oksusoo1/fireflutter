@@ -22,7 +22,8 @@ class CategoryService with FirestoreMixin {
   /// Note that, this is async call. So, it should be used with `setState`
   /// ```dart
   /// ```
-  Future<List<CategoryModel>> getCategories({bool hideHiddenCategory: false}) async {
+  Future<List<CategoryModel>> getCategories(
+      {bool hideHiddenCategory: false}) async {
     if (categories.length == 0) await loadCategories();
     if (hideHiddenCategory)
       return categories.where((cat) => cat.order != -1).toList();
@@ -32,7 +33,8 @@ class CategoryService with FirestoreMixin {
 
   /// Loads categories and save it into [categories], and return it.
   Future<List<CategoryModel>> loadCategories() async {
-    final querySnapshot = await categoryCol.orderBy('order', descending: true).get();
+    final querySnapshot =
+        await categoryCol.orderBy('order', descending: true).get();
     if (querySnapshot.size == 0) return [];
 
     categories = [];

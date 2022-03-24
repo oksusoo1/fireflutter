@@ -124,6 +124,7 @@ Table of contents
   - [FileUploadButton](#fileuploadbutton)
   - [Displaying Uploaded Image](#displaying-uploaded-image)
   - [Uploaded file management](#uploaded-file-management)
+- [Location Service](#location-service)
 - [Cloud Functions](#cloud-functions)
   - [Meilisearch](#meilisearch)
 - [Backup](#backup)
@@ -1464,7 +1465,9 @@ HttpException: Invalid statusCode: 403, uri = https://firebasestorage.googleapis
 
 
 
+# Location Service
 
+- Use this service to get current location positoin.
 
 # Cloud Functions
 

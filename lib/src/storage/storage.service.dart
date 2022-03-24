@@ -77,7 +77,8 @@ class StorageService {
     StreamSubscription? _sub;
     if (onProgress != null) {
       _sub = uploadTask.snapshotEvents.listen((event) {
-        double progress = event.bytesTransferred.toDouble() / event.totalBytes.toDouble();
+        double progress =
+            event.bytesTransferred.toDouble() / event.totalBytes.toDouble();
         onProgress(progress);
       });
     }
@@ -179,6 +180,7 @@ class StorageService {
     }
     final String basename = _tempUrl.split('/').last;
     final String filename = basename.split('.').first;
-    return _tempUrl.replaceFirst(basename, '${filename}_200x200.webp') + '?alt=media';
+    return _tempUrl.replaceFirst(basename, '${filename}_200x200.webp') +
+        '?alt=media';
   }
 }

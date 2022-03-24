@@ -25,6 +25,7 @@ class _FriendMapScreenState extends State<FriendMapScreen> {
       ),
       body: FriendMap(
         googleApiKey: Config.gcpApiKeyWithRestriction,
+        otherUserUid: widget.arguments['uid'],
         latitude: latitude,
         longitude: longitude,
         error: error,

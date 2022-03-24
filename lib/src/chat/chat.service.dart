@@ -45,7 +45,8 @@ class ChatService with ChatMixins {
       // print('countNewMessages() ... listen()');
       int _newMessages = 0;
       snapshot.docs.forEach((doc) {
-        ChatMessageModel room = ChatMessageModel.fromJson(doc.data() as Map, null);
+        ChatMessageModel room =
+            ChatMessageModel.fromJson(doc.data() as Map, null);
         _newMessages += room.newMessages;
       });
       newMessages.add(_newMessages);
@@ -134,7 +135,8 @@ class ChatService with ChatMixins {
   /// Update my friend under
   ///   - /chat/rooms/<my-uid>/<other-uid>
   /// To make sure, all room info doc update must use this method.
-  Future<void> myOtherRoomInfoUpdate(String otherUid, Map<String, dynamic> data) {
+  Future<void> myOtherRoomInfoUpdate(
+      String otherUid, Map<String, dynamic> data) {
     return myRoomsCol.doc(otherUid).set(data, SetOptions(merge: true));
   }
 
@@ -143,8 +145,11 @@ class ChatService with ChatMixins {
   /// Update my info under my friend's room list
   ///   - /chat/rooms/<other-uid>/<my-uid>
   /// To make sure, all room info doc update must use this method.
-  Future<void> otherMyRoomInfoUpdate(String otherUid, Map<String, dynamic> data) {
-    return otherRoomsCol(otherUid).doc(myUid).set(data, SetOptions(merge: true));
+  Future<void> otherMyRoomInfoUpdate(
+      String otherUid, Map<String, dynamic> data) {
+    return otherRoomsCol(otherUid)
+        .doc(myUid)
+        .set(data, SetOptions(merge: true));
   }
 
   /// Return a room info doc under currently logged in user's room list.
@@ -197,5 +202,24 @@ class ChatService with ChatMixins {
           .delete(),
     ];
     return Future.wait(futures);
+  }
+
+  /// Get number of new messages for a user
+  ///
+  /// ! Warning - This will read many documents. Chat feature is based on firestore at this time and it's expensive.
+  /// ! Warning - Change it to realtime database when time comes.
+  Future<int> getNoOfNewMessages(String otherUid) async {
+    /// Send push notification to the other user.
+    QuerySnapshot querySnapshot = await ChatService.instance
+        .otherRoomsCol(otherUid)
+        .where('newMessages', isGreaterThan: 0)
+        .get();
+
+    int newMessages = 0;
+    querySnapshot.docs.forEach((doc) {
+      ChatMessageModel room = ChatMessageModel.fromJson(doc.data() as Map);
+      newMessages += room.newMessages;
+    });
+    return newMessages;
   }
 }

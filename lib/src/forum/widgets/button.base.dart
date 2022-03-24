@@ -6,6 +6,7 @@ class ButtonBase extends StatelessWidget {
     required this.uid,
     this.noOfComments = 0,
     required this.isPost,
+    required this.onProfile,
     required this.onReply,
     required this.onReport,
     required this.onEdit,
@@ -26,6 +27,7 @@ class ButtonBase extends StatelessWidget {
   final String uid;
   final bool isPost;
   final int noOfComments;
+  final Function(String uid) onProfile;
   final Function() onReply;
   final Function() onReport;
   final Function() onEdit;
@@ -55,11 +57,16 @@ class ButtonBase extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        _button(isPost ? 'Reply${noOfComments > 0 ? '($noOfComments)' : ''}' : 'Reply', onReply),
+        _button(
+            isPost
+                ? 'Reply${noOfComments > 0 ? '($noOfComments)' : ''}'
+                : 'Reply',
+            onReply),
         // _button('Report', onReport),
         _button('Like ${likeCount > 0 ? likeCount : ""}', onLike),
         if (onDislike != null)
-          _button('Dislike ${dislikeCount > 0 ? dislikeCount : ""}', onDislike!),
+          _button(
+              'Dislike ${dislikeCount > 0 ? dislikeCount : ""}', onDislike!),
         if (!isMine && onChat != null) _button('Chat', onChat!),
         if (shareButton != null) shareButton!,
         Spacer(),
@@ -70,7 +77,10 @@ class ButtonBase extends StatelessWidget {
           ),
           initialValue: '',
           itemBuilder: (BuildContext context) => [
-            if (isMine) PopupMenuItem<String>(value: 'edit', child: Text('Edit')),
+            if (!isMine)
+              PopupMenuItem<String>(value: 'profile', child: Text('Profile')),
+            if (isMine)
+              PopupMenuItem<String>(value: 'edit', child: Text('Edit')),
             if (isMine || isAdmin)
               PopupMenuItem<String>(
                 value: 'delete',
@@ -94,10 +104,15 @@ class ButtonBase extends StatelessWidget {
                 ),
               ),
             if (isPost && onHide != null)
-              PopupMenuItem<String>(value: 'hide_post', child: Text('Hide Post')),
+              PopupMenuItem<String>(
+                  value: 'hide_post', child: Text('Hide Post')),
             PopupMenuItem<String>(value: 'close_menu', child: Text('Close')),
           ],
           onSelected: (String value) async {
+            if (value == 'profile') {
+              return onProfile(uid);
+            }
+
             if (value == 'hide_post') {
               onHide!();
               return;
