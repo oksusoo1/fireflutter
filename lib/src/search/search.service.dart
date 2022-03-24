@@ -78,34 +78,6 @@ class SearchService {
     return _posts;
   }
 
-  ///
-  /// ADMIN FUNCTIONS
-  ///
-
-  // /// Updates index search settings.
-  // ///
-  // Future updateIndexSearchSettings({
-  //   required String index,
-  //   List<String>? searchables,
-  //   List<String>? sortables,
-  //   List<String>? filterables,
-  // }) async {
-  //   /// if (!UserService.instance.user.isAdmin) throw 'YOU_ARE_NOT_ADMIN';
-
-  //   return SearchService.instance.client.index(index).updateSettings(
-  //         IndexSettings(
-  //           searchableAttributes: searchables,
-  //           sortableAttributes: sortables,
-  //           filterableAttributes: filterables,
-  //           // rankingRules: [],
-  //           // distinctAttribute: '', // default to index
-  //           // displayedAttributes: ['*'], // default to '*' (all)
-  //           // stopWords: [],
-  //           // synonyms: { 'word': ['other', 'logan'] },
-  //         ),
-  //       );
-  // }
-
   /// Deletes all documents of an index.
   ///
   Future deleteAllDocuments(String uid) async {
