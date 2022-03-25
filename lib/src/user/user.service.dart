@@ -192,7 +192,12 @@ class UserService with FirestoreMixin, DatabaseMixin {
     // }
   }
 
-  /// Caches other user's profile data to display.
+  /// It gets other user's document.
+  ///
+  /// It return cached data if the user doc is previous fetch. So, it can be
+  /// used multiple times without refetching from realtime database.
+  ///
+  /// Use this method to get other user's doc.
   ///
   /// See readme for details.
   Map<String, UserModel> others = {};
@@ -236,8 +241,7 @@ class UserService with FirestoreMixin, DatabaseMixin {
     UserModel user = await getOtherUserDoc(uid);
     if (user.disabled) return ERROR_USER_ALREADY_BLOCKED;
     HttpsCallable onCallDisableUser =
-        FirebaseFunctions.instanceFor(region: 'asia-northeast3')
-            .httpsCallable('disableUser');
+        FirebaseFunctions.instanceFor(region: 'asia-northeast3').httpsCallable('disableUser');
     try {
       final res = await onCallDisableUser.call({'uid': uid});
       print(res);

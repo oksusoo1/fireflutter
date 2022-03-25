@@ -67,7 +67,6 @@ class _FriendMapState extends State<FriendMap> with WidgetsBindingObserver, Data
     } catch (e) {
       widget.error(e);
     }
-    if (mounted) setState(() {});
   }
 
   initPositionListener() {
@@ -76,13 +75,13 @@ class _FriendMapState extends State<FriendMap> with WidgetsBindingObserver, Data
     /// If user click on an older friend map request on chat, it will initially the coordinated on that particular chat message,
     /// and this will get the last saved location of the other user from realtime database.
     otherUserPositionStream =
-        userDoc(widget.otherUserUid).child('location').onValue.listen((event) {
-      print('Other user location update, $event');
+        userDoc(widget.otherUserUid).child('location').onValue.listen((event) async {
+      print('Other user ${widget.otherUserUid}, location update, ${event.snapshot.value}');
       DataSnapshot snapshot = event.snapshot;
       final loc = snapshot.value as String?;
 
       if (loc != null) {
-        service.updateMarkerPosition(
+        await service.updateMarkerPosition(
           MarkerIds.destination,
           double.parse(loc.split(":").first), // latitude
           double.parse(loc.split(":").last), // longitude
