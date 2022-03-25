@@ -1,9 +1,8 @@
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import '../location/location.service.dart';
 
-enum MarkerIds { currentLocation, destination }
+enum MarkerIds { currentLocation, destination, empty }
 
 class FriendMapService {
   static FriendMapService? _instance;
@@ -12,102 +11,102 @@ class FriendMapService {
     return _instance!;
   }
 
-  /// Initialize
+  /// Initializes destination location
   ///
   /// [init] can be called multiple times.
   /// [latitude] and [longitude] are being used for default markers on the map.
-  init({
-    // required String googleApiKey,
-    double latitude = 0,
-    double longitude = 0,
-  }) {
-    // _apiKey = googleApiKey;
-    this.latitude = latitude;
-    this.longitude = longitude;
+  Future<void> initUsersLocations({
+    required double latitude,
+    required double longitude,
+    LocationAccuracy accuracy = LocationAccuracy.bestForNavigation,
+  }) async {
+    Position currentUserPosition = await Geolocator.getCurrentPosition(desiredAccuracy: accuracy);
+
+    this._currentUserLatitude = currentUserPosition.latitude;
+    this._currentUserLongitude = currentUserPosition.longitude;
+    this._destinationLatitude = latitude;
+    this._destinationLongitude = longitude;
+
+    return refreshMap();
   }
 
-  // Other user's/destination initial coordinate
-  double latitude = 0;
-  double longitude = 0;
+  /// InitialCoordinates.
+  /// This will also be used as fallback values if no value is passed to the following functions:
+  ///  - drawCurrentLocationMarker()
+  ///  - drawDestinationLocationMarker()
+  ///
+  late double _currentUserLatitude;
+  late double _currentUserLongitude;
+  late double _destinationLatitude;
+  late double _destinationLongitude;
+
+  late GoogleMapController _mapController;
 
   String _currentAddress = '';
-  String get currentAddress => _currentAddress;
   String _otherUsersAddress = '';
+  Set<Marker> _markers = {};
+
+  double get _sLat => markers.first.position.latitude;
+  double get _sLon => markers.first.position.longitude;
+  double get _dLat => markers.last.position.latitude;
+  double get _dLon => markers.last.position.longitude;
+
+  /// Location Addresses
+  ///
+  String get currentAddress => _currentAddress;
   String get otherUsersAddress => _otherUsersAddress;
 
   /// Location markers.
   ///
-  Set<Marker> _markers = {};
   get markers => _markers;
 
-  double get _startLatitude => markers.first.position.latitude;
-  double get _destinationLatitude => markers.last.position.latitude;
-  double get _startLongitude => markers.first.position.longitude;
-  double get _destinationLongitude => markers.last.position.longitude;
-
-  late GoogleMapController _mapController;
   set mapController(GoogleMapController controller) => _mapController = controller;
 
   /// If this is enabled, the camera view will follow and focus on the user's location on every changes.
   ///
   bool isCameraFocused = false;
-  double defaultCameraZoom = 18;
 
-  /// Initialize location change listener
+  /// =========== PRIVATE FUNCTIONS =========== ///
+
+  /// Draws marker to the map.
+  /// This will remove any marker with the same MarkerId as the new one.
   ///
-  Stream<Position> initLocationListener({
-    int distanceFilter = 0,
-    LocationAccuracy accuracy = LocationAccuracy.high,
+  bool _drawMarker(
+    MarkerIds id,
+    double lat,
+    double lng, {
+    String? title,
+    String? snippet,
+    BitmapDescriptor markerType = BitmapDescriptor.defaultMarker,
   }) {
-    return Geolocator.getPositionStream(
-      locationSettings: LocationSettings(distanceFilter: distanceFilter, accuracy: accuracy),
-    );
-  }
-
-  /// Marks locations on screen.
-  ///
-  Future markUsersLocations({
-    LocationAccuracy accuracy = LocationAccuracy.bestForNavigation,
-  }) async {
-    print('Mark users locations');
-    await LocationService.instance.checkPermission();
-
-    Position currentUserPosition = await Geolocator.getCurrentPosition(desiredAccuracy: accuracy);
-
-    /// set current address.
-    // _currentAddress = await getAddressFromCoordinates(
-    //   currentUserPosition.latitude,
-    //   currentUserPosition.longitude,
-    // );
-
-    drawMarker(
-      MarkerIds.currentLocation,
-      currentUserPosition.latitude,
-      currentUserPosition.longitude,
-      title: "My Location",
-      snippet: _currentAddress,
-      markerType: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueCyan),
+    Marker previousMarker = _markers.firstWhere(
+      (m) => m.markerId == MarkerId('$id'),
+      orElse: () => Marker(markerId: MarkerId(MarkerIds.empty.toString())),
     );
 
-    // _otherUsersAddress = await getAddressFromCoordinates(
-    //   latitude,
-    //   longitude,
-    // );
+    final isExisting = previousMarker.markerId != MarkerId(MarkerIds.empty.toString());
 
-    drawMarker(
-      MarkerIds.destination,
-      latitude,
-      longitude,
-      title: "Destination",
-      snippet: _otherUsersAddress,
+    Marker newMarker = Marker(
+      markerId: MarkerId('$id'),
+      position: LatLng(lat, lng),
+      infoWindow: InfoWindow(
+        title: previousMarker.infoWindow.title ?? title,
+        snippet: previousMarker.infoWindow.snippet ?? snippet,
+      ),
+      icon: isExisting ? previousMarker.icon : markerType,
     );
 
-    adjustCameraViewAndZoom();
+    if (isExisting) {
+      /// prevents multiple marker to show on map.
+      _markers.removeWhere((marker) => marker.markerId == newMarker.markerId);
+    }
+    _markers.add(newMarker);
+    return isExisting;
   }
 
   /// Transforms a position's coordinate to an address.
   ///
-  Future<String> getAddressFromCoordinates(double lat, double lng) async {
+  Future<String> _getAddressFromCoordinates(double lat, double lng) async {
     String _address = '';
 
     try {
@@ -119,86 +118,24 @@ class FriendMapService {
     return _address;
   }
 
-  void drawCurrentUserMarker(double lat, double lon) {
-    return drawMarker(
-      MarkerIds.currentLocation,
-      lat,
-      lon,
-      title: "My Location",
-      snippet: _otherUsersAddress,
-    );
-  }
+  /// =========== PUBLIC FUNCTIONS =========== ///
 
-  void drawOtherUserMarker(double lat, double lon) {
-    return drawMarker(
-      MarkerIds.destination,
-      lat,
-      lon,
-      title: "Destination",
-      snippet: _otherUsersAddress,
-    );
-  }
-
-  /// draw marker to map.
+  /// Returns subscribable stream of current user's location.
   ///
-  void drawMarker(
-    MarkerIds id,
-    double lat,
-    double lng, {
-    String? title,
-    String? snippet,
-    BitmapDescriptor markerType = BitmapDescriptor.defaultMarker,
+  Stream<Position> currentUserLocationStream({
+    int distanceFilter = 0,
+    LocationAccuracy accuracy = LocationAccuracy.high,
   }) {
-    Marker marker = Marker(
-      markerId: MarkerId('$id'),
-      position: LatLng(lat, lng),
-      infoWindow: InfoWindow(title: title, snippet: snippet),
-      icon: markerType,
+    return Geolocator.getPositionStream(
+      locationSettings: LocationSettings(
+        distanceFilter: distanceFilter,
+        accuracy: accuracy,
+      ),
     );
-
-    /// resets the polylines.
-    // if (_polylines.length > 0) _polylines.clear();
-
-    /// prevents multiple marker to show on map.
-    _markers.removeWhere((m) => m.markerId.value == id.toString());
-
-    _markers.add(marker);
-  }
-
-  /// Updates the existing marker on the map.
-  ///
-  /// returns true if marker location is updated.
-  bool updateMarkerPosition(
-    MarkerIds id,
-    double lat,
-    double lng, {
-    double cameraZoom = 18,
-  }) {
-    if (_markers.isEmpty) return false;
-    Marker previousMarker = _markers.firstWhere((m) => m.markerId.value == id.toString());
-    if (previousMarker.position.latitude == lat && previousMarker.position.longitude == lng) {
-      /// Do nothing, it's the same coordinates..
-      return false;
-    } else {
-      Marker marker = Marker(
-        markerId: MarkerId(id.toString()),
-        position: LatLng(lat, lng),
-        infoWindow: previousMarker.infoWindow,
-        icon: previousMarker.icon,
-      );
-      _markers.removeWhere((m) => m.markerId.value == id.toString());
-      _markers.add(marker);
-
-      /// NOTE: when either of the other or current user's position changed, this will re draw the lines on the map.
-      // await drawPolylines();
-
-      return true;
-    }
   }
 
   /// Update camera view.
-  ///
-  /// does not need to call "setState()" after calling this function.
+  /// does not need to call setState() when calling this function.
   ///
   void moveCameraView(double lat, double lng, {double zoom = 18}) {
     _mapController.animateCamera(
@@ -209,16 +146,13 @@ class FriendMapService {
   }
 
   /// adjust camera view and zoom to make all markers visible on map.
-  ///
-  /// does not need to call "setState()" after calling this function.
+  /// does not need to call setState() when calling this function.
   ///
   void adjustCameraViewAndZoom() {
-    double miny = (_startLatitude <= _destinationLatitude) ? _startLatitude : _destinationLatitude;
-    double minx =
-        (_startLongitude <= _destinationLongitude) ? _startLongitude : _destinationLongitude;
-    double maxy = (_startLatitude <= _destinationLatitude) ? _destinationLatitude : _startLatitude;
-    double maxx =
-        (_startLongitude <= _destinationLongitude) ? _destinationLongitude : _startLongitude;
+    double miny = (_sLat <= _dLat) ? _sLat : _dLat;
+    double minx = (_sLon <= _dLon) ? _sLon : _dLon;
+    double maxy = (_sLat <= _dLat) ? _dLat : _sLat;
+    double maxx = (_sLon <= _dLon) ? _dLon : _sLon;
 
     _mapController.animateCamera(
       CameraUpdate.newLatLngBounds(
@@ -228,22 +162,90 @@ class FriendMapService {
     );
   }
 
+  /// Zooms in the map view
+  /// does not need to call setState() when calling this function.
+  ///
   zoomIn() {
     _mapController.animateCamera(
       CameraUpdate.zoomIn(),
     );
   }
 
+  /// Zooms out the map view.
+  /// does not need to call setState() when calling this function.
+  ///
   zoomOut() {
     _mapController.animateCamera(
       CameraUpdate.zoomOut(),
     );
   }
 
+  /// Zoom to current user's marker position.
+  /// does not need to call setState() when calling this function.
+  ///
   zoomToMe() {
     Marker myMarker = _markers.firstWhere(
       (m) => m.markerId.value == MarkerIds.currentLocation.toString(),
     );
     moveCameraView(myMarker.position.latitude, myMarker.position.longitude);
   }
+
+  /// Marks current location with address as snippet
+  ///
+  Future<bool> drawCurrentLocationMarker({
+    double? lat,
+    double? lon,
+  }) async {
+    /// set current address.
+    _currentAddress = await _getAddressFromCoordinates(
+      lat ?? _currentUserLatitude,
+      lon ?? _currentUserLongitude,
+    );
+
+    return _drawMarker(
+      MarkerIds.currentLocation,
+      lat ?? _currentUserLatitude,
+      lon ?? _currentUserLongitude,
+      title: "My Location",
+      snippet: _currentAddress,
+      markerType: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueCyan),
+    );
+  }
+
+  /// Marks destination location with address as snippet
+  ///
+  Future<void> drawDestinationLocationMarker({
+    double? lat,
+    double? lon,
+  }) async {
+    _otherUsersAddress = await _getAddressFromCoordinates(
+      lat ?? _destinationLatitude,
+      lon ?? _destinationLongitude,
+    );
+
+    _drawMarker(
+      MarkerIds.destination,
+      lat ?? _destinationLatitude,
+      lon ?? _destinationLongitude,
+      title: "Destination",
+      snippet: _otherUsersAddress,
+    );
+  }
+
+  /// refreshes the map to redraw markers and adjust camera view.
+  ///
+  Future<void> refreshMap() async {
+    await drawDestinationLocationMarker();
+    await drawCurrentLocationMarker();
+    adjustCameraViewAndZoom();
+  }
+
+  // test() {
+  //   bool result =
+  //       MarkerId(MarkerIds.currentLocation.toString()) == MarkerId(MarkerIds.empty.toString());
+  //   print(result);
+  //   result = MarkerId(MarkerIds.currentLocation.toString()) ==
+  //       MarkerId(MarkerIds.currentLocation.toString());
+  //   print(result);
+  // }
 }
