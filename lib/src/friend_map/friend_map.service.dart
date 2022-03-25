@@ -1,11 +1,8 @@
-// import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-// import 'package:flutter_polyline_points/flutter_polyline_points.dart';
-import '../location/location.service.dart';
 
-enum MarkerIds { currentLocation, destination }
+enum MarkerIds { currentLocation, destination, empty }
 
 class FriendMapService {
   static FriendMapService? _instance;
@@ -14,110 +11,103 @@ class FriendMapService {
     return _instance!;
   }
 
-  /// Initialize
+  /// Initializes destination location
   ///
   /// [init] can be called multiple times.
   /// [latitude] and [longitude] are being used for default markers on the map.
-  init({
-    // required String googleApiKey,
-    double latitude = 0,
-    double longitude = 0,
-  }) {
-    // _apiKey = googleApiKey;
-    this.latitude = latitude;
-    this.longitude = longitude;
+  Future<void> initUsersLocations({
+    required double latitude,
+    required double longitude,
+    LocationAccuracy accuracy = LocationAccuracy.bestForNavigation,
+  }) async {
+    Position currentUserPosition = await Geolocator.getCurrentPosition(desiredAccuracy: accuracy);
+
+    this._currentUserLatitude = currentUserPosition.latitude;
+    this._currentUserLongitude = currentUserPosition.longitude;
+    this._destinationLatitude = latitude;
+    this._destinationLongitude = longitude;
+
+    return refreshMap();
   }
 
-  // As of March 25, 2022
-  //  - this service don't support drawing polylines, passing google maps api key is not necessary.
-  // String _apiKey = '';
+  /// InitialCoordinates.
+  /// This will also be used as fallback values if no value is passed to the following functions:
+  ///  - drawCurrentLocationMarker()
+  ///  - drawDestinationLocationMarker()
+  ///
+  late double _currentUserLatitude;
+  late double _currentUserLongitude;
+  late double _destinationLatitude;
+  late double _destinationLongitude;
 
-  // Other user's/destination initial coordinate
-  late double latitude;
-  late double longitude;
+  late GoogleMapController _mapController;
 
   String _currentAddress = '';
-  String get currentAddress => _currentAddress;
   String _otherUsersAddress = '';
-  String get otherUsersAddress => _otherUsersAddress;
+  Set<Marker> _markers = {};
 
-  /// Map storing polylines created by connecting two points.
+  double get _sLat => markers.first.position.latitude;
+  double get _sLon => markers.first.position.longitude;
+  double get _dLat => markers.last.position.latitude;
+  double get _dLon => markers.last.position.longitude;
+
+  /// Location Addresses
   ///
-  Map<PolylineId, Polyline> _polylines = {};
-  get polylines => _polylines;
+  String get currentAddress => _currentAddress;
+  String get otherUsersAddress => _otherUsersAddress;
 
   /// Location markers.
   ///
-  Set<Marker> _markers = {};
   get markers => _markers;
 
-  double get _startLatitude => markers.first.position.latitude;
-  double get _destinationLatitude => markers.last.position.latitude;
-  double get _startLongitude => markers.first.position.longitude;
-  double get _destinationLongitude => markers.last.position.longitude;
-
-  late GoogleMapController _mapController;
   set mapController(GoogleMapController controller) => _mapController = controller;
 
   /// If this is enabled, the camera view will follow and focus on the user's location on every changes.
   ///
   bool isCameraFocused = false;
-  double defaultCameraZoom = 18;
 
-  /// Initialize location change listener
+  /// =========== PRIVATE FUNCTIONS =========== ///
+
+  /// Draws marker to the map.
   ///
-  Stream<Position> initLocationListener({
-    int distanceFilter = 0,
-    LocationAccuracy accuracy = LocationAccuracy.high,
+  /// This will remove any marker with the same MarkerId as the new one.
+  ///
+  bool _drawMarker(
+    MarkerIds id,
+    double lat,
+    double lng, {
+    String? title,
+    String? snippet,
+    BitmapDescriptor markerType = BitmapDescriptor.defaultMarker,
   }) {
-    return Geolocator.getPositionStream(
-      locationSettings: LocationSettings(distanceFilter: distanceFilter, accuracy: accuracy),
-    );
-  }
-
-  /// Marks locations on screen.
-  ///
-  Future markUsersLocations({
-    LocationAccuracy accuracy = LocationAccuracy.bestForNavigation,
-  }) async {
-    await LocationService.instance.checkPermission();
-
-    Position currentUserPosition = await Geolocator.getCurrentPosition(desiredAccuracy: accuracy);
-
-    /// set current address.
-    _currentAddress = await getAddressFromCoordinates(
-      currentUserPosition.latitude,
-      currentUserPosition.longitude,
+    Marker previousMarker = _markers.firstWhere(
+      (m) => m.markerId == MarkerId('$id'),
+      orElse: () => Marker(markerId: MarkerId(MarkerIds.empty.toString())),
     );
 
-    addMarker(
-      MarkerIds.currentLocation,
-      currentUserPosition.latitude,
-      currentUserPosition.longitude,
-      title: "My Location",
-      snippet: _currentAddress,
-      markerType: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueCyan),
+    final isExisting = previousMarker.markerId != MarkerId(MarkerIds.empty.toString());
+
+    Marker newMarker = Marker(
+      markerId: MarkerId('$id'),
+      position: LatLng(lat, lng),
+      infoWindow: InfoWindow(
+        title: previousMarker.infoWindow.title ?? title,
+        snippet: previousMarker.infoWindow.snippet ?? snippet,
+      ),
+      icon: isExisting ? previousMarker.icon : markerType,
     );
 
-    _otherUsersAddress = await getAddressFromCoordinates(
-      latitude,
-      longitude,
-    );
-
-    addMarker(
-      MarkerIds.destination,
-      latitude,
-      longitude,
-      title: "Destination",
-      snippet: _otherUsersAddress,
-    );
-
-    adjustCameraViewAndZoom();
+    if (isExisting) {
+      /// prevents multiple marker to show on map.
+      _markers.removeWhere((marker) => marker.markerId == newMarker.markerId);
+    }
+    _markers.add(newMarker);
+    return isExisting;
   }
 
   /// Transforms a position's coordinate to an address.
   ///
-  Future<String> getAddressFromCoordinates(double lat, double lng) async {
+  Future<String> _getAddressFromCoordinates(double lat, double lng) async {
     String _address = '';
 
     try {
@@ -129,114 +119,24 @@ class FriendMapService {
     return _address;
   }
 
-  /// add marker to map.
+  /// =========== PUBLIC FUNCTIONS =========== ///
+
+  /// Returns subscribable stream of current user's location.
   ///
-  void addMarker(
-    MarkerIds id,
-    double lat,
-    double lng, {
-    String? title,
-    String? snippet,
-    BitmapDescriptor markerType = BitmapDescriptor.defaultMarker,
+  Stream<Position> currentUserLocationStream({
+    int distanceFilter = 0,
+    LocationAccuracy accuracy = LocationAccuracy.high,
   }) {
-    Marker marker = Marker(
-      markerId: MarkerId('$id'),
-      position: LatLng(lat, lng),
-      infoWindow: InfoWindow(title: title, snippet: snippet),
-      icon: markerType,
+    return Geolocator.getPositionStream(
+      locationSettings: LocationSettings(
+        distanceFilter: distanceFilter,
+        accuracy: accuracy,
+      ),
     );
-
-    /// resets the polylines.
-    if (_polylines.length > 0) _polylines.clear();
-
-    /// prevents multiple marker to show on map.
-    _markers.removeWhere((m) => m.markerId.value == id.toString());
-
-    _markers.add(marker);
   }
-
-  /// Updates the existing marker on the map.
-  ///
-  /// returns true if marker location is updated.
-  Future<bool> updateMarkerPosition(
-    MarkerIds id,
-    double lat,
-    double lng, {
-    double cameraZoom = 18,
-  }) async {
-    if (_markers.isEmpty) return false;
-    Marker previousMarker = _markers.firstWhere((m) => m.markerId.value == id.toString());
-    if (previousMarker.position.latitude == lat && previousMarker.position.longitude == lng) {
-      /// Do nothing, it's the same coordinates..
-      return false;
-    } else {
-      Marker marker = Marker(
-        markerId: MarkerId(id.toString()),
-        position: LatLng(lat, lng),
-        infoWindow: previousMarker.infoWindow,
-        icon: previousMarker.icon,
-      );
-      _markers.removeWhere((m) => m.markerId.value == id.toString());
-      _markers.add(marker);
-
-      /// NOTE: when either of the other or current user's position changed, this will re draw the lines on the map.
-      // await drawPolylines();
-
-      return true;
-    }
-  }
-
-  /// Adding Polylines
-  ///
-  /// NOTE
-  ///  - `Directions API` mus be enabled on Google Cloud Platform.
-  ///  - `Directions Api` must also be included in the API restriction of the Api Key in used.
-  ///  - Billing must be enabled on the Google Cloud Project.
-  ///
-  // Future<void> drawPolylines({
-  //   TravelMode travelMode = TravelMode.driving,
-  // }) async {
-  //   // Initializing PolylinePoints
-  //   PolylinePoints polylinePoints = PolylinePoints();
-  //   List<LatLng> polylineCoordinates = [];
-
-  //   PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
-  //     _apiKey,
-  //     PointLatLng(_startLatitude, _startLongitude),
-  //     PointLatLng(_destinationLatitude, _destinationLongitude),
-  //     travelMode: travelMode,
-  //   );
-
-  //   if (result.status == 'REQUEST_DENIED') {
-  //     /// throw '${result.status} - ${result.errorMessage}';
-  //     print('${result.status} - ${result.errorMessage}');
-  //   }
-
-  //   // Adding the coordinates to the list
-  //   if (result.points.isNotEmpty) {
-  //     result.points.forEach((PointLatLng point) {
-  //       polylineCoordinates.add(LatLng(point.latitude, point.longitude));
-  //     });
-  //   }
-
-  //   // Defining an ID
-  //   PolylineId id = PolylineId('poly');
-
-  //   // Initializing Polyline
-  //   Polyline polyline = Polyline(
-  //     polylineId: id,
-  //     color: Colors.red,
-  //     points: polylineCoordinates,
-  //     width: 3,
-  //   );
-
-  //   // Adding the polyline to the map
-  //   _polylines[id] = polyline;
-  // }
 
   /// Update camera view.
-  ///
-  /// does not need to call "setState()" after calling this function.
+  /// does not need to call setState() when calling this function.
   ///
   void moveCameraView(double lat, double lng, {double zoom = 18}) {
     _mapController.animateCamera(
@@ -247,16 +147,13 @@ class FriendMapService {
   }
 
   /// adjust camera view and zoom to make all markers visible on map.
-  ///
-  /// does not need to call "setState()" after calling this function.
+  /// does not need to call setState() when calling this function.
   ///
   void adjustCameraViewAndZoom() {
-    double miny = (_startLatitude <= _destinationLatitude) ? _startLatitude : _destinationLatitude;
-    double minx =
-        (_startLongitude <= _destinationLongitude) ? _startLongitude : _destinationLongitude;
-    double maxy = (_startLatitude <= _destinationLatitude) ? _destinationLatitude : _startLatitude;
-    double maxx =
-        (_startLongitude <= _destinationLongitude) ? _destinationLongitude : _startLongitude;
+    double miny = (_sLat <= _dLat) ? _sLat : _dLat;
+    double minx = (_sLon <= _dLon) ? _sLon : _dLon;
+    double maxy = (_sLat <= _dLat) ? _dLat : _sLat;
+    double maxx = (_sLon <= _dLon) ? _dLon : _sLon;
 
     _mapController.animateCamera(
       CameraUpdate.newLatLngBounds(
@@ -266,22 +163,90 @@ class FriendMapService {
     );
   }
 
+  /// Zooms in the map view
+  /// does not need to call setState() when calling this function.
+  ///
   zoomIn() {
     _mapController.animateCamera(
       CameraUpdate.zoomIn(),
     );
   }
 
+  /// Zooms out the map view.
+  /// does not need to call setState() when calling this function.
+  ///
   zoomOut() {
     _mapController.animateCamera(
       CameraUpdate.zoomOut(),
     );
   }
 
+  /// Zoom to current user's marker position.
+  /// does not need to call setState() when calling this function.
+  ///
   zoomToMe() {
     Marker myMarker = _markers.firstWhere(
       (m) => m.markerId.value == MarkerIds.currentLocation.toString(),
     );
     moveCameraView(myMarker.position.latitude, myMarker.position.longitude);
   }
+
+  /// Marks current location with address as snippet
+  ///
+  Future<bool> drawCurrentLocationMarker({
+    double? lat,
+    double? lon,
+  }) async {
+    /// set current address.
+    _currentAddress = await _getAddressFromCoordinates(
+      lat ?? _currentUserLatitude,
+      lon ?? _currentUserLongitude,
+    );
+
+    return _drawMarker(
+      MarkerIds.currentLocation,
+      lat ?? _currentUserLatitude,
+      lon ?? _currentUserLongitude,
+      title: "My Location",
+      snippet: _currentAddress,
+      markerType: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueCyan),
+    );
+  }
+
+  /// Marks destination location with address as snippet
+  ///
+  Future<void> drawDestinationLocationMarker({
+    double? lat,
+    double? lon,
+  }) async {
+    _otherUsersAddress = await _getAddressFromCoordinates(
+      lat ?? _destinationLatitude,
+      lon ?? _destinationLongitude,
+    );
+
+    _drawMarker(
+      MarkerIds.destination,
+      lat ?? _destinationLatitude,
+      lon ?? _destinationLongitude,
+      title: "Destination",
+      snippet: _otherUsersAddress,
+    );
+  }
+
+  /// refreshes the map to redraw markers and adjust camera view.
+  ///
+  Future<void> refreshMap() async {
+    await drawDestinationLocationMarker();
+    await drawCurrentLocationMarker();
+    adjustCameraViewAndZoom();
+  }
+
+  // test() {
+  //   bool result =
+  //       MarkerId(MarkerIds.currentLocation.toString()) == MarkerId(MarkerIds.empty.toString());
+  //   print(result);
+  //   result = MarkerId(MarkerIds.currentLocation.toString()) ==
+  //       MarkerId(MarkerIds.currentLocation.toString());
+  //   print(result);
+  // }
 }
