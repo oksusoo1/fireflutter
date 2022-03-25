@@ -41,7 +41,6 @@ class _FriendMapState extends State<FriendMap> with WidgetsBindingObserver, Data
     super.initState();
 
     service.init(
-      googleApiKey: widget.googleApiKey,
       latitude: widget.latitude.toDouble(),
       longitude: widget.longitude.toDouble(),
     );
@@ -63,7 +62,7 @@ class _FriendMapState extends State<FriendMap> with WidgetsBindingObserver, Data
   markUsersLocations() async {
     try {
       await service.markUsersLocations();
-      await service.addPolylines();
+      // await service.drawPolylines();
       initPositionListener();
     } catch (e) {
       widget.error(e);
@@ -73,6 +72,9 @@ class _FriendMapState extends State<FriendMap> with WidgetsBindingObserver, Data
 
   initPositionListener() {
     /// Listen to other user's location update on realtime database.
+    ///
+    /// If user click on an older friend map request on chat, it will initially the coordinated on that particular chat message,
+    /// and this will get the last saved location of the other user from realtime database.
     otherUserPositionStream =
         userDoc(widget.otherUserUid).child('location').onValue.listen((event) {
       print('Other user location update, $event');
@@ -89,10 +91,10 @@ class _FriendMapState extends State<FriendMap> with WidgetsBindingObserver, Data
       }
     });
 
-    currentUserPositionStream = service.initLocationListener().listen((Position position) {
+    currentUserPositionStream = service.initLocationListener().listen((Position position) async {
       // print('position changed: lat ${position.latitude} ; lng ${position.longitude}');
 
-      final updated = service.updateMarkerPosition(
+      final updated = await service.updateMarkerPosition(
         MarkerIds.currentLocation,
         position.latitude,
         position.longitude,
