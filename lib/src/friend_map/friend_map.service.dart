@@ -1,8 +1,6 @@
-// import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-// import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import '../location/location.service.dart';
 
 enum MarkerIds { currentLocation, destination }
@@ -28,23 +26,14 @@ class FriendMapService {
     this.longitude = longitude;
   }
 
-  // As of March 25, 2022
-  //  - this service don't support drawing polylines, passing google maps api key is not necessary.
-  // String _apiKey = '';
-
   // Other user's/destination initial coordinate
-  late double latitude;
-  late double longitude;
+  double latitude = 0;
+  double longitude = 0;
 
   String _currentAddress = '';
   String get currentAddress => _currentAddress;
   String _otherUsersAddress = '';
   String get otherUsersAddress => _otherUsersAddress;
-
-  /// Map storing polylines created by connecting two points.
-  ///
-  Map<PolylineId, Polyline> _polylines = {};
-  get polylines => _polylines;
 
   /// Location markers.
   ///
@@ -80,17 +69,18 @@ class FriendMapService {
   Future markUsersLocations({
     LocationAccuracy accuracy = LocationAccuracy.bestForNavigation,
   }) async {
+    print('Mark users locations');
     await LocationService.instance.checkPermission();
 
     Position currentUserPosition = await Geolocator.getCurrentPosition(desiredAccuracy: accuracy);
 
     /// set current address.
-    _currentAddress = await getAddressFromCoordinates(
-      currentUserPosition.latitude,
-      currentUserPosition.longitude,
-    );
+    // _currentAddress = await getAddressFromCoordinates(
+    //   currentUserPosition.latitude,
+    //   currentUserPosition.longitude,
+    // );
 
-    addMarker(
+    drawMarker(
       MarkerIds.currentLocation,
       currentUserPosition.latitude,
       currentUserPosition.longitude,
@@ -99,12 +89,12 @@ class FriendMapService {
       markerType: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueCyan),
     );
 
-    _otherUsersAddress = await getAddressFromCoordinates(
-      latitude,
-      longitude,
-    );
+    // _otherUsersAddress = await getAddressFromCoordinates(
+    //   latitude,
+    //   longitude,
+    // );
 
-    addMarker(
+    drawMarker(
       MarkerIds.destination,
       latitude,
       longitude,
@@ -129,9 +119,29 @@ class FriendMapService {
     return _address;
   }
 
-  /// add marker to map.
+  void drawCurrentUserMarker(double lat, double lon) {
+    return drawMarker(
+      MarkerIds.currentLocation,
+      lat,
+      lon,
+      title: "My Location",
+      snippet: _otherUsersAddress,
+    );
+  }
+
+  void drawOtherUserMarker(double lat, double lon) {
+    return drawMarker(
+      MarkerIds.destination,
+      lat,
+      lon,
+      title: "Destination",
+      snippet: _otherUsersAddress,
+    );
+  }
+
+  /// draw marker to map.
   ///
-  void addMarker(
+  void drawMarker(
     MarkerIds id,
     double lat,
     double lng, {
@@ -147,7 +157,7 @@ class FriendMapService {
     );
 
     /// resets the polylines.
-    if (_polylines.length > 0) _polylines.clear();
+    // if (_polylines.length > 0) _polylines.clear();
 
     /// prevents multiple marker to show on map.
     _markers.removeWhere((m) => m.markerId.value == id.toString());
@@ -158,12 +168,12 @@ class FriendMapService {
   /// Updates the existing marker on the map.
   ///
   /// returns true if marker location is updated.
-  Future<bool> updateMarkerPosition(
+  bool updateMarkerPosition(
     MarkerIds id,
     double lat,
     double lng, {
     double cameraZoom = 18,
-  }) async {
+  }) {
     if (_markers.isEmpty) return false;
     Marker previousMarker = _markers.firstWhere((m) => m.markerId.value == id.toString());
     if (previousMarker.position.latitude == lat && previousMarker.position.longitude == lng) {
@@ -185,54 +195,6 @@ class FriendMapService {
       return true;
     }
   }
-
-  /// Adding Polylines
-  ///
-  /// NOTE
-  ///  - `Directions API` mus be enabled on Google Cloud Platform.
-  ///  - `Directions Api` must also be included in the API restriction of the Api Key in used.
-  ///  - Billing must be enabled on the Google Cloud Project.
-  ///
-  // Future<void> drawPolylines({
-  //   TravelMode travelMode = TravelMode.driving,
-  // }) async {
-  //   // Initializing PolylinePoints
-  //   PolylinePoints polylinePoints = PolylinePoints();
-  //   List<LatLng> polylineCoordinates = [];
-
-  //   PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
-  //     _apiKey,
-  //     PointLatLng(_startLatitude, _startLongitude),
-  //     PointLatLng(_destinationLatitude, _destinationLongitude),
-  //     travelMode: travelMode,
-  //   );
-
-  //   if (result.status == 'REQUEST_DENIED') {
-  //     /// throw '${result.status} - ${result.errorMessage}';
-  //     print('${result.status} - ${result.errorMessage}');
-  //   }
-
-  //   // Adding the coordinates to the list
-  //   if (result.points.isNotEmpty) {
-  //     result.points.forEach((PointLatLng point) {
-  //       polylineCoordinates.add(LatLng(point.latitude, point.longitude));
-  //     });
-  //   }
-
-  //   // Defining an ID
-  //   PolylineId id = PolylineId('poly');
-
-  //   // Initializing Polyline
-  //   Polyline polyline = Polyline(
-  //     polylineId: id,
-  //     color: Colors.red,
-  //     points: polylineCoordinates,
-  //     width: 3,
-  //   );
-
-  //   // Adding the polyline to the map
-  //   _polylines[id] = polyline;
-  // }
 
   /// Update camera view.
   ///

@@ -40,12 +40,16 @@ class _FriendMapState extends State<FriendMap> with WidgetsBindingObserver, Data
   void initState() {
     super.initState();
 
-    service.init(
-      latitude: widget.latitude.toDouble(),
-      longitude: widget.longitude.toDouble(),
-    );
-
-    markUsersLocations();
+    /// 1. Initialize and update other user location based on data from realtime database
+    ///    - If the location data from realtime database is null, use coordinates from arguments.
+    ///    - Call FriendMap service init and passing the other user's location.
+    /// 2. Current user - update current user location
+    /// 3. Mark user locations on the map.
+    ///    - Make sure that the other user's location is set.
+    /// 4. Adjust camera view to show both markers on the map.
+    ///
+    initOtherUsersLocation();
+    initCurrentUserLocation();
     WidgetsBinding.instance?.addObserver(this);
   }
 
@@ -57,43 +61,59 @@ class _FriendMapState extends State<FriendMap> with WidgetsBindingObserver, Data
     super.dispose();
   }
 
-  /// Marks users locations.
-  ///
-  markUsersLocations() async {
+  markUsersLocation() async {
     try {
       await service.markUsersLocations();
-      // await service.drawPolylines();
-      initPositionListener();
     } catch (e) {
       widget.error(e);
     }
   }
 
-  initPositionListener() {
-    /// Listen to other user's location update on realtime database.
-    ///
-    /// If user click on an older friend map request on chat, it will initially the coordinated on that particular chat message,
-    /// and this will get the last saved location of the other user from realtime database.
-    otherUserPositionStream =
-        userDoc(widget.otherUserUid).child('location').onValue.listen((event) async {
-      print('Other user ${widget.otherUserUid}, location update, ${event.snapshot.value}');
-      DataSnapshot snapshot = event.snapshot;
-      final loc = snapshot.value as String?;
+  /// Listen to other user's location update on realtime database.
+  ///
+  /// If user click on an older friend map request on chat, it will initially the coordinated on that particular chat message,
+  /// and this will get the last saved location of the other user from realtime database.
+  initOtherUsersLocation() {
+    otherUserPositionStream?.cancel(); // make sure it only listens once.
 
-      if (loc != null) {
-        await service.updateMarkerPosition(
-          MarkerIds.destination,
-          double.parse(loc.split(":").first), // latitude
-          double.parse(loc.split(":").last), // longitude
-        );
+    otherUserPositionStream = userDoc(widget.otherUserUid).child('location').onValue.listen(
+      (event) {
+        print('Other user ${widget.otherUserUid}, location update, ${event.snapshot.value}');
+        DataSnapshot snapshot = event.snapshot;
+        final loc = snapshot.value as String?;
+
+        double _lat;
+        double _lon;
+        // If the data from realtime database is null, use coordinates from arguments.
+        if (loc == null) {
+          _lat = widget.latitude;
+          _lon = widget.longitude;
+        } else {
+          _lat = double.parse(loc.split(":").first);
+          _lon = double.parse(loc.split(":").last);
+        }
+
+        // Call FriendMap service init with other user's location if not set.
+        if (service.latitude != 0 && service.longitude != 0) {
+          print('Initialize only once: FriendMap.init()');
+          service.init(latitude: _lat, longitude: _lon);
+          markUsersLocation();
+        } else {
+          service.updateMarkerPosition(MarkerIds.destination, _lat, _lon);
+        }
+
         if (mounted) setState(() {});
-      }
-    });
+      },
+    );
+  }
 
-    currentUserPositionStream = service.initLocationListener().listen((Position position) async {
-      // print('position changed: lat ${position.latitude} ; lng ${position.longitude}');
+  initCurrentUserLocation() {
+    currentUserPositionStream?.cancel(); // Make sure to only listen once.
 
-      final updated = await service.updateMarkerPosition(
+    currentUserPositionStream = service.initLocationListener().listen((Position position) {
+      print('position changed: lat ${position.latitude} ; lng ${position.longitude}');
+
+      final updated = service.updateMarkerPosition(
         MarkerIds.currentLocation,
         position.latitude,
         position.longitude,
@@ -118,7 +138,7 @@ class _FriendMapState extends State<FriendMap> with WidgetsBindingObserver, Data
     // print('state $state');
 
     if (state == AppLifecycleState.resumed && !LocationService.instance.locationServiceEnabled) {
-      markUsersLocations();
+      service.markUsersLocations();
     }
   }
 
@@ -135,7 +155,7 @@ class _FriendMapState extends State<FriendMap> with WidgetsBindingObserver, Data
           initialCameraPosition: currentLocation,
           onMapCreated: (GoogleMapController controller) => service.mapController = controller,
           markers: Set<Marker>.from(service.markers),
-          polylines: Set<Polyline>.of(service.polylines.values),
+          // polylines: Set<Polyline>.of(service.polylines.values),
         ),
         SafeArea(
           child: Padding(
