@@ -16,8 +16,7 @@ class UserProfilePhoto extends StatelessWidget {
     this.size = 40,
     this.iconSize = 24,
     this.onTap,
-    this.boxShadow = const BoxShadow(
-        color: Colors.white, blurRadius: 1.0, spreadRadius: 1.0),
+    this.boxShadow = const BoxShadow(color: Colors.white, blurRadius: 1.0, spreadRadius: 1.0),
     this.padding,
     this.margin,
     Key? key,
@@ -46,8 +45,11 @@ class UserProfilePhoto extends StatelessWidget {
                     size: iconSize,
                   ),
           ),
-          constraints: BoxConstraints(
-              minWidth: size, minHeight: size, maxWidth: size, maxHeight: size),
+
+          /// TODO: due to this constraints, the size of loader does not follow what is in UploadImage.
+          /// UploadImage has size 10, but that's ignored by this constraints.
+          constraints:
+              BoxConstraints(minWidth: size, minHeight: size, maxWidth: size, maxHeight: size),
           decoration: BoxDecoration(
             shape: BoxShape.circle,
             color: user.photoUrl == '' ? Colors.grey.shade300 : Colors.white,
