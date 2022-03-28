@@ -80,24 +80,38 @@ class UserService with FirestoreMixin, DatabaseMixin {
           } else {
             resetTopicSubscription();
             final doc = userDoc(_user.uid);
+
+            /// Put user uid first, and use the model.
+            user = UserModel(uid: uid);
+
+            /// Update last sign in stamp
+            user.updateLastSignInAt();
+
+            await user.load();
+
+            await user.updateProfileReady();
+
+            // /// Update profile ready or not?
+            // if (profileReady) {
+            //   if (user.profileReady == false) {
+            //     user.update(field: 'profileReady', value: true);
+            //   }
+            // } else {
+            //   if (user.profileReady) {
+            //     user.update(field: 'profileReady', value: false);
+            //   }
+            // }
+
             userSubscription = doc.onValue.listen((event) {
-              // if user doc does not exists, create one.
+              /// ! Warning, Don't change user doc inside here. It will perpetually run.
+
+              /// if user doc does not exists, create one.
               if (event.snapshot.exists == false) {
                 create();
               } else {
                 /// User profile information has been updated.
                 user = UserModel.fromJson(event.snapshot.value, _user.uid);
                 changes.add(user);
-
-                if (profileReady) {
-                  if (user.profileReady == false) {
-                    user.update(field: 'profileReady', value: true);
-                  }
-                } else {
-                  if (user.profileReady) {
-                    user.update(field: 'profileReady', value: false);
-                  }
-                }
               }
             }, onError: (e) {
               print('UserDoc listening error; $e');
@@ -220,22 +234,22 @@ class UserService with FirestoreMixin, DatabaseMixin {
     return others[uid]!;
   }
 
-  String get profileError {
-    if (photoUrl == '') return ERROR_NO_PROFILE_PHOTO;
-    if (email == '') return ERROR_NO_EMAIL;
-    if (user.firstName == '') return ERROR_NO_FIRST_NAME;
-    if (user.lastName == '') return ERROR_NO_LAST_NAME;
-    if (user.gender == '') return ERROR_NO_GENER;
-    if (user.birthday == 0) return ERROR_NO_BIRTHDAY;
-    return '';
-  }
+  // String get profileError {
+  //   if (photoUrl == '') return ERROR_NO_PROFILE_PHOTO;
+  //   if (email == '') return ERROR_NO_EMAIL;
+  //   if (user.firstName == '') return ERROR_NO_FIRST_NAME;
+  //   if (user.lastName == '') return ERROR_NO_LAST_NAME;
+  //   if (user.gender == '') return ERROR_NO_GENER;
+  //   if (user.birthday == 0) return ERROR_NO_BIRTHDAY;
+  //   return '';
+  // }
 
-  bool get profileReady {
-    if (profileError == '')
-      return true;
-    else
-      return false;
-  }
+  // bool get profileReady {
+  //   if (profileError == '')
+  //     return true;
+  //   else
+  //     return false;
+  // }
 
   Future<dynamic> blockUser(String uid) async {
     UserModel user = await getOtherUserDoc(uid);

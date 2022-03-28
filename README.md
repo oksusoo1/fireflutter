@@ -46,6 +46,7 @@ Table of contents
 - [User](#user)
   - [User installation](#user-installation)
   - [User data and user profile](#user-data-and-user-profile)
+  - [UserModel](#usermodel)
   - [UserService](#userservice)
   - [User setting service](#user-setting-service)
   - [Test users](#test-users)
@@ -408,6 +409,25 @@ $ npm run shell
   - Don't put user's setting data in `/users/<uid>`. Use may use `UserModel.updateSettings()` and `UserModel.readSettings()` to manage user's setting.
 
 - Use `MyDoc` to display my profile data.
+
+## UserModel
+
+
+- Note that, If the app knows only user's uid, then it can create user model and use some of the user model's methods.
+
+```dart
+/// Put user uid on UserModel, and the app can use the model's member methods already.
+user = UserModel(uid: uid);
+
+/// Update last sign in stamp
+user.updateLastSignInAt();
+
+/// Load user data and set it into member variables.
+await user.load();
+
+/// Print user properties.
+print(user);
+```
 
 ## UserService
 
