@@ -45,6 +45,11 @@ function getTimestamp(servertime) {
   }
 }
 
+function getRandomInt(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
 exports.removeHtmlTags = removeHtmlTags;
 exports.getTimestamp = getTimestamp;
 exports.decodeHTMLEntities = decodeHTMLEntities;
+exports.getRandomInt = getRandomInt;

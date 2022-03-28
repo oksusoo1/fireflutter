@@ -126,9 +126,12 @@ Table of contents
   - [Uploaded file management](#uploaded-file-management)
 - [Location Service](#location-service)
 - [Cloud Functions](#cloud-functions)
+  - [Unit test for Cloud Functions](#unit-test-for-cloud-functions)
   - [Meilisearch](#meilisearch)
 - [Backup](#backup)
   - [Firestore backup](#firestore-backup)
+- [Point](#point)
+  - [Logic](#logic)
 
 # TODOs
 
@@ -1476,6 +1479,11 @@ HttpException: Invalid statusCode: 403, uri = https://firebasestorage.googleapis
   - And we think, sending posts and comments into different palce can be done by flutter app, we may remove those cloud functions in the future.
     - One good reason why we do it in `cloud functions` is that, user can create a post or a comemnt not only using flutter app, but also using web site. And we don't have to implement the same code (for sending posts and comments into another place) twice.
 
+
+## Unit test for Cloud Functions
+
+- `<root>/firebase/functions/tests` folder has all the tests.
+
 ## Meilisearch
 
 https://docs.google.com/document/d/1tSJJt8iJsXNl9vcBqYhKPkiRZR5JFo-SQE2SJ90GItA/edit#heading=h.g94frts1xgxo
@@ -1510,3 +1518,26 @@ https://docs.google.com/document/d/1tSJJt8iJsXNl9vcBqYhKPkiRZR5JFo-SQE2SJ90GItA/
 ```txt
 50 10 * * * cd ~/fireflutter/firebase/backup; node index.js
 ```
+
+
+
+# Point
+
+## Logic
+
+- A point event document will be created under `/point/<uid>` with properties of `timestamp`, and `point` when user action happens.
+  - When event happens (document create or update), random point will be generated acoording to `lib.js::pointEventRule`.
+
+- User actions that trigger point document would be;
+  - register,
+    - When a user registers, cloud function event trigger will create a record at `/point/<uid>/register` with `{ timetstamp: timestamp, point: ... }`.
+  - app run,
+    - When a user runs app on every 24 hours, `/point/<uid>/signIn` will be created.
+  - create post,
+    - When a user creates a post, `/point/<uid>/post/<postId>` will be created
+  - create comment,
+    - When a user creates a comment, `/point/<uid>/comment/<commentId>`,
+
+- Note that, `signIn`, `postCreate` and `commentCreate` has a time limit that it cannot have new point event within x-number of minutes.
+  - For instance, if the limit of `postCreate` within 15, then, even if the create many posts within 15 hours, only one will get point event. When the user creates another post after 15 hours, it will take point event again.
+
