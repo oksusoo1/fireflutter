@@ -1,5 +1,7 @@
 /**
  * @file lib.js
+ *
+ * @attention! on test mode, initialize firebase admin first before loading lib.js
  */
 "use strict";
 
@@ -8,6 +10,7 @@ const admin = require("firebase-admin");
 const Axios = require("axios");
 const utils = require("./utils");
 const ref = require("./reference");
+// const {util} = require("@google-cloud/common");
 // const {user} = require("firebase-functions/v1/auth");
 
 // const {MeiliSearch} = require("meilisearch");
@@ -20,6 +23,7 @@ const rdb = admin.database();
 
 const auth = admin.auth();
 
+// @todo move it to utils.
 const delay = (time) => new Promise((res) => setTimeout(res, time));
 
 const commentNotification = "newCommentUnderMyPostOrComment";
@@ -637,6 +641,149 @@ async function sendMessageOnCommentCreate(commentId, data) {
   };
 }
 
+/**
+ * **************************** POINT FUNCTIONS ****************************
+ */
+
+const pointEvent = {
+  register: "register",
+  signIn: "signIn",
+  postCreate: "postCreate",
+  commentCreate: "commentCreate",
+};
+
+// / Within is seconds.
+const randomPoint = {
+  // / When user registers, he gets random points between 1000 and 2000.
+  [pointEvent.register]: {
+    min: 1000,
+    max: 2000,
+  },
+  [pointEvent.signIn]: {
+    min: 50,
+    max: 200,
+    within: 15,
+  },
+  [pointEvent.postCreate]: {
+    min: 55,
+    max: 155,
+    within: 60 * 60,
+  },
+  [pointEvent.commentCreate]: {
+    min: 33,
+    max: 88,
+    within: 10 * 60,
+  },
+};
+
+/**
+ * Returns the reference of point register of the user of uid
+ *
+ * Use this function to get user's register point document.
+ *
+ * @param {*} uid uid
+ */
+function pointRegisterRef(uid) {
+  return rdb.ref("point").child(uid).child("register");
+}
+/**
+ * Returns a reference (folder) of sign in point event doc.
+ *
+ * Use this function to get user's sign in point document.
+ *
+ * @param {*} uid uid
+ */
+function pointSignInRef(uid) {
+  return rdb.ref("point").child(uid).child("signIn");
+}
+
+/**
+ * Registration point event
+ *
+ * One time point event for new users.
+ *
+ * Note, it gives point only one time.
+ *
+ * @param {*} data The data of the document - /users/<uid>
+ * @param {*} context The context.params.uid is the user's uid.
+ *
+ * @return reference of the point event document
+ */
+async function userRegisterPoint(data, context) {
+  const uid = context.params.uid;
+  const ref = pointRegisterRef(uid);
+  const snapshot = await ref.get();
+  if (snapshot.exists()) {
+    // Registration point has already given.
+    return null;
+  }
+
+  const point = utils.getRandomInt(
+      randomPoint[pointEvent.register].min,
+      randomPoint[pointEvent.register].max,
+  );
+  const docData = {timestamp: utils.getTimestamp(), point: point};
+  await ref.set(docData);
+  return ref;
+}
+
+/**
+ * Sign-in point event.
+ *
+ * It gives a random point on every 24 hours.
+ *
+ * @logic
+ * 1. Get last (previous) event
+ * 2. And check if the timestamp has passed for 24 hours.
+ * 3. If it passed, then give random point.
+ * 4. Or, nust return null.
+ * @param {*} data data of the document
+ * @param {*} context context. the `context.params.uid` is the user's uid.
+ *
+ * @return reference of the point event document
+ */
+async function userSignInPoint(data, context) {
+  const uid = context.params.uid;
+
+  const signInRef = pointSignInRef(uid);
+
+  const lastEventSnapshot = await signInRef.orderByKey().limitToLast(1).once("value");
+
+  if (lastEventSnapshot.exists()) {
+    const val = lastEventSnapshot.val();
+    const keys = Object.keys(val);
+    if (keys.length > 0) {
+      const previousTimestamp = val[keys[0]].timestamp;
+      const within = randomPoint[pointEvent.signIn].within;
+
+      console.log("current timstamp;", utils.getTimestamp());
+      console.log("previous + withi;", previousTimestamp + within);
+      // / Time has passed?
+      if (previousTimestamp + within < utils.getTimestamp()) {
+        console.log("Okay, you can get the point!");
+      } else {
+        console.log("No, you cannot get it yet");
+        return null;
+      }
+
+      console.log("val; ", val, within, utils.getTimestamp() + 3);
+    }
+  }
+
+  const ref = signInRef.push();
+
+  const point = utils.getRandomInt(
+      randomPoint[pointEvent.signIn].min,
+      randomPoint[pointEvent.signIn].max,
+  );
+
+  const docData = {timestamp: utils.getTimestamp(), point: point};
+  await ref.set(docData);
+  return ref;
+}
+
+// **************************** EO POINT FUNCTIONS ****************************
+
 exports.delay = delay;
 exports.getSizeOfCategories = getSizeOfCategories;
 exports.getCategories = getCategories;
@@ -674,3 +821,10 @@ exports.indexUserDocument = indexUserDocument;
 exports.deleteIndexedUserDocument = deleteIndexedUserDocument;
 
 exports.testAnswer = testAnswer;
+
+exports.pointRegisterRef = pointRegisterRef;
+exports.userRegisterPoint = userRegisterPoint;
+exports.userSignInPoint = userSignInPoint;
+
+exports.pointEvent = pointEvent;
+exports.randomPoint = randomPoint;

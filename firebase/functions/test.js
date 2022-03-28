@@ -153,8 +153,13 @@ async function createComment(data) {
 /**
  * Create a user for test
  *
+ * It creates a user document under /users/<uid> with user data and returns user ref.
+ *
  * @param {*} uid
  * @returns - reference.
+ *
+ * @example create a user.
+ * test.createTestUser(userA).then((v) => console.log(v));
  */
 async function createTestUser(uid, data = null) {
   const timestamp = new Date().getTime();
@@ -170,10 +175,7 @@ async function createTestUser(uid, data = null) {
     userData = data;
   }
 
-  await rdb
-      .ref("users")
-      .child(uid)
-      .set(userData);
+  await rdb.ref("users").child(uid).set(userData);
   return rdb.ref("users").child(uid);
 }
 
@@ -184,9 +186,7 @@ async function createTestUser(uid, data = null) {
  * @returns - reference.
  */
 async function deleteTestUser(uid) {
-  return rdb
-      .ref("users")
-      .child(uid).remove();
+  return rdb.ref("users").child(uid).remove();
 }
 
 exports.createCategory = createCategory;

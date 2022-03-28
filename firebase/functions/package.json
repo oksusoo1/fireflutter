@@ -21,6 +21,7 @@
     "test:getTimestamp": "mocha --timeout 10000 --watch tests/getTimestamp.test.js",
     "test:meilisearch:user": "mocha --timeout 10000 --watch tests/meilisearch.user.test.js",
     "test:testAnswer": "mocha --timeout 10000 --watch tests/testAnswer.test.js",
+    "test:point": "mocha --timeout 10000 --watch tests/point.test.js",
     "lint:fix": "./node_modules/.bin/eslint . --fix"
   },
   "engines": {
@@ -30,7 +31,7 @@
   "dependencies": {
     "axios": "^0.26.0",
     "firebase-admin": "^9.8.0",
-    "firebase-functions": "^3.18.1",
+    "firebase-functions": "^3.19.0",
     "meilisearch": "^0.24.0"
   },
   "devDependencies": {

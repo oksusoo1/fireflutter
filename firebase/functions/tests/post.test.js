@@ -19,11 +19,10 @@ if (!admin.apps.length) {
   });
 }
 // This must come after initlization
-
 const test = require("../test");
 const lib = require("../lib");
 
-describe("Post ~~~~~~~~~~~~~~~~", () => {
+describe("Post", () => {
   it("Post test", async () => {
     const userA = "postTestUserA";
 

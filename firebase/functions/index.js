@@ -219,29 +219,45 @@ exports.updateFileParentIdForComment = functions
     });
 
 exports.disableUser = functions.region("asia-northeast3").https.onCall(async (data, context) => {
+  // / TODO: no need to await
   return await lib.disableUser(data, context);
 });
 exports.enableUser = functions.region("asia-northeast3").https.onCall(async (data, context) => {
+  // / TODO: no need to await
   return await lib.enableUser(data, context);
 });
 
 exports.testAnswer = functions.region("asia-northeast3").https.onCall(async (data, context) => {
+  // / TODO: no need to await
   return await lib.testAnswer(data, context);
 });
 
 // context.app will be undefined
 // if the request doesn't include a valid App Check token.
-exports.testAppCheck = functions.region("asia-northeast3").https.onCall((data, context) => {
-  if (context.app == undefined) {
-    throw new functions.https.HttpsError(
-        "failed-precondition",
-        "The function must be called from an App Check verified app.",
-        context,
-    );
-  }
+// exports.testAppCheck = functions.region("asia-northeast3").https.onCall((data, context) => {
+//   if (context.app == undefined) {
+//     throw new functions.https.HttpsError(
+//       "failed-precondition",
+//       "The function must be called from an App Check verified app.",
+//       context
+//     );
+//   }
 
-  return {
-    "data": data,
-    "context": context,
-  };
-});
+//   return {
+//     data: data,
+//     context: context,
+//   };
+// });
+
+/**
+ * **************************** POINT FUNCTIONS ****************************
+ */
+// Listens for a new user to be register(created) at /users/:uid
+exports.pointEventRegister = functions
+    .region("asia-northeast3")
+    .database.ref("/users/{uid}")
+    .onCreate((snapshot, context) => {
+      return lib.userRegisterPoint(snapshot.val(), context.params);
+    });
+
+// **************************** EO POINT FUNCTIONS ****************************
