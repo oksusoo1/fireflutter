@@ -46,7 +46,7 @@ exports.sendMessageOnPostCreate = functions
 exports.sendMessageOnCommentCreate = functions
   .region("asia-northeast3")
   .firestore.document("/comments/{commentId}")
-  .onCreate(async (snapshot, context) => {
+  .onCreate((snapshot, context) => {
     return lib.sendMessageOnCommentCreate(context.params.commentId, snapshot.data());
   });
 
@@ -95,18 +95,23 @@ exports.deleteUserIndex = functions.auth.user().onDelete((user) => {
 /**
  * Indexes a post document when it is created.
  *
- * createPostIndex({
+ * onPostCreate({
  *  uid: 'user_ccc',
  *  category: 'discussion',
  *  title: 'I post on discussion',
  *  content: 'Discussion'
  * })
+ *
+ * @test how to run in shell
+ * % npm run shell
+ * > onPostCreate({uid: 'a'}, {params: {postId: 'p-1'}});
  */
-exports.createPostIndex = functions
+exports.onPostCreate = functions
   .region("asia-northeast3")
   .firestore.document("/posts/{postId}")
-  .onCreate((snap, context) => {
-    return lib.indexPost(context.params.postId, snap.data());
+  .onCreate(async (snapshot, context) => {
+    await lib.postCreatePoint(snapshot.data(), context);
+    return lib.indexPost(context.params.postId, snapshot.data());
   });
 
 /**
@@ -145,12 +150,19 @@ exports.updatePostIndex = functions
 
 // Indexes a comment document when it is created.
 //
-// createCommentIndex({ uid: 'user_ccc', content: 'Discussion' })
-exports.createCommentIndex = functions
+// onCommentCreate({ uid: 'user_ccc', content: 'Discussion' })
+/**
+ *
+ * @test how to run in shell
+ * % npm run shell
+ * > onCommentCreate({uid: 'a'}, {params: {commentId: 'c-1'}});
+ */
+exports.onCommentCreate = functions
   .region("asia-northeast3")
   .firestore.document("/comments/{commentId}")
-  .onCreate((snap, context) => {
-    return lib.indexComment(context.params.commentId, snap.data());
+  .onCreate(async (snapshot, context) => {
+    await lib.commentCreatePoint(snapshot.data(), context);
+    return lib.indexComment(context.params.commentId, snapshot.data());
   });
 
 // Updates or delete the indexed document when a comment is updated or deleted.
@@ -252,18 +264,34 @@ exports.testAnswer = functions.region("asia-northeast3").https.onCall(async (dat
 /**
  * **************************** POINT FUNCTIONS ****************************
  */
-// Listens for a new user to be register(created) at /users/:uid
+/**
+ * Listens for a new user to be register(created) at /users/:uid and do point event.
+ * A doc will be created at /point/{uid}/register
+ *
+ * @test How to test
+ * % npm run shell
+ * % pointEventRegister({}, {params: {uid: 'a'}})
+ */
 exports.pointEventRegister = functions
   .region("asia-northeast3")
   .database.ref("/users/{uid}")
   .onCreate((snapshot, context) => {
     return lib.userRegisterPoint(snapshot.val(), context);
   });
+
+/**
+ * Listens for a user sign in and do point event.
+ * A doc will be created at /point/{uid}/signIn/{pushId}
+ *
+ * @test How to test
+ * % npm run shell
+ * % pointEventSignIn({after: {lastLogin: 1234}}, {params: {uid: 'a'}})
+ */
 exports.pointEventSignIn = functions
   .region("asia-northeast3")
-  .database.ref("/users/{uid}")
-  .onCreate((snapshot, context) => {
-    return lib.userSignInPoint(snapshot.val(), context);
+  .database.ref("/users/{uid}/lastSignInAt")
+  .onUpdate((change, context) => {
+    return lib.userSignInPoint(change.after.val(), context);
   });
 
 // **************************** EO POINT FUNCTIONS ****************************

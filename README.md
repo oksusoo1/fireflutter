@@ -132,7 +132,9 @@ Table of contents
 - [Backup](#backup)
   - [Firestore backup](#firestore-backup)
 - [Point](#point)
+  - [Point settings](#point-settings)
   - [Logic](#logic)
+  - [Senario](#senario)
 
 # TODOs
 
@@ -1543,6 +1545,13 @@ https://docs.google.com/document/d/1tSJJt8iJsXNl9vcBqYhKPkiRZR5JFo-SQE2SJ90GItA/
 
 # Point
 
+## Point settings
+
+- There are 4 point event.
+- Each point event criteria is set to `randomPoint` in `lib.js`
+- On each event, the cloud funtion will randomly generate point between `min` and `max`. `min` is the minimum point and `max` is the maximum point.
+- Some event has `within` property. `within` property has seconds that if the action happens again within that seconds, there will be no point event.
+
 ## Logic
 
 - A point event document will be created under `/point/<uid>` with properties of `timestamp`, and `point` when user action happens.
@@ -1560,4 +1569,9 @@ https://docs.google.com/document/d/1tSJJt8iJsXNl9vcBqYhKPkiRZR5JFo-SQE2SJ90GItA/
 
 - Note that, `signIn`, `postCreate` and `commentCreate` has a time limit that it cannot have new point event within x-number of minutes.
   - For instance, if the limit of `postCreate` within 15, then, even if the create many posts within 15 hours, only one will get point event. When the user creates another post after 15 hours, it will take point event again.
+
+
+## Senario
+
+- When a user registers, he gets registration point. and If here sign out and sign in (or close app and run again) immediately, he can get sign-in point.
 
