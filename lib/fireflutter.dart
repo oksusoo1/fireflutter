@@ -96,3 +96,5 @@ export 'src/user/auth/user.signed_out.dart';
 export 'src/user/widgets/user.setting.doc.dart';
 
 export 'src/location/location.service.dart';
+
+export 'src/point/point.builder.dart';

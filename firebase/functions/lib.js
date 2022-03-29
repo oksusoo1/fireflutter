@@ -760,7 +760,7 @@ async function getMyPoint(uid) {
  * @param {*} eventName event name
  */
 async function timePassed(ref, eventName) {
-  const lastEventSnapshot = await ref.orderByKey().limitToLast(1).once("value");
+  const lastEventSnapshot = await ref.orderByChild("timestamp").limitToLast(1).once("value");
 
   if (lastEventSnapshot.exists()) {
     const docs = lastEventSnapshot.val();

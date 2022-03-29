@@ -3,6 +3,7 @@ import 'package:firebase_database/firebase_database.dart';
 
 mixin DatabaseMixin {
   DatabaseReference get users => FirebaseDatabase.instance.ref('users');
+  DatabaseReference get pointRef => FirebaseDatabase.instance.ref('point');
   DatabaseReference userDoc(uid) => users.child(uid);
   DatabaseReference get userSettingsDoc =>
       FirebaseDatabase.instance.ref('user-settings').child(FirebaseAuth.instance.currentUser!.uid);

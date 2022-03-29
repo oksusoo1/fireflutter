@@ -134,6 +134,8 @@ Table of contents
 - [Point](#point)
   - [Point settings](#point-settings)
   - [Logic](#logic)
+  - [Point widgets](#point-widgets)
+    - [PointBuilder](#pointbuilder)
   - [Senario](#senario)
 
 # TODOs
@@ -1571,6 +1573,32 @@ https://docs.google.com/document/d/1tSJJt8iJsXNl9vcBqYhKPkiRZR5JFo-SQE2SJ90GItA/
   - For instance, if the limit of `postCreate` within 15, then, even if the create many posts within 15 hours, only one will get point event. When the user creates another post after 15 hours, it will take point event again.
 
 
+
+## Point widgets
+
+### PointBuilder
+
+- To display point earned by create a post or comment.
+
+```dart
+PointBuilder(
+  uid: post.uid,
+  id: post.id,
+  type: 'post',
+  builder: (point, user) {
+    return point == 0
+        ? SizedBox.shrink()
+        : Text(
+            '* ${user?.displayName ?? ''} earned $point points.',
+            style: TextStyle(
+              fontSize: 12,
+              color: Colors.grey,
+              fontStyle: FontStyle.italic,
+            ),
+          );
+  },
+),
+```
 ## Senario
 
 - When a user registers, he gets registration point. and If here sign out and sign in (or close app and run again) immediately, he can get sign-in point.

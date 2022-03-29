@@ -64,8 +64,7 @@ class _CommentState extends State<Comment> with FirestoreMixin {
         .listen((QuerySnapshot snapshots) {
       snapshots.docs.forEach((QueryDocumentSnapshot snapshot) {
         /// is it immediate child?
-        final CommentModel c =
-            CommentModel.fromJson(snapshot.data() as Json, id: snapshot.id);
+        final CommentModel c = CommentModel.fromJson(snapshot.data() as Json, id: snapshot.id);
         // print(c);
 
         // if exists in array, just update it.
@@ -141,6 +140,23 @@ class _CommentState extends State<Comment> with FirestoreMixin {
               // Text('Comment Id: ${comment.id}'),
               _commentHeader(comment),
               _contentBuilder(comment),
+              PointBuilder(
+                uid: comment.uid,
+                id: comment.id,
+                type: 'comment',
+                builder: (point, user) {
+                  return point == 0
+                      ? SizedBox.shrink()
+                      : Text(
+                          '* ${user?.displayName ?? ''} earned $point points.',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.grey,
+                            fontStyle: FontStyle.italic,
+                          ),
+                        );
+                },
+              ),
               ImageList(
                 files: comment.files,
                 onImageTap: (i) => widget.onImageTap(i, comment.files),
@@ -159,9 +175,7 @@ class _CommentState extends State<Comment> with FirestoreMixin {
                   buttonBuilder: widget.buttonBuilder,
                   likeCount: comment.like,
                   dislikeCount: comment.dislike,
-                  onChat: (widget.onChat != null)
-                      ? () => widget.onChat!(comment)
-                      : null,
+                  onChat: (widget.onChat != null) ? () => widget.onChat!(comment) : null,
                 ),
             ],
           ),
@@ -178,18 +192,12 @@ class _CommentState extends State<Comment> with FirestoreMixin {
         uid: comment.uid,
         builder: (user) => Row(
           children: [
-            ClipOval(
-              child: user.photoUrl != ''
-                  ? UploadedImage(url: user.photoUrl)
-                  : Icon(Icons.person, color: Colors.black, size: 30),
-            ),
+            UserProfilePhoto(uid: user.uid),
             SizedBox(width: 8),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(user.displayName.isNotEmpty
-                    ? "${user.displayName}"
-                    : "No name"),
+                Text(user.displayName.isNotEmpty ? "${user.displayName}" : "No name"),
                 SizedBox(height: 8),
                 ShortDate(comment.createdAt.millisecondsSinceEpoch),
               ],

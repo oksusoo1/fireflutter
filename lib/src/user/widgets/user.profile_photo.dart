@@ -38,16 +38,17 @@ class UserProfilePhoto extends StatelessWidget {
           margin: margin,
           child: ClipOval(
             child: user.photoUrl != ''
-                ? UploadedImage(url: user.photoUrl)
+                ? UploadedImage(
+                    url: user.photoUrl,
+                    width: size,
+                    height: size,
+                  )
                 : Icon(
                     Icons.person,
                     color: Color.fromARGB(255, 111, 111, 111),
                     size: iconSize,
                   ),
           ),
-
-          /// TODO: due to this constraints, the size of loader does not follow what is in UploadImage.
-          /// UploadImage has size 10, but that's ignored by this constraints.
           constraints:
               BoxConstraints(minWidth: size, minHeight: size, maxWidth: size, maxHeight: size),
           decoration: BoxDecoration(
