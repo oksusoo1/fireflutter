@@ -599,10 +599,10 @@ async function testAnswer(data, context) {
 
 async function sendMessageOnCommentCreate(commentId, data) {
   console.log(commentId, data);
-  await rdb
-      .ref("log")
-      .child("sendMessageOnCommentCreate" + commentId)
-      .set({commentId: commentId, data: data});
+  // await rdb
+  //     .ref("log")
+  //     .child("sendMessageOnCommentCreate" + commentId)
+  //     .set({commentId: commentId, data: data});
 
   // get root post
   const post = await getPost(data.postId);
