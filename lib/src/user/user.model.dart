@@ -5,7 +5,7 @@ import '../../fireflutter.dart';
 
 /// UserModel
 ///
-///
+/// Note that, you can only put uid and use the member methods.
 class UserModel with FirestoreMixin, DatabaseMixin {
   UserModel({
     this.uid = '',
@@ -37,6 +37,13 @@ class UserModel with FirestoreMixin, DatabaseMixin {
   /// Note, user settings instance is connected to user model. Not user service.
   /// Note, it is user settings **service**, Not model.
   UserSettingService settings = UserSettingService.instance;
+
+  User? get currentUser => FirebaseAuth.instance.currentUser;
+
+  /// Returns currently signed in user's uid or empty string.
+  String get phoneNumber => currentUser?.phoneNumber ?? '';
+  String get email => currentUser?.email ?? '';
+  bool get emailIsVerified => currentUser?.emailVerified ?? false;
 
   /// This is the user's document id which is the uid.
   /// If it is empty, the user may not be signed-in
@@ -97,8 +104,7 @@ class UserModel with FirestoreMixin, DatabaseMixin {
   bool get signedOut => signedIn == false;
 
   ///
-  DatabaseReference get _userDoc =>
-      FirebaseDatabase.instance.ref('users').child(uid);
+  DatabaseReference get _userDoc => FirebaseDatabase.instance.ref('users').child(uid);
 
   factory UserModel.fromJson(dynamic data, String uid) {
     if (data == null) return UserModel();
@@ -151,6 +157,65 @@ class UserModel with FirestoreMixin, DatabaseMixin {
       'registeredAt': ServerValue.timestamp,
       'updatedAt': ServerValue.timestamp,
     });
+  }
+
+  /// Update last sign in stamp
+  Future<void> updateLastSignInAt() {
+    return _userDoc.update({
+      'lastSignInAt': ServerValue.timestamp,
+    });
+  }
+
+  /// Load user data into the member variables. See README for details.
+  Future<void> load() async {
+    final snapshot = await _userDoc.get();
+    final u = UserModel.fromJson(snapshot.value, uid);
+    copyWith(u);
+  }
+
+  /// Copy user data from antoher user model.
+  copyWith(UserModel u) {
+    uid = u.uid;
+    isAdmin = u.isAdmin;
+    disabled = u.disabled;
+    firstName = u.firstName;
+    middleName = u.middleName;
+    lastName = u.lastName;
+    nickname = u.nickname;
+    photoUrl = u.photoUrl;
+    birthday = u.birthday;
+    gender = u.gender;
+    profileReady = u.profileReady;
+  }
+
+  /// Return empty string('') if there is no error on profile.
+  String get profileError {
+    if (photoUrl == '') return ERROR_NO_PROFILE_PHOTO;
+    if (email == '') return ERROR_NO_EMAIL;
+    if (firstName == '') return ERROR_NO_FIRST_NAME;
+    if (lastName == '') return ERROR_NO_LAST_NAME;
+    if (gender == '') return ERROR_NO_GENER;
+    if (birthday == 0) return ERROR_NO_BIRTHDAY;
+    return '';
+  }
+
+  /// Set user profile ready or not.
+  Future<void> updateProfileReady() async {
+    /// If there is no error on profile,
+    if (profileError == '') {
+      /// But the profile is set to false on database, then set it true.
+      if (profileReady == false) {
+        return update(field: 'profileReady', value: true);
+      }
+    }
+
+    /// If there is error on profile,
+    else {
+      // And the profile is set to true on database, then set it false.
+      if (profileReady) {
+        return update(field: 'profileReady', value: false);
+      }
+    }
   }
 
   /// Update login user's document on `/users/{userDoc}` in realtime database.

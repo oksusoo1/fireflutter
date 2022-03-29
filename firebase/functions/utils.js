@@ -4,7 +4,11 @@
  * @param {*} content string
  */
 function removeHtmlTags(content) {
-  return content.replace(/<[^>]+>/g, "");
+  if (content) {
+    return content.replace(/<[^>]+>/g, "");
+  } else {
+    return content;
+  }
 }
 
 /**

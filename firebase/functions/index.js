@@ -12,7 +12,7 @@ const lib = require("./lib");
 /**
  * Run from functions shell
  * ```
- * sendMessageOnPostCreate({
+ * sendMessageOnPostCreateIndex({
  *  title: 'from functions shell',
  *  content: 'Content', category: 'qna',
  *  uid: 'o0BtHX2JMiaa0SIrDJ3qhDczXDF2'
@@ -21,7 +21,7 @@ const lib = require("./lib");
  * })
  * ```
  */
-exports.sendMessageOnPostCreate = functions
+exports.sendMessageOnPostCreateIndex = functions
     .region("asia-northeast3")
     .firestore.document("/posts/{postId}")
     .onCreate((snapshot, context) => {
@@ -46,7 +46,7 @@ exports.sendMessageOnPostCreate = functions
 exports.sendMessageOnCommentCreate = functions
     .region("asia-northeast3")
     .firestore.document("/comments/{commentId}")
-    .onCreate(async (snapshot, context) => {
+    .onCreate((snapshot, context) => {
       return lib.sendMessageOnCommentCreate(context.params.commentId, snapshot.data());
     });
 
@@ -95,25 +95,29 @@ exports.deleteUserIndex = functions.auth.user().onDelete((user) => {
 /**
  * Indexes a post document when it is created.
  *
- * createPostIndex({
+ * onPostCreateIndex({
  *  uid: 'user_ccc',
  *  category: 'discussion',
  *  title: 'I post on discussion',
  *  content: 'Discussion'
  * })
+ *
+ * @test how to run in shell
+ * % npm run shell
+ * > onPostCreateIndex({uid: 'a'}, {params: {postId: 'p-1'}});
  */
-exports.createPostIndex = functions
+exports.onPostCreateIndex = functions
     .region("asia-northeast3")
     .firestore.document("/posts/{postId}")
-    .onCreate((snap, context) => {
-      return lib.indexPost(context.params.postId, snap.data());
+    .onCreate((snapshot, context) => {
+      return lib.indexPost(context.params.postId, snapshot.data());
     });
 
 /**
  * Updates or delete the indexed document when a post is updated or deleted.
  *
  * Update:
- *  updatePostIndex({
+ *  onPostUpdateIndex({
  *   before: {},
  *   after: {
  *    uid: 'user_ccc',
@@ -125,13 +129,13 @@ exports.createPostIndex = functions
  *   })
  *
  *  Delete:
- *  updatePostIndex({
+ *  onPostUpdateIndex({
  *   before: {},
  *   after: { deleted: true }},
  *   { params: { postId: 'psot-id' }
  *  })
  */
-exports.updatePostIndex = functions
+exports.onPostUpdateIndex = functions
     .region("asia-northeast3")
     .firestore.document("/posts/{postId}")
     .onUpdate((change, context) => {
@@ -145,30 +149,36 @@ exports.updatePostIndex = functions
 
 // Indexes a comment document when it is created.
 //
-// createCommentIndex({ uid: 'user_ccc', content: 'Discussion' })
-exports.createCommentIndex = functions
+// onCommentCreate({ uid: 'user_ccc', content: 'Discussion' })
+/**
+ *
+ * @test how to run in shell
+ * % npm run shell
+ * > onCommentCreate({uid: 'a'}, {params: {commentId: 'c-1'}});
+ */
+exports.onCommentCreateIndex = functions
     .region("asia-northeast3")
     .firestore.document("/comments/{commentId}")
-    .onCreate((snap, context) => {
-      return lib.indexComment(context.params.commentId, snap.data());
+    .onCreate((snapshot, context) => {
+      return lib.indexComment(context.params.commentId, snapshot.data());
     });
 
 // Updates or delete the indexed document when a comment is updated or deleted.
 //
 // Update:
-//  updateCommentIndex({
+//  onCommentUpdateIndex({
 //   before: {},
 //   after: { content: '...' }},
 //   { params: { commentId: 'comment-id' }
 //  })
 //
 // Delete:
-//  updateCommentIndex({
+//  onCommentUpdateIndex({
 //   before: {},
 //   after: { deleted: true }},
 //   { params: { commentId: 'comment-id' }
 //  })
-exports.updateCommentIndex = functions
+exports.onCommentUpdateIndex = functions
     .region("asia-northeast3")
     .firestore.document("/comments/{commentId}")
     .onUpdate((change, context) => {
@@ -204,6 +214,7 @@ exports.sendMessageToUsers = functions
       res.status(200).send(await lib.sendMessageToUsers(req.query));
     });
 
+// / When a post or a comment had created with 'files', put the doc id on file meta.
 exports.updateFileParentIdForPost = functions
     .region("asia-northeast3")
     .firestore.document("/posts/{postId}")
@@ -252,12 +263,56 @@ exports.testAnswer = functions.region("asia-northeast3").https.onCall(async (dat
 /**
  * **************************** POINT FUNCTIONS ****************************
  */
-// Listens for a new user to be register(created) at /users/:uid
+/**
+ * Listens for a new user to be register(created) at /users/:uid and do point event.
+ * A doc will be created at /point/{uid}/register
+ *
+ * @test How to test
+ * % npm run shell
+ * % pointEventRegister({}, {params: {uid: 'a'}})
+ */
 exports.pointEventRegister = functions
     .region("asia-northeast3")
     .database.ref("/users/{uid}")
     .onCreate((snapshot, context) => {
-      return lib.userRegisterPoint(snapshot.val(), context.params);
+      return lib.userRegisterPoint(snapshot.val(), context);
+    });
+
+/**
+ * Listens for a user sign in and do point event.
+ * A doc will be created at /point/{uid}/signIn/{pushId}
+ *
+ * @test How to test
+ * % npm run shell
+ * % pointEventSignIn({after: {lastLogin: 1234}}, {params: {uid: 'a'}})
+ */
+exports.pointEventSignIn = functions
+    .region("asia-northeast3")
+    .database.ref("/users/{uid}/lastSignInAt")
+    .onUpdate((change, context) => {
+      return lib.userSignInPoint(change.after.val(), context);
+    });
+
+/**
+ * Listens for a user sign in and do point event.
+ * A doc will be created at /point/{uid}/signIn/{pushId}
+ *
+ * @test How to test
+ * % npm run shell
+ * % onPostCreatePoint( {uid: 'a'}, {params: {postId: 'post-1'}} )
+ */
+exports.onPostCreatePoint = functions
+    .region("asia-northeast3")
+    .firestore.document("/posts/{postId}")
+    .onCreate((snapshot, context) => {
+      return lib.postCreatePoint(snapshot.data(), context);
+    });
+
+exports.onCommentCreatePoint = functions
+    .region("asia-northeast3")
+    .firestore.document("/comments/{commentId}")
+    .onCreate((snapshot, context) => {
+      return lib.commentCreatePoint(snapshot.data(), context);
     });
 
 // **************************** EO POINT FUNCTIONS ****************************

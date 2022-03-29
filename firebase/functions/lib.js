@@ -468,6 +468,11 @@ function getFilePathFromStorageUrl(url) {
   return parts[parts.length - 1].replaceAll("%2F", "/");
 }
 
+/**
+ * Update post or comment id on the file meta.
+ * @param {*} id post id or comment id.
+ * @param {*} data document data
+ */
 async function updateFileParentId(id, data) {
   if (!data || !data.files || !data.files.length) {
     return;
@@ -662,7 +667,7 @@ const randomPoint = {
   [pointEvent.signIn]: {
     min: 50,
     max: 200,
-    within: 15,
+    within: 60 * 60 * 24, // 24 hours
   },
   [pointEvent.postCreate]: {
     min: 55,
@@ -697,6 +702,85 @@ function pointSignInRef(uid) {
   return rdb.ref("point").child(uid).child("signIn");
 }
 
+function pointPostCreateRef(uid) {
+  return rdb.ref("point").child(uid).child("postCreate");
+}
+
+function pointCommentCreateRef(uid) {
+  return rdb.ref("point").child(uid).child("commentCreate");
+}
+
+/**
+ * `point` can be increase or decrease.
+ * `history` is the total amount of point that the user earned in life time.
+ * `history` is only increased. It does not decrease. So, it's good for computing user level.
+ *
+ * @param {*} uid uid
+ * @param {*} point point to update
+ */
+async function updateUserPoint(uid, point) {
+  return rdb
+      .ref("point")
+      .child(uid)
+      .child("point")
+      .update({
+        point: admin.database.ServerValue.increment(point),
+        history: admin.database.ServerValue.increment(point),
+      });
+}
+
+/**
+ * Returns random point of the point event
+ * @param {*} eventName Point event name
+ */
+function getRandomPoint(eventName) {
+  return utils.getRandomInt(randomPoint[eventName].min, randomPoint[eventName].max);
+}
+
+/**
+ * Returns user point. It returns 0 if there is no value.
+ * @param {*} uid user id
+ */
+async function getMyPoint(uid) {
+  const snapshot = await rdb.ref("point").child(uid).child("point").child("point").get();
+  if (snapshot.exists) {
+    const val = snapshot.val();
+    return val ? val : 0;
+  } else {
+    return 0;
+  }
+}
+
+/**
+ * Returns true if time has passed.
+ *
+ * Point histories are saved on realtime database.
+ *
+ * @param {*} ref folder reference of event history.
+ * @param {*} eventName event name
+ */
+async function timePassed(ref, eventName) {
+  const lastEventSnapshot = await ref.orderByKey().limitToLast(1).once("value");
+
+  if (lastEventSnapshot.exists()) {
+    const docs = lastEventSnapshot.val();
+
+    const keys = Object.keys(docs);
+    if (keys.length > 0) {
+      const previousTimestamp = docs[keys[0]].timestamp;
+      const within = randomPoint[eventName].within;
+
+      // / Time has passed?
+      if (previousTimestamp + within < utils.getTimestamp()) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+  }
+  return true;
+}
+
 /**
  * Registration point event
  *
@@ -717,13 +801,11 @@ async function userRegisterPoint(data, context) {
     // Registration point has already given.
     return null;
   }
+  const point = getRandomPoint(pointEvent.register);
 
-  const point = utils.getRandomInt(
-      randomPoint[pointEvent.register].min,
-      randomPoint[pointEvent.register].max,
-  );
   const docData = {timestamp: utils.getTimestamp(), point: point};
   await ref.set(docData);
+  await updateUserPoint(uid, point);
   return ref;
 }
 
@@ -743,42 +825,67 @@ async function userRegisterPoint(data, context) {
  * @return reference of the point event document
  */
 async function userSignInPoint(data, context) {
+  // console.log("data; ", data);
   const uid = context.params.uid;
 
   const signInRef = pointSignInRef(uid);
 
-  const lastEventSnapshot = await signInRef.orderByKey().limitToLast(1).once("value");
-
-  if (lastEventSnapshot.exists()) {
-    const val = lastEventSnapshot.val();
-    const keys = Object.keys(val);
-    if (keys.length > 0) {
-      const previousTimestamp = val[keys[0]].timestamp;
-      const within = randomPoint[pointEvent.signIn].within;
-
-      console.log("current timstamp;", utils.getTimestamp());
-      console.log("previous + withi;", previousTimestamp + within);
-      // / Time has passed?
-      if (previousTimestamp + within < utils.getTimestamp()) {
-        console.log("Okay, you can get the point!");
-      } else {
-        console.log("No, you cannot get it yet");
-        return null;
-      }
-
-      console.log("val; ", val, within, utils.getTimestamp() + 3);
-    }
-  }
-
-  const ref = signInRef.push();
-
-  const point = utils.getRandomInt(
-      randomPoint[pointEvent.signIn].min,
-      randomPoint[pointEvent.signIn].max,
-  );
+  if ((await timePassed(signInRef, pointEvent.signIn)) === false) return null;
+  const point = getRandomPoint(pointEvent.signIn);
 
   const docData = {timestamp: utils.getTimestamp(), point: point};
+
+  const ref = signInRef.push();
   await ref.set(docData);
+  await updateUserPoint(uid, point);
+  return ref;
+}
+
+async function postCreatePoint(data, context) {
+  const uid = data.uid;
+  const postId = context.params.postId;
+  // console.log("uid; ", uid, ", postId", postId);
+  const postCreateRef = pointPostCreateRef(uid);
+  if ((await timePassed(postCreateRef, pointEvent.postCreate)) === false) return null;
+  const point = getRandomPoint(pointEvent.postCreate);
+  const docData = {timestamp: utils.getTimestamp(), point: point};
+
+  // Reference to create a history.
+  const ref = postCreateRef.child(postId);
+
+  // Check if the post has already point event.
+  // Note, this will not happen in production mode since it only works on `onCreate` event.
+  // This is only for test and it might be commented out if you wish.
+  const snapshot = await ref.get();
+  if (snapshot.exists() && snapshot.val()) return null;
+
+  // Set history and update point.
+  await ref.set(docData);
+  await updateUserPoint(uid, point);
+  return ref;
+}
+async function commentCreatePoint(data, context) {
+  const uid = data.uid;
+  const commentId = context.params.commentId;
+  // console.log("uid; ", uid, ", commentId", commentId);
+
+  const commentCreateRef = pointCommentCreateRef(uid);
+  if ((await timePassed(commentCreateRef, pointEvent.commentCreate)) === false) return null;
+  const point = getRandomPoint(pointEvent.commentCreate);
+  const docData = {timestamp: utils.getTimestamp(), point: point};
+
+  // Reference to create a history.
+  const ref = commentCreateRef.child(commentId);
+
+  // Check if the comment has already point event.
+  // Note, this will not happen in production mode since it only works on `onCreate` event.
+  // This is only for test and it might be commented out if you wish.
+  const snapshot = await ref.get();
+  if (snapshot.exists() && snapshot.val()) return null;
+
+  // Set history and update point.
+  await ref.set(docData);
+  await updateUserPoint(uid, point);
   return ref;
 }
 
@@ -828,3 +935,7 @@ exports.userSignInPoint = userSignInPoint;
 
 exports.pointEvent = pointEvent;
 exports.randomPoint = randomPoint;
+
+exports.postCreatePoint = postCreatePoint;
+exports.commentCreatePoint = commentCreatePoint;
+exports.getMyPoint = getMyPoint;

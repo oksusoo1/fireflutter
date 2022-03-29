@@ -1,5 +1,10 @@
 # Change Log
 
+## [0.2.19]
+
+- Refactoring `UserService`.
+- Working on user points.
+
 ## [0.2.18]
 
 - Add `LocationService`.

@@ -21,7 +21,9 @@
     "test:getTimestamp": "mocha --timeout 10000 --watch tests/getTimestamp.test.js",
     "test:meilisearch:user": "mocha --timeout 10000 --watch tests/meilisearch.user.test.js",
     "test:testAnswer": "mocha --timeout 10000 --watch tests/testAnswer.test.js",
-    "test:point": "mocha --timeout 10000 --watch tests/point.test.js",
+    "test:point:user": "mocha --timeout 10000 --watch tests/point.user.test.js",
+    "test:point:post": "mocha --timeout 10000 --watch tests/point.post.test.js",
+    "test:point:comment": "mocha --timeout 10000 --watch tests/point.comment.test.js",
     "lint:fix": "./node_modules/.bin/eslint . --fix"
   },
   "engines": {
