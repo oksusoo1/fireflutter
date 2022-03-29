@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import '../../../../fireflutter.dart';
 
@@ -57,18 +56,6 @@ class Post extends StatelessWidget {
           uid: post.uid,
           id: post.id,
           type: 'post',
-          builder: (point, user) {
-            return point == 0
-                ? SizedBox.shrink()
-                : Text(
-                    '* ${user?.displayName ?? ''} earned $point points.',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Colors.grey,
-                      fontStyle: FontStyle.italic,
-                    ),
-                  );
-          },
         ),
         if (post.summary != '')
           Container(

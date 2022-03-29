@@ -226,4 +226,14 @@ class CommentModel with FirestoreMixin, ForumBase {
   Future feedDislike() {
     return feed(path, 'dislike');
   }
+
+  /// If the post was created just now (in 5 minutes), then returns true.
+  ///
+  /// Use this to check if this comment has just been created.
+  bool get justNow {
+    final date = DateTime.fromMillisecondsSinceEpoch(createdAt.millisecondsSinceEpoch);
+    final today = DateTime.now();
+    final diff = date.difference(today);
+    return diff.inMinutes < 5;
+  }
 }

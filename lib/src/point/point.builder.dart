@@ -1,3 +1,4 @@
+import 'package:firebase_database/firebase_database.dart';
 import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
 
@@ -20,41 +21,65 @@ class PointBuilder extends StatefulWidget {
 }
 
 class _PointBuilderState extends State<PointBuilder> with DatabaseMixin {
-  int point = 0;
-  UserModel? user;
+  // int point = 0;
+  // UserModel? user;
 
-  @override
-  void initState() {
-    final ref =
-        pointRef.child(widget.uid).child(widget.type + 'Create').child(widget.id).child('point');
-    ref.get().then((snapshot) {
-      if (snapshot.exists && snapshot.value != null) {
-        setState(() {
-          point = snapshot.value as int;
-        });
-      }
-    }).catchError((e) {
-      print(e);
-    });
+  // @override
+  // void initState() {
+  //   final ref =
+  //       pointRef.child(widget.uid).child(widget.type + 'Create').child(widget.id).child('point');
+  //   ref.get().then((snapshot) {
+  //     if (snapshot.exists && snapshot.value != null) {
+  //       setState(() {
+  //         point = snapshot.value as int;
+  //       });
+  //     }
+  //   }).catchError((e) {
+  //     print(e);
+  //   });
 
-    UserService.instance.getOtherUserDoc(widget.uid).then((value) => setState(() => user = value));
+  //   UserService.instance.getOtherUserDoc(widget.uid).then((value) => setState(() => user = value));
 
-    super.initState();
-  }
+  //   super.initState();
+  // }
 
   @override
   Widget build(BuildContext context) {
-    return widget.builder != null
-        ? widget.builder!(point, user)
-        : point == 0
-            ? SizedBox.shrink()
-            : Text(
-                '${user?.displayName ?? ''} earned $point points.',
-                style: TextStyle(
-                  fontSize: 12,
-                  color: Colors.grey,
-                  fontStyle: FontStyle.italic,
-                ),
-              );
+    return StreamBuilder<DatabaseEvent>(
+        stream: pointRef
+            .child(widget.uid)
+            .child(widget.type + 'Create')
+            .child(widget.id)
+            .child('point')
+            .onValue,
+        builder: (c, snapshotPointData) {
+          if (snapshotPointData.hasData) {
+            final DatabaseEvent event = snapshotPointData.data!;
+            final int point = (event.snapshot.value ?? 0) as int;
+            return FutureBuilder(
+                future: UserService.instance.getOtherUserDoc(widget.uid),
+                builder: ((cc, snapshotUserData) {
+                  if (snapshotUserData.hasData) {
+                    final UserModel user = snapshotUserData.data as UserModel;
+                    return widget.builder != null
+                        ? widget.builder!(point, user)
+                        : point == 0
+                            ? SizedBox.shrink()
+                            : Text(
+                                '* ${user.displayName} earned $point points.',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.grey,
+                                  fontStyle: FontStyle.italic,
+                                ),
+                              );
+                  } else {
+                    return SizedBox.shrink();
+                  }
+                }));
+          } else {
+            return SizedBox.shrink();
+          }
+        });
   }
 }

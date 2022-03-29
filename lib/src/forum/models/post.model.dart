@@ -359,6 +359,16 @@ class PostModel with FirestoreMixin, ForumBase {
     return re ? DateFormat.jm().format(date).toLowerCase() : DateFormat.yMd().format(date);
   }
 
+  /// If the post was created just now (in 5 minutes), then returns true.
+  ///
+  /// Use this to check if this post has just been created.
+  bool get justNow {
+    final date = DateTime.fromMillisecondsSinceEpoch(createdAt.millisecondsSinceEpoch);
+    final today = DateTime.now();
+    final diff = today.difference(date);
+    return diff.inMinutes < 5;
+  }
+
   /// Returns true if the text is HTML.
   static bool _isHtml(String t) {
     t = t.toLowerCase();

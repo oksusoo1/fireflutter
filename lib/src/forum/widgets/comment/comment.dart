@@ -144,18 +144,6 @@ class _CommentState extends State<Comment> with FirestoreMixin {
                 uid: comment.uid,
                 id: comment.id,
                 type: 'comment',
-                builder: (point, user) {
-                  return point == 0
-                      ? SizedBox.shrink()
-                      : Text(
-                          '* ${user?.displayName ?? ''} earned $point points.',
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Colors.grey,
-                            fontStyle: FontStyle.italic,
-                          ),
-                        );
-                },
               ),
               ImageList(
                 files: comment.files,
