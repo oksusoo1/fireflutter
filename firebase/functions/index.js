@@ -12,7 +12,7 @@ const lib = require("./lib");
 /**
  * Run from functions shell
  * ```
- * sendMessageOnPostCreate({
+ * sendMessageOnPostCreateIndex({
  *  title: 'from functions shell',
  *  content: 'Content', category: 'qna',
  *  uid: 'o0BtHX2JMiaa0SIrDJ3qhDczXDF2'
@@ -21,21 +21,21 @@ const lib = require("./lib");
  * })
  * ```
  */
-exports.sendMessageOnPostCreate = functions
-  .region("asia-northeast3")
-  .firestore.document("/posts/{postId}")
-  .onCreate((snapshot, context) => {
-    const category = snapshot.data().category;
+exports.sendMessageOnPostCreateIndex = functions
+    .region("asia-northeast3")
+    .firestore.document("/posts/{postId}")
+    .onCreate((snapshot, context) => {
+      const category = snapshot.data().category;
 
-    const payload = lib.topicPayload("posts_" + category, {
-      title: snapshot.data().title ? snapshot.data().title : "",
-      body: snapshot.data().content ? snapshot.data().content : "",
-      postId: context.params.postId,
-      type: "post",
-      uid: snapshot.data().uid,
+      const payload = lib.topicPayload("posts_" + category, {
+        title: snapshot.data().title ? snapshot.data().title : "",
+        body: snapshot.data().content ? snapshot.data().content : "",
+        postId: context.params.postId,
+        type: "post",
+        uid: snapshot.data().uid,
+      });
+      return admin.messaging().send(payload);
     });
-    return admin.messaging().send(payload);
-  });
 
 // sendMessageOnCommentCreate({
 // content: 'new items for sale',
@@ -44,11 +44,11 @@ exports.sendMessageOnPostCreate = functions
 // uid: '1h0pWRlRkEOgQedJL5HriYMxqTw2'},
 // {params:{commentId:'eIpYHUmYGKUf921B9fRj'}})
 exports.sendMessageOnCommentCreate = functions
-  .region("asia-northeast3")
-  .firestore.document("/comments/{commentId}")
-  .onCreate((snapshot, context) => {
-    return lib.sendMessageOnCommentCreate(context.params.commentId, snapshot.data());
-  });
+    .region("asia-northeast3")
+    .firestore.document("/comments/{commentId}")
+    .onCreate((snapshot, context) => {
+      return lib.sendMessageOnCommentCreate(context.params.commentId, snapshot.data());
+    });
 
 /**
  * Indexes a user document whenever it is created (someone registered a new account).
@@ -73,13 +73,13 @@ exports.createUserIndex = functions.auth.user().onCreate((user) => {
  * })
  */
 exports.updateUserIndex = functions
-  .region("asia-northeast3")
-  .database.ref("/users/{userId}")
-  .onUpdate((change, context) => {
-    const data = change.after.val();
-    //  console.log('user data change after', context.params.userId, data);
-    return lib.indexUserDocument(context.params.userId, data);
-  });
+    .region("asia-northeast3")
+    .database.ref("/users/{userId}")
+    .onUpdate((change, context) => {
+      const data = change.after.val();
+      //  console.log('user data change after', context.params.userId, data);
+      return lib.indexUserDocument(context.params.userId, data);
+    });
 
 /**
  * Deletes indexing whenever a user document is deleted (user resignation).
@@ -95,7 +95,7 @@ exports.deleteUserIndex = functions.auth.user().onDelete((user) => {
 /**
  * Indexes a post document when it is created.
  *
- * onPostCreate({
+ * onPostCreateIndex({
  *  uid: 'user_ccc',
  *  category: 'discussion',
  *  title: 'I post on discussion',
@@ -104,21 +104,20 @@ exports.deleteUserIndex = functions.auth.user().onDelete((user) => {
  *
  * @test how to run in shell
  * % npm run shell
- * > onPostCreate({uid: 'a'}, {params: {postId: 'p-1'}});
+ * > onPostCreateIndex({uid: 'a'}, {params: {postId: 'p-1'}});
  */
-exports.onPostCreate = functions
-  .region("asia-northeast3")
-  .firestore.document("/posts/{postId}")
-  .onCreate(async (snapshot, context) => {
-    await lib.postCreatePoint(snapshot.data(), context);
-    return lib.indexPost(context.params.postId, snapshot.data());
-  });
+exports.onPostCreateIndex = functions
+    .region("asia-northeast3")
+    .firestore.document("/posts/{postId}")
+    .onCreate((snapshot, context) => {
+      return lib.indexPost(context.params.postId, snapshot.data());
+    });
 
 /**
  * Updates or delete the indexed document when a post is updated or deleted.
  *
  * Update:
- *  updatePostIndex({
+ *  onPostUpdateIndex({
  *   before: {},
  *   after: {
  *    uid: 'user_ccc',
@@ -130,23 +129,23 @@ exports.onPostCreate = functions
  *   })
  *
  *  Delete:
- *  updatePostIndex({
+ *  onPostUpdateIndex({
  *   before: {},
  *   after: { deleted: true }},
  *   { params: { postId: 'psot-id' }
  *  })
  */
-exports.updatePostIndex = functions
-  .region("asia-northeast3")
-  .firestore.document("/posts/{postId}")
-  .onUpdate((change, context) => {
-    const data = change.after.data();
-    if (data["deleted"]) {
-      return lib.deleteIndexedPost(context.params.postId);
-    } else {
-      return lib.indexPost(context.params.postId, data);
-    }
-  });
+exports.onPostUpdateIndex = functions
+    .region("asia-northeast3")
+    .firestore.document("/posts/{postId}")
+    .onUpdate((change, context) => {
+      const data = change.after.data();
+      if (data["deleted"]) {
+        return lib.deleteIndexedPost(context.params.postId);
+      } else {
+        return lib.indexPost(context.params.postId, data);
+      }
+    });
 
 // Indexes a comment document when it is created.
 //
@@ -157,40 +156,39 @@ exports.updatePostIndex = functions
  * % npm run shell
  * > onCommentCreate({uid: 'a'}, {params: {commentId: 'c-1'}});
  */
-exports.onCommentCreate = functions
-  .region("asia-northeast3")
-  .firestore.document("/comments/{commentId}")
-  .onCreate(async (snapshot, context) => {
-    await lib.commentCreatePoint(snapshot.data(), context);
-    return lib.indexComment(context.params.commentId, snapshot.data());
-  });
+exports.onCommentCreateIndex = functions
+    .region("asia-northeast3")
+    .firestore.document("/comments/{commentId}")
+    .onCreate((snapshot, context) => {
+      return lib.indexComment(context.params.commentId, snapshot.data());
+    });
 
 // Updates or delete the indexed document when a comment is updated or deleted.
 //
 // Update:
-//  updateCommentIndex({
+//  onCommentUpdateIndex({
 //   before: {},
 //   after: { content: '...' }},
 //   { params: { commentId: 'comment-id' }
 //  })
 //
 // Delete:
-//  updateCommentIndex({
+//  onCommentUpdateIndex({
 //   before: {},
 //   after: { deleted: true }},
 //   { params: { commentId: 'comment-id' }
 //  })
-exports.updateCommentIndex = functions
-  .region("asia-northeast3")
-  .firestore.document("/comments/{commentId}")
-  .onUpdate((change, context) => {
-    const data = change.after.data();
-    if (data["deleted"]) {
-      return lib.deleteIndexedComment(context.params.commentId);
-    } else {
-      return lib.indexComment(context.params.commentId, data);
-    }
-  });
+exports.onCommentUpdateIndex = functions
+    .region("asia-northeast3")
+    .firestore.document("/comments/{commentId}")
+    .onUpdate((change, context) => {
+      const data = change.after.data();
+      if (data["deleted"]) {
+        return lib.deleteIndexedComment(context.params.commentId);
+      } else {
+        return lib.indexComment(context.params.commentId, data);
+      }
+    });
 
 exports.sendMessageToAll = functions.region("asia-northeast3").https.onRequest(async (req, res) => {
   const query = req.query;
@@ -199,36 +197,37 @@ exports.sendMessageToAll = functions.region("asia-northeast3").https.onRequest(a
 });
 
 exports.sendMessageToTopic = functions
-  .region("asia-northeast3")
-  .https.onRequest(async (req, res) => {
-    res.status(200).send(await lib.sendMessageToTopic(req.query));
-  });
+    .region("asia-northeast3")
+    .https.onRequest(async (req, res) => {
+      res.status(200).send(await lib.sendMessageToTopic(req.query));
+    });
 
 exports.sendMessageToTokens = functions
-  .region("asia-northeast3")
-  .https.onRequest(async (req, res) => {
-    res.status(200).send(await lib.sendMessageToTokens(req.query));
-  });
+    .region("asia-northeast3")
+    .https.onRequest(async (req, res) => {
+      res.status(200).send(await lib.sendMessageToTokens(req.query));
+    });
 
 exports.sendMessageToUsers = functions
-  .region("asia-northeast3")
-  .https.onRequest(async (req, res) => {
-    res.status(200).send(await lib.sendMessageToUsers(req.query));
-  });
+    .region("asia-northeast3")
+    .https.onRequest(async (req, res) => {
+      res.status(200).send(await lib.sendMessageToUsers(req.query));
+    });
 
+// / When a post or a comment had created with 'files', put the doc id on file meta.
 exports.updateFileParentIdForPost = functions
-  .region("asia-northeast3")
-  .firestore.document("/posts/{postId}")
-  .onWrite((change, context) => {
-    return lib.updateFileParentId(context.params.postId, change.after.data());
-  });
+    .region("asia-northeast3")
+    .firestore.document("/posts/{postId}")
+    .onWrite((change, context) => {
+      return lib.updateFileParentId(context.params.postId, change.after.data());
+    });
 
 exports.updateFileParentIdForComment = functions
-  .region("asia-northeast3")
-  .firestore.document("/comments/{commentId}")
-  .onWrite((change, context) => {
-    return lib.updateFileParentId(context.params.commentId, change.after.data());
-  });
+    .region("asia-northeast3")
+    .firestore.document("/comments/{commentId}")
+    .onWrite((change, context) => {
+      return lib.updateFileParentId(context.params.commentId, change.after.data());
+    });
 
 exports.disableUser = functions.region("asia-northeast3").https.onCall(async (data, context) => {
   // / TODO: no need to await
@@ -273,11 +272,11 @@ exports.testAnswer = functions.region("asia-northeast3").https.onCall(async (dat
  * % pointEventRegister({}, {params: {uid: 'a'}})
  */
 exports.pointEventRegister = functions
-  .region("asia-northeast3")
-  .database.ref("/users/{uid}")
-  .onCreate((snapshot, context) => {
-    return lib.userRegisterPoint(snapshot.val(), context);
-  });
+    .region("asia-northeast3")
+    .database.ref("/users/{uid}")
+    .onCreate((snapshot, context) => {
+      return lib.userRegisterPoint(snapshot.val(), context);
+    });
 
 /**
  * Listens for a user sign in and do point event.
@@ -288,10 +287,32 @@ exports.pointEventRegister = functions
  * % pointEventSignIn({after: {lastLogin: 1234}}, {params: {uid: 'a'}})
  */
 exports.pointEventSignIn = functions
-  .region("asia-northeast3")
-  .database.ref("/users/{uid}/lastSignInAt")
-  .onUpdate((change, context) => {
-    return lib.userSignInPoint(change.after.val(), context);
-  });
+    .region("asia-northeast3")
+    .database.ref("/users/{uid}/lastSignInAt")
+    .onUpdate((change, context) => {
+      return lib.userSignInPoint(change.after.val(), context);
+    });
+
+/**
+ * Listens for a user sign in and do point event.
+ * A doc will be created at /point/{uid}/signIn/{pushId}
+ *
+ * @test How to test
+ * % npm run shell
+ * % onPostCreatePoint( {uid: 'a'}, {params: {postId: 'post-1'}} )
+ */
+exports.onPostCreatePoint = functions
+    .region("asia-northeast3")
+    .firestore.document("/posts/{postId}")
+    .onCreate((snapshot, context) => {
+      return lib.postCreatePoint(snapshot.data(), context);
+    });
+
+exports.onCommentCreatePoint = functions
+    .region("asia-northeast3")
+    .firestore.document("/comments/{commentId}")
+    .onCreate((snapshot, context) => {
+      return lib.commentCreatePoint(snapshot.data(), context);
+    });
 
 // **************************** EO POINT FUNCTIONS ****************************

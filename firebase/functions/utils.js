@@ -18,19 +18,19 @@ function removeHtmlTags(content) {
  */
 function decodeHTMLEntities(text) {
   const entities = {
-    amp: "&",
-    apos: "'",
+    "amp": "&",
+    "apos": "'",
     "#x27": "'",
     "#x2F": "/",
     "#39": "'",
     "#47": "/",
-    lt: "<",
-    gt: ">",
-    nbsp: " ",
-    quot: '"',
-    bull: "•",
+    "lt": "<",
+    "gt": ">",
+    "nbsp": " ",
+    "quot": "\"",
+    "bull": "•",
   };
-  return text.replace(/&([^;]+);/gm, function (match, entity) {
+  return text.replace(/&([^;]+);/gm, function(match, entity) {
     return entities[entity] || match;
   });
 }

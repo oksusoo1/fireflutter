@@ -163,9 +163,9 @@ function indexForumDocument(data) {
 async function deleteIndexedPostDocument(id) {
   const promises = [];
   promises.push(
-    Axios.post("https://wonderfulkorea.kr:4431/index.php?api=post/delete", {
-      id: id,
-    })
+      Axios.post("https://wonderfulkorea.kr:4431/index.php?api=post/delete", {
+        id: id,
+      }),
   );
   promises.push(Axios.delete("http://wonderfulkorea.kr:7700/indexes/posts/documents/" + id));
   promises.push(deleteIndexedForumDocument(id));
@@ -175,9 +175,9 @@ async function deleteIndexedPostDocument(id) {
 async function deleteIndexedCommentDocument(id) {
   const promises = [];
   promises.push(
-    Axios.post("https://wonderfulkorea.kr:4431/index.php?api=post/delete", {
-      id: id,
-    })
+      Axios.post("https://wonderfulkorea.kr:4431/index.php?api=post/delete", {
+        id: id,
+      }),
   );
   promises.push(Axios.delete("http://wonderfulkorea.kr:7700/indexes/comments/documents/" + id));
   promises.push(deleteIndexedForumDocument(id));
@@ -313,9 +313,9 @@ async function sendMessageToTopic(query) {
   const payload = topicPayload(query.topic, query);
   try {
     const res = await admin.messaging().send(payload);
-    return { code: "success", result: res };
+    return {code: "success", result: res};
   } catch (e) {
-    return { code: "error", message: e };
+    return {code: "error", message: e};
   }
 }
 
@@ -331,9 +331,9 @@ async function sendMessageToTokens(query) {
 
   try {
     const res = await sendingMessageToTokens(_tokens, payload);
-    return { code: "success", result: res };
+    return {code: "success", result: res};
   } catch (e) {
-    return { code: "error", message: e };
+    return {code: "error", message: e};
   }
 }
 
@@ -343,9 +343,9 @@ async function sendMessageToUsers(query) {
   const tokens = await getTokensFromUids(uids);
   try {
     const res = await sendingMessageToTokens(tokens, payload);
-    return { code: "success", result: res };
+    return {code: "success", result: res};
   } catch (e) {
-    return { code: "error", message: e };
+    return {code: "error", message: e};
   }
 }
 
@@ -403,7 +403,7 @@ async function sendingMessageToTokens(tokens, payload) {
     });
   });
   await Promise.all(tokensToRemove);
-  return { success: successCount, error: errorCount };
+  return {success: successCount, error: errorCount};
 }
 
 function topicPayload(topic, query) {
@@ -468,6 +468,11 @@ function getFilePathFromStorageUrl(url) {
   return parts[parts.length - 1].replaceAll("%2F", "/");
 }
 
+/**
+ * Update post or comment id on the file meta.
+ * @param {*} id post id or comment id.
+ * @param {*} data document data
+ */
 async function updateFileParentId(id, data) {
   if (!data || !data.files || !data.files.length) {
     return;
@@ -502,11 +507,11 @@ async function enableUser(data, context) {
     };
   }
   try {
-    const user = await auth.updateUser(data.uid, { disabled: false });
-    if (user.disabled == false) await rdb.ref("users").child(data.uid).update({ disabled: false });
-    return { code: "success", result: user };
+    const user = await auth.updateUser(data.uid, {disabled: false});
+    if (user.disabled == false) await rdb.ref("users").child(data.uid).update({disabled: false});
+    return {code: "success", result: user};
   } catch (e) {
-    return { code: "error", message: e };
+    return {code: "error", message: e};
   }
 }
 
@@ -519,11 +524,11 @@ async function disableUser(data, context) {
     };
   }
   try {
-    const user = await auth.updateUser(data.uid, { disabled: true });
-    if (user.disabled == true) await rdb.ref("users").child(data.uid).update({ disabled: true });
-    return { code: "success", result: user };
+    const user = await auth.updateUser(data.uid, {disabled: true});
+    if (user.disabled == true) await rdb.ref("users").child(data.uid).update({disabled: true});
+    return {code: "success", result: user};
   } catch (e) {
-    return { code: "error", message: e };
+    return {code: "error", message: e};
   }
 }
 
@@ -555,9 +560,9 @@ async function testAnswer(data, context) {
   // console.log("quizDoc", quizDoc);
   if (typeof quizDoc === "undefined") {
     throw new functions.https.HttpsError(
-      "failed-precondition",
-      "ERROR_NO_QUIZ_BY_THAT_ID"
-      // "The quiz document id does not exists.",
+        "failed-precondition",
+        "ERROR_NO_QUIZ_BY_THAT_ID",
+        // "The quiz document id does not exists.",
     );
   }
 
@@ -574,21 +579,21 @@ async function testAnswer(data, context) {
 
     if (Object.keys(userQuizDoc).indexOf(quizId) != -1) {
       throw new functions.https.HttpsError(
-        "failed-precondition",
-        "ERROR_CANNOT_ANSWER_SAME_QUESTION_TWICE"
-        // "The quiz document id does not exists.",
+          "failed-precondition",
+          "ERROR_CANNOT_ANSWER_SAME_QUESTION_TWICE",
+          // "The quiz document id does not exists.",
       );
     }
   }
 
   await userQuizRef.set(
-    {
-      [quizId]: {
-        answer: userAnswer,
-        result: re,
+      {
+        [quizId]: {
+          answer: userAnswer,
+          result: re,
+        },
       },
-    },
-    { merge: true }
+      {merge: true},
   );
   return {
     quizId: quizId,
@@ -600,9 +605,9 @@ async function testAnswer(data, context) {
 async function sendMessageOnCommentCreate(commentId, data) {
   console.log(commentId, data);
   await rdb
-    .ref("log")
-    .child("sendMessageOnCommentCreate" + commentId)
-    .set({ commentId: commentId, data: data });
+      .ref("log")
+      .child("sendMessageOnCommentCreate" + commentId)
+      .set({commentId: commentId, data: data});
 
   // get root post
   const post = await getPost(data.postId);
@@ -697,6 +702,14 @@ function pointSignInRef(uid) {
   return rdb.ref("point").child(uid).child("signIn");
 }
 
+function pointPostCreateRef(uid) {
+  return rdb.ref("point").child(uid).child("postCreate");
+}
+
+function pointCommentCreateRef(uid) {
+  return rdb.ref("point").child(uid).child("commentCreate");
+}
+
 /**
  * `point` can be increase or decrease.
  * `history` is the total amount of point that the user earned in life time.
@@ -707,13 +720,65 @@ function pointSignInRef(uid) {
  */
 async function updateUserPoint(uid, point) {
   return rdb
-    .ref("point")
-    .child(uid)
-    .child("point")
-    .update({
-      point: admin.database.ServerValue.increment(point),
-      history: admin.database.ServerValue.increment(point),
-    });
+      .ref("point")
+      .child(uid)
+      .child("point")
+      .update({
+        point: admin.database.ServerValue.increment(point),
+        history: admin.database.ServerValue.increment(point),
+      });
+}
+
+/**
+ * Returns random point of the point event
+ * @param {*} eventName Point event name
+ */
+function getRandomPoint(eventName) {
+  return utils.getRandomInt(randomPoint[eventName].min, randomPoint[eventName].max);
+}
+
+/**
+ * Returns user point. It returns 0 if there is no value.
+ * @param {*} uid user id
+ */
+async function getMyPoint(uid) {
+  const snapshot = await rdb.ref("point").child(uid).child("point").child("point").get();
+  if (snapshot.exists) {
+    const val = snapshot.val();
+    return val ? val : 0;
+  } else {
+    return 0;
+  }
+}
+
+/**
+ * Returns true if time has passed.
+ *
+ * Point histories are saved on realtime database.
+ *
+ * @param {*} ref folder reference of event history.
+ * @param {*} eventName event name
+ */
+async function timePassed(ref, eventName) {
+  const lastEventSnapshot = await ref.orderByKey().limitToLast(1).once("value");
+
+  if (lastEventSnapshot.exists()) {
+    const docs = lastEventSnapshot.val();
+
+    const keys = Object.keys(docs);
+    if (keys.length > 0) {
+      const previousTimestamp = docs[keys[0]].timestamp;
+      const within = randomPoint[eventName].within;
+
+      // / Time has passed?
+      if (previousTimestamp + within < utils.getTimestamp()) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+  }
+  return true;
 }
 
 /**
@@ -736,12 +801,9 @@ async function userRegisterPoint(data, context) {
     // Registration point has already given.
     return null;
   }
+  const point = getRandomPoint(pointEvent.register);
 
-  const point = utils.getRandomInt(
-    randomPoint[pointEvent.register].min,
-    randomPoint[pointEvent.register].max
-  );
-  const docData = { timestamp: utils.getTimestamp(), point: point };
+  const docData = {timestamp: utils.getTimestamp(), point: point};
   await ref.set(docData);
   await updateUserPoint(uid, point);
   return ref;
@@ -768,37 +830,12 @@ async function userSignInPoint(data, context) {
 
   const signInRef = pointSignInRef(uid);
 
-  const lastEventSnapshot = await signInRef.orderByKey().limitToLast(1).once("value");
+  if ((await timePassed(signInRef, pointEvent.signIn)) === false) return null;
+  const point = getRandomPoint(pointEvent.signIn);
 
-  if (lastEventSnapshot.exists()) {
-    const val = lastEventSnapshot.val();
-    const keys = Object.keys(val);
-    if (keys.length > 0) {
-      const previousTimestamp = val[keys[0]].timestamp;
-      const within = randomPoint[pointEvent.signIn].within;
-
-      // console.log("current timstamp;", utils.getTimestamp());
-      // console.log("previous + withi;", previousTimestamp + within);
-      // / Time has passed?
-      if (previousTimestamp + within < utils.getTimestamp()) {
-        // console.log("Okay, you can get the point!");
-      } else {
-        // console.log("No, you cannot get it yet");
-        return null;
-      }
-
-      // console.log("val; ", val, within, utils.getTimestamp() + 3);
-    }
-  }
+  const docData = {timestamp: utils.getTimestamp(), point: point};
 
   const ref = signInRef.push();
-
-  const point = utils.getRandomInt(
-    randomPoint[pointEvent.signIn].min,
-    randomPoint[pointEvent.signIn].max
-  );
-
-  const docData = { timestamp: utils.getTimestamp(), point: point };
   await ref.set(docData);
   await updateUserPoint(uid, point);
   return ref;
@@ -807,12 +844,49 @@ async function userSignInPoint(data, context) {
 async function postCreatePoint(data, context) {
   const uid = data.uid;
   const postId = context.params.postId;
-  console.log("uid; ", uid, ", postId", postId);
+  // console.log("uid; ", uid, ", postId", postId);
+  const postCreateRef = pointPostCreateRef(uid);
+  if ((await timePassed(postCreateRef, pointEvent.postCreate)) === false) return null;
+  const point = getRandomPoint(pointEvent.postCreate);
+  const docData = {timestamp: utils.getTimestamp(), point: point};
+
+  // Reference to create a history.
+  const ref = postCreateRef.child(postId);
+
+  // Check if the post has already point event.
+  // Note, this will not happen in production mode since it only works on `onCreate` event.
+  // This is only for test and it might be commented out if you wish.
+  const snapshot = await ref.get();
+  if (snapshot.exists() && snapshot.val()) return null;
+
+  // Set history and update point.
+  await ref.set(docData);
+  await updateUserPoint(uid, point);
+  return ref;
 }
 async function commentCreatePoint(data, context) {
   const uid = data.uid;
   const commentId = context.params.commentId;
-  console.log("uid; ", uid, ", commentId", commentId);
+  // console.log("uid; ", uid, ", commentId", commentId);
+
+  const commentCreateRef = pointCommentCreateRef(uid);
+  if ((await timePassed(commentCreateRef, pointEvent.commentCreate)) === false) return null;
+  const point = getRandomPoint(pointEvent.commentCreate);
+  const docData = {timestamp: utils.getTimestamp(), point: point};
+
+  // Reference to create a history.
+  const ref = commentCreateRef.child(commentId);
+
+  // Check if the comment has already point event.
+  // Note, this will not happen in production mode since it only works on `onCreate` event.
+  // This is only for test and it might be commented out if you wish.
+  const snapshot = await ref.get();
+  if (snapshot.exists() && snapshot.val()) return null;
+
+  // Set history and update point.
+  await ref.set(docData);
+  await updateUserPoint(uid, point);
+  return ref;
 }
 
 // **************************** EO POINT FUNCTIONS ****************************
@@ -864,3 +938,4 @@ exports.randomPoint = randomPoint;
 
 exports.postCreatePoint = postCreatePoint;
 exports.commentCreatePoint = commentCreatePoint;
+exports.getMyPoint = getMyPoint;
