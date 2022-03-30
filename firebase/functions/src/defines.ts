@@ -1,0 +1,1 @@
+export const ERROR_USER_EXISTS = "ERROR_USER_EXISTS";
