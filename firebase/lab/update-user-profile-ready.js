@@ -26,12 +26,12 @@ async function updateProfileReady() {
   const docs = snapshot.val();
   for (let key in docs) {
     console.log("user: ", key, ", profile: ", docs[key].profileReady);
-    if (docs[key].profileReady === true) {
+    if (docs[key].profileReady) {
       rdb
         .ref("users")
         .child(key)
         .child("profileReady")
-        .set(90000000000000 + docs[key].registeredAt);
+        .set(90000000000000 - docs[key].registeredAt);
     }
   }
 }
