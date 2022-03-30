@@ -9,15 +9,27 @@ export class Ref {
   static user(uid: string) {
     return this.users.child(uid);
   }
-  static userPointFolder(uid: string) {
+  static point(uid: string) {
     return this.rdb.ref("point").child(uid);
   }
-  static userPointSignIn(uid: string) {
-    return this.userPointFolder(uid).child("signIn");
+  static pointSignIn(uid: string) {
+    return this.point(uid).child("signIn");
   }
   static userPoint(uid: string) {
-    return this.userPointFolder(uid).child("point");
+    return this.point(uid).child("point");
   }
+
+  /**
+   * Returns the reference of point register of the user of uid
+   *
+   * Use this function to get user's register point document.
+   *
+   * @param {*} uid uid
+   */
+  static pointRegister(uid: string) {
+    return this.point(uid).child("register");
+  }
+
   static get messageTokens() {
     return this.rdb.ref("message-tokens");
   }

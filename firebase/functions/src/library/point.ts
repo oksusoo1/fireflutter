@@ -41,11 +41,11 @@ export class Point {
    * @param context context
    * @return Reference of the point history document
    */
-  static async signInPoint(after: any, context: any) {
+  static async signInPoint(after: any, context: any): Promise<null | admin.database.Reference> {
     // console.log("data; ", after);
     const uid = context.params.uid;
 
-    const signInRef = Ref.userPointSignIn(uid);
+    const signInRef = Ref.pointSignIn(uid);
 
     if ((await Point.timePassed(signInRef, EventName.signIn)) === false) return null;
     const point = this.getRandomPoint(EventName.signIn);
@@ -53,6 +53,34 @@ export class Point {
     const docData = { timestamp: Utils.getTimestamp(), point: point };
 
     const ref = signInRef.push();
+    await ref.set(docData);
+    await this.updateUserPoint(uid, point);
+    return ref;
+  }
+
+  /**
+   * Registration point event
+   *
+   * One time point event for new users.
+   *
+   * Note, it gives point only one time.
+   *
+   * @param {*} data The data of the document - /users/<uid>
+   * @param {*} context The context.params.uid is the user's uid.
+   *
+   * @return reference of the point event document
+   */
+  static async registerPoint(data: any, context: any): Promise<null | admin.database.Reference> {
+    const uid = context.params.uid;
+    const ref = Ref.pointRegister(uid);
+    const snapshot = await ref.get();
+    if (snapshot.exists()) {
+      // Registration point has already given.
+      return null;
+    }
+    const point = this.getRandomPoint(EventName.register);
+
+    const docData = { timestamp: Utils.getTimestamp(), point: point };
     await ref.set(docData);
     await this.updateUserPoint(uid, point);
     return ref;
@@ -119,7 +147,7 @@ export class Point {
    * @param {*} point point to update
    */
   static updateUserPoint(uid: string, point: number) {
-    console.log("path; ", Ref.userPoint(uid).key);
+    // console.log("path; ", Ref.userPoint(uid).key);
     return Ref.userPoint(uid).update({
       point: admin.database.ServerValue.increment(point),
       history: admin.database.ServerValue.increment(point),
