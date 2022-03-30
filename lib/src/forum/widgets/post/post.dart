@@ -52,10 +52,13 @@ class Post extends StatelessWidget {
           },
           padding: padding,
         ),
-        PointBuilder(
-          uid: post.uid,
-          id: post.id,
-          type: 'post',
+        Padding(
+          padding: const EdgeInsets.only(left: 16.0),
+          child: PointBuilder(
+            uid: post.uid,
+            id: post.id,
+            type: 'post',
+          ),
         ),
         if (post.summary != '')
           Container(
