@@ -35,11 +35,7 @@ async function updateProfileReady() {
         .child("profileReady")
         .set(90000000000000 - registeredAt);
     } else {
-      rdb
-        .ref("users")
-        .child(key)
-        .child("profileReady")
-        .set(90000000000001 - registeredAt);
+      rdb.ref("users").child(key).child("profileReady").set(90000000000001);
     }
   }
 }
