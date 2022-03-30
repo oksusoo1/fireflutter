@@ -5,11 +5,22 @@ import { MeiliSearch } from "meilisearch";
 import { MeilisearchIndex } from "../../src/lib/meilisearchIndex";
 import { Utils } from "../../src/lib/utils";
 
-const client = new MeiliSearch({ 
+const client = new MeiliSearch({
   host: "http://wonderfulkorea.kr:7700",
 });
 
 describe("Meilisearch forum document indexing", () => {
+  it("prepares test", async () => {
+    const indexFilters = await client.index("posts-and-comments").getFilterableAttributes();
+
+    console.log("Post filterables: ", indexFilters);
+    if (!indexFilters.includes("id")) {
+      indexFilters.push("id");
+      console.log("Updating post filterables: ", indexFilters);
+      await client.index("posts").updateFilterableAttributes(indexFilters);
+    }
+  });
+
   it("simple forum document indexing and deleting test", async () => {
     const timestamp = new Date().getTime().toString();
     console.log("timestamp :", timestamp);
