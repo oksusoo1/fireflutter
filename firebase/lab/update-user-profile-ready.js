@@ -25,13 +25,23 @@ async function updateProfileReady() {
   const snapshot = await rdb.ref("users").once("value");
   const docs = snapshot.val();
   for (let key in docs) {
-    console.log("user: ", key, ", profile: ", docs[key].profileReady);
+    console.log(
+      "user: ",
+      key,
+      ", profileReady: ",
+      docs[key].profileReady,
+      ", registeredAt: ",
+      docs[key].registeredAt
+    );
     if (docs[key].profileReady === true) {
-      rdb
+      let registeredAt = 0;
+      if (docs[key].registeredAt) registeredAt = docs[key].registeredAt;
+
+      await rdb
         .ref("users")
         .child(key)
         .child("profileReady")
-        .set(90000000000000 + docs[key].registeredAt);
+        .set(90000000000000 + registeredAt);
     }
   }
 }
