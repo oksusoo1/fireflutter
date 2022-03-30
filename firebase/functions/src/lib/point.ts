@@ -35,7 +35,7 @@ export const randomPoint = {
 
 export class Point {
   static async signInPoint(after: any, context: any) {
-    // console.log("data; ", data);
+    // console.log("data; ", after);
     const uid = context.params.uid;
 
     const signInRef = Ref.userPointSignIn(uid);
@@ -49,6 +49,20 @@ export class Point {
     await ref.set(docData);
     await this.updateUserPoint(uid, point);
     return ref;
+  }
+
+  /**
+   * Returns user point. It returns 0 if there is no value.
+   * @param {*} uid user id
+   */
+  static async getUserPoint(uid: string): Promise<number> {
+    const snapshot = await Ref.userPoint(uid).child("point").get();
+    if (snapshot.exists()) {
+      const val = snapshot.val();
+      return val ? val : 0;
+    } else {
+      return 0;
+    }
   }
 
   /**
@@ -97,7 +111,8 @@ export class Point {
    * @param {*} uid uid
    * @param {*} point point to update
    */
-  static async updateUserPoint(uid: string, point: number) {
+  static updateUserPoint(uid: string, point: number) {
+    console.log("path; ", Ref.userPoint(uid).key);
     return Ref.userPoint(uid).update({
       point: admin.database.ServerValue.increment(point),
       history: admin.database.ServerValue.increment(point),

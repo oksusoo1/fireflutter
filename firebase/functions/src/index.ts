@@ -1,14 +1,10 @@
 import * as admin from "firebase-admin";
 import * as functions from "firebase-functions";
 import { Point } from "./lib/point";
-// import databaseUrlJson from "../../database-url.json";
-
-// import { Point } from "./lib/point";
-
-// console.log("databaseUrlJson; ", databaseUrlJson, databaseUrlJson.databaseURL);
+import * as wonderfulKorea from "../../wonderful-korea.config";
 
 admin.initializeApp({
-  databaseURL: "https://withcenter-test-project-default-rtdb.asia-southeast1.firebasedatabase.app/",
+  databaseURL: wonderfulKorea.config.databaseURL,
 });
 
 // Start writing Firebase Functions
@@ -31,7 +27,5 @@ export const pointEventSignIn = functions
   .region("asia-northeast3")
   .database.ref("/users/{uid}/lastSignInAt")
   .onUpdate((change, context) => {
-    // console.log("databaseUrlJson; ", databaseUrlJson, databaseUrlJson.databaseURL);
-
     return Point.signInPoint(change.after.val(), context);
   });
