@@ -13,14 +13,14 @@ export class PushMessaging {
 
     const _tokens = [];
     const getTokensPromise = [];
-    for (let u of _uids) {
+    for (const u of _uids) {
       getTokensPromise.push(
-        Ref.messageTokens.orderByChild("uid").equalTo(u).get()
+          Ref.messageTokens.orderByChild("uid").equalTo(u).get()
       );
     }
 
     const result = await Promise.all(getTokensPromise);
-    for (let i in result) {
+    for (const i in result) {
       if (!result[i]) continue;
       const tokens = result[i].val();
       if (!tokens) continue;
@@ -43,12 +43,12 @@ export class PushMessaging {
 
     const re = [];
     const getTopicsPromise = [];
-    for (let uid of _uids) {
+    for (const uid of _uids) {
       getTopicsPromise.push(Ref.userSetting(uid, "topic").get());
     }
     const result = await Promise.all(getTopicsPromise);
 
-    for (let i in result) {
+    for (const i in result) {
       if (!result[i]) continue;
       const subscriptions = result[i].val();
       // / Get user who subscribe to topic

@@ -1,9 +1,9 @@
 import "mocha";
 import { expect } from "chai";
 
-import { EventName, Point, randomPoint } from "../../src/lib/point";
+import { EventName, Point, randomPoint } from "../../src/library/point";
 import { FirebaseAppInitializer } from "../firebase-app-initializer";
-import { Utils } from "../../src/lib/utils";
+import { Utils } from "../../src/library/utils";
 
 new FirebaseAppInitializer();
 
@@ -24,7 +24,7 @@ describe("Sign-in point test", () => {
     // expect success
     expect(ref).not.to.be.null;
 
-    // get bonus point;
+    // get bonus point
     const snapshot = await ref!.get();
     const data = snapshot.val();
 

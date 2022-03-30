@@ -1,5 +1,5 @@
 import * as admin from "firebase-admin";
-import * as wonderfulKorea from "../../wonderful-korea.config";
+import * as wonderfulKorea from "../src/wonderful-korea.config";
 
 export class FirebaseAppInitializer {
   constructor() {

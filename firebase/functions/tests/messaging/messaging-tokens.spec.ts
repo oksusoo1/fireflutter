@@ -2,10 +2,10 @@ import "mocha";
 // import { expect } from "chai";
 
 import { FirebaseAppInitializer } from "../firebase-app-initializer";
-import { Test } from "../../src/lib/test";
-// import { Ref } from "../../src/lib/ref";
+import { Test } from "../../src/library/test";
+// import { Ref } from "../../src/library/ref";
 
-// import { PushMessaging } from "../../src/lib/push-messaging";
+// import { PushMessaging } from "../../src/library/push-messaging";
 
 new FirebaseAppInitializer();
 
@@ -45,7 +45,7 @@ describe("get tokens test", () => {
     // const res3 = await PushMessaging.getTokensFromUids([userB, userB]);
     // expect(res3.length).equal(1, "B and B must 1 token");
 
-    //create user
+    // create user
 
     // update user tokens
 

@@ -1,7 +1,7 @@
 import "mocha";
 import { expect } from "chai";
 
-import { Utils } from "../../src/lib/utils";
+import { Utils } from "../../src/library/utils";
 
 describe("Remove html tags", () => {
   it("simple html tag remove test", async () => {

@@ -35,9 +35,9 @@ export class MeilisearchIndex {
   static meilisearchExcludedCategories = ["quiz"];
 
   /**
-   *
-   * @param data data to be indexed.
-   * @returns Promise
+   * Index
+   * @param data data to be index
+   * @return Promise<any>
    */
   static indexForumDocument(data: PostDocument | CommentDocument): Promise<any> {
     return axios.post("http://wonderfulkorea.kr:7700/indexes/posts-and-comments/documents", data);
@@ -46,7 +46,7 @@ export class MeilisearchIndex {
   /**
    *
    * @param id document ID to delete
-   * @returns Promise
+   * @return Promise
    */
   static deleteIndexedForumDocument(id: string) {
     return axios.delete("http://wonderfulkorea.kr:7700/indexes/posts-and-comments/documents/" + id);
@@ -57,7 +57,7 @@ export class MeilisearchIndex {
    *
    * @param id post id
    * @param data post data to index
-   * @returns Promise
+   * @return Promise
    */
   static async indexPostDocument(id: string, data: PostDocument) {
     let _files = "";
@@ -95,14 +95,14 @@ export class MeilisearchIndex {
    * Deletes indexed post document.
    *
    * @param id Post ID of the document to be deleted.
-   * @returns Promise
+   * @return Promise
    */
   static async deleteIndexedPostDocument(id: string) {
     const promises = [];
     promises.push(
-      axios.post("https://wonderfulkorea.kr:4431/index.php?api=post/delete", {
-        id: id,
-      })
+        axios.post("https://wonderfulkorea.kr:4431/index.php?api=post/delete", {
+          id: id,
+        })
     );
     promises.push(axios.delete("http://wonderfulkorea.kr:7700/indexes/posts/documents/" + id));
     promises.push(this.deleteIndexedForumDocument(id));
@@ -114,7 +114,7 @@ export class MeilisearchIndex {
    *
    * @param id Document ID
    * @param data Document data
-   * @returns Promise
+   * @return Promise
    */
   static async indexCommentDocument(id: string, data: CommentDocument) {
     let _files = "";
@@ -148,14 +148,14 @@ export class MeilisearchIndex {
    * Deletes indexed comment document.
    *
    * @param id Comment ID of the document to be deleted.
-   * @returns Promise
+   * @return Promise
    */
   static async deleteIndexedCommentDocument(id: string) {
     const promises = [];
     promises.push(
-      axios.post("https://wonderfulkorea.kr:4431/index.php?api=post/delete", {
-        id: id,
-      })
+        axios.post("https://wonderfulkorea.kr:4431/index.php?api=post/delete", {
+          id: id,
+        })
     );
     promises.push(axios.delete("http://wonderfulkorea.kr:7700/indexes/comments/documents/" + id));
     promises.push(this.deleteIndexedForumDocument(id));
@@ -167,7 +167,7 @@ export class MeilisearchIndex {
    *
    * @param {*} uid user id.
    * @param {*} data user data to index.
-   * @returns promise
+   * @return promise
    */
   async indexUserDocument(uid: string, data: any = {}) {
     const _data = {
@@ -187,7 +187,7 @@ export class MeilisearchIndex {
    * Deletes user related documents on realtime database and meilisearch indexing.
    *
    * @param {*} uid user id to delete.
-   * @returns promise
+   * @return promise
    */
   async deleteIndexedUserDocument(uid: string) {
     const promises = [];
@@ -202,9 +202,14 @@ export class MeilisearchIndex {
     return Promise.all(promises);
   }
 
-  /// FOR TESTING
-  /// TODO: move this code somewhere else.
-  static createTestPostDocument(data: { id: string; uid?: string; title?: string; content?: string }): PostDocument {
+  // / FOR TESTING
+  // / TODO: move this code somewhere else.
+  static createTestPostDocument(data: {
+    id: string;
+    uid?: string;
+    title?: string;
+    content?: string;
+  }): PostDocument {
     return {
       id: data.id,
       uid: data.uid ?? new Date().getTime().toString(),

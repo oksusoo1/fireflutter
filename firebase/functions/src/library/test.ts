@@ -9,7 +9,7 @@ export class Test {
    * It creates a user document under /users/<uid> with user data and returns user ref.
    *
    * @param {*} uid
-   * @returns - reference of newly created user's document.
+   * @return - reference of newly created user's document.
    *
    * @example create a user.
    * test.createTestUser(userA).then((v) => console.log(v));
@@ -41,7 +41,7 @@ export class Test {
    * delets a test user from realtime database.
    *
    * @param {*} uid
-   * @returns - reference.
+   * @return - reference.
    */
   static async deleteTestUser(uid: string) {
     return Ref.rdb.ref("users").child(uid).remove();
