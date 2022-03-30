@@ -16,4 +16,18 @@ export class Utils {
   static getRandomInt(min: number, max: number) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
   }
+  /**
+   * Wait for milliseconds.
+   *
+   * @param ms milliseconds
+   * @returns Promise
+   *
+   * @example
+   *  await Utils.delay(3000);
+   */
+  static async delay(ms: number) {
+    return new Promise((res) => {
+      setTimeout(res, ms);
+    });
+  }
 }

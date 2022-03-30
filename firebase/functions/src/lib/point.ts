@@ -34,6 +34,13 @@ export const randomPoint = {
 };
 
 export class Point {
+  /**
+   * Update sign-in bonus event.
+   *
+   * @param after after value of Document update
+   * @param context context
+   * @returns Reference of the point history document
+   */
   static async signInPoint(after: any, context: any) {
     // console.log("data; ", after);
     const uid = context.params.uid;
