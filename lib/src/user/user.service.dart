@@ -35,7 +35,7 @@ class UserService with FirestoreMixin, DatabaseMixin {
   bool get emailIsVerified => currentUser?.emailVerified ?? false;
 
   /// To display email on screen, use this.
-  String get displayEmail => email == '' ? 'NO-EMAIL' : email;
+  String get displayEmail => email == '' ? 'No email' : email;
 
   String get photoUrl => user.photoUrl;
 
@@ -84,18 +84,20 @@ class UserService with FirestoreMixin, DatabaseMixin {
             /// Put user uid first, and use the model.
             user = UserModel(uid: uid);
 
-            /// Update last sign in stamp
-            user.updateLastSignInAt();
-
             await user.load();
+
+            /// Update last sign in stamp
+            if (user.docExists) {
+              user.updateLastSignInAt();
+            } else {
+              user.create();
+            }
 
             userSubscription = doc.onValue.listen((event) {
               /// ! Warning, Don't change user doc inside here. It will perpetually run.
 
               /// if user doc does not exists, create one.
-              if (event.snapshot.exists == false) {
-                create();
-              } else {
+              if (event.snapshot.exists) {
                 /// User profile information has been updated.
                 user = UserModel.fromJson(event.snapshot.value, _user.uid);
                 changes.add(user);
@@ -141,10 +143,6 @@ class UserService with FirestoreMixin, DatabaseMixin {
 
   signOut() async {
     FirebaseAuth.instance.signOut();
-  }
-
-  Future<void> create() {
-    return user.create();
   }
 
   /// Update login user's document on `/users/{userDoc}` in realtime database.

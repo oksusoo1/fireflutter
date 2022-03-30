@@ -16,7 +16,7 @@ class UserModel with FirestoreMixin, DatabaseMixin {
     this.photoUrl = '',
     this.birthday = 0,
     this.gender = '',
-    this.profileReady = 0,
+    this.profileReady = 90000000000000,
     this.isAdmin = false,
     this.disabled = false,
     this.registeredAt = 0,
@@ -52,7 +52,11 @@ class UserModel with FirestoreMixin, DatabaseMixin {
   String uid;
 
   /// If id is empty string, then the model has no user info or the doc of the model does not exists.
+  /// * warning - it returns true as long as [uid] is set even if the user document does not exists.
   bool get exists => uid != '';
+
+  /// returns true if user document is truely exists.
+  bool get docExists => registeredAt > 0;
   bool isAdmin;
   bool disabled;
 
@@ -111,7 +115,7 @@ class UserModel with FirestoreMixin, DatabaseMixin {
 
   /// It becomes int when the user's profile is ready.
   int profileReady;
-  bool get ready => profileReady > 0;
+  bool get ready => profileReady < 90000000000000;
 
   bool get signedIn => FirebaseAuth.instance.currentUser != null;
   bool get signedOut => signedIn == false;
@@ -171,6 +175,8 @@ class UserModel with FirestoreMixin, DatabaseMixin {
     return _userDoc.set({
       'registeredAt': ServerValue.timestamp,
       'updatedAt': ServerValue.timestamp,
+      'profileReady': 90000000000000,
+      'lastSignInAt': ServerValue.timestamp,
     });
   }
 
@@ -185,7 +191,9 @@ class UserModel with FirestoreMixin, DatabaseMixin {
   Future<void> load() async {
     final snapshot = await _userDoc.get();
     final u = UserModel.fromJson(snapshot.value, uid);
-    copyWith(u);
+    if (u.docExists) {
+      copyWith(u);
+    }
   }
 
   /// Copy user data from antoher user model.
@@ -201,6 +209,8 @@ class UserModel with FirestoreMixin, DatabaseMixin {
     birthday = u.birthday;
     gender = u.gender;
     profileReady = u.profileReady;
+    registeredAt = u.registeredAt;
+    updatedAt = u.updatedAt;
   }
 
   /// Return empty string('') if there is no error on profile.
@@ -222,16 +232,17 @@ class UserModel with FirestoreMixin, DatabaseMixin {
     /// If there is no error on profile,
     if (profileError == '') {
       /// But the profile is set to false on database, then set it true.
-      if (profileReady == 0) {
-        return update(field: 'profileReady', value: 90000000000000 + registeredAt);
+      if (profileReady == 90000000000000) {
+        /// It does +1 here to block perpetual running. This may happens somehow when registeredAt is 0.
+        return update(field: 'profileReady', value: 90000000000000 - registeredAt + 1);
       }
     }
 
     /// If there is error on profile,
     else {
       // And the profile is set to true on database, then set it false.
-      if (profileReady != 0) {
-        return update(field: 'profileReady', value: 0);
+      if (profileReady != 90000000000000) {
+        return update(field: 'profileReady', value: 90000000000000);
       }
     }
   }
