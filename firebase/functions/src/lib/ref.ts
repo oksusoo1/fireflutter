@@ -3,6 +3,12 @@ export class Ref {
   static get rdb() {
     return admin.database();
   }
+  static get users() {
+    return this.rdb.ref("users");
+  }
+  static user(uid: string) {
+    return this.users.child(uid);
+  }
   static userPointFolder(uid: string) {
     return this.rdb.ref("point").child(uid);
   }

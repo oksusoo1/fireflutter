@@ -1,4 +1,7 @@
+import { UserData } from "../interfaces/user.interface";
 import { Ref } from "./ref";
+import { ERROR_USER_EXISTS } from "../defines";
+
 export class Test {
   /**
    * Create a user for test
@@ -6,25 +9,31 @@ export class Test {
    * It creates a user document under /users/<uid> with user data and returns user ref.
    *
    * @param {*} uid
-   * @returns - reference.
+   * @returns - reference of newly created user's document.
    *
    * @example create a user.
    * test.createTestUser(userA).then((v) => console.log(v));
    */
-  static async createTestUser(uid: string, data?: any) {
+  static async createTestUser(uid: string, data?: UserData) {
+    // check if the user of uid exists, then return null
+
+    const ref = await Ref.user(uid).get();
+    if (ref.exists()) throw ERROR_USER_EXISTS;
+
     const timestamp = new Date().getTime();
 
-    let userData = {
+    const userData: UserData = {
       nickname: "testUser" + timestamp,
       firstName: "firstName" + timestamp,
       lastName: "lastName" + timestamp,
       registeredAt: timestamp,
     };
-    console.log(userData);
+
     if (data !== null) {
-      userData = data;
+      Object.assign(userData, data);
     }
-    await Ref.rdb.ref("users").child(uid).set(userData);
+
+    await Ref.user(uid).set(userData);
     return Ref.rdb.ref("users").child(uid);
   }
 
