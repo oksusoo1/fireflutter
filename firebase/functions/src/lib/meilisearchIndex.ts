@@ -22,6 +22,15 @@ export interface CommentDocument extends ForumDocument {
   parentId: string;
 }
 
+/**
+ * TODO: Test
+ * - indexPostDocument
+ * - deleteIndexedPostDocument
+ * - indexCommentDocument
+ * - deleteIndexedCommentDocument
+ * - indexUserDocument
+ * - deleteIndexedUserDocument
+ */
 export class MeilisearchIndex {
   static meilisearchExcludedCategories = ["quiz"];
 
@@ -35,7 +44,7 @@ export class MeilisearchIndex {
   }
 
   /**
-   * 
+   *
    * @param id document ID to delete
    * @returns Promise
    */
@@ -44,7 +53,7 @@ export class MeilisearchIndex {
   }
 
   /**
-   * Indexes a post
+   * Creates or update a post document index.
    *
    * @param id post id
    * @param data post data to index
@@ -82,6 +91,31 @@ export class MeilisearchIndex {
     return Promise.all(promises);
   }
 
+  /**
+   * Deletes indexed post document.
+   *
+   * @param id Post ID of the document to be deleted.
+   * @returns Promise
+   */
+  static async deleteIndexedPostDocument(id: string) {
+    const promises = [];
+    promises.push(
+      axios.post("https://wonderfulkorea.kr:4431/index.php?api=post/delete", {
+        id: id,
+      })
+    );
+    promises.push(axios.delete("http://wonderfulkorea.kr:7700/indexes/posts/documents/" + id));
+    promises.push(this.deleteIndexedForumDocument(id));
+    return Promise.all(promises);
+  }
+
+  /**
+   * Creates or update a comment document index.
+   *
+   * @param id Document ID
+   * @param data Document data
+   * @returns Promise
+   */
   static async indexCommentDocument(id: string, data: CommentDocument) {
     let _files = "";
     if (data.files && data.files.length) {
@@ -98,18 +132,75 @@ export class MeilisearchIndex {
       createdAt: Utils.getTimestamp(data.createdAt),
       updatedAt: Utils.getTimestamp(data.updatedAt),
     };
-  
+
     const promises = [];
-  
+
     promises.push(axios.post("https://wonderfulkorea.kr:4431/index.php?api=post/record", _data));
-  
+
     _data.content = Utils.removeHtmlTags(_data.content);
     promises.push(axios.post("http://wonderfulkorea.kr:7700/indexes/comments/documents", _data));
     promises.push(this.indexForumDocument(_data));
-  
+
     return Promise.all(promises);
   }
-  
+
+  /**
+   * Deletes indexed comment document.
+   *
+   * @param id Comment ID of the document to be deleted.
+   * @returns Promise
+   */
+  static async deleteIndexedCommentDocument(id: string) {
+    const promises = [];
+    promises.push(
+      axios.post("https://wonderfulkorea.kr:4431/index.php?api=post/delete", {
+        id: id,
+      })
+    );
+    promises.push(axios.delete("http://wonderfulkorea.kr:7700/indexes/comments/documents/" + id));
+    promises.push(this.deleteIndexedForumDocument(id));
+    return Promise.all(promises);
+  }
+
+  /**
+   * Creates or update a user document index.
+   *
+   * @param {*} uid user id.
+   * @param {*} data user data to index.
+   * @returns promise
+   */
+  async indexUserDocument(uid: string, data: any = {}) {
+    const _data = {
+      id: uid,
+      gender: data.gender ?? "",
+      firstName: data.firstName ?? "",
+      middleName: data.middleName ?? "",
+      lastName: data.lastName ?? "",
+      photoUrl: data.photoUrl ?? "",
+      // registeredAt: data.registeredAt ?? 0,
+      // updatedAt: data.updatedAt ?? 0,
+    };
+    return axios.post("http://wonderfulkorea.kr:7700/indexes/users/documents", _data);
+  }
+
+  /**
+   * Deletes user related documents on realtime database and meilisearch indexing.
+   *
+   * @param {*} uid user id to delete.
+   * @returns promise
+   */
+  async deleteIndexedUserDocument(uid: string) {
+    const promises = [];
+
+    // Remove user data under it's uid from:
+    // - 'users' and 'user-settings' realtime database,
+    // - 'quiz-history' firestore database.
+    // promises.push(rdb.ref("users").child(uid).remove());
+    // promises.push(rdb.ref("user-settings").child(uid).remove());
+    // promises.push(db.collection("quiz-history").doc(uid).delete());
+    promises.push(axios.delete("http://wonderfulkorea.kr:7700/indexes/users/documents/" + uid));
+    return Promise.all(promises);
+  }
 
   /// FOR TESTING
   /// TODO: move this code somewhere else.

@@ -44,7 +44,7 @@ export class Utils {
       return content;
     }
   }
-  
+
   /**
    * Divide an array into many
    *
