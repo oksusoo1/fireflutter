@@ -16,9 +16,11 @@ class UserModel with FirestoreMixin, DatabaseMixin {
     this.photoUrl = '',
     this.birthday = 0,
     this.gender = '',
-    this.profileReady = false,
+    this.profileReady = 0,
     this.isAdmin = false,
     this.disabled = false,
+    this.registeredAt = 0,
+    this.updatedAt = 0,
   });
 
   final fields = [
@@ -58,6 +60,9 @@ class UserModel with FirestoreMixin, DatabaseMixin {
   String middleName;
   String lastName;
   String nickname;
+
+  int registeredAt;
+  int updatedAt;
 
   /// Use display name to display user name.
   /// Don't confuse the displayName of FirebaseAuth.
@@ -104,8 +109,9 @@ class UserModel with FirestoreMixin, DatabaseMixin {
     return age;
   }
 
-  /// It becomes true when the user's profile is ready.
-  bool profileReady;
+  /// It becomes int when the user's profile is ready.
+  int profileReady;
+  bool get ready => profileReady > 0;
 
   bool get signedIn => FirebaseAuth.instance.currentUser != null;
   bool get signedOut => signedIn == false;
@@ -127,7 +133,9 @@ class UserModel with FirestoreMixin, DatabaseMixin {
       photoUrl: data['photoUrl'] ?? '',
       birthday: data['birthday'] ?? 0,
       gender: data['gender'] ?? '',
-      profileReady: data['profileReady'] ?? false,
+      profileReady: data['profileReady'] ?? 0,
+      registeredAt: data['registeredAt'] ?? 0,
+      updatedAt: data['updatedAt'] ?? 0,
     );
   }
 
@@ -207,20 +215,22 @@ class UserModel with FirestoreMixin, DatabaseMixin {
   }
 
   /// Set user profile ready or not.
+  /// * Note that, this only updates when the value changes. If the value does not change, then it does not update.
+  /// ! To prevent perpetual update.
   Future<void> updateProfileReady() async {
     /// If there is no error on profile,
     if (profileError == '') {
       /// But the profile is set to false on database, then set it true.
-      if (profileReady == false) {
-        return update(field: 'profileReady', value: true);
+      if (profileReady == 0) {
+        return update(field: 'profileReady', value: 90000000000000 + registeredAt);
       }
     }
 
     /// If there is error on profile,
     else {
       // And the profile is set to true on database, then set it false.
-      if (profileReady) {
-        return update(field: 'profileReady', value: false);
+      if (profileReady != 0) {
+        return update(field: 'profileReady', value: 0);
       }
     }
   }

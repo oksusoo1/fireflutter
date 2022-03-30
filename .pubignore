@@ -13,10 +13,10 @@ example/lib/service/config.dart
 
 
 readme
-
 test
-
 firebase
+firebase-admin-sdk-key.json
+database-url.json
 
 
 

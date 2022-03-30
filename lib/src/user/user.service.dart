@@ -89,17 +89,6 @@ class UserService with FirestoreMixin, DatabaseMixin {
 
             await user.load();
 
-            // /// Update profile ready or not?
-            // if (profileReady) {
-            //   if (user.profileReady == false) {
-            //     user.update(field: 'profileReady', value: true);
-            //   }
-            // } else {
-            //   if (user.profileReady) {
-            //     user.update(field: 'profileReady', value: false);
-            //   }
-            // }
-
             userSubscription = doc.onValue.listen((event) {
               /// ! Warning, Don't change user doc inside here. It will perpetually run.
 
@@ -179,32 +168,10 @@ class UserService with FirestoreMixin, DatabaseMixin {
     return user.updatePhotoUrl(url);
   }
 
-  // @Deprecated('This is useless method.')
-  // Future<UserModel> get() async {
-  //   final doc = await _myDoc.get();
-  //   if (doc.exists) {
-  //     final user = UserModel.fromJson(doc.value, doc.key!);
-  //     return user;
-  //   } else {
-  //     return UserModel(uid: currentUser?.uid ?? '');
-  //   }
-  // }
-
   /// Update wether if the user is an admin or not.
   /// Refer readme for details
   Future<void> updateAdminStatus() async {
     user.updateAdminStatus();
-    // final DocumentSnapshot doc = await adminsDoc.get();
-    // if (doc.exists) {
-    //   final data = doc.data()! as Map<String, dynamic>;
-    //   if (data[user.uid] == true) {
-    //     await update(field: 'isAdmin', value: true);
-    //     user.isAdmin = true;
-    //   } else {
-    //     await update(field: 'isAdmin', value: null);
-    //     user.isAdmin = false;
-    //   }
-    // }
   }
 
   /// It gets other user's document.
@@ -235,23 +202,6 @@ class UserService with FirestoreMixin, DatabaseMixin {
     return others[uid]!;
   }
 
-  // String get profileError {
-  //   if (photoUrl == '') return ERROR_NO_PROFILE_PHOTO;
-  //   if (email == '') return ERROR_NO_EMAIL;
-  //   if (user.firstName == '') return ERROR_NO_FIRST_NAME;
-  //   if (user.lastName == '') return ERROR_NO_LAST_NAME;
-  //   if (user.gender == '') return ERROR_NO_GENER;
-  //   if (user.birthday == 0) return ERROR_NO_BIRTHDAY;
-  //   return '';
-  // }
-
-  // bool get profileReady {
-  //   if (profileError == '')
-  //     return true;
-  //   else
-  //     return false;
-  // }
-
   Future<dynamic> blockUser(String uid) async {
     UserModel user = await getOtherUserDoc(uid);
     if (user.disabled) return ERROR_USER_ALREADY_BLOCKED;
@@ -262,7 +212,7 @@ class UserService with FirestoreMixin, DatabaseMixin {
       print(res);
       UserModel newUser = UserModel.fromJson(res, uid); // error test
       // update other user profile
-      print(newUser);
+      // print(newUser);
       return newUser;
     } catch (e) {
       print(e);

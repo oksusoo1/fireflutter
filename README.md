@@ -477,7 +477,11 @@ UserSettingDoc(
 
 ## Profile ready
 
-- 
+- When user completes to update his profile, the app sets the user's profile field to be an int.
+  - The criteria of user profile properties are in `UserModel.profileError`. If any of this property is missing, the profile is not ready.
+
+- `UserService` is listening user's profile change. And when user updates his profile, it sets an int value to `profileReady` and with that int value, app can order(sort) by user's registered date.
+  - So, if you want to dispaly new users who completed their profile, use `.orderByChild('profileReady').limitToLast(100)`.
 
 
 ## Test users
