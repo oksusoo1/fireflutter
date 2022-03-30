@@ -30,4 +30,18 @@ export class Utils {
       setTimeout(res, ms);
     });
   }
+
+  /**
+   * Convert html entities into code.
+   *
+   * @param content string with HTML string.
+   * @returns string without html tags.
+   */
+  static removeHtmlTags(content: string) {
+    if (content) {
+      return content.replace(/<[^>]+>/g, "");
+    } else {
+      return content;
+    }
+  }
 }
