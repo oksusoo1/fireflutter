@@ -49,6 +49,7 @@ Table of contents
   - [UserModel](#usermodel)
   - [UserService](#userservice)
   - [User setting service](#user-setting-service)
+  - [Profile ready](#profile-ready)
   - [Test users](#test-users)
   - [Phone number sign-in](#phone-number-sign-in)
   - [Email authentication under phone sign-in](#email-authentication-under-phone-sign-in)
@@ -471,6 +472,11 @@ UserSettingDoc(
   },
 )
 ```
+
+
+## Profile ready
+
+- 
 
 
 ## Test users
@@ -1602,4 +1608,8 @@ PointBuilder(
 ## Senario
 
 - When a user registers, he gets registration point. and If here sign out and sign in (or close app and run again) immediately, he can get sign-in point.
+
+- Point histories are on the `/point/<uid>/...` in realtime database.
+  - You can develop point history screen. since the histories are splited into many sub folders,
+    It is one way to collect all of the histories on the folders by day, week, month, year.
 
