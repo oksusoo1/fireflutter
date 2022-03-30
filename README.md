@@ -481,8 +481,11 @@ UserSettingDoc(
   - The criteria of user profile properties are in `UserModel.profileError`. If any of this property is missing, the profile is not ready.
 
 - `UserService` is listening user's profile change. And when user updates his profile, it sets an int value to `profileReady` and with that int value, app can order(sort) by user's registered date.
+  - It simply add `9` infront of `registeredAt` and set it on `profileReady`. So it is sortable by user registration date.
   - So, if you want to dispaly new users who completed their profile, use `.orderByChild('profileReady').limitToLast(100)`.
 
+
+- To know if user's profile is ready or not, use `UserModel.ready` boolean variable.
 
 ## Test users
 
