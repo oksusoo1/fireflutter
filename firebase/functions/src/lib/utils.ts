@@ -30,4 +30,19 @@ export class Utils {
       setTimeout(res, ms);
     });
   }
+
+  /**
+   * Divide an array into many
+   *
+   * @param {*} arr array
+   * @param {*} chunkSize chunk size
+   */
+  static chunk(arr: Array<any>, chunkSize: number) {
+    if (chunkSize <= 0) return []; // don't throw here since it will not be catched.
+    const chunks = [];
+    for (let i = 0, len = arr.length; i < len; i += chunkSize) {
+      chunks.push(arr.slice(i, i + chunkSize));
+    }
+    return chunks;
+  }
 }

@@ -12,4 +12,14 @@ export class Ref {
   static userPoint(uid: string) {
     return this.userPointFolder(uid).child("point");
   }
+  static get messageTokens() {
+    return this.rdb.ref("message-tokens");
+  }
+
+  static userSettings(uid: string) {
+    return this.rdb.ref("user-settings").child(uid);
+  }
+  static userSetting(uid: string, setting: string) {
+    return this.userSettings(uid).child(setting);
+  }
 }
