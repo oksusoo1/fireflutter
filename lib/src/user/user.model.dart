@@ -217,6 +217,7 @@ class UserModel with FirestoreMixin, DatabaseMixin {
   /// Set user profile ready or not.
   /// * Note that, this only updates when the value changes. If the value does not change, then it does not update.
   /// ! To prevent perpetual update.
+  /// * Note, this code is written in client app. Meaning, this won't work on web.
   Future<void> updateProfileReady() async {
     /// If there is no error on profile,
     if (profileError == '') {
