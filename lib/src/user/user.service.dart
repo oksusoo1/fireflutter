@@ -89,8 +89,6 @@ class UserService with FirestoreMixin, DatabaseMixin {
 
             await user.load();
 
-            await user.updateProfileReady();
-
             // /// Update profile ready or not?
             // if (profileReady) {
             //   if (user.profileReady == false) {
@@ -112,6 +110,9 @@ class UserService with FirestoreMixin, DatabaseMixin {
                 /// User profile information has been updated.
                 user = UserModel.fromJson(event.snapshot.value, _user.uid);
                 changes.add(user);
+
+                /// This must be here. So, whenever user updates his profile, it will update also.
+                user.updateProfileReady();
               }
             }, onError: (e) {
               print('UserDoc listening error; $e');

@@ -1,8 +1,8 @@
 import 'package:firebase_database/firebase_database.dart';
-import 'package:fireflutter/fireflutter.dart';
+import '../../fireflutter.dart';
 import 'package:flutter/material.dart';
 
-class PointBuilder extends StatefulWidget {
+class PointBuilder extends StatelessWidget with DatabaseMixin {
   const PointBuilder({
     Key? key,
     required this.id,
@@ -17,52 +17,20 @@ class PointBuilder extends StatefulWidget {
   final Function(int point, UserModel? user)? builder;
 
   @override
-  State<PointBuilder> createState() => _PointBuilderState();
-}
-
-class _PointBuilderState extends State<PointBuilder> with DatabaseMixin {
-  // int point = 0;
-  // UserModel? user;
-
-  // @override
-  // void initState() {
-  //   final ref =
-  //       pointRef.child(widget.uid).child(widget.type + 'Create').child(widget.id).child('point');
-  //   ref.get().then((snapshot) {
-  //     if (snapshot.exists && snapshot.value != null) {
-  //       setState(() {
-  //         point = snapshot.value as int;
-  //       });
-  //     }
-  //   }).catchError((e) {
-  //     print(e);
-  //   });
-
-  //   UserService.instance.getOtherUserDoc(widget.uid).then((value) => setState(() => user = value));
-
-  //   super.initState();
-  // }
-
-  @override
   Widget build(BuildContext context) {
     return StreamBuilder<DatabaseEvent>(
-        stream: pointRef
-            .child(widget.uid)
-            .child(widget.type + 'Create')
-            .child(widget.id)
-            .child('point')
-            .onValue,
+        stream: pointRef.child(uid).child(type + 'Create').child(id).child('point').onValue,
         builder: (c, snapshotPointData) {
           if (snapshotPointData.hasData) {
             final DatabaseEvent event = snapshotPointData.data!;
             final int point = (event.snapshot.value ?? 0) as int;
             return FutureBuilder(
-                future: UserService.instance.getOtherUserDoc(widget.uid),
+                future: UserService.instance.getOtherUserDoc(uid),
                 builder: ((cc, snapshotUserData) {
                   if (snapshotUserData.hasData) {
                     final UserModel user = snapshotUserData.data as UserModel;
-                    return widget.builder != null
-                        ? widget.builder!(point, user)
+                    return builder != null
+                        ? builder!(point, user)
                         : point == 0
                             ? SizedBox.shrink()
                             : Text(

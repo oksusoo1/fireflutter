@@ -137,6 +137,7 @@ Table of contents
   - [Logic](#logic)
   - [Point widgets](#point-widgets)
     - [PointBuilder](#pointbuilder)
+    - [MyPointBuilder](#mypointbuilder)
   - [Senario](#senario)
 
 # TODOs
@@ -1605,6 +1606,13 @@ PointBuilder(
   },
 ),
 ```
+
+### MyPointBuilder
+
+- For display login user's point, use `MyPointBuilder`.
+
+
+
 ## Senario
 
 - When a user registers, he gets registration point. and If here sign out and sign in (or close app and run again) immediately, he can get sign-in point.

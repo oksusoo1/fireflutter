@@ -18,12 +18,10 @@ class ForumListPushNotificationIcon extends StatefulWidget {
   final Function onSigninRequired;
   final Function(String, bool) onChanged;
   @override
-  _ForumListPushNotificationIconState createState() =>
-      _ForumListPushNotificationIconState();
+  _ForumListPushNotificationIconState createState() => _ForumListPushNotificationIconState();
 }
 
-class _ForumListPushNotificationIconState
-    extends State<ForumListPushNotificationIcon> {
+class _ForumListPushNotificationIconState extends State<ForumListPushNotificationIcon> {
   bool get hasSubscription {
     return UserService.instance.user.settings
             .hasSubscription(NotificationOptions.post(widget.categoryId)) ||
@@ -69,18 +67,13 @@ class _ForumListPushNotificationIconState
                       Row(
                         children: [
                           Icon(
-                            hasPostSubscription
-                                ? Icons.notifications_on
-                                : Icons.notifications_off,
-                            color:
-                                hasPostSubscription ? Colors.blue : Colors.grey,
+                            hasPostSubscription ? Icons.notifications_on : Icons.notifications_off,
+                            color: hasPostSubscription ? Colors.blue : Colors.grey,
                           ),
                           Text(
                             ' Post' + " " + widget.categoryId,
                             style: TextStyle(
-                              color: hasPostSubscription
-                                  ? Colors.blue
-                                  : Colors.grey,
+                              color: hasPostSubscription ? Colors.blue : Colors.grey,
                             ),
                           ),
                         ],
@@ -93,18 +86,13 @@ class _ForumListPushNotificationIconState
                   child: Row(
                     children: [
                       Icon(
-                        hasCommentSubscription
-                            ? Icons.notifications_on
-                            : Icons.notifications_off,
-                        color:
-                            hasCommentSubscription ? Colors.blue : Colors.grey,
+                        hasCommentSubscription ? Icons.notifications_on : Icons.notifications_off,
+                        color: hasCommentSubscription ? Colors.blue : Colors.grey,
                       ),
                       Text(
                         ' Comment' + " " + widget.categoryId,
                         style: TextStyle(
-                          color: hasCommentSubscription
-                              ? Colors.blue
-                              : Colors.grey,
+                          color: hasCommentSubscription ? Colors.blue : Colors.grey,
                         ),
                       ),
                     ],
@@ -113,7 +101,7 @@ class _ForumListPushNotificationIconState
                 ),
               ],
               icon: Icon(
-                hasSubscription ? Icons.notifications : Icons.notifications_off,
+                hasSubscription ? Icons.notifications_on : Icons.notifications_off,
                 color: hasSubscription
                     ? Color.fromARGB(255, 74, 74, 74)
                     : Color.fromARGB(255, 177, 177, 177),
@@ -123,21 +111,27 @@ class _ForumListPushNotificationIconState
             ),
             if (hasPostSubscription)
               Positioned(
-                top: 16,
-                left: 4,
+                top: 20,
+                left: 15,
                 child: Transform(
                   transform: Matrix4.rotationY(math.pi),
                   alignment: Alignment.center,
-                  child: Icon(Icons.mark_chat_unread,
-                      size: 12, color: Color.fromARGB(255, 255, 132, 0)),
+                  child: Icon(
+                    Icons.circle,
+                    size: 6,
+                    color: Color.fromARGB(255, 196, 255, 239),
+                  ),
                 ),
               ),
             if (hasCommentSubscription)
               Positioned(
-                top: 15,
-                right: 0,
-                child: Icon(Icons.maps_ugc,
-                    size: 12, color: Color.fromARGB(255, 225, 0, 4)),
+                top: 20,
+                right: 5,
+                child: Icon(
+                  Icons.circle,
+                  size: 6,
+                  color: Color.fromARGB(255, 255, 202, 132),
+                ),
               ),
           ],
         );

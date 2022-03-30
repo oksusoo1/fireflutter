@@ -140,10 +140,13 @@ class _CommentState extends State<Comment> with FirestoreMixin {
               // Text('Comment Id: ${comment.id}'),
               _commentHeader(comment),
               _contentBuilder(comment),
-              PointBuilder(
-                uid: comment.uid,
-                id: comment.id,
-                type: 'comment',
+              Padding(
+                padding: const EdgeInsets.only(top: 8.0, left: 8.0),
+                child: PointBuilder(
+                  uid: comment.uid,
+                  id: comment.id,
+                  type: 'comment',
+                ),
               ),
               ImageList(
                 files: comment.files,
