@@ -6,9 +6,9 @@ import * as weekOfYear from "dayjs/plugin/weekOfYear";
 dayjs.extend(dayOfYear);
 dayjs.extend(weekOfYear);
 
-import { PostCreate, PostDocument, PostUpdate } from "../interfaces/forum.interface";
+import { PostCreate, PostDocument } from "../interfaces/forum.interface";
 import { Ref } from "./ref";
-import { ERROR_EMPTY_CATEGORY, ERROR_EMPTY_POST_ID, ERROR_EMPTY_UID, ERROR_POST_DOES_NOT_EXISTS } from "../defines";
+import { ERROR_EMPTY_CATEGORY, ERROR_EMPTY_UID } from "../defines";
 
 export class Post {
   /**
@@ -47,28 +47,5 @@ export class Post {
     } else {
       return null;
     }
-  }
-
-  /**
-   * Update.
-   * 
-   * @param data Post doc data to be updated
-   * @returns Post doc data after update.
-   */
-  static async update(data: PostUpdate): Promise<PostDocument> {
-    if (!data.id) throw ERROR_EMPTY_POST_ID;
-
-    // get ref and snapshot.
-    const doc = Ref.postCol.doc(data.id);
-    const docSnapshot = await doc.get();
-
-    // if snapshot does not exist, throw error.
-    if (!docSnapshot.exists) throw ERROR_POST_DOES_NOT_EXISTS;
-
-    // if exists, remove data id then update document with new data.
-    // return updated data.
-    delete data.id;
-    await doc.update(data);
-    return docSnapshot.data()! as PostDocument;
   }
 }

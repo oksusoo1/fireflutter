@@ -1,6 +1,6 @@
 import { Utils } from "./utils";
 import { CommentDocument, PostDocument } from "../interfaces/forum.interface";
-import { MeiliSearch as Meili, SearchParams } from "meilisearch";
+import { MeiliSearch as Meili, SearchParams, SearchResponse } from "meilisearch";
 
 /**
  * TODO: Test
@@ -242,7 +242,7 @@ export class Meilisearch {
   static async search(
     index: string,
     data: { keyword?: string; searchOptions?: SearchParams }
-  ): Promise<Record<string, any>> {
+  ): Promise<SearchResponse<Record<string, any>>> {
     return this.client.index(index).search(data.keyword, data.searchOptions);
   }
 

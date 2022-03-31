@@ -2,8 +2,10 @@ import "mocha";
 import { expect } from "chai";
 import { Meilisearch } from "../../src/classes/meilisearch";
 import { Utils } from "../../src/classes/utils";
+import { Ref } from "../../src/classes/ref";
+import { FirebaseAppInitializer } from "../firebase-app-initializer";
 
-import { Post } from "../../src/classes/post";
+new FirebaseAppInitializer();
 
 async function initIndexFilter(index: string) {
   const indexFilters = await Meilisearch.client.index(index).getFilterableAttributes();
@@ -83,11 +85,26 @@ describe("Meilisearch forum document indexing", () => {
     expect(searchResult.hits).has.length(0);
   });
 
-  // it("Test post ignore update", async () => {
-  //   // create post on firebase
-  //   // this would also index it to meilisearch via cloud functions.
-  //   // const originalPost = await Post.create({ uid: "test-uid", category: "cat1", title: "test post" } as any);
+  it("Test post ignore update", async () => {
+    const postId = "post-test-" + timestamp;
 
-  //   // update post's like or dislike
-  // });
+    const postRef = Ref.postCol.doc(postId);
+
+    // create post on firebase
+    // this would also index it to meilisearch via cloud functions.
+    await postRef.set({ uid: "test-uid", title: "some title", updatedAt: 2 });
+    const createdData = (await postRef.get()).data();
+    console.log("createdData :", createdData);
+    
+    // update post's like or dislike
+    await postRef.update({ like: 1 });
+    const updatedData = (await postRef.get()).data();
+    console.log("updatedData :", updatedData);
+
+    // compare updated data with one indexed on meilisearch.
+    const meiliIndexedData = await Meilisearch.search("posts", { searchOptions: { filter: ["id =" + postId] } });
+    console.log("meiliIndexedData :", meiliIndexedData.hits[0]);
+
+    expect(updatedData!.updatedAt > meiliIndexedData.hits[0].updatedAt).true;
+  });
 });
