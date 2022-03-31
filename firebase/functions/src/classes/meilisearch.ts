@@ -1,6 +1,6 @@
-import axios from "axios";
 import { Utils } from "./utils";
 import { CommentDocument, PostDocument } from "../interfaces/forum.interface";
+import { MeiliSearch as Meili, SearchParams } from "meilisearch";
 
 /**
  * TODO: Test
@@ -14,13 +14,17 @@ import { CommentDocument, PostDocument } from "../interfaces/forum.interface";
 export class Meilisearch {
   static excludedCategories = ["quiz"];
 
+  static client = new Meili({
+    host: "http://wonderfulkorea.kr:7700",
+  });
+
   /**
    * Index
    * @param data data to be index
    * @return Promise<any>
    */
   static indexForumDocument(data: PostDocument | CommentDocument): Promise<any> {
-    return axios.post("http://wonderfulkorea.kr:7700/indexes/posts-and-comments/documents", data);
+    return this.client.index("posts-and-comments").addDocuments([data]);
   }
 
   /**
@@ -29,7 +33,7 @@ export class Meilisearch {
    * @return Promise
    */
   static deleteIndexedForumDocument(id: string) {
-    return axios.delete("http://wonderfulkorea.kr:7700/indexes/posts-and-comments/documents/" + id);
+    return this.client.index("posts-and-comments").deleteDocument(id);
   }
 
   /**
@@ -57,7 +61,8 @@ export class Meilisearch {
 
     const promises = [];
 
-    promises.push(axios.post("http://wonderfulkorea.kr:7700/indexes/posts/documents", _data));
+    promises.push(this.client.index("posts").addDocuments([_data]));
+    // promises.push(axios.post("http://wonderfulkorea.kr:7700/indexes/posts/documents", _data));
     promises.push(this.indexForumDocument(_data));
 
     return Promise.all(promises);
@@ -92,7 +97,8 @@ export class Meilisearch {
 
     const promises = [];
 
-    promises.push(axios.post("http://wonderfulkorea.kr:7700/indexes/posts/documents", _data));
+    promises.push(this.client.index("posts").updateDocuments([_data]));
+    // promises.push(axios.post("http://wonderfulkorea.kr:7700/indexes/posts/documents", _data));
     promises.push(this.indexForumDocument(_data));
 
     return Promise.all(promises);
@@ -101,17 +107,14 @@ export class Meilisearch {
   /**
    * Deletes indexed post document.
    *
-   * @param id Post ID of the document to be deleted.
+   * @param context Post ID of the document to be deleted.
    * @return Promise
    */
-  static async deleteIndexedPostDocument(id: string) {
+  static async deleteIndexedPostDocument(context: any) {
+    const id = context.params.id;
+
     const promises = [];
-    promises.push(
-        axios.post("https://wonderfulkorea.kr:4431/index.php?api=post/delete", {
-          id: id,
-        })
-    );
-    promises.push(axios.delete("http://wonderfulkorea.kr:7700/indexes/posts/documents/" + id));
+    promises.push(this.client.index("posts").deleteDocument(id));
     promises.push(this.deleteIndexedForumDocument(id));
     return Promise.all(promises);
   }
@@ -137,7 +140,8 @@ export class Meilisearch {
 
     const promises = [];
 
-    promises.push(axios.post("http://wonderfulkorea.kr:7700/indexes/comments/documents", _data));
+    promises.push(this.client.index("comments").addDocuments([_data]));
+    // promises.push(axios.post("http://wonderfulkorea.kr:7700/indexes/comments/documents", _data));
     promises.push(this.indexForumDocument(_data));
 
     return Promise.all(promises);
@@ -167,7 +171,8 @@ export class Meilisearch {
 
     const promises = [];
 
-    promises.push(axios.post("http://wonderfulkorea.kr:7700/indexes/comments/documents", _data));
+    promises.push(this.client.index("comments").updateDocuments([_data]));
+    // promises.push(axios.post("http://wonderfulkorea.kr:7700/indexes/comments/documents", _data));
     promises.push(this.indexForumDocument(_data));
 
     return Promise.all(promises);
@@ -181,12 +186,8 @@ export class Meilisearch {
    */
   static async deleteIndexedCommentDocument(id: string) {
     const promises = [];
-    promises.push(
-        axios.post("https://wonderfulkorea.kr:4431/index.php?api=post/delete", {
-          id: id,
-        })
-    );
-    promises.push(axios.delete("http://wonderfulkorea.kr:7700/indexes/comments/documents/" + id));
+    promises.push(this.client.index("comments").deleteDocument(id));
+    // promises.push(axios.delete("http://wonderfulkorea.kr:7700/indexes/comments/documents/" + id));
     promises.push(this.deleteIndexedForumDocument(id));
     return Promise.all(promises);
   }
@@ -198,7 +199,7 @@ export class Meilisearch {
    * @param {*} data user data to index.
    * @return promise
    */
-  async indexUserDocument(uid: string, data: any = {}) {
+  static async indexUserDocument(uid: string, data: any = {}): Promise<any> {
     const _data = {
       id: uid,
       gender: data.gender ?? "",
@@ -206,10 +207,10 @@ export class Meilisearch {
       middleName: data.middleName ?? "",
       lastName: data.lastName ?? "",
       photoUrl: data.photoUrl ?? "",
-      // registeredAt: data.registeredAt ?? 0,
-      // updatedAt: data.updatedAt ?? 0,
     };
-    return axios.post("http://wonderfulkorea.kr:7700/indexes/users/documents", _data);
+
+    return this.client.index("users").addDocuments([_data]);
+    // return axios.post("http://wonderfulkorea.kr:7700/indexes/users/documents", _data);
   }
 
   /**
@@ -218,7 +219,7 @@ export class Meilisearch {
    * @param {*} uid user id to delete.
    * @return promise
    */
-  async deleteIndexedUserDocument(uid: string) {
+  static async deleteIndexedUserDocument(uid: string) {
     const promises = [];
 
     // Remove user data under it's uid from:
@@ -227,8 +228,22 @@ export class Meilisearch {
     // promises.push(rdb.ref("users").child(uid).remove());
     // promises.push(rdb.ref("user-settings").child(uid).remove());
     // promises.push(db.collection("quiz-history").doc(uid).delete());
-    promises.push(axios.delete("http://wonderfulkorea.kr:7700/indexes/users/documents/" + uid));
+    promises.push(this.client.index("users").deleteDocument(uid));
     return Promise.all(promises);
+  }
+
+  /**
+   * Search
+   * 
+   * @param index 
+   * @param data search options
+   * @returns Search result
+   */
+  static async search(
+    index: string,
+    data: { keyword?: string; searchOptions?: SearchParams }
+  ): Promise<Record<string, any>> {
+    return this.client.index(index).search(data.keyword, data.searchOptions);
   }
 
   // FOR TESTING

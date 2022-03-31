@@ -17,15 +17,15 @@ import { PostDocument } from "../interfaces/forum.interface";
  * > onPostCreateIndex({uid: 'a'}, {params: {postId: 'p-1'}});
  */
 export const onPostCreateIndex = functions
-    .region("asia-northeast3")
-    .firestore.document("/posts/{id}")
-    .onCreate((snapshot, context) => {
-      return Meilisearch.indexPostCreate(snapshot.data() as PostDocument, context);
-    });
+  .region("asia-northeast3")
+  .firestore.document("/posts/{id}")
+  .onCreate((snapshot, context) => {
+    return Meilisearch.indexPostCreate(snapshot.data() as PostDocument, context);
+  });
 
 export const onPostUpdateIndex = functions
-    .region("asia-northeast3")
-    .firestore.document("/posts/{id}")
-    .onUpdate((change, context) => {
-      return Meilisearch.indexPostUpdate(change as any, context);
-    });
+  .region("asia-northeast3")
+  .firestore.document("/posts/{id}")
+  .onUpdate((change, context) => {
+    return Meilisearch.indexPostUpdate(change as any, context);
+  });
