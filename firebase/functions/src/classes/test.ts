@@ -38,6 +38,18 @@ export class Test {
   }
 
   /**
+   * Creates a use and returns the document data.
+   * @param uid uid
+   * @param data data
+   * @returns document object
+   */
+  static async createTestUserAndGetDoc(uid: string, data?: UserData): Promise<UserData> {
+    const ref = await this.createTestUser(uid, data);
+    const snapshot = await ref.get();
+    return snapshot.val();
+  }
+
+  /**
    * delets a test user from realtime database.
    *
    * @param {*} uid

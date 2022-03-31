@@ -3,56 +3,48 @@ import "mocha";
 
 import { FirebaseAppInitializer } from "../firebase-app-initializer";
 import { Test } from "../../src/classes/test";
-// import { Ref } from "../../src/classes/ref";
+import { Utils } from "../../src/classes/utils";
 
-// import { PushMessaging } from "../../src/classes/push-messaging";
+import { Messaging } from "../../src/classes/messaging";
+import { expect } from "chai";
 
 new FirebaseAppInitializer();
 
-describe("get tokens test", () => {
-  it("retrieve push tokens test", async () => {
-    const userA = "retrieveTokenUserA";
-    // const userB = "retrieveTokenUserB";
-    try {
-      await Test.createTestUser(userA);
-    } catch (e) {
-      console.log(e);
-    }
+describe("Tokens test", () => {
+  it("Token saving test for one user", async () => {
+    // Create two users
+    const a = "A-" + Utils.getTimestamp();
+    await Test.createTestUserAndGetDoc(a);
 
-    // await Test.createTestUser(userB);
+    await Messaging.updateToken(a, "fake-token-2");
+    await Messaging.updateToken(a, "fake-token-1");
+    const tokens = await Messaging.getTokens(a);
+    expect(tokens).to.be.an("array");
+    expect(tokens).to.be.an("array").contains("fake-token-1");
+    expect(tokens).to.be.an("array").contains("fake-token-2");
+  });
+  it("Token saving test for two user", async () => {
+    // Create two users
+    const a = "a2-" + Utils.getTimestamp();
+    const b = "b2-" + Utils.getTimestamp();
+    await Test.createTestUser(a);
+    await Test.createTestUser(b);
 
-    // const tokenUpdates = [];
-    // tokenUpdates.push(
-    //   Ref.messageTokens.child("fakeToken1").set({ uid: userA })
-    // );
-    // tokenUpdates.push(
-    //   Ref.messageTokens.child("fakeToken2").set({ uid: userA })
-    // );
-    // tokenUpdates.push(
-    //   Ref.messageTokens.child("fakeToken3").set({ uid: userA })
-    // );
-    // tokenUpdates.push(
-    //   Ref.messageTokens.child("fakeToken4").set({ uid: userB })
-    // );
-    // await Promise.all(tokenUpdates);
+    // Add 4 tokens
+    const promises = [];
+    promises.push(Messaging.updateToken(a, "fake-token-a-1"));
+    promises.push(Messaging.updateToken(a, "fake-token-a-2"));
+    promises.push(Messaging.updateToken(b, "fake-token-b-3"));
+    promises.push(Messaging.updateToken(b, "fake-token-b-4"));
+    await Promise.all(promises);
 
-    // const res1 = await PushMessaging.getTokensFromUids(userA);
-    // expect(res1.length).equal(3, "mush have 3 token");
+    const tokens = await Messaging.getTokensFromUids([a, b].join(","));
 
-    // const res2 = await PushMessaging.getTokensFromUids(userA + "," + userB);
-    // expect(res2.length).equal(4, "A and B must have 4 tokens in total");
+    expect(tokens).to.be.an("array").length(4);
 
-    // const res3 = await PushMessaging.getTokensFromUids([userB, userB]);
-    // expect(res3.length).equal(1, "B and B must 1 token");
-
-    // create user
-
-    // update user tokens
-
-    // check user tokens
-
-    // topicsubscriber
-
-    // chatsubscriber
+    expect(tokens).to.be.an("array").contains("fake-token-a-1");
+    expect(tokens).to.be.an("array").contains("fake-token-a-2");
+    expect(tokens).to.be.an("array").contains("fake-token-b-3");
+    expect(tokens).to.be.an("array").contains("fake-token-b-4");
   });
 });
