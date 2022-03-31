@@ -44,24 +44,23 @@ export class Messaging {
 
   static async isUserSubscriptionOff(
     uid: string,
-    topic: string
+    subscription: string
   ): Promise<boolean> {
     const snapshot = await Ref.userSetting(uid, "topic").get();
     if (!snapshot.exists()) return true;
     const val = snapshot.val();
-    if (val && val[topic] == false) {
+    if (val && val[subscription] == false) {
       return false;
     } else {
       return true;
     }
   }
 
-  static async getTopicSubscriber(uids: string, topic: string) {
-    const promises: Promise<boolean>[] = [];
+  static async getTopicSubscriber(uids: string, subscription: string) {
     const _uids = uids.split(",");
-
+    const promises: Promise<boolean>[] = [];
     _uids.forEach((uid) =>
-      promises.push(this.isUserSubscriptionOff(uid, "topic"))
+      promises.push(this.isUserSubscriptionOff(uid, subscription))
     );
 
     const re = [];
@@ -69,13 +68,6 @@ export class Messaging {
 
     for (const i in result) {
       if (result[i]) re.push(_uids[i]);
-      const subscriptions = result[i].val();
-      // / Get user who subscribe to topic
-      if (subscriptions && subscriptions[topic] == false) {
-        // skip only if user intentionally off the topic
-      } else {
-        re.push(_uids[i]);
-      }
     }
     return re;
   }
