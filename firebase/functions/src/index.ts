@@ -7,6 +7,6 @@ admin.initializeApp({
 });
 
 export * from "./indexes/point.functions";
-export * from "./indexes/job.functions";
+export * from "./indexes/forum.functions";
 export * from "./indexes/storage.functions";
 export * from "./indexes/meilisearch.functions";
