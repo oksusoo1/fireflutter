@@ -1,9 +1,9 @@
 import "mocha";
 import { expect } from "chai";
 
-import { EventName, Point, randomPoint } from "../../src/library/point";
+import { EventName, Point, randomPoint } from "../../src/classes/point";
 import { FirebaseAppInitializer } from "../firebase-app-initializer";
-import { Utils } from "../../src/library/utils";
+import { Utils } from "../../src/classes/utils";
 
 new FirebaseAppInitializer();
 

@@ -1,10 +1,10 @@
 import "mocha";
 import { expect } from "chai";
 
-import { Point } from "../../src/library/point";
+import { Point } from "../../src/classes/point";
 import { FirebaseAppInitializer } from "../firebase-app-initializer";
-import { Ref } from "../../src/library/ref";
-import { Utils } from "../../src/library/utils";
+import { Ref } from "../../src/classes/ref";
+import { Utils } from "../../src/classes/utils";
 
 new FirebaseAppInitializer();
 

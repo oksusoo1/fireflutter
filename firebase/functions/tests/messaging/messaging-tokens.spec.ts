@@ -2,10 +2,10 @@ import "mocha";
 // import { expect } from "chai";
 
 import { FirebaseAppInitializer } from "../firebase-app-initializer";
-import { Test } from "../../src/library/test";
-// import { Ref } from "../../src/library/ref";
+import { Test } from "../../src/classes/test";
+// import { Ref } from "../../src/classes/ref";
 
-// import { PushMessaging } from "../../src/library/push-messaging";
+// import { PushMessaging } from "../../src/classes/push-messaging";
 
 new FirebaseAppInitializer();
 

@@ -2,8 +2,8 @@ import "mocha";
 import { expect } from "chai";
 import { MeiliSearch } from "meilisearch";
 
-import { MeilisearchIndex } from "../../src/library/meilisearch-index";
-import { Utils } from "../../src/library/utils";
+import { MeilisearchIndex } from "../../src/classes/meilisearch-index";
+import { Utils } from "../../src/classes/utils";
 
 const client = new MeiliSearch({
   host: "http://wonderfulkorea.kr:7700",
@@ -35,8 +35,8 @@ describe("Meilisearch forum document indexing", () => {
 
     // Search if the post is indexed.
     let searchResult = await client
-        .index("posts-and-comments")
-        .search("", { filter: ["id = " + testPost.id] });
+      .index("posts-and-comments")
+      .search("", { filter: ["id = " + testPost.id] });
     // It should exactly contain 1 document, since it is filtered out.
     // console.log(searchResult);
     expect(searchResult.hits).has.length(1);
@@ -47,8 +47,8 @@ describe("Meilisearch forum document indexing", () => {
 
     // Search
     searchResult = await client
-        .index("posts-and-comments")
-        .search("", { filter: ["id = " + testPost.id] });
+      .index("posts-and-comments")
+      .search("", { filter: ["id = " + testPost.id] });
     // It should not contain a document since it is should be deleted..
     expect(searchResult.hits).has.length(0);
   });

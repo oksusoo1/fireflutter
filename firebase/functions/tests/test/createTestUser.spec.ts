@@ -1,11 +1,11 @@
 import "mocha";
 import { expect } from "chai";
 
-// import { EventName, Point, randomPoint } from "../../src/library/point";
+// import { EventName, Point, randomPoint } from "../../src/classes/point";
 import { FirebaseAppInitializer } from "../firebase-app-initializer";
-import { Test } from "../../src/library/test";
+import { Test } from "../../src/classes/test";
 import { UserData } from "../../src/interfaces/user.interface";
-import { Utils } from "../../src/library/utils";
+import { Utils } from "../../src/classes/utils";
 import { ERROR_USER_EXISTS } from "../../src/defines";
 
 new FirebaseAppInitializer();
