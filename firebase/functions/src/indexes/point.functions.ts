@@ -1,5 +1,5 @@
 import * as functions from "firebase-functions";
-import { Point } from "../library/point";
+import { Point } from "../classes/point";
 
 /**
  * Listens for a user sign in and do point event.
