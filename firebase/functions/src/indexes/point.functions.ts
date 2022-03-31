@@ -48,3 +48,10 @@ export const pointEventPostCreate = functions
   .onCreate((snapshot, context) => {
     return Point.postCreatePoint(snapshot.data(), context);
   });
+
+export const onCommentCreatePoint = functions
+  .region("asia-northeast3")
+  .firestore.document("/comments/{commentId}")
+  .onCreate((snapshot, context) => {
+    return Point.commentCreatePoint(snapshot.data(), context);
+  });

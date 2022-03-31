@@ -48,8 +48,13 @@ export class Ref {
     return this.userSettings(uid).child(setting);
   }
 
-  // post create point folder
+  // post create point folder of the user
   static pointPostCreate(uid: string) {
     return this.point(uid).child("postCreate");
+  }
+
+  // comment create point folder of the user
+  static pointCommentCreate(uid: string) {
+    return this.point(uid).child("commentCreate");
   }
 }

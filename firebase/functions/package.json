@@ -13,6 +13,7 @@
     "test:point:signIn": "mocha --timeout 10000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/point/sign-in.spec.ts",
     "test:point:register": "mocha --timeout 10000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/point/register.spec.ts",
     "test:point:post": "mocha --timeout 10000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/point/post.spec.ts",
+    "test:point:comment": "mocha --timeout 10000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/point/comment.spec.ts",
     "test:utils:removeHtmlTags": "mocha --timeout 10000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/utils/removeHtmlTags.spec.ts",
     "test:meilisearch:forumDocument": "mocha --timeout 10000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/meilisearch/forumDocument.spec.ts",
     "test:messagingToken": "mocha --timeout 20000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/messaging/messaging-tokens.spec.ts"

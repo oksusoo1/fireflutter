@@ -116,9 +116,40 @@ export class Point {
     return ref;
   }
 
+  static async commentCreatePoint(data: any, context: any) {
+    const uid = data.uid;
+    const commentId = context.params.commentId;
+    // console.log("uid; ", uid, ", commentId", commentId);
+
+    const commentCreateRef = Ref.pointCommentCreate(uid);
+    if ((await this.timePassed(commentCreateRef, EventName.commentCreate)) === false) return null;
+    const point = this.getRandomPoint(EventName.commentCreate);
+    const docData = { timestamp: Utils.getTimestamp(), point: point };
+
+    // Reference to create a history.
+    const ref = commentCreateRef.child(commentId);
+
+    // Check if the comment has already point event.
+    // Note, this will not happen in production mode since it only works on `onCreate` event.
+    // This is only for test and it might be commented out if you wish.
+    const snapshot = await ref.get();
+    if (snapshot.exists() && snapshot.val()) return null;
+
+    // Set history and update point.
+    await ref.set(docData);
+    await this.updateUserPoint(uid, point);
+    return ref;
+  }
+
   /**
-   * Returns user point. It returns 0 if there is no value.
+   * Returns user point.
+   *
+   * It returns 0 if there is no value.
+   *
+   * @usage Use this method on veriety case.
+   *
    * @param {*} uid user id
+   * @return 0 or point
    */
   static async getUserPoint(uid: string): Promise<number> {
     const snapshot = await Ref.userPoint(uid).child("point").get();
@@ -169,9 +200,14 @@ export class Point {
   }
 
   /**
+   * Updates user point.
+   *
    * `point` can be increase or decrease.
    * `history` is the total amount of point that the user earned in life time.
-   * `history` is only increased. It does not decrease. So, it's good for computing user level.
+   *  - `history` is only increased. It does not decrease.
+   *  - So, it's good for computing user level.
+   *
+   * @usage Use this method to increase or decrease user point in variety cases.
    *
    * @param {*} uid uid
    * @param {*} point point to update
