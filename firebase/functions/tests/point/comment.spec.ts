@@ -37,8 +37,8 @@ describe("Post point test", () => {
     // Expect failure.
     // Test with same comment id. it will not change point. since it is going to be an update.
     const updateRef = await Point.commentCreatePoint(
-      { uid: uid },
-      { params: { commentId: commentId } }
+        { uid: uid },
+        { params: { commentId: commentId } }
     );
     expect(updateRef === null).true;
 
@@ -46,8 +46,8 @@ describe("Post point test", () => {
     // There will be two point event histories.
     // Do point event for comment create with different comment id.
     const ref2 = await Point.commentCreatePoint(
-      { uid: uid },
-      { params: { commentId: commentId + "2" } }
+        { uid: uid },
+        { params: { commentId: commentId + "2" } }
     );
     expect(ref2).not.to.be.null;
     const data2 = (await ref2!.get()).val();
@@ -58,8 +58,8 @@ describe("Post point test", () => {
     // After 1.5 seconds later, do it again and expect failure since `within` time has not passed.
     await Utils.delay(1500);
     const ref3 = await Point.commentCreatePoint(
-      { uid: uid },
-      { params: { commentId: commentId + "3" } }
+        { uid: uid },
+        { params: { commentId: commentId + "3" } }
     );
     expect(ref3 === null).true;
     const pointAfterCreate3 = await Point.getUserPoint(uid);

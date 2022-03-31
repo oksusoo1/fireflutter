@@ -19,7 +19,7 @@ describe("Storage test", () => {
     });
 
     const metadata = await Storage.getMetadataFromUrl(
-      "https://firebasestorage.googleapis.com/v0/b/withcenter-test-project.appspot.com/o/uploads%2F525de0e1-7762-4c25-8bcc-bb361b565deb.jpg?alt=media&token=e7132bce-37e5-43d5-b63e-abcaac18e290"
+        "https://firebasestorage.googleapis.com/v0/b/withcenter-test-project.appspot.com/o/uploads%2F525de0e1-7762-4c25-8bcc-bb361b565deb.jpg?alt=media&token=e7132bce-37e5-43d5-b63e-abcaac18e290"
     );
 
     expect(metadata[0].metadata["id"]).equals(randomId);

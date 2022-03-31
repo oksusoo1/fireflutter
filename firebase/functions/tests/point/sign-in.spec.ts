@@ -33,8 +33,8 @@ describe("Sign-in point test", () => {
 
     // check `starting point + bonus point = updated point`
     expect(startingPoint + data.point).equal(
-      updatedPoint,
-      `startingPoint:${startingPoint} vs updatedPoint:${updatedPoint}`
+        updatedPoint,
+        `startingPoint:${startingPoint} vs updatedPoint:${updatedPoint}`
     );
   });
 
