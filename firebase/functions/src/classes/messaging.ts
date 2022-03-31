@@ -20,7 +20,11 @@ export class Messaging {
    * @returns array of tokens
    */
   static async getTokens(uid: string): Promise<string[]> {
-    const snapshot = await Ref.messageTokens.orderByChild("uid").equalTo(uid).get();
+    const snapshot = await Ref.messageTokens
+      .orderByChild("uid")
+      .equalTo(uid)
+      .get();
+    if (!snapshot.exists()) return [];
     const val = snapshot.val();
     return Object.keys(val);
   }
@@ -32,27 +36,39 @@ export class Messaging {
    */
   static async getTokensFromUids(uids: string) {
     const promises: Promise<string[]>[] = [];
-    uids.split(",").forEach((uid, i, arr) => promises.push(this.getTokens(uid)));
+    uids
+      .split(",")
+      .forEach((uid, i, arr) => promises.push(this.getTokens(uid)));
     return (await Promise.all(promises)).flat();
   }
 
-  static async getTopicSubscriber(uids: any, topic: string) {
-    let _uids: Array<any>;
-    if (typeof uids == "string") {
-      _uids = uids.split(",");
+  static async isUserSubscriptionOff(
+    uid: string,
+    topic: string
+  ): Promise<boolean> {
+    const snapshot = await Ref.userSetting(uid, "topic").get();
+    if (!snapshot.exists()) return true;
+    const val = snapshot.val();
+    if (val && val[topic] == false) {
+      return false;
     } else {
-      _uids = uids;
+      return true;
     }
+  }
+
+  static async getTopicSubscriber(uids: string, topic: string) {
+    const promises: Promise<boolean>[] = [];
+    const _uids = uids.split(",");
+
+    _uids.forEach((uid) =>
+      promises.push(this.isUserSubscriptionOff(uid, "topic"))
+    );
 
     const re = [];
-    const getTopicsPromise = [];
-    for (const uid of _uids) {
-      getTopicsPromise.push(Ref.userSetting(uid, "topic").get());
-    }
-    const result = await Promise.all(getTopicsPromise);
+    const result = await Promise.all(promises);
 
     for (const i in result) {
-      if (!result[i]) continue;
+      if (result[i]) re.push(_uids[i]);
       const subscriptions = result[i].val();
       // / Get user who subscribe to topic
       if (subscriptions && subscriptions[topic] == false) {

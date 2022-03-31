@@ -47,4 +47,13 @@ describe("Tokens test", () => {
     expect(tokens).to.be.an("array").contains("fake-token-b-3");
     expect(tokens).to.be.an("array").contains("fake-token-b-4");
   });
+  it("Token get for user with no token", async () => {
+    // Create a user
+    const a = "A3-" + Utils.getTimestamp();
+    await Test.createTestUserAndGetDoc(a);
+
+    const tokens = await Messaging.getTokens(a);
+    expect(tokens).to.be.an("array");
+    expect(tokens).empty;
+  });
 });
