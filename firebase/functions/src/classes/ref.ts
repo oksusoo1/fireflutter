@@ -53,6 +53,10 @@ export class Ref {
     return this.userSettings(uid).child(setting);
   }
 
+  static userSettingTopic(uid: string) {
+    return this.userSetting(uid, "topic");
+  }
+
   // post create point folder of the user
   static pointPostCreate(uid: string) {
     return this.point(uid).child("postCreate");

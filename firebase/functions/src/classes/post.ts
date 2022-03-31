@@ -9,6 +9,8 @@ dayjs.extend(weekOfYear);
 import { PostCreate, PostDocument } from "../interfaces/forum.interface";
 import { Ref } from "./ref";
 import { ERROR_EMPTY_CATEGORY, ERROR_EMPTY_UID } from "../defines";
+import { Messaging } from "./messaging";
+import { messaging } from "firebase-admin";
 
 export class Post {
   /**
@@ -47,5 +49,17 @@ export class Post {
     } else {
       return null;
     }
+  }
+
+  static async sendMessageOnPostCreate(data: PostDocument, context: any) {
+    const category = data.category;
+    const payload = Messaging.topicPayload("posts_" + category, {
+      title: data.title ? data.title : "",
+      body: data.content ? data.content : "",
+      postId: context.params.postId,
+      type: "post",
+      uid: data.uid,
+    });
+    return admin.messaging().send(payload);
   }
 }
