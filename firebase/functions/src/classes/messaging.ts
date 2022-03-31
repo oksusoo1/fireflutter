@@ -16,6 +16,7 @@ export class Messaging {
 
   /**
    * Returns tokens of a user.
+   *
    * @param uid user uid
    * @returns array of tokens
    */
@@ -28,6 +29,7 @@ export class Messaging {
 
   /**
    * Returns tokens of multiple users.
+   *
    * @param uids array of user uid
    * @returns array of tokens
    */
