@@ -17,14 +17,31 @@ import { Meilisearch, PostDocument } from "../classes/meilisearch";
  */
 export const onPostCreateIndex = functions
   .region("asia-northeast3")
-  .firestore.document("/posts/{postId}")
+  .firestore.document("/posts/{id}")
   .onCreate((snapshot, context) => {
     return Meilisearch.indexPostCreate(snapshot.data() as PostDocument, context);
   });
 
-export const onPostCreateUpdate = functions
+export const onPostUpdateIndex = functions
   .region("asia-northeast3")
-  .firestore.document("/posts/{postId}")
+  .firestore.document("/posts/{id}")
   .onUpdate((change, context) => {
     return Meilisearch.indexPostUpdate(change as any, context);
   });
+
+  
+// export const onCommentCreateIndex = functions
+//   .region("asia-northeast3")
+//   .firestore.document("/comments/{id}")
+//   .onCreate((snapshot, context) => {
+//     return Meilisearch.indexCommentCreate(snapshot.data() as CommentDocument, context);
+//   });
+
+// export const onCommentUpdateIndex = functions
+//   .region("asia-northeast3")
+//   .firestore.document("/comments/{id}")
+//   .onUpdate((change, context) => {
+//     return Meilisearch.indexPostUpdate(change as any, context);
+//   });
+
+  

@@ -14,7 +14,7 @@ export interface PostDocument extends ForumDocument {
   title: string;
   category: string;
   noOfComments?: number;
-  deleted: "Y" | "N";
+  deleted?: "Y" | "N";
 }
 
 export interface CommentDocument extends ForumDocument {
@@ -137,34 +137,56 @@ export class Meilisearch {
   }
 
   /**
-   * Creates or update a comment document index.
+   * Creates a comment document index.
    *
-   * @param id Document ID
    * @param data Document data
+   * @param context Event context
    * @return Promise
    */
-  static async indexCommentDocument(id: string, data: CommentDocument) {
-    let _files = "";
-    if (data.files && data.files.length) {
-      _files = typeof data.files == "string" ? data.files : data.files.join(",");
-    }
-
+  static async indexCommentCreate(data: CommentDocument, context: any) {
     const _data = {
-      id: id,
+      id: context.params.id,
       uid: data.uid,
       postId: data.postId,
       parentId: data.parentId,
-      content: data.content,
-      files: _files,
+      content: Utils.removeHtmlTags(data.content) ?? "",
+      files: Array.isArray(data.files) ? data.files.join(",") : data.files,
       createdAt: Utils.getTimestamp(data.createdAt),
       updatedAt: Utils.getTimestamp(data.updatedAt),
     };
 
     const promises = [];
 
-    promises.push(axios.post("https://wonderfulkorea.kr:4431/index.php?api=post/record", _data));
+    promises.push(axios.post("http://wonderfulkorea.kr:7700/indexes/comments/documents", _data));
+    promises.push(this.indexForumDocument(_data));
 
-    _data.content = Utils.removeHtmlTags(_data.content);
+    return Promise.all(promises);
+  }
+
+  /**
+   * Updates a comment document index.
+   *
+   * @param data Document data
+   * @param context Event context
+   * @return Promise
+   */
+  static async indexCommentUpdate(data: { before: CommentDocument; after: CommentDocument }, context: any) {
+    if (data.before.content === data.after.content) return null;
+
+    const after = data.after;
+
+    const _data: CommentDocument = {
+      id: context.params.id,
+      uid: after.uid,
+      postId: after.postId,
+      parentId: after.parentId,
+      content: Utils.removeHtmlTags(after.content),
+      files: Array.isArray(after.files) ? after.files.join(",") : after.files,
+      updatedAt: Utils.getTimestamp(after.updatedAt),
+    };
+
+    const promises = [];
+
     promises.push(axios.post("http://wonderfulkorea.kr:7700/indexes/comments/documents", _data));
     promises.push(this.indexForumDocument(_data));
 
@@ -229,21 +251,15 @@ export class Meilisearch {
     return Promise.all(promises);
   }
 
-  // / FOR TESTING
-  // / TODO: move this code somewhere else.
-  static createTestPostDocument(data: {
-    id: string;
-    uid?: string;
-    title?: string;
-    content?: string;
-  }): PostDocument {
+  // FOR TESTING
+  // TODO: move this code somewhere else.
+  static createTestPostDocument(data: { id: string; uid?: string; title?: string; content?: string }): PostDocument {
     return {
       id: data.id,
-      uid: data.uid ?? new Date().getTime().toString(),
-      title: data.title ?? new Date().getTime().toString(),
-      content: data.content ?? new Date().getTime().toString(),
+      uid: data.uid ?? "test-uid",
+      title: data.title ?? `${data.id} title`,
+      content: data.content ?? `${data.id} content`,
       category: "test-cat",
-      deleted: "N",
     };
   }
 }
