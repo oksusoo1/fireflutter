@@ -6,3 +6,4 @@ admin.initializeApp({
 });
 
 export * from "./indexes/point.functions";
+export * from "./indexes/job.functions";

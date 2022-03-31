@@ -1,27 +1,29 @@
 import "mocha";
 import { expect } from "chai";
 
-import { EventName, Point, randomPoint } from "../../src/library/point";
+import { Point } from "../../src/library/point";
 import { FirebaseAppInitializer } from "../firebase-app-initializer";
+import { Ref } from "../../src/library/ref";
 import { Utils } from "../../src/library/utils";
 
 new FirebaseAppInitializer();
 
-describe("Sign-in point test", () => {
+describe("Register point test", () => {
   it("Register point event test", async () => {
+    const uid = "point-a" + Utils.getTimestamp();
     // Do random point.
-    const ref = await lib.userRegisterPoint({}, { params: { uid: uid } });
-    assert.ok(ref !== null);
-    const data = (await ref.get()).val();
+    const ref = await Point.registerPoint({}, { params: { uid: uid } });
+    expect(ref).not.to.be.null;
+    const data = (await ref!.get()).val();
 
     // Check if success by getting the real doc data.
-    const pointDoc = await lib.pointRegisterRef(uid).get();
-    const pointDocData = pointDoc.val();
+    const pointDoc = await Ref.pointRegister(uid).get();
+    const registerPointDocData = pointDoc.val();
 
-    assert.ok(data.timestamp === pointDocData.timestamp);
+    expect(data.timestamp).equals(registerPointDocData.timestamp);
 
     // Do random point again and see if it fails.
-    const re = await lib.userRegisterPoint({}, { params: { uid: uid } });
-    assert.ok(re === null);
+    const re = await Point.registerPoint({}, { params: { uid: uid } });
+    expect(re).to.be.null;
   });
 });

@@ -47,7 +47,7 @@ export class Point {
 
     const signInRef = Ref.pointSignIn(uid);
 
-    if ((await Point.timePassed(signInRef, EventName.signIn)) === false) return null;
+    if ((await this.timePassed(signInRef, EventName.signIn)) === false) return null;
     const point = this.getRandomPoint(EventName.signIn);
 
     const docData = { timestamp: Utils.getTimestamp(), point: point };
@@ -81,6 +81,36 @@ export class Point {
     const point = this.getRandomPoint(EventName.register);
 
     const docData = { timestamp: Utils.getTimestamp(), point: point };
+    await ref.set(docData);
+    await this.updateUserPoint(uid, point);
+    return ref;
+  }
+
+  /**
+   * Returns point document reference
+   * @param data post data
+   * @param context context
+   * @returns reference
+   */
+  static async postCreatePoint(data: any, context: any) {
+    const uid = data.uid;
+    const postId = context.params.postId;
+    // console.log("uid; ", uid, ", postId", postId);
+    const postCreateRef = Ref.pointPostCreate(uid);
+    if ((await this.timePassed(postCreateRef, EventName.postCreate)) === false) return null;
+    const point = this.getRandomPoint(EventName.postCreate);
+    const docData = { timestamp: Utils.getTimestamp(), point: point };
+
+    // Reference to create a history.
+    const ref = postCreateRef.child(postId);
+
+    // Check if the post has already point event.
+    // Note, this will not happen in production mode since it only works on `onCreate` event.
+    // This is only for test and it might be commented out if you wish.
+    const snapshot = await ref.get();
+    if (snapshot.exists() && snapshot.val()) return null;
+
+    // Set history and update point.
     await ref.set(docData);
     await this.updateUserPoint(uid, point);
     return ref;

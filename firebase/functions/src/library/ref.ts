@@ -9,7 +9,14 @@ export class Ref {
   static user(uid: string) {
     return this.users.child(uid);
   }
-  static point(uid: string) {
+
+  /**
+   * Returns user point folder reference
+   *
+   * @param uid user uid
+   * @returns Reference of user point folder
+   */
+  static point(uid: string): admin.database.Reference {
     return this.rdb.ref("point").child(uid);
   }
   static pointSignIn(uid: string) {
@@ -39,5 +46,10 @@ export class Ref {
   }
   static userSetting(uid: string, setting: string) {
     return this.userSettings(uid).child(setting);
+  }
+
+  // post create point folder
+  static pointPostCreate(uid: string) {
+    return this.point(uid).child("postCreate");
   }
 }
