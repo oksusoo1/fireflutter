@@ -4,7 +4,7 @@ import { expect } from "chai";
 // import { EventName, Point, randomPoint } from "../../src/classes/point";
 import { FirebaseAppInitializer } from "../firebase-app-initializer";
 import { Test } from "../../src/classes/test";
-import { UserData } from "../../src/interfaces/user.interface";
+import { UserDocument } from "../../src/interfaces/user.interface";
 import { Utils } from "../../src/classes/utils";
 import { ERROR_USER_EXISTS } from "../../src/defines";
 
@@ -19,7 +19,7 @@ describe("User create test", () => {
     const snapshot = await ref.get();
     expect(snapshot.key).equal(uid);
 
-    const data = snapshot.val() as UserData;
+    const data = snapshot.val() as UserDocument;
     expect(data).to.be.an("object").to.have.property("middleName").equal("test-a-yo");
 
     //

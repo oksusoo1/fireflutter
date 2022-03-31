@@ -1,4 +1,4 @@
-export interface UserData {
+export interface UserDocument {
   lastName?: string;
   firstName?: string;
   middleName?: string;

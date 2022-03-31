@@ -31,8 +31,8 @@ export interface CommentDocument extends ForumDocument {
  * - indexUserDocument
  * - deleteIndexedUserDocument
  */
-export class MeilisearchIndex {
-  static meilisearchExcludedCategories = ["quiz"];
+export class Meilisearch {
+  static excludedCategories = ["quiz"];
 
   /**
    * Index
@@ -53,25 +53,22 @@ export class MeilisearchIndex {
   }
 
   /**
-   * Creates or update a post document index.
+   * Creates a post document index.
    *
-   * @param id post id
    * @param data post data to index
+   * @param context context
    * @return Promise
    */
-  static async indexPostDocument(id: string, data: PostDocument) {
-    let _files = "";
-    if (data.files && data.files.length) {
-      _files = typeof data.files == "string" ? data.files : data.files.join(",");
-    }
+  static async indexPostCreate(data: PostDocument, context: any) {
+    if (this.excludedCategories.includes(data.category)) return null;
 
     const _data: PostDocument = {
-      id: id,
+      id: context.params.id,
       uid: data.uid,
       title: data.title ?? "",
       category: data.category,
-      content: data.content ?? "",
-      files: _files,
+      content: Utils.removeHtmlTags(data.content),
+      files: Array.isArray(data.files) ? data.files.join(",") : data.files,
       noOfComments: data.noOfComments ?? 0,
       deleted: data.deleted ? "Y" : "N",
       createdAt: Utils.getTimestamp(data.createdAt),
@@ -80,13 +77,43 @@ export class MeilisearchIndex {
 
     const promises = [];
 
-    promises.push(axios.post("https://wonderfulkorea.kr:4431/index.php?api=post/record", _data));
+    promises.push(axios.post("http://wonderfulkorea.kr:7700/indexes/posts/documents", _data));
+    promises.push(this.indexForumDocument(_data));
 
-    if (!this.meilisearchExcludedCategories.includes(_data.category)) {
-      _data.content = Utils.removeHtmlTags(_data.content);
-      promises.push(axios.post("http://wonderfulkorea.kr:7700/indexes/posts/documents", _data));
-      promises.push(this.indexForumDocument(_data));
+    return Promise.all(promises);
+  }
+
+  /**
+   * Update a post document index.
+   *
+   * @param data post data to index
+   * @param context context
+   * @return Promise
+   */
+  static async indexPostUpdate(data: { before: PostDocument; after: PostDocument }, context: any) {
+    if (this.excludedCategories.includes(data.after.category)) return null;
+    if (data.before.title === data.after.title && data.before.content === data.after.content) {
+      return null;
     }
+
+    const after = data.after;
+
+    const _data: PostDocument = {
+      id: context.params.id,
+      uid: after.uid,
+      title: after.title ?? "",
+      category: after.category,
+      content: Utils.removeHtmlTags(after.content),
+      files: Array.isArray(after.files) ? after.files.join(",") : after.files,
+      noOfComments: after.noOfComments ?? 0,
+      deleted: after.deleted ? "Y" : "N",
+      updatedAt: Utils.getTimestamp(after.updatedAt),
+    };
+
+    const promises = [];
+
+    promises.push(axios.post("http://wonderfulkorea.kr:7700/indexes/posts/documents", _data));
+    promises.push(this.indexForumDocument(_data));
 
     return Promise.all(promises);
   }
@@ -100,9 +127,9 @@ export class MeilisearchIndex {
   static async deleteIndexedPostDocument(id: string) {
     const promises = [];
     promises.push(
-        axios.post("https://wonderfulkorea.kr:4431/index.php?api=post/delete", {
-          id: id,
-        })
+      axios.post("https://wonderfulkorea.kr:4431/index.php?api=post/delete", {
+        id: id,
+      })
     );
     promises.push(axios.delete("http://wonderfulkorea.kr:7700/indexes/posts/documents/" + id));
     promises.push(this.deleteIndexedForumDocument(id));
@@ -153,9 +180,9 @@ export class MeilisearchIndex {
   static async deleteIndexedCommentDocument(id: string) {
     const promises = [];
     promises.push(
-        axios.post("https://wonderfulkorea.kr:4431/index.php?api=post/delete", {
-          id: id,
-        })
+      axios.post("https://wonderfulkorea.kr:4431/index.php?api=post/delete", {
+        id: id,
+      })
     );
     promises.push(axios.delete("http://wonderfulkorea.kr:7700/indexes/comments/documents/" + id));
     promises.push(this.deleteIndexedForumDocument(id));
