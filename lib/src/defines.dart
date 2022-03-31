@@ -15,6 +15,7 @@ typedef BuilderWidgetUserFunction = Widget Function(User);
 typedef VoidMapCallback = void Function(Map<String, dynamic>);
 
 const ERROR_SIGN_IN = 'ERROR_SIGN_IN';
+const ERROR_NOT_SIGN_IN = 'ERROR_NOT_SIGN_IN';
 
 /// User may be signed in, but the user didn't update his profile
 /// and user document under `/users` collection does not eixsts.
@@ -37,8 +38,7 @@ const ERROR_UNKNWON = 'ERROR_UNKNWON';
 const COMMENT_CONTENT_DELETED = "COMMENT_CONTENT_DELETED";
 
 /// This happens when the app tries to save(update) a field with data on user information where the field is not supported.
-const ERROR_NOT_SUPPORTED_FIELD_ON_USER_UPDATE =
-    'ERROR_NOT_SUPPORTED_FIELD_ON_USER_UPDATE';
+const ERROR_NOT_SUPPORTED_FIELD_ON_USER_UPDATE = 'ERROR_NOT_SUPPORTED_FIELD_ON_USER_UPDATE';
 
 const ERROR_USER_ALREADY_BLOCKED = "ERROR_USER_ALREADY_BLOCKED";
 

@@ -10,7 +10,6 @@ import { PostCreate, PostDocument } from "../interfaces/forum.interface";
 import { Ref } from "./ref";
 import { ERROR_EMPTY_CATEGORY, ERROR_EMPTY_UID } from "../defines";
 import { Messaging } from "./messaging";
-import { messaging } from "firebase-admin";
 
 export class Post {
   /**
