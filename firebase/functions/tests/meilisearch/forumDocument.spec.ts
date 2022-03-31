@@ -2,7 +2,7 @@ import "mocha";
 import { expect } from "chai";
 import { MeiliSearch } from "meilisearch";
 
-import { MeilisearchIndex } from "../../src/classes/meilisearch";
+import { Meilisearch } from "../../src/classes/meilisearch";
 import { Utils } from "../../src/classes/utils";
 
 const client = new MeiliSearch({
@@ -25,12 +25,12 @@ describe("Meilisearch forum document indexing", () => {
     const timestamp = new Date().getTime().toString();
     console.log("timestamp :", timestamp);
 
-    const testPost = MeilisearchIndex.createTestPostDocument({
+    const testPost = Meilisearch.createTestPostDocument({
       id: "postId-" + timestamp,
     });
 
     // / Indexing
-    await MeilisearchIndex.indexForumDocument(testPost);
+    await Meilisearch.indexForumDocument(testPost);
     await Utils.delay(3000);
 
     // Search if the post is indexed.
@@ -42,7 +42,7 @@ describe("Meilisearch forum document indexing", () => {
     expect(searchResult.hits).has.length(1);
 
     // / Deleting
-    await MeilisearchIndex.deleteIndexedForumDocument(testPost.id);
+    await Meilisearch.deleteIndexedForumDocument(testPost.id);
     await Utils.delay(3000);
 
     // Search
