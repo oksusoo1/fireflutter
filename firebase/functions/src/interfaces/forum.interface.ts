@@ -25,6 +25,10 @@ export interface PostDocument extends ForumDocument {
   noOfComments?: number;
   deleted?: "Y" | "N";
 }
+export interface CommentDocument extends ForumDocument {
+  postId: string;
+  parentId: string;
+}
 
 export interface PostCreate {
   uid: string;
@@ -46,7 +50,23 @@ export interface PostCreate {
   updatedAt: admin.firestore.FieldValue;
 }
 
-export interface CommentDocument extends ForumDocument {
-  postId: string;
-  parentId: string;
+export interface PostUpdate {
+  id?: string;
+  uid: string;
+  category: string;
+  subcategory?: string;
+  title?: string;
+  content?: string;
+  summary?: string;
+  files?: string;
+  hasPhoto?: boolean;
+  deleted?: boolean;
+  noOfComment?: number;
+  year?: number;
+  month?: number;
+  day?: number;
+  dayOfYear?: number;
+  week?: number;
+  createdAt?: admin.firestore.FieldValue;
+  updatedAt: admin.firestore.FieldValue;
 }

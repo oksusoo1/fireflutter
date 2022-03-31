@@ -3,13 +3,15 @@ import { expect } from "chai";
 import { Meilisearch } from "../../src/classes/meilisearch";
 import { Utils } from "../../src/classes/utils";
 
+import { Post } from "../../src/classes/post";
+
 async function initIndexFilter(index: string) {
   const indexFilters = await Meilisearch.client.index(index).getFilterableAttributes();
 
-  console.log("Post filterables: ", indexFilters);
+  // console.log("Post filterables: ", indexFilters);
   if (!indexFilters.includes("id")) {
     indexFilters.push("id");
-    console.log("Updating post filterables: ", indexFilters);
+    // console.log("Updating post filterables: ", indexFilters);
     await Meilisearch.client.index(index).updateFilterableAttributes(indexFilters);
   }
 }
@@ -82,23 +84,10 @@ describe("Meilisearch forum document indexing", () => {
   });
 
   // it("Test post ignore update", async () => {
-  //   // const fb = admin.firestore();
+  //   // create post on firebase
+  //   // this would also index it to meilisearch via cloud functions.
+  //   // const originalPost = await Post.create({ uid: "test-uid", category: "cat1", title: "test post" } as any);
 
-  //   // // create post
-  //   // const postId = `post-test-${timestamp}`;
-  //   // const originalPost = await fb.collection("posts").doc(postId).set({
-  //   //   uid: 'test-uid',
-  //   //   category: 'test-cat',
-  //   //   title: "post title",
-  //   //   content: "post content",
-  //   // });
-
-  //   // console.log(originalPost);
-
-  //   // Update `like` of the post.
-  //   // dealy 3 seconds.
-  //   // Get the updatedAt from Meilisearch
-  //   // Get the updatedAt from Database.
-  //   // They must not match.
+  //   // update post's like or dislike
   // });
 });
