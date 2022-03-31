@@ -46,7 +46,7 @@ export class Utils {
    * @param content string with HTML string.
    * @return string without html tags.
    */
-  static removeHtmlTags(content: string) {
+  static removeHtmlTags(content?: string) {
     if (content) {
       return content.replace(/<[^>]+>/g, "");
     } else {

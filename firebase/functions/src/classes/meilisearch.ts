@@ -107,9 +107,9 @@ export class Meilisearch {
   static async deleteIndexedPostDocument(id: string) {
     const promises = [];
     promises.push(
-      axios.post("https://wonderfulkorea.kr:4431/index.php?api=post/delete", {
-        id: id,
-      })
+        axios.post("https://wonderfulkorea.kr:4431/index.php?api=post/delete", {
+          id: id,
+        })
     );
     promises.push(axios.delete("http://wonderfulkorea.kr:7700/indexes/posts/documents/" + id));
     promises.push(this.deleteIndexedForumDocument(id));
@@ -182,9 +182,9 @@ export class Meilisearch {
   static async deleteIndexedCommentDocument(id: string) {
     const promises = [];
     promises.push(
-      axios.post("https://wonderfulkorea.kr:4431/index.php?api=post/delete", {
-        id: id,
-      })
+        axios.post("https://wonderfulkorea.kr:4431/index.php?api=post/delete", {
+          id: id,
+        })
     );
     promises.push(axios.delete("http://wonderfulkorea.kr:7700/indexes/comments/documents/" + id));
     promises.push(this.deleteIndexedForumDocument(id));

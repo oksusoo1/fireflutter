@@ -1,3 +1,5 @@
+import * as admin from "firebase-admin";
+
 export interface CategoryDocument {
   id?: string;
   timestamp?: number;
@@ -9,9 +11,9 @@ export interface CategoryDocument {
 }
 
 export interface ForumDocument {
-  id: string;
+  id?: string;
   uid: string;
-  content: string;
+  content?: string;
   files?: string | string[];
   createdAt?: number;
   updatedAt?: number;
@@ -22,6 +24,26 @@ export interface PostDocument extends ForumDocument {
   category: string;
   noOfComments?: number;
   deleted?: "Y" | "N";
+}
+
+export interface PostCreate {
+  uid: string;
+  category: string;
+  subcategory?: string;
+  title?: string;
+  content?: string;
+  summary?: string;
+  files?: string;
+  hasPhoto: boolean;
+  deleted: false;
+  noOfComment: 0;
+  year: number;
+  month: number;
+  day: number;
+  dayOfYear: number;
+  week: number;
+  createdAt: admin.firestore.FieldValue;
+  updatedAt: admin.firestore.FieldValue;
 }
 
 export interface CommentDocument extends ForumDocument {

@@ -10,6 +10,7 @@
     "deploy": "firebase deploy --only functions",
     "logs": "firebase functions:log",
     "test:createTestUser": "mocha --timeout 10000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/test/createTestUser.spec.ts",
+    "test:post:create": "mocha --timeout 10000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/post/post-create.spec.ts",
     "test:point:sign-in": "mocha --timeout 10000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/point/sign-in.spec.ts",
     "test:point:register": "mocha --timeout 10000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/point/register.spec.ts",
     "test:point:post": "mocha --timeout 10000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/point/post.spec.ts",
@@ -25,6 +26,7 @@
   "main": "lib/index.js",
   "dependencies": {
     "axios": "^0.26.1",
+    "dayjs": "^1.11.0",
     "firebase-admin": "^9.8.0",
     "firebase-functions": "^3.14.1"
   },

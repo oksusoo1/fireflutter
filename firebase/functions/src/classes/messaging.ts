@@ -20,10 +20,7 @@ export class Messaging {
    * @returns array of tokens
    */
   static async getTokens(uid: string): Promise<string[]> {
-    const snapshot = await Ref.messageTokens
-      .orderByChild("uid")
-      .equalTo(uid)
-      .get();
+    const snapshot = await Ref.messageTokens.orderByChild("uid").equalTo(uid).get();
     if (!snapshot.exists()) return [];
     const val = snapshot.val();
     return Object.keys(val);
@@ -36,16 +33,11 @@ export class Messaging {
    */
   static async getTokensFromUids(uids: string) {
     const promises: Promise<string[]>[] = [];
-    uids
-      .split(",")
-      .forEach((uid, i, arr) => promises.push(this.getTokens(uid)));
+    uids.split(",").forEach((uid) => promises.push(this.getTokens(uid)));
     return (await Promise.all(promises)).flat();
   }
 
-  static async isUserSubscriptionOff(
-    uid: string,
-    subscription: string
-  ): Promise<boolean> {
+  static async isUserSubscriptionOff(uid: string, subscription: string): Promise<boolean> {
     const snapshot = await Ref.userSetting(uid, "topic").get();
     if (!snapshot.exists()) return true;
     const val = snapshot.val();
@@ -59,9 +51,7 @@ export class Messaging {
   static async getTopicSubscriber(uids: string, subscription: string) {
     const _uids = uids.split(",");
     const promises: Promise<boolean>[] = [];
-    _uids.forEach((uid) =>
-      promises.push(this.isUserSubscriptionOff(uid, subscription))
-    );
+    _uids.forEach((uid) => promises.push(this.isUserSubscriptionOff(uid, subscription)));
 
     const re = [];
     const result = await Promise.all(promises);

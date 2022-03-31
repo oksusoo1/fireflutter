@@ -1,7 +1,11 @@
 import * as functions from "firebase-functions";
 import * as express from "express";
 
-export function cors(req: functions.https.Request, res: express.Response, callback: () => void) {
+export async function cors(
+  req: functions.https.Request,
+  res: express.Response,
+  callback: () => Promise<void>
+) {
   res.set("Access-Control-Allow-Origin", "*");
 
   if (req.method === "OPTIONS") {
@@ -14,6 +18,8 @@ export function cors(req: functions.https.Request, res: express.Response, callba
     res.set("Access-Control-Max-Age", "3600");
     res.status(204).send("");
   } else {
-    callback();
+    callback().catch((e) => {
+      res.status(200).send(e);
+    });
   }
 }

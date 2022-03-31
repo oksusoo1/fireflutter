@@ -9,6 +9,8 @@ export class FirebaseAppInitializer {
         databaseURL: config.databaseURL,
         storageBucket: config.storageBucket,
       });
+
+      admin.firestore().settings({ ignoreUndefinedProperties: true });
     } catch (e) {}
   }
 }

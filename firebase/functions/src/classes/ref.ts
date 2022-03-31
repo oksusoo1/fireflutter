@@ -1,8 +1,10 @@
 import * as admin from "firebase-admin";
 export class Ref {
   static get db() {
-    return admin.firestore();
+    const db = admin.firestore();
+    return db;
   }
+
   static get rdb() {
     return admin.database();
   }
@@ -61,12 +63,16 @@ export class Ref {
     return this.point(uid).child("commentCreate");
   }
 
+  static get postCol() {
+    return this.db.collection("posts");
+  }
+
   /**
    * Returns post reference
    * @param id post id
    * @return reference
    */
   static postDoc(id: string) {
-    return this.db.collection("posts").doc(id);
+    return this.postCol.doc(id);
   }
 }

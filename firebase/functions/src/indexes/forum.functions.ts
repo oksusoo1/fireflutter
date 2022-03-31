@@ -15,13 +15,15 @@
  *
  */
 import * as functions from "firebase-functions";
+import { Post } from "../classes/post";
 import { cors } from "../cors";
 
 // Start writing Firebase Functions
 // https://firebase.google.com/docs/functions/typescript
 
-export const date = functions.region("asia-northeast3").https.onRequest((req, res) => {
-  cors(req, res, () => {
-    res.send("Hello World!");
+export const postCreate = functions.region("asia-northeast3").https.onRequest((req, res) => {
+  cors(req, res, async () => {
+    console.log(req.query);
+    res.status(200).send(await Post.create(req.query as any));
   });
 });

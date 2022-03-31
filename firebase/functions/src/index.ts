@@ -6,6 +6,8 @@ admin.initializeApp({
   storageBucket: config.storageBucket,
 });
 
+admin.firestore().settings({ ignoreUndefinedProperties: true });
+
 export * from "./indexes/point.functions";
 export * from "./indexes/forum.functions";
 export * from "./indexes/storage.functions";
