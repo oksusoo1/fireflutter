@@ -37,27 +37,40 @@ export class Messaging {
     return (await Promise.all(promises)).flat();
   }
 
-  static async isUserSubscriptionOff(uid: string, subscription: string): Promise<boolean> {
-    const snapshot = await Ref.userSetting(uid, "topic").get();
-    if (!snapshot.exists()) return true;
-    const val = snapshot.val();
-    if (val && val[subscription] == false) {
-      return false;
-    } else {
-      return true;
-    }
+  /**
+   * Return true if the user didn't subscribe the topic.
+   * @param uid uid of a user
+   * @param topic topic
+   * @returns Promise<boolean>
+   */
+  static async isUserSubscriptionOff(uid: string, topic: string): Promise<boolean> {
+    return !this.userHasSusbscription(uid, topic);
   }
 
-  static async getTopicSubscriber(uids: string, subscription: string) {
+  /**
+   * Returns true if the user subscribed the topic.
+   * @param uid uid of a suer
+   * @param topic topic
+   * @returns Promise<boolean>
+   */
+  static async userHasSusbscription(uid: string, topic: string): Promise<boolean> {
+    /// Get all the topics of the user
+    const snapshot = await Ref.userSetting(uid, "topic").get();
+    if (snapshot.exists() === false) return false;
+    const val = snapshot.val();
+    return val && val[topic];
+  }
+
+  static async getTopicSubscriber(uids: string, topic: string) {
     const _uids = uids.split(",");
     const promises: Promise<boolean>[] = [];
-    _uids.forEach((uid) => promises.push(this.isUserSubscriptionOff(uid, subscription)));
+    _uids.forEach((uid) => promises.push(this.isUserSubscriptionOff(uid, topic)));
 
     const re = [];
-    const result = await Promise.all(promises);
+    const results = await Promise.all(promises);
 
-    for (const i in result) {
-      if (result[i]) re.push(_uids[i]);
+    for (const i in results) {
+      if (results[i]) re.push(_uids[i]);
     }
     return re;
   }
