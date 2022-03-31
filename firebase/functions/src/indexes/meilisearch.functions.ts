@@ -1,5 +1,6 @@
 import * as functions from "firebase-functions";
-import { Meilisearch, PostDocument } from "../classes/meilisearch";
+import { Meilisearch } from "../classes/meilisearch";
+import { PostDocument } from "../interfaces/forum.interface";
 
 /**
  * Indexes a post document when it is created.
@@ -28,20 +29,3 @@ export const onPostUpdateIndex = functions
   .onUpdate((change, context) => {
     return Meilisearch.indexPostUpdate(change as any, context);
   });
-
-  
-// export const onCommentCreateIndex = functions
-//   .region("asia-northeast3")
-//   .firestore.document("/comments/{id}")
-//   .onCreate((snapshot, context) => {
-//     return Meilisearch.indexCommentCreate(snapshot.data() as CommentDocument, context);
-//   });
-
-// export const onCommentUpdateIndex = functions
-//   .region("asia-northeast3")
-//   .firestore.document("/comments/{id}")
-//   .onUpdate((change, context) => {
-//     return Meilisearch.indexPostUpdate(change as any, context);
-//   });
-
-  

@@ -1,9 +1,12 @@
 import "mocha";
 import { expect } from "chai";
 import { MeiliSearch as Meili } from "meilisearch";
-
 import { Meilisearch } from "../../src/classes/meilisearch";
 import { Utils } from "../../src/classes/utils";
+// import * as admin from "firebase-admin";
+// import { FirebaseAppInitializer } from "../firebase-app-initializer";
+
+// new FirebaseAppInitializer();
 
 const client = new Meili({
   host: "http://wonderfulkorea.kr:7700",
@@ -82,11 +85,24 @@ describe("Meilisearch forum document indexing", () => {
     expect(searchResult.hits).has.length(0);
   });
 
-  // it("Test post ignore update", async () => {
-  //   // Update `like` of the post.
-  //   // dealy 3 seconds.
-  //   // Get the updatedAt from Meilisearch
-  //   // Get the updatedAt from Database.
-  //   // They must not match.
-  // });
+  it("Test post ignore update", async () => {
+    // const fb = admin.firestore();
+
+    // // create post
+    // const postId = `post-test-${timestamp}`;
+    // const originalPost = await fb.collection("posts").doc(postId).set({
+    //   uid: 'test-uid',
+    //   category: 'test-cat',
+    //   title: "post title",
+    //   content: "post content",
+    // });
+
+    // console.log(originalPost);
+
+    // Update `like` of the post.
+    // dealy 3 seconds.
+    // Get the updatedAt from Meilisearch
+    // Get the updatedAt from Database.
+    // They must not match.
+  });
 });
