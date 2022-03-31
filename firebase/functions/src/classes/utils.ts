@@ -55,6 +55,30 @@ export class Utils {
   }
 
   /**
+   * Convert html entities into code.
+   *
+   * @param {*} text HTML string
+   */
+  static decodeHTMLEntities(text: string) {
+    const entities: any = {
+      amp: "&",
+      apos: "'",
+      "#x27": "'",
+      "#x2F": "/",
+      "#39": "'",
+      "#47": "/",
+      lt: "<",
+      gt: ">",
+      nbsp: " ",
+      quot: '"',
+      bull: "•",
+    };
+    return text.replace(/&([^;]+);/gm, function (match, entity) {
+      return entities[entity] || match;
+    });
+  }
+
+  /**
    * Divide an array into many
    *
    * @param {*} arr array
