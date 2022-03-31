@@ -18,6 +18,7 @@
     "test:storage:file-upload": "mocha --timeout 10000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/storage/file-upload.spec.ts",
     "test:utils:removeHtmlTags": "mocha --timeout 10000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/utils/removeHtmlTags.spec.ts",
     "test:meilisearch:forum-indexing": "mocha --timeout 20000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/meilisearch/forum-indexing.spec.ts",
+    "test:meilisearch:post-update": "mocha --timeout 20000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/meilisearch/post-update.spec.ts",
     "test:messagingToken": "mocha --timeout 20000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/messaging/messaging-tokens.spec.ts",
     "test:messagingSubscriber": "mocha --timeout 20000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/messaging/messaging-subscriber.spec.ts"
   },

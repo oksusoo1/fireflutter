@@ -55,8 +55,8 @@ export class Meilisearch {
       files: Array.isArray(data.files) ? data.files.join(",") : data.files,
       noOfComments: data.noOfComments ?? 0,
       deleted: data.deleted ? "Y" : "N",
-      createdAt: Utils.getTimestamp(data.createdAt),
-      updatedAt: Utils.getTimestamp(data.updatedAt),
+      createdAt: Utils.getTimestamp(),
+      updatedAt: Utils.getTimestamp(),
     };
 
     const promises = [];
@@ -74,8 +74,13 @@ export class Meilisearch {
    * @param data post data to index
    * @param context context
    * @return Promise
+   *
+   * @test tests/meilisearch/post-update.spect.ts
    */
-  static async indexPostUpdate(data: { before: PostDocument; after: PostDocument }, context: any) {
+  static async indexPostUpdate(
+    data: { before: PostDocument; after: PostDocument },
+    context: any
+  ): Promise<any> {
     if (this.excludedCategories.includes(data.after.category)) return null;
     if (data.before.title === data.after.title && data.before.content === data.after.content) {
       return null;
@@ -92,13 +97,12 @@ export class Meilisearch {
       files: Array.isArray(after.files) ? after.files.join(",") : after.files,
       noOfComments: after.noOfComments ?? 0,
       deleted: after.deleted ? "Y" : "N",
-      updatedAt: Utils.getTimestamp(after.updatedAt),
+      updatedAt: Utils.getTimestamp(),
     };
 
     const promises = [];
 
     promises.push(this.client.index("posts").updateDocuments([_data]));
-    // promises.push(axios.post("http://wonderfulkorea.kr:7700/indexes/posts/documents", _data));
     promises.push(this.indexForumDocument(_data));
 
     return Promise.all(promises);
@@ -154,7 +158,10 @@ export class Meilisearch {
    * @param context Event context
    * @return Promise
    */
-  static async indexCommentUpdate(data: { before: CommentDocument; after: CommentDocument }, context: any) {
+  static async indexCommentUpdate(
+    data: { before: CommentDocument; after: CommentDocument },
+    context: any
+  ) {
     if (data.before.content === data.after.content) return null;
 
     const after = data.after;
@@ -234,8 +241,8 @@ export class Meilisearch {
 
   /**
    * Search
-   * 
-   * @param index 
+   *
+   * @param index
    * @param data search options
    * @returns Search result
    */
@@ -248,7 +255,12 @@ export class Meilisearch {
 
   // FOR TESTING
   // TODO: move this code somewhere else.
-  static createTestPostDocument(data: { id: string; uid?: string; title?: string; content?: string }): PostDocument {
+  static createTestPostDocument(data: {
+    id: string;
+    uid?: string;
+    title?: string;
+    content?: string;
+  }): PostDocument {
     return {
       id: data.id,
       uid: data.uid ?? "test-uid",

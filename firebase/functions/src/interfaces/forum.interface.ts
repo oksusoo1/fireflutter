@@ -20,7 +20,7 @@ export interface ForumDocument {
 }
 
 export interface PostDocument extends ForumDocument {
-  title: string;
+  title?: string;
   category: string;
   noOfComments?: number;
   deleted?: "Y" | "N";
