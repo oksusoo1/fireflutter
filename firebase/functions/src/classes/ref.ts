@@ -71,6 +71,10 @@ export class Ref {
     return this.db.collection("posts");
   }
 
+  static get commentCol() {
+    return this.db.collection("comments");
+  }
+
   /**
    * Returns post reference
    * @param id post id
@@ -78,5 +82,13 @@ export class Ref {
    */
   static postDoc(id: string) {
     return this.postCol.doc(id);
+  }
+  /**
+   * Returns comment reference
+   * @param id comment id
+   * @return reference
+   */
+  static commentDoc(id: string) {
+    return this.commentCol.doc(id);
   }
 }
