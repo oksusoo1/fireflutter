@@ -1,9 +1,6 @@
 import "mocha";
-import { expect } from "chai";
 
 import { FirebaseAppInitializer } from "../firebase-app-initializer";
-import { Post } from "../../src/classes/post";
-import { PostDocument } from "../../src/interfaces/forum.interface";
 import { Utils } from "../../src/classes/utils";
 
 new FirebaseAppInitializer();

@@ -128,13 +128,13 @@ export class Test {
       // console.log('category id; ', catDoc.id);
     }
 
-    const postData: any = {
-      category: data.category && data.category.id ? data.category.id : "test",
-      title: data.post && data.post.title ? data.post.title : "create_post",
-      uid: data.post && data.post.uid ? data.post.uid : "uid",
-      createdAt: Utils.getTimestamp(),
-      updatedAt: Utils.getTimestamp(),
-    };
+    // const postData: any = {
+    //   category: data.category && data.category.id ? data.category.id : "test",
+    //   title: data.post && data.post.title ? data.post.title : "create_post",
+    //   uid: data.post && data.post.uid ? data.post.uid : "uid",
+    //   createdAt: Utils.getTimestamp(),
+    //   updatedAt: Utils.getTimestamp(),
+    // };
 
     // / create post
 
