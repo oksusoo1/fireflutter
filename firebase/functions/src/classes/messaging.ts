@@ -1,9 +1,8 @@
-// import * as admin from "firebase-admin";
+import * as admin from "firebase-admin";
 import { messaging } from "firebase-admin";
 import { MessagePayload } from "../interfaces/messaging.interface";
 import { Ref } from "./ref";
 import { Utils } from "./utils";
-// import { Utils } from "./utils";
 
 export class Messaging {
   /**
@@ -24,7 +23,10 @@ export class Messaging {
    * @returns array of tokens
    */
   static async getTokens(uid: string): Promise<string[]> {
-    const snapshot = await Ref.messageTokens.orderByChild("uid").equalTo(uid).get();
+    const snapshot = await Ref.messageTokens
+      .orderByChild("uid")
+      .equalTo(uid)
+      .get();
     if (!snapshot.exists()) return [];
     const val = snapshot.val();
     return Object.keys(val);
@@ -40,6 +42,35 @@ export class Messaging {
     const promises: Promise<string[]>[] = [];
     uids.split(",").forEach((uid) => promises.push(this.getTokens(uid)));
     return (await Promise.all(promises)).flat();
+  }
+
+  // check the uids if they are subscribe to topic and also want to get notification under their post/comment
+  /**
+   * Get ancestors who subscribed to 'comment notification' but removing those who subscribed to the topic.
+   * @param {*} uids ancestors
+   * @param {*} topic topic
+   * @returns UIDs of ancestors.
+   */
+  static async getCommentNotifyeeWithoutTopicSubscriber(
+    uids: string,
+    topic: string
+  ) {
+    const _uids = uids.split(",");
+    const promises: Promise<boolean>[] = [];
+    _uids.forEach((uid) =>
+      promises.push(this.userHasSusbscriptionOff(uid, topic))
+    );
+    const result = await Promise.all(promises);
+
+    const re = [];
+    for (const i in result) {
+      // / Get anscestors who subscribed to 'comment notification' and didn't subscribe to the topic.
+      if (!result[i]) {
+        re.push(uids[i]);
+      }
+    }
+
+    return re;
   }
 
   // /**
@@ -61,7 +92,10 @@ export class Messaging {
    * @param topic topic
    * @returns Promise<boolean>
    */
-  static async userHasSusbscription(uid: string, topic: string): Promise<boolean> {
+  static async userHasSusbscription(
+    uid: string,
+    topic: string
+  ): Promise<boolean> {
     // / Get all the topics of the user
     const snapshot = await Ref.userSetting(uid, "topic").get();
     if (snapshot.exists() === false) return false;
@@ -75,7 +109,10 @@ export class Messaging {
    * @param topic topic
    * @returns Promise<boolean>
    */
-  static async userHasSusbscriptionOff(uid: string, topic: string): Promise<boolean> {
+  static async userHasSusbscriptionOff(
+    uid: string,
+    topic: string
+  ): Promise<boolean> {
     // / Get all the topics of the user
     const snapshot = await Ref.userSetting(uid, "topic").get();
     if (snapshot.exists() === false) return false;
@@ -94,11 +131,12 @@ export class Messaging {
     const _uids = uids.split(",");
     const promises: Promise<boolean>[] = [];
 
-    _uids.forEach((uid) => promises.push(this.userHasSusbscriptionOff(uid, topic)));
-
-    const re = [];
+    _uids.forEach((uid) =>
+      promises.push(this.userHasSusbscriptionOff(uid, topic))
+    );
     const results = await Promise.all(promises);
 
+    const re = [];
     // dont add user who has turn off subscription
     for (const i in results) {
       if (!results[i]) re.push(_uids[i]);
@@ -117,7 +155,11 @@ export class Messaging {
       data: {
         id: query.postId ? query.postId : query.id ? query.id : "",
         type: query.type ? query.type : "",
-        senderUid: query.senderUid ? query.senderUid : query.uid ? query.uid : "",
+        senderUid: query.senderUid
+          ? query.senderUid
+          : query.uid
+          ? query.uid
+          : "",
         badge: query.badge ? query.badge : "",
       },
       notification: {
@@ -142,7 +184,8 @@ export class Messaging {
 
     if (res.notification.body != "") {
       res.notification.body = Utils.removeHtmlTags(res.notification.body) ?? "";
-      res.notification.body = Utils.decodeHTMLEntities(res.notification.body) ?? "";
+      res.notification.body =
+        Utils.decodeHTMLEntities(res.notification.body) ?? "";
       res.notification.body = res.notification.body.substring(0, 255);
     }
 
@@ -151,5 +194,59 @@ export class Messaging {
     }
 
     return res;
+  }
+
+  static async sendingMessageToTokens(
+    tokens: Array<string>,
+    payload: MessagePayload
+  ) {
+    if (tokens.length == 0) return [];
+
+    // / sendMulticast supports 500 token per batch only.
+    const chunks = Utils.chunk(tokens, 500);
+
+    const sendToDevicePromise = [];
+    for (const c of chunks) {
+      // Send notifications to all tokens.
+      const newPayload: messaging.MulticastMessage = Object.assign(
+        { tokens: c },
+        payload as any
+      );
+      sendToDevicePromise.push(admin.messaging().sendMulticast(newPayload));
+    }
+    const sendDevice = await Promise.all(sendToDevicePromise);
+
+    const tokensToRemove: Promise<any>[] = [];
+    let successCount = 0;
+    let errorCount = 0;
+    sendDevice.forEach((res, i) => {
+      successCount += res.successCount;
+      errorCount += res.failureCount;
+
+      res.responses.forEach((result, index) => {
+        const error = result.error;
+        if (error) {
+          // console.log(
+          //     "Failure sending notification to",
+          //     chunks[i][index],
+          //     error,
+          // );
+          // console.log('error.code');
+          // console.log(error.code);
+          // Cleanup the tokens who are not registered anymore.
+          if (
+            error.code === "messaging/invalid-registration-token" ||
+            error.code === "messaging/registration-token-not-registered" ||
+            error.code === "messaging/invalid-argument"
+          ) {
+            tokensToRemove.push(
+              Ref.messageTokens.child(chunks[i][index]).remove()
+            );
+          }
+        }
+      });
+    });
+    await Promise.all(tokensToRemove);
+    return { success: successCount, error: errorCount };
   }
 }

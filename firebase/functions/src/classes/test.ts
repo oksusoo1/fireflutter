@@ -43,7 +43,10 @@ export class Test {
    * @param data data
    * @returns document object
    */
-  static async createTestUserAndGetDoc(uid: string, data?: UserDocument): Promise<UserDocument> {
+  static async createTestUserAndGetDoc(
+    uid: string,
+    data?: UserDocument
+  ): Promise<UserDocument> {
     const ref = await this.createTestUser(uid, data);
     const snapshot = await ref.get();
     return snapshot.val();
