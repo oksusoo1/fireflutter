@@ -1,14 +1,16 @@
+import { Ref } from "./ref";
 import { Utils } from "./utils";
 import { CommentDocument, PostDocument } from "../interfaces/forum.interface";
 import { MeiliSearch as Meili, SearchParams, SearchResponse } from "meilisearch";
+import { EventContext } from "firebase-functions/v1";
+import { UserRecord } from "firebase-functions/v1/auth";
+import { UserModel } from "../interfaces/user.interface";
 
 /**
  * TODO: Test
- * - indexPostDocument
- * - deleteIndexedPostDocument
- * - indexCommentDocument
- * - deleteIndexedCommentDocument
- * - indexUserDocument
+ *
+ * - indexUserCreate
+ * - indexUserUpdate
  * - deleteIndexedUserDocument
  */
 export class Meilisearch {
@@ -19,7 +21,7 @@ export class Meilisearch {
   });
 
   /**
-   * Index
+   * Indexes document under [posts-and-comments] index.
    * @param data data to be index
    * @return Promise<any>
    */
@@ -28,22 +30,23 @@ export class Meilisearch {
   }
 
   /**
+   * Deletes meilisearch document indexing from [posts-and-comments] index.
    *
-   * @param id document ID to delete
+   * @param context Event context
    * @return Promise
    */
-  static deleteIndexedForumDocument(id: string) {
-    return this.client.index("posts-and-comments").deleteDocument(id);
+  static deleteIndexedForumDocument(context: EventContext) {
+    return this.client.index("posts-and-comments").deleteDocument(context.params.id);
   }
 
   /**
    * Creates a post document index.
    *
    * @param data post data to index
-   * @param context context
+   * @param context Event context
    * @return Promise
    */
-  static async indexPostCreate(data: PostDocument, context: any) {
+  static async indexPostCreate(data: PostDocument, context: EventContext) {
     if (this.excludedCategories.includes(data.category)) return null;
 
     const _data = {
@@ -51,10 +54,10 @@ export class Meilisearch {
       uid: data.uid,
       title: data.title ?? "",
       category: data.category,
-      content: Utils.removeHtmlTags(data.content),
-      files: data.files,
+      content: Utils.removeHtmlTags(data.content) ?? "",
+      files: data.files ? data.files.join(",") : "",
       noOfComments: data.noOfComments ?? 0,
-      deleted: data.deleted,
+      deleted: false,
       createdAt: Utils.getTimestamp(),
       updatedAt: Utils.getTimestamp(),
     };
@@ -72,14 +75,14 @@ export class Meilisearch {
    * Update a post document index.
    *
    * @param data post data to index
-   * @param context context
+   * @param context Event context
    * @return Promise
    *
    * @test tests/meilisearch/post-update.spect.ts
    */
   static async indexPostUpdate(
-      data: { before: PostDocument; after: PostDocument },
-      context: any
+    data: { before: PostDocument; after: PostDocument },
+    context: EventContext
   ): Promise<any> {
     if (this.excludedCategories.includes(data.after.category)) return null;
     if (data.before.title === data.after.title && data.before.content === data.after.content) {
@@ -91,12 +94,12 @@ export class Meilisearch {
     const _data = {
       id: context.params.id,
       uid: after.uid,
-      title: after.title ?? "",
       category: after.category,
+      title: after.title ?? "",
       content: Utils.removeHtmlTags(after.content),
-      files: after.files,
+      files: after.files ? after.files.join(",") : "",
       noOfComments: after.noOfComments,
-      deleted: after.deleted,
+      deleted: false,
       updatedAt: Utils.getTimestamp(),
     };
 
@@ -114,12 +117,10 @@ export class Meilisearch {
    * @param context Post ID of the document to be deleted.
    * @return Promise
    */
-  static async deleteIndexedPostDocument(context: any) {
-    const id = context.params.id;
-
+  static async deleteIndexedPostDocument(context: EventContext) {
     const promises = [];
-    promises.push(this.client.index("posts").deleteDocument(id));
-    promises.push(this.deleteIndexedForumDocument(id));
+    promises.push(this.client.index("posts").deleteDocument(context.params.id));
+    promises.push(this.deleteIndexedForumDocument(context));
     return Promise.all(promises);
   }
 
@@ -130,16 +131,16 @@ export class Meilisearch {
    * @param context Event context
    * @return Promise
    */
-  static async indexCommentCreate(data: CommentDocument, context: any) {
+  static async indexCommentCreate(data: CommentDocument, context: EventContext) {
     const _data = {
       id: context.params.id,
       uid: data.uid,
       postId: data.postId,
       parentId: data.parentId,
       content: Utils.removeHtmlTags(data.content) ?? "",
-      files: data.files.join(","),
-      createdAt: Utils.getTimestamp(data.createdAt),
-      updatedAt: Utils.getTimestamp(data.updatedAt),
+      files: data.files ? data.files.join(",") : "",
+      createdAt: Utils.getTimestamp(),
+      updatedAt: Utils.getTimestamp(),
     };
 
     const promises = [];
@@ -159,8 +160,8 @@ export class Meilisearch {
    * @return Promise
    */
   static async indexCommentUpdate(
-      data: { before: CommentDocument; after: CommentDocument },
-      context: any
+    data: { before: CommentDocument; after: CommentDocument },
+    context: EventContext
   ) {
     if (data.before.content === data.after.content) return null;
 
@@ -172,7 +173,7 @@ export class Meilisearch {
       postId: after.postId,
       parentId: after.parentId,
       content: Utils.removeHtmlTags(after.content),
-      files: after.files.join(","),
+      files: after.files ? after.files.join(",") : "",
       updatedAt: Utils.getTimestamp(after.updatedAt),
     };
 
@@ -188,32 +189,66 @@ export class Meilisearch {
   /**
    * Deletes indexed comment document.
    *
-   * @param id Comment ID of the document to be deleted.
+   * @param context Event context.
    * @return Promise
    */
-  static async deleteIndexedCommentDocument(id: string) {
+  static async deleteIndexedCommentDocument(context: EventContext) {
     const promises = [];
-    promises.push(this.client.index("comments").deleteDocument(id));
+    promises.push(this.client.index("comments").deleteDocument(context.params.id));
     // promises.push(axios.delete("http://wonderfulkorea.kr:7700/indexes/comments/documents/" + id));
-    promises.push(this.deleteIndexedForumDocument(id));
+    promises.push(this.deleteIndexedForumDocument(context));
     return Promise.all(promises);
   }
 
   /**
-   * Creates or update a user document index.
+   * Indexes user data coming from create event of auth.
    *
-   * @param {*} uid user id.
-   * @param {*} data user data to index.
+   * @param {*} data User data to index. It must also contain the users id.
    * @return promise
    */
-  static async indexUserDocument(uid: string, data: any = {}): Promise<any> {
+  static async indexUserCreate(data: UserRecord): Promise<any> {
     const _data = {
-      id: uid,
-      gender: data.gender ?? "",
-      firstName: data.firstName ?? "",
-      middleName: data.middleName ?? "",
-      lastName: data.lastName ?? "",
-      photoUrl: data.photoUrl ?? "",
+      id: data.uid,
+      photoUrl: data.photoURL ?? "",
+      registeredAt: Utils.getTimestamp(),
+      updatedAt: Utils.getTimestamp(),
+    };
+
+    return this.client.index("users").addDocuments([_data]);
+    // return axios.post("http://wonderfulkorea.kr:7700/indexes/users/documents", _data);
+  }
+
+  /**
+   * Indexes user data coming from realtime database update.
+   *
+   * @param changes User data before and after.
+   * @param context Event context.
+   * @return promise
+   */
+  static async indexUserUpdate(
+    changes: { before: UserModel; after: UserModel },
+    context: EventContext
+  ): Promise<any> {
+    const before = changes.before;
+    const after = changes.after;
+    if (
+      before.firstName === after.firstName &&
+      before.middleName === after.middleName &&
+      before.lastName === after.lastName
+      /// Todo: add more ignore condition ? ...
+    ) {
+      return null;
+    }
+
+    const _data = {
+      id: context.params.uid,
+      photoUrl: after.photoUrl ?? "",
+      gender: after.gender ?? "",
+      firstName: after.firstName ?? "",
+      middleName: after.middleName ?? "",
+      lastName: after.lastName ?? "",
+      birthday: after.birthday ?? 0,
+      updatedAt: Utils.getTimestamp(),
     };
 
     return this.client.index("users").addDocuments([_data]);
@@ -223,18 +258,19 @@ export class Meilisearch {
   /**
    * Deletes user related documents on realtime database and meilisearch indexing.
    *
-   * @param {*} uid user id to delete.
+   * @param user user data.
    * @return promise
    */
-  static async deleteIndexedUserDocument(uid: string) {
+  static async deleteIndexedUserDocument(user: UserRecord) {
+    const uid = user.uid;
     const promises = [];
 
     // Remove user data under it's uid from:
     // - 'users' and 'user-settings' realtime database,
     // - 'quiz-history' firestore database.
-    // promises.push(rdb.ref("users").child(uid).remove());
-    // promises.push(rdb.ref("user-settings").child(uid).remove());
-    // promises.push(db.collection("quiz-history").doc(uid).delete());
+    promises.push(Ref.rdb.ref("users").child(uid).remove());
+    promises.push(Ref.rdb.ref("user-settings").child(uid).remove());
+    promises.push(Ref.db.collection("quiz-history").doc(uid).delete());
     promises.push(this.client.index("users").deleteDocument(uid));
     return Promise.all(promises);
   }
@@ -247,8 +283,8 @@ export class Meilisearch {
    * @returns Search result
    */
   static async search(
-      index: string,
-      data: { keyword?: string; searchOptions?: SearchParams }
+    index: string,
+    data: { keyword?: string; searchOptions?: SearchParams }
   ): Promise<SearchResponse<Record<string, any>>> {
     return this.client.index(index).search(data.keyword, data.searchOptions);
   }

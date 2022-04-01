@@ -1,6 +1,7 @@
 import { UserDocument } from "../interfaces/user.interface";
 import { Ref } from "./ref";
 import { ERROR_USER_EXISTS } from "../defines";
+import { Meilisearch } from "../classes/meilisearch";
 
 export class Test {
   /**
@@ -57,5 +58,23 @@ export class Test {
    */
   static async deleteTestUser(uid: string) {
     return Ref.rdb.ref("users").child(uid).remove();
+  }
+
+  /**
+   * Initializes index search filter.
+   *
+   * @param index meilisearch index
+   */
+  static async initIndexFilter(index: string, filters: string[]) {
+    const indexFilters = await Meilisearch.client.index(index).getFilterableAttributes();
+
+    if (filters?.length) {
+      filters.forEach((f) => {
+        if (!indexFilters.includes(f)) {
+          indexFilters.push(f);
+        }
+      });
+      await Meilisearch.client.index(index).updateFilterableAttributes(indexFilters);
+    }
   }
 }

@@ -11,6 +11,11 @@ export class UserModel {
   registeredAt = 0;
   updatedAt = 0;
   point = 0;
+
+  photoUrl = "";
+  gender = "";
+  birthday = 0;
+
   password = "";
 
   static fromJson(doc: UserModel, id: string): UserModel {
@@ -21,6 +26,9 @@ export class UserModel {
     o.firstName = doc.firstName ?? "";
     o.middleName = doc.middleName ?? "";
     o.nickname = doc.nickname ?? "";
+    o.photoUrl = doc.photoUrl ?? "";
+    o.gender = doc.gender ?? "";
+    o.birthday = doc.birthday ?? 0;
     o.registeredAt = doc.registeredAt ?? 0;
     o.updatedAt = doc.updatedAt ?? 0;
     o.point = doc.point ?? 0;
@@ -41,6 +49,9 @@ export interface UserCreate {
   middleName?: string;
   lastName?: string;
   nickname?: string;
+  gender?: string;
   registeredAt?: number;
+  photoUrl?: string;
   updatedAt?: number;
+  birthday?: number;
 }

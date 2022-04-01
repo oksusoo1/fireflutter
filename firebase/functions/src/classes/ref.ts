@@ -1,8 +1,7 @@
 import * as admin from "firebase-admin";
 export class Ref {
   static get db() {
-    const db = admin.firestore();
-    return db;
+    return admin.firestore();
   }
 
   static get rdb() {
