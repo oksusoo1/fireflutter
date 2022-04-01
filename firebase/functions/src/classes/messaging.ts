@@ -24,9 +24,9 @@ export class Messaging {
    */
   static async getTokens(uid: string): Promise<string[]> {
     const snapshot = await Ref.messageTokens
-      .orderByChild("uid")
-      .equalTo(uid)
-      .get();
+        .orderByChild("uid")
+        .equalTo(uid)
+        .get();
     if (!snapshot.exists()) return [];
     const val = snapshot.val();
     return Object.keys(val);
@@ -52,8 +52,8 @@ export class Messaging {
    * @returns UIDs of ancestors.
    */
   static async getCommentNotifyeeWithoutTopicSubscriber(
-    uids: string,
-    topic: string
+      uids: string,
+      topic: string
   ) {
     const _uids = uids.split(",");
     const promises: Promise<boolean>[] = [];
@@ -93,8 +93,8 @@ export class Messaging {
    * @returns Promise<boolean>
    */
   static async userHasSusbscription(
-    uid: string,
-    topic: string
+      uid: string,
+      topic: string
   ): Promise<boolean> {
     // / Get all the topics of the user
     const snapshot = await Ref.userSetting(uid, "topic").get();
@@ -110,8 +110,8 @@ export class Messaging {
    * @returns Promise<boolean>
    */
   static async userHasSusbscriptionOff(
-    uid: string,
-    topic: string
+      uid: string,
+      topic: string
   ): Promise<boolean> {
     // / Get all the topics of the user
     const snapshot = await Ref.userSetting(uid, "topic").get();
@@ -155,11 +155,11 @@ export class Messaging {
       data: {
         id: query.postId ? query.postId : query.id ? query.id : "",
         type: query.type ? query.type : "",
-        senderUid: query.senderUid
-          ? query.senderUid
-          : query.uid
-          ? query.uid
-          : "",
+        senderUid: query.senderUid ?
+          query.senderUid :
+          query.uid ?
+          query.uid :
+          "",
         badge: query.badge ? query.badge : "",
       },
       notification: {
@@ -197,8 +197,8 @@ export class Messaging {
   }
 
   static async sendingMessageToTokens(
-    tokens: Array<string>,
-    payload: MessagePayload
+      tokens: Array<string>,
+      payload: MessagePayload
   ) {
     if (tokens.length == 0) return [];
 
@@ -209,7 +209,7 @@ export class Messaging {
     for (const c of chunks) {
       // Send notifications to all tokens.
       const newPayload: messaging.MulticastMessage = Object.assign(
-        { tokens: c },
+          { tokens: c },
         payload as any
       );
       sendToDevicePromise.push(admin.messaging().sendMulticast(newPayload));
@@ -240,7 +240,7 @@ export class Messaging {
             error.code === "messaging/invalid-argument"
           ) {
             tokensToRemove.push(
-              Ref.messageTokens.child(chunks[i][index]).remove()
+                Ref.messageTokens.child(chunks[i][index]).remove()
             );
           }
         }

@@ -3,7 +3,7 @@ import { Ref } from "./ref";
 import { ERROR_USER_EXISTS } from "../defines";
 import { Meilisearch } from "../classes/meilisearch";
 import { Utils } from "./utils";
-import { CategoryDocument, } from "../interfaces/forum.interface";
+import { CategoryDocument } from "../interfaces/forum.interface";
 
 export class Test {
   /**

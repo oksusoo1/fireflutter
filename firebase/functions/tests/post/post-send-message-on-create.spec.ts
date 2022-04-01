@@ -12,8 +12,8 @@ describe("Send message on post create test", () => {
   it("Sende Message on create", async () => {
     const postId = "onCreatePost" + Utils.getTimestamp();
     const post = new PostDocument().fromDocument(
-      { uid: "onCreate", category: "cat1test", title: "Hello" },
-      postId
+        { uid: "onCreate", category: "cat1test", title: "Hello" },
+        postId
     );
     expect(post.id).equal(postId);
     const res = await Post.sendMessageOnPostCreate(post);
