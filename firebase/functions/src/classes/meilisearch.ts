@@ -58,7 +58,6 @@ export class Meilisearch {
     const promises = [];
 
     promises.push(this.client.index("posts").addDocuments([_data]));
-    // promises.push(axios.post("http://wonderfulkorea.kr:7700/indexes/posts/documents", _data));
     promises.push(this.indexForumDocument(_data));
 
     return Promise.all(promises);
@@ -139,7 +138,6 @@ export class Meilisearch {
     const promises = [];
 
     promises.push(this.client.index("comments").addDocuments([_data]));
-    // promises.push(axios.post("http://wonderfulkorea.kr:7700/indexes/comments/documents", _data));
     promises.push(this.indexForumDocument(_data));
 
     return Promise.all(promises);
@@ -170,7 +168,6 @@ export class Meilisearch {
     const promises = [];
 
     promises.push(this.client.index("comments").updateDocuments([_data]));
-    // promises.push(axios.post("http://wonderfulkorea.kr:7700/indexes/comments/documents", _data));
     promises.push(this.indexForumDocument(_data));
 
     return Promise.all(promises);
@@ -185,7 +182,6 @@ export class Meilisearch {
   static async deleteIndexedCommentDocument(context: EventContext) {
     const promises = [];
     promises.push(this.client.index("comments").deleteDocument(context.params.id));
-    // promises.push(axios.delete("http://wonderfulkorea.kr:7700/indexes/comments/documents/" + id));
     promises.push(this.deleteIndexedForumDocument(context));
     return Promise.all(promises);
   }
@@ -205,7 +201,6 @@ export class Meilisearch {
     };
 
     return this.client.index("users").addDocuments([_data]);
-    // return axios.post("http://wonderfulkorea.kr:7700/indexes/users/documents", _data);
   }
 
   /**
@@ -221,8 +216,10 @@ export class Meilisearch {
     if (
       before.firstName === after.firstName &&
       before.middleName === after.middleName &&
-      before.lastName === after.lastName
-      // Todo: add more ignore condition ? ...
+      before.lastName === after.lastName &&
+      before.gender === after.gender &&
+      before.photoUrl === after.photoUrl
+      // Todo: add or remove ignore condition ? ...
     ) {
       return null;
     }
@@ -239,7 +236,6 @@ export class Meilisearch {
     };
 
     return this.client.index("users").addDocuments([_data]);
-    // return axios.post("http://wonderfulkorea.kr:7700/indexes/users/documents", _data);
   }
 
   /**
