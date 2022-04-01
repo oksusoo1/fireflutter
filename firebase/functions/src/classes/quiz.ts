@@ -21,10 +21,6 @@ export class Quiz {
    *  - `false` if not.
    */
   static async testAnswer(data: QuizAnswer, context: CallableContext): Promise<QuizResult> {
-    // console.log(context);
-    // console.log(data);
-
-
     if (!context.auth) {
       throw new functions.https.HttpsError(
           "failed-precondition",
@@ -35,7 +31,6 @@ export class Quiz {
 
     const quizId = Object.keys(data)[0];
     const userAnswer = data[quizId].answer;
-    // console.log("quizId; ", quizId, userAnswer);
 
     // 1.
     const quizDoc = (await Ref.db.collection("/posts/").doc(quizId).get()).data();
@@ -45,7 +40,6 @@ export class Quiz {
       throw new functions.https.HttpsError(
           "failed-precondition",
           ERROR_NO_QUIZ_BY_THAT_ID
-          // "The quiz document id does not exists.",
       );
     }
 
@@ -64,7 +58,6 @@ export class Quiz {
         throw new functions.https.HttpsError(
             "failed-precondition",
             ERROR_CANNOT_ANSWER_SAME_QUESTION_TWICE
-            // "The quiz document id does not exists.",
         );
       }
     }
