@@ -9,7 +9,7 @@ new FirebaseAppInitializer();
 
 describe("Meilisearch forum document indexing", () => {
   const timestamp = Utils.getTimestamp();
-  console.log("timestamp :", timestamp);
+  // console.log("timestamp :", timestamp);
 
   it("Prepares test", async () => {
     await Test.initIndexFilter("posts-and-comments", ["id"]);
