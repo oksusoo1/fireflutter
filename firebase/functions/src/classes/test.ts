@@ -136,15 +136,17 @@ export class Test {
       updatedAt: Utils.getTimestamp(),
     };
 
-    if (data.post && data.post.id) {
-      if (data.post.deleted && data.post.deleted === true) {
-        postData.deleted = true;
-      }
+    /// create post
 
-      await Ref.postDoc(data.post.id).set(postData, { merge: true });
-      return Ref.postDoc(data.post.id);
-    } else {
-      return Ref.postCol.add(postData);
-    }
+    // if (data.post && data.post.id) {
+    //   if (data.post.deleted && data.post.deleted === true) {
+    //     postData.deleted = true;
+    //   }
+
+    //   await Ref.postDoc(data.post.id).set(postData, { merge: true });
+    //   return Ref.postDoc(data.post.id);
+    // } else {
+    //   return Ref.postCol.add(postData);
+    // }
   }
 }
