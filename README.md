@@ -131,6 +131,9 @@ Table of contents
 - [Cloud Functions](#cloud-functions)
   - [Unit test for Cloud Functions](#unit-test-for-cloud-functions)
   - [Cloud functions - http trigger, restful api.](#cloud-functions---http-trigger-restful-api)
+  - [Ready](#ready)
+  - [Post create](#post-create)
+    - [Cloud functions Sample codes](#cloud-functions-sample-codes)
   - [Meilisearch](#meilisearch)
 - [Backup](#backup)
   - [Firestore backup](#firestore-backup)
@@ -1542,6 +1545,9 @@ HttpException: Invalid statusCode: 403, uri = https://firebasestorage.googleapis
 
 ## Cloud functions - http trigger, restful api.
 
+
+## Ready
+
 - Cors and pre-flight.
   - `ready` function takes care of cors and preflight. and it also takes care of user authentication.
   - To authenticate a user, call `ready({ req, res, auth: true}, (data) => {})`.
@@ -1555,6 +1561,17 @@ curl -X POST -H "Content-Type: application/json" "http://localhost:5001/withcent
 
 curl -X POST -H "Content-Type: application/x-www-form-urlencoded" "http://localhost:5001/withcenter-test-project/asia-northeast3/inputTest?a=apple&b=banana" -d 'c=cherry&d=durian'
 ```
+
+- You need to use `ready` on http call only.
+
+
+## Post create
+
+- To create a post, you need to provide uid and password. See the test code how you can provide password.
+
+### Cloud functions Sample codes
+
+- See `tests` folder for the sample code. These sample codes are the best examples you can refer.
 
 
 ## Meilisearch
