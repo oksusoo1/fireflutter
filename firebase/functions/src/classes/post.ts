@@ -6,12 +6,7 @@ import * as weekOfYear from "dayjs/plugin/weekOfYear";
 dayjs.extend(dayOfYear);
 dayjs.extend(weekOfYear);
 
-import {
-  CommentDocument,
-  PostCreateParams,
-  PostCreateRequirements,
-  PostDocument,
-} from "../interfaces/forum.interface";
+import { CommentDocument, PostCreateParams, PostCreateRequirements, PostDocument } from "../interfaces/forum.interface";
 
 import { Ref } from "./ref";
 import { ERROR_EMPTY_CATEGORY, ERROR_EMPTY_UID } from "../defines";
@@ -23,35 +18,27 @@ export class Post {
    * @param data post doc data to be created
    * @returns post doc data after create. Note that, it will contain post id.
    */
-  static async create(data: PostCreateParams): Promise<PostDocument | null> {
+  static async create(data: any): Promise<PostDocument | null> {
     if (!data.uid) throw ERROR_EMPTY_UID;
     if (!data.category) throw ERROR_EMPTY_CATEGORY;
-    const doc: PostCreateRequirements = {
-      uid: data.uid,
-      category: data.category,
-      subcategory: data.subcategory,
-      title: data.title,
-      content: data.content,
-      summary: data.summary,
-      files: data.files ?? [],
-      hasPhoto: !!data.files,
-      deleted: false,
-      noOfComment: 0,
-      year: dayjs().year(),
-      month: dayjs().month() + 1,
-      day: dayjs().date(),
-      dayOfYear: dayjs().dayOfYear(),
-      week: dayjs().week(),
-      createdAt: admin.firestore.FieldValue.serverTimestamp(),
-      updatedAt: admin.firestore.FieldValue.serverTimestamp(),
-    };
+    const doc: { [key: string]: any } = data as any;
+
+    doc.hasPhoto = !!doc.files;
+    doc.deleted = false;
+    doc.noOfComments = 0;
+
+    doc.year = dayjs().year();
+    doc.month = dayjs().month() + 1;
+    doc.day = dayjs().date();
+    doc.dayOfYear = dayjs().dayOfYear();
+    doc.week = dayjs().week();
+    doc.createdAt = admin.firestore.FieldValue.serverTimestamp();
+    doc.updatedAt = admin.firestore.FieldValue.serverTimestamp();
+
     const ref = await Ref.postCol.add(doc);
     const snapshot = await ref.get();
     if (snapshot.exists) {
       return new PostDocument().fromDocument(snapshot.data(), ref.id);
-      // const docData = snapshot.data()! as PostDocument;
-      // docData.id = ref.id;
-      // return docData;
     } else {
       return null;
     }
@@ -110,10 +97,7 @@ export class Post {
     }
 
     // Don't send the same message twice to topic subscribers and comment notifyees.
-    const userUids = await Messaging.getCommentNotifyeeWithoutTopicSubscriber(
-      ancestorsUid.join(","),
-      topic
-    );
+    const userUids = await Messaging.getCommentNotifyeeWithoutTopicSubscriber(ancestorsUid.join(","), topic);
     console.log(userUids);
     // get users tokens
     const tokens = await Messaging.getTokensFromUids(userUids.join(","));
@@ -132,10 +116,7 @@ export class Post {
   // get comment ancestor by getting parent comment until it reach the root comment
   // return the uids of the author
   static async getCommentAncestors(id: string, authorUid: string) {
-    let comment = new CommentDocument().fromDocument(
-      await Ref.commentDoc(id).get(),
-      id
-    );
+    let comment = new CommentDocument().fromDocument(await Ref.commentDoc(id).get(), id);
     const uids = [];
     while (comment.postId != comment.parentId) {
       const com = await Ref.commentDoc(comment.parentId).get();

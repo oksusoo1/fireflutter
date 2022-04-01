@@ -11,7 +11,13 @@ export interface CategoryDocument {
 }
 
 /**
- * Post document interface for multi purpose.
+ * Post document class for multi purpose.
+ *
+ * This can be used as a type like below.
+ *
+ * ```ts
+ * const post = res2.data as PostDocument;
+ * ```
  */
 export class PostDocument {
   id = "";
@@ -35,7 +41,7 @@ export class PostDocument {
   point = 0;
 
   fromDocument(doc: any, id: string): PostDocument {
-    const obj = new PostDocument();
+    const obj = doc as PostDocument;
 
     obj.id = id;
     obj.uid = doc.uid;
@@ -64,35 +70,35 @@ export class PostDocument {
 /**
  * Minimum
  */
-export interface PostCreateParams {
-  uid: string;
-  category: string;
-  subcategory?: string;
-  title?: string;
-  content?: string;
-  summary?: string;
-  files?: string[];
-}
+// export interface PostCreateParams {
+//   uid: string;
+//   category: string;
+//   subcategory?: string;
+//   title?: string;
+//   content?: string;
+//   summary?: string;
+//   files?: string[];
+// }
 
-export interface PostCreateRequirements {
-  uid: string;
-  category: string;
-  subcategory?: string;
-  title?: string;
-  content?: string;
-  summary?: string;
-  files: string[];
-  hasPhoto: boolean;
-  deleted: false;
-  noOfComment: 0;
-  year: number;
-  month: number;
-  day: number;
-  dayOfYear: number;
-  week: number;
-  createdAt: admin.firestore.FieldValue;
-  updatedAt: admin.firestore.FieldValue;
-}
+// export interface PostCreateRequirements {
+//   uid: string;
+//   category: string;
+//   subcategory?: string;
+//   title?: string;
+//   content?: string;
+//   summary?: string;
+//   files: string[];
+//   hasPhoto: boolean;
+//   deleted: false;
+//   noOfComment: 0;
+//   year: number;
+//   month: number;
+//   day: number;
+//   dayOfYear: number;
+//   week: number;
+//   createdAt: admin.firestore.FieldValue;
+//   updatedAt: admin.firestore.FieldValue;
+// }
 
 /**
  * A multi-purpose comment document interface representing the comment document of firebase.
