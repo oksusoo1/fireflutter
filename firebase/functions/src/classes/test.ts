@@ -1,4 +1,4 @@
-import { UserModel } from "../interfaces/user.interface";
+import { UserCreate, UserModel } from "../interfaces/user.interface";
 import { Ref } from "./ref";
 import { ERROR_USER_EXISTS } from "../defines";
 import { Meilisearch } from "../classes/meilisearch";
@@ -23,7 +23,7 @@ export class Test {
 
     const timestamp = new Date().getTime();
 
-    const userData: UserModel = {
+    const userData: UserCreate = {
       nickname: "testUser" + timestamp,
       firstName: "firstName" + timestamp,
       lastName: "lastName" + timestamp,
