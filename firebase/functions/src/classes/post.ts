@@ -19,10 +19,16 @@ export class Post {
    * @returns post doc data after create. Note that, it will contain post id.
    */
   static async create(data: any): Promise<PostDocument | null> {
+    // check up
     if (!data.uid) throw ERROR_EMPTY_UID;
     if (!data.category) throw ERROR_EMPTY_CATEGORY;
+
+    // get all the data from client.
     const doc: { [key: string]: any } = data as any;
 
+    delete doc.password;
+
+    // default data
     doc.hasPhoto = !!doc.files;
     doc.deleted = false;
     doc.noOfComments = 0;
@@ -35,7 +41,10 @@ export class Post {
     doc.createdAt = admin.firestore.FieldValue.serverTimestamp();
     doc.updatedAt = admin.firestore.FieldValue.serverTimestamp();
 
+    // create post
     const ref = await Ref.postCol.add(doc);
+
+    // return the document object of newly created post.
     const snapshot = await ref.get();
     if (snapshot.exists) {
       return new PostDocument().fromDocument(snapshot.data(), ref.id);

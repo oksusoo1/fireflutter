@@ -18,7 +18,8 @@ import { User } from "../../src/classes/user";
 
 new FirebaseAppInitializer();
 
-const endpoint = "http://localhost:5001/withcenter-test-project/asia-northeast3/postCreate";
+// const endpoint = "http://localhost:5001/withcenter-test-project/asia-northeast3/postCreate";
+const endpoint = "https://asia-northeast3-withcenter-test-project.cloudfunctions.net/postCreate";
 describe("Post create via http call", () => {
   it("empty uid", async () => {
     const res = await axios.post(endpoint);
@@ -54,5 +55,6 @@ describe("Post create via http call", () => {
     const post = res2.data as any;
     expect(post.uid).equals(id);
     expect(post["a"]).equals("apple");
+    console.log(post);
   });
 });
