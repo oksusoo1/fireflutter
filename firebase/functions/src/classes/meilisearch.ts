@@ -1,6 +1,7 @@
 import { Utils } from "./utils";
 import { CommentDocument, PostDocument } from "../interfaces/forum.interface";
 import { MeiliSearch as Meili, SearchParams, SearchResponse } from "meilisearch";
+import { MeiliSearchPostDocument } from "../interfaces/meilisearch.interface";
 
 /**
  * TODO: Test
@@ -32,8 +33,8 @@ export class Meilisearch {
    * @param id document ID to delete
    * @return Promise
    */
-  static deleteIndexedForumDocument(id: string) {
-    return this.client.index("posts-and-comments").deleteDocument(id);
+  static deleteIndexedForumDocument(context: any) {
+    return this.client.index("posts-and-comments").deleteDocument(context.params.id);
   }
 
   /**
@@ -46,15 +47,15 @@ export class Meilisearch {
   static async indexPostCreate(data: PostDocument, context: any) {
     if (this.excludedCategories.includes(data.category)) return null;
 
-    const _data = {
+    const _data: MeiliSearchPostDocument = {
       id: context.params.id,
       uid: data.uid,
       title: data.title ?? "",
       category: data.category,
-      content: Utils.removeHtmlTags(data.content),
-      files: data.files,
+      content: Utils.removeHtmlTags(data.content) ?? "",
+      files: data.files ? data.files.join(",") : "",
       noOfComments: data.noOfComments ?? 0,
-      deleted: data.deleted,
+      deleted: false,
       createdAt: Utils.getTimestamp(),
       updatedAt: Utils.getTimestamp(),
     };
@@ -77,10 +78,7 @@ export class Meilisearch {
    *
    * @test tests/meilisearch/post-update.spect.ts
    */
-  static async indexPostUpdate(
-      data: { before: PostDocument; after: PostDocument },
-      context: any
-  ): Promise<any> {
+  static async indexPostUpdate(data: { before: PostDocument; after: PostDocument }, context: any): Promise<any> {
     if (this.excludedCategories.includes(data.after.category)) return null;
     if (data.before.title === data.after.title && data.before.content === data.after.content) {
       return null;
@@ -88,15 +86,15 @@ export class Meilisearch {
 
     const after = data.after;
 
-    const _data = {
+    const _data: MeiliSearchPostDocument = {
       id: context.params.id,
       uid: after.uid,
-      title: after.title ?? "",
       category: after.category,
+      title: after.title ?? "",
       content: Utils.removeHtmlTags(after.content),
-      files: after.files,
+      files: after.files ? after.files.join(",") : "",
       noOfComments: after.noOfComments,
-      deleted: after.deleted,
+      deleted: false,
       updatedAt: Utils.getTimestamp(),
     };
 
@@ -130,16 +128,16 @@ export class Meilisearch {
    * @param context Event context
    * @return Promise
    */
-  static async indexCommentCreate(data: CommentDocument, context: any) {
+  static async indexCommentCreate(data: any, context: any) {
     const _data = {
       id: context.params.id,
       uid: data.uid,
       postId: data.postId,
       parentId: data.parentId,
       content: Utils.removeHtmlTags(data.content) ?? "",
-      files: data.files.join(","),
-      createdAt: Utils.getTimestamp(data.createdAt),
-      updatedAt: Utils.getTimestamp(data.updatedAt),
+      files: data.files ? data.files.join(",") : "",
+      createdAt: Utils.getTimestamp(),
+      updatedAt: Utils.getTimestamp(),
     };
 
     const promises = [];
@@ -158,10 +156,7 @@ export class Meilisearch {
    * @param context Event context
    * @return Promise
    */
-  static async indexCommentUpdate(
-      data: { before: CommentDocument; after: CommentDocument },
-      context: any
-  ) {
+  static async indexCommentUpdate(data: { before: CommentDocument; after: CommentDocument }, context: any) {
     if (data.before.content === data.after.content) return null;
 
     const after = data.after;
@@ -172,7 +167,7 @@ export class Meilisearch {
       postId: after.postId,
       parentId: after.parentId,
       content: Utils.removeHtmlTags(after.content),
-      files: after.files.join(","),
+      files: after.files ? after.files.join(",") : "",
       updatedAt: Utils.getTimestamp(after.updatedAt),
     };
 
@@ -191,11 +186,11 @@ export class Meilisearch {
    * @param id Comment ID of the document to be deleted.
    * @return Promise
    */
-  static async deleteIndexedCommentDocument(id: string) {
+  static async deleteIndexedCommentDocument(context: any) {
     const promises = [];
-    promises.push(this.client.index("comments").deleteDocument(id));
+    promises.push(this.client.index("comments").deleteDocument(context.params.id));
     // promises.push(axios.delete("http://wonderfulkorea.kr:7700/indexes/comments/documents/" + id));
-    promises.push(this.deleteIndexedForumDocument(id));
+    promises.push(this.deleteIndexedForumDocument(context));
     return Promise.all(promises);
   }
 
@@ -247,8 +242,8 @@ export class Meilisearch {
    * @returns Search result
    */
   static async search(
-      index: string,
-      data: { keyword?: string; searchOptions?: SearchParams }
+    index: string,
+    data: { keyword?: string; searchOptions?: SearchParams }
   ): Promise<SearchResponse<Record<string, any>>> {
     return this.client.index(index).search(data.keyword, data.searchOptions);
   }
