@@ -4,7 +4,7 @@ export interface MessagePayload {
   data: {
     id?: string;
     type?: string;
-    sender_uid?: string;
+    senderUid?: string;
     badge?: number;
   };
   notification: {

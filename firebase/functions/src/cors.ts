@@ -2,9 +2,9 @@ import * as functions from "firebase-functions";
 import * as express from "express";
 
 export async function cors(
-  req: functions.https.Request,
-  res: express.Response,
-  callback: () => Promise<void>
+    req: functions.https.Request,
+    res: express.Response,
+    callback: () => Promise<void>
 ) {
   res.set("Access-Control-Allow-Origin", "*");
 

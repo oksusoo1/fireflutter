@@ -20,16 +20,16 @@ describe("Subscriber test", () => {
     await Test.createTestUserAndGetDoc(b);
 
     const uids = await Messaging.removeUserHasSubscriptionOff(
-      [a, b].join(","),
-      "subs-1"
+        [a, b].join(","),
+        "subs-1"
     );
     expect(uids).to.be.an("array").contain(a);
     expect(uids).contain(b);
 
     await Ref.userSettingTopic(a).update({ ["chatNotify" + a]: false });
     const uids1false = await Messaging.removeUserHasSubscriptionOff(
-      [a, b].join(","),
-      "chatNotify" + a
+        [a, b].join(","),
+        "chatNotify" + a
     );
     expect(uids1false).to.be.an("array").contain(b);
     expect(uids1false).not.include(a);
@@ -38,8 +38,8 @@ describe("Subscriber test", () => {
     await Ref.userSettingTopic(a).update({ ["chatNotify" + a]: true });
     await Ref.userSettingTopic(b).update({ ["chatNotify" + a]: false });
     const uids1true1false = await Messaging.removeUserHasSubscriptionOff(
-      [a, b].join(","),
-      "chatNotify" + a
+        [a, b].join(","),
+        "chatNotify" + a
     );
     expect(uids1true1false).to.be.an("array").contain(a);
     expect(uids1true1false).not.include(b);

@@ -70,10 +70,10 @@ export class Utils {
       lt: "<",
       gt: ">",
       nbsp: " ",
-      quot: '"',
+      quot: "\"",
       bull: "•",
     };
-    return text.replace(/&([^;]+);/gm, function (match, entity) {
+    return text.replace(/&([^;]+);/gm, function(match, entity) {
       return entities[entity] || match;
     });
   }

@@ -14,25 +14,25 @@ export interface CategoryDocument {
  * Post document interface for multi purpose.
  */
 export class PostDocument {
-  id: string = "";
-  uid: string = "";
-  category: string = "";
+  id = "";
+  uid = "";
+  category = "";
   subcategory?: string;
   title?: string;
   content?: string;
   summary?: string;
   files?: string[];
-  hasPhoto: boolean = false;
-  deleted: boolean = false;
-  noOfComment: number = 0;
-  year: number = 0;
-  month: number = 0;
-  day: number = 0;
-  dayOfYear: number = 0;
-  week: number = 0;
+  hasPhoto = false;
+  deleted = false;
+  noOfComment = 0;
+  year = 0;
+  month = 0;
+  day = 0;
+  dayOfYear = 0;
+  week = 0;
   createdAt?: admin.firestore.FieldValue;
   updatedAt?: admin.firestore.FieldValue;
-  point: number = 0;
+  point = 0;
 
   fromDocument(doc: any, id: string): PostDocument {
     const obj = new PostDocument();
@@ -99,17 +99,17 @@ export interface PostCreateRequirements {
  *
  */
 export class CommentDocument {
-  id: string = "";
-  uid: string = "";
-  postId: string = "";
-  parentId: string = "";
-  content: string = "";
+  id = "";
+  uid = "";
+  postId = "";
+  parentId = "";
+  content = "";
   files: string[] = [];
-  hasPhoto: boolean = false;
-  deleted: boolean = false;
+  hasPhoto = false;
+  deleted = false;
   createdAt?: admin.firestore.FieldValue;
   updatedAt?: admin.firestore.FieldValue;
-  point: number = 0;
+  point = 0;
 
   fromDocument(data: any, id: string): CommentDocument {
     const obj = new CommentDocument();

@@ -24,10 +24,7 @@ export class Messaging {
    * @returns array of tokens
    */
   static async getTokens(uid: string): Promise<string[]> {
-    const snapshot = await Ref.messageTokens
-      .orderByChild("uid")
-      .equalTo(uid)
-      .get();
+    const snapshot = await Ref.messageTokens.orderByChild("uid").equalTo(uid).get();
     if (!snapshot.exists()) return [];
     const val = snapshot.val();
     return Object.keys(val);
@@ -64,11 +61,8 @@ export class Messaging {
    * @param topic topic
    * @returns Promise<boolean>
    */
-  static async userHasSusbscription(
-    uid: string,
-    topic: string
-  ): Promise<boolean> {
-    /// Get all the topics of the user
+  static async userHasSusbscription(uid: string, topic: string): Promise<boolean> {
+    // / Get all the topics of the user
     const snapshot = await Ref.userSetting(uid, "topic").get();
     if (snapshot.exists() === false) return false;
     const val = snapshot.val();
@@ -81,11 +75,8 @@ export class Messaging {
    * @param topic topic
    * @returns Promise<boolean>
    */
-  static async userHasSusbscriptionOff(
-    uid: string,
-    topic: string
-  ): Promise<boolean> {
-    /// Get all the topics of the user
+  static async userHasSusbscriptionOff(uid: string, topic: string): Promise<boolean> {
+    // / Get all the topics of the user
     const snapshot = await Ref.userSetting(uid, "topic").get();
     if (snapshot.exists() === false) return false;
     const val = snapshot.val();
@@ -103,9 +94,7 @@ export class Messaging {
     const _uids = uids.split(",");
     const promises: Promise<boolean>[] = [];
 
-    _uids.forEach((uid) =>
-      promises.push(this.userHasSusbscriptionOff(uid, topic))
-    );
+    _uids.forEach((uid) => promises.push(this.userHasSusbscriptionOff(uid, topic)));
 
     const re = [];
     const results = await Promise.all(promises);
@@ -128,11 +117,7 @@ export class Messaging {
       data: {
         id: query.postId ? query.postId : query.id ? query.id : "",
         type: query.type ? query.type : "",
-        sender_uid: query.sender_uid
-          ? query.sender_uid
-          : query.uid
-          ? query.uid
-          : "",
+        senderUid: query.senderUid ? query.senderUid : query.uid ? query.uid : "",
         badge: query.badge ? query.badge : "",
       },
       notification: {
@@ -157,13 +142,13 @@ export class Messaging {
 
     if (res.notification.body != "") {
       res.notification.body = Utils.removeHtmlTags(res.notification.body) ?? "";
-      res.notification.body =
-        Utils.decodeHTMLEntities(res.notification.body) ?? "";
+      res.notification.body = Utils.decodeHTMLEntities(res.notification.body) ?? "";
       res.notification.body = res.notification.body.substring(0, 255);
     }
 
-    if (query.badge != null)
+    if (query.badge != null) {
       res.apns.payload.aps["badge"] = parseInt(query.badge);
+    }
 
     return res;
   }

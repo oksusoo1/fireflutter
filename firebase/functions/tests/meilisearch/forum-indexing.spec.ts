@@ -95,7 +95,7 @@ describe("Meilisearch forum document indexing", () => {
     await postRef.set({ uid: "test-uid", title: "some title", updatedAt: 2 });
     const createdData = (await postRef.get()).data();
     console.log("createdData :", createdData);
-    
+
     // update post's like or dislike
     await postRef.update({ like: 1 });
     const updatedData = (await postRef.get()).data();

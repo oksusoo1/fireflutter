@@ -65,9 +65,9 @@ describe("Post point test", () => {
     expect(ref3 === null).true;
     const pointAfterCreate3 = await Point.getUserPoint(uid);
     console.log(
-      startingPoint + post!.point + data2!.point + " === " + pointAfterCreate3,
-      "postId; ",
-      postId
+        startingPoint + post!.point + data2!.point + " === " + pointAfterCreate3,
+        "postId; ",
+        postId
     );
     expect(startingPoint + post!.point + data2!.point === pointAfterCreate3).true;
   });

@@ -78,8 +78,8 @@ export class Meilisearch {
    * @test tests/meilisearch/post-update.spect.ts
    */
   static async indexPostUpdate(
-    data: { before: PostDocument; after: PostDocument },
-    context: any
+      data: { before: PostDocument; after: PostDocument },
+      context: any
   ): Promise<any> {
     if (this.excludedCategories.includes(data.after.category)) return null;
     if (data.before.title === data.after.title && data.before.content === data.after.content) {
@@ -159,8 +159,8 @@ export class Meilisearch {
    * @return Promise
    */
   static async indexCommentUpdate(
-    data: { before: CommentDocument; after: CommentDocument },
-    context: any
+      data: { before: CommentDocument; after: CommentDocument },
+      context: any
   ) {
     if (data.before.content === data.after.content) return null;
 
@@ -247,8 +247,8 @@ export class Meilisearch {
    * @returns Search result
    */
   static async search(
-    index: string,
-    data: { keyword?: string; searchOptions?: SearchParams }
+      index: string,
+      data: { keyword?: string; searchOptions?: SearchParams }
   ): Promise<SearchResponse<Record<string, any>>> {
     return this.client.index(index).search(data.keyword, data.searchOptions);
   }
