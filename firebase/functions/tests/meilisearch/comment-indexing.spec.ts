@@ -13,7 +13,7 @@ describe("Meilisearch comment document indexing", () => {
   // console.log("timestamp :", timestamp);
 
   it("prepares test", async () => {
-    await Test.initIndexFilter("comments", ["id"]);
+    await Test.initMeiliSearchIndexFilter("comments", ["id"]);
   });
 
   it("Tests comment create, update and delete indexing", async () => {
@@ -30,9 +30,7 @@ describe("Meilisearch comment document indexing", () => {
 
     // Search if the post is indexed.
     // It should exactly contain 1 document, since it is filtered out.
-    let searchResult = await Meilisearch.search("comments", {
-      searchOptions: { filter: ["id = " + testComment.id] },
-    });
+    let searchResult = await Meilisearch.search("comments", { id: params.id });
     expect(searchResult.hits).has.length(1);
 
     // Update Index
@@ -49,9 +47,7 @@ describe("Meilisearch comment document indexing", () => {
       } as any
     );
     await Utils.delay(3000);
-    searchResult = await Meilisearch.search("comments", {
-      searchOptions: { filter: ["id = " + testComment.id] },
-    });
+    searchResult = await Meilisearch.search("comments", { id: params.id });
     expect(testComment).not.to.be.equals(updatedComment.content);
     expect(searchResult.hits[0].content).to.be.equals(updatedComment.content);
 
@@ -61,9 +57,7 @@ describe("Meilisearch comment document indexing", () => {
 
     // Search
     // It should not contain a document since it is should be deleted..
-    searchResult = await Meilisearch.search("comments", {
-      searchOptions: { filter: ["id = " + testComment.id] },
-    });
+    searchResult = await Meilisearch.search("comments", { id: params.id });
     expect(searchResult.hits).has.length(0);
   });
 
@@ -77,9 +71,7 @@ describe("Meilisearch comment document indexing", () => {
     );
     await Utils.delay(3000);
 
-    const createdData = await Meilisearch.search("comments", {
-      searchOptions: { filter: ["id=" + params.id] },
-    });
+    const createdData = await Meilisearch.search("comments", { id: params.id });
 
     expect(createdData.hits.length).equals(1);
 
@@ -92,9 +84,7 @@ describe("Meilisearch comment document indexing", () => {
     );
     await Utils.delay(3000);
 
-    const updatedData = await Meilisearch.search("comments", {
-      searchOptions: { filter: ["id=" + params.id] },
-    });
+    const updatedData = await Meilisearch.search("comments", { id: params.id });
 
     expect(createdData.hits[0].updatedAt).equal(updatedData.hits[0].updatedAt);
 
@@ -107,9 +97,7 @@ describe("Meilisearch comment document indexing", () => {
     );
     await Utils.delay(3000);
 
-    const anotherUpdate = await Meilisearch.search("comments", {
-      searchOptions: { filter: ["id=" + params.id] },
-    });
+    const anotherUpdate = await Meilisearch.search("comments", { id: params.id });
 
     expect(createdData.hits[0].updatedAt).to.be.below(anotherUpdate.hits[0].updatedAt);
 

@@ -1,7 +1,7 @@
 import { Ref } from "./ref";
 import { Utils } from "./utils";
 import { CommentDocument, PostDocument } from "../interfaces/forum.interface";
-import { MeiliSearch as Meili, SearchParams, SearchResponse } from "meilisearch";
+import { MeiliSearch as Meili, SearchResponse } from "meilisearch";
 import { EventContext } from "firebase-functions/v1";
 import { UserRecord } from "firebase-functions/v1/auth";
 import { UserModel } from "../interfaces/user.interface";
@@ -271,9 +271,15 @@ export class Meilisearch {
    */
   static async search(
       index: string,
-      data: { keyword?: string; searchOptions?: SearchParams }
+      data: { keyword?: string; id?: string }
   ): Promise<SearchResponse<Record<string, any>>> {
-    return this.client.index(index).search(data.keyword, data.searchOptions);
+    const searchFilters = [];
+
+    if (data.id) searchFilters.push("id=" + data.id);
+
+    return this.client.index(index).search(data.keyword, {
+      filter: searchFilters,
+    });
   }
 }
 

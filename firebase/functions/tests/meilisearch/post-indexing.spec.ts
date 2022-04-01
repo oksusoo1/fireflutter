@@ -13,7 +13,7 @@ describe("Meilisearch post document indexing", () => {
   // console.log("timestamp :", timestamp);
 
   it("prepares test", async () => {
-    await Test.initIndexFilter("posts", ["id"]);
+    await Test.initMeiliSearchIndexFilter("posts", ["id"]);
   });
 
   it("Test post create, update and delete indexing", async () => {
@@ -25,9 +25,7 @@ describe("Meilisearch post document indexing", () => {
     // Create.
     await Meilisearch.indexPostCreate(originalPost as any, { params: params } as any);
     await Utils.delay(3000);
-    let searchResult = await Meilisearch.search("posts", {
-      searchOptions: { filter: ["id = " + params.id] },
-    });
+    let searchResult = await Meilisearch.search("posts", { id: params.id });
     // console.log(searchResult);
     expect(searchResult.hits).has.length(1);
 
@@ -41,9 +39,7 @@ describe("Meilisearch post document indexing", () => {
       { params: params } as any
     );
     await Utils.delay(3000);
-    searchResult = await Meilisearch.search("posts", {
-      searchOptions: { filter: ["id = " + params.id] },
-    });
+    searchResult = await Meilisearch.search("posts", { id: params.id });
     expect(searchResult.hits).has.length(1);
     expect(searchResult.hits[0].title === updatedPost.title).true;
 
@@ -51,9 +47,7 @@ describe("Meilisearch post document indexing", () => {
     // Expect index is deleted.
     await Meilisearch.deleteIndexedPostDocument({ params: params } as any);
     await Utils.delay(3000);
-    searchResult = await Meilisearch.search("posts", {
-      searchOptions: { filter: ["id = " + params.id] },
-    });
+    searchResult = await Meilisearch.search("posts", { id: params.id });
     expect(searchResult.hits).has.length(0);
   });
 
@@ -68,9 +62,7 @@ describe("Meilisearch post document indexing", () => {
 
     await Utils.delay(1500);
 
-    const createdData = await Meilisearch.search("posts", {
-      searchOptions: { filter: ["id=" + params.id] },
-    });
+    const createdData = await Meilisearch.search("posts", { id: params.id });
 
     expect(createdData.hits.length).equals(1);
 
@@ -84,9 +76,7 @@ describe("Meilisearch post document indexing", () => {
 
     await Utils.delay(2000);
 
-    const updatedData = await Meilisearch.search("posts", {
-      searchOptions: { filter: ["id=" + params.id] },
-    });
+    const updatedData = await Meilisearch.search("posts", { id: params.id });
 
     expect(createdData.hits[0].updatedAt).equal(updatedData.hits[0].updatedAt);
 
@@ -94,3 +84,4 @@ describe("Meilisearch post document indexing", () => {
     await Meilisearch.deleteIndexedPostDocument({ params: params } as any);
   });
 });
+
