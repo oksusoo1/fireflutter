@@ -1,5 +1,6 @@
 import "mocha";
 import { expect } from "chai";
+import { Test } from "../../src/classes/test";
 import { Meilisearch } from "../../src/classes/meilisearch";
 import { Utils } from "../../src/classes/utils";
 import { FirebaseAppInitializer } from "../firebase-app-initializer";
@@ -16,29 +17,23 @@ function createTestPostDocument(data: { id: string; uid?: string; title?: string
   };
 }
 
-async function initIndexFilter(index: string) {
-  const indexFilters = await Meilisearch.client.index(index).getFilterableAttributes();
-
-  if (!indexFilters.includes("id")) {
-    indexFilters.push("id");
-    await Meilisearch.client.index(index).updateFilterableAttributes(indexFilters);
-  }
-}
-
 describe("Meilisearch forum document indexing", () => {
   const timestamp = Utils.getTimestamp();
   const params = { id: "postId-" + timestamp };
   console.log("timestamp :", timestamp);
 
   it("prepares test", async () => {
-    await initIndexFilter("posts");
+    await Test.initIndexFilter("posts", ["id"]);
   });
 
   it("Test post create, update and delete indexing", async () => {
-    const originalPost = createTestPostDocument(params);
+    const originalPost = {
+      id: params.id,
+      title: `${params.id} title`,
+    };
 
     // Create.
-    await Meilisearch.indexPostCreate(originalPost, { params: params } as any);
+    await Meilisearch.indexPostCreate(originalPost as any, { params: params } as any);
     await Utils.delay(3000);
     let searchResult = await Meilisearch.search("posts", {
       searchOptions: { filter: ["id = " + params.id] },
@@ -48,7 +43,13 @@ describe("Meilisearch forum document indexing", () => {
 
     // Update.
     const updatedPost = { ...originalPost, title: "post updated title" };
-    Meilisearch.indexPostUpdate({ before: originalPost, after: updatedPost }, { params: params } as any);
+    Meilisearch.indexPostUpdate(
+      {
+        before: originalPost as any,
+        after: updatedPost as any,
+      },
+      { params: params } as any
+    );
     await Utils.delay(3000);
     searchResult = await Meilisearch.search("posts", {
       searchOptions: { filter: ["id = " + params.id] },

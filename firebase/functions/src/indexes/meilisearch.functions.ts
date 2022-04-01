@@ -1,6 +1,7 @@
 import * as functions from "firebase-functions";
 import { Meilisearch } from "../classes/meilisearch";
 import { CommentDocument, PostDocument } from "../interfaces/forum.interface";
+import { UserDocument } from "../interfaces/user.interface";
 
 /**
  * Indexes a post document when it is created.
@@ -54,8 +55,6 @@ export const onCommentUpdateIndex = functions
     }
   });
 
-
-  
 /**
  * Indexes a user document whenever it is created (someone registered a new account).
  *
@@ -79,11 +78,17 @@ export const createUserIndex = functions.auth.user().onCreate((user) => {
  * })
  */
 export const updateUserIndex = functions
-    .region("asia-northeast3")
-    .database.ref("/users/{id}")
-    .onUpdate((change, context) => {
-      return Meilisearch.indexUserUpdate(change, context);
-    });
+  .region("asia-northeast3")
+  .database.ref("/users/{uid}")
+  .onUpdate((change, context) => {
+    return Meilisearch.indexUserUpdate(
+      {
+        before: change.before.val() as UserDocument,
+        after: change.after.val() as UserDocument,
+      },
+      context
+    );
+  });
 
 /**
  * Deletes indexing whenever a user document is deleted (user resignation).

@@ -6,4 +6,5 @@ export interface UserDocument {
   photoUrl?: string;
   nickname?: string;
   registeredAt?: number;
+  birthday?: number;
 }

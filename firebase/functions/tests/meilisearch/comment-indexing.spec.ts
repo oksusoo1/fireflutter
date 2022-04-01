@@ -1,7 +1,8 @@
 import "mocha";
 import { expect } from "chai";
-import { Meilisearch } from "../../src/classes/meilisearch";
+import { Test } from "../../src/classes/test";
 import { Utils } from "../../src/classes/utils";
+import { Meilisearch } from "../../src/classes/meilisearch";
 import { FirebaseAppInitializer } from "../firebase-app-initializer";
 
 new FirebaseAppInitializer();
@@ -16,22 +17,13 @@ function createTestCommentDocument(data: { id: string; content?: string }): any 
   };
 }
 
-async function initIndexFilter(index: string) {
-  const indexFilters = await Meilisearch.client.index(index).getFilterableAttributes();
-
-  if (!indexFilters.includes("id")) {
-    indexFilters.push("id");
-    await Meilisearch.client.index(index).updateFilterableAttributes(indexFilters);
-  }
-}
-
 describe("Meilisearch comment document indexing", () => {
   const timestamp = Utils.getTimestamp();
   const params = { id: "comment-" + timestamp };
   console.log("timestamp :", timestamp);
 
   it("prepares test", async () => {
-    await initIndexFilter("comments");
+    await Test.initIndexFilter("comments", ["id"]);
   });
 
   it("Tests comment create, update and delete indexing", async () => {

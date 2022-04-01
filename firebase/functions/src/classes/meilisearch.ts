@@ -2,9 +2,9 @@ import { Ref } from "./ref";
 import { Utils } from "./utils";
 import { CommentDocument, PostDocument } from "../interfaces/forum.interface";
 import { MeiliSearch as Meili, SearchParams, SearchResponse } from "meilisearch";
-import { Change, EventContext } from "firebase-functions/v1";
+import { EventContext } from "firebase-functions/v1";
 import { UserRecord } from "firebase-functions/v1/auth";
-import { DataSnapshot } from "firebase-functions/v1/database";
+import { UserDocument } from "../interfaces/user.interface";
 
 /**
  * TODO: Test
@@ -222,14 +222,24 @@ export class Meilisearch {
    * @param context Event context.
    * @return promise
    */
-  static async indexUserUpdate(changes: Change<DataSnapshot>, context: EventContext): Promise<any> {
-    // TODO: ignore update when necessary data for indexing does not change.
-
-    const after = changes.after.val();
+  static async indexUserUpdate(
+    changes: { before: UserDocument; after: UserDocument },
+    context: EventContext
+  ): Promise<any> {
+    const before = changes.before;
+    const after = changes.after;
+    if (
+      before.firstName === after.firstName &&
+      before.middleName === after.middleName &&
+      before.lastName === after.lastName
+      /// Todo: add more ignore condition ? ...
+    ) {
+      return null;
+    }
 
     const _data = {
-      id: after.uid,
-      photoUrl: after.photoURL ?? "",
+      id: context.params.uid,
+      photoUrl: after.photoUrl ?? "",
       gender: after.gender ?? "",
       firstName: after.firstName ?? "",
       middleName: after.middleName ?? "",
@@ -245,7 +255,7 @@ export class Meilisearch {
   /**
    * Deletes user related documents on realtime database and meilisearch indexing.
    *
-   * @param uid user id to delete.
+   * @param user user data.
    * @return promise
    */
   static async deleteIndexedUserDocument(user: UserRecord) {

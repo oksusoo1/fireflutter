@@ -1,26 +1,18 @@
 import "mocha";
 import { expect } from "chai";
-import { Meilisearch } from "../../src/classes/meilisearch";
+import { Test } from "../../src/classes/test";
 import { Utils } from "../../src/classes/utils";
+import { Meilisearch } from "../../src/classes/meilisearch";
 import { FirebaseAppInitializer } from "../firebase-app-initializer";
 
 new FirebaseAppInitializer();
-
-async function initIndexFilter(index: string) {
-  const indexFilters = await Meilisearch.client.index(index).getFilterableAttributes();
-
-  if (!indexFilters.includes("id")) {
-    indexFilters.push("id");
-    await Meilisearch.client.index(index).updateFilterableAttributes(indexFilters);
-  }
-}
 
 describe("Meilisearch forum document indexing", () => {
   const timestamp = Utils.getTimestamp();
   console.log("timestamp :", timestamp);
 
   it("Prepares test", async () => {
-    await initIndexFilter("posts-and-comments");
+    await Test.initIndexFilter("posts-and-comments", ["id"]);
   });
 
   it("Tests simple forum document indexing and deleting.", async () => {
@@ -28,7 +20,7 @@ describe("Meilisearch forum document indexing", () => {
       id: `post-id-${timestamp}`,
       title: "some title",
       content: "some content",
-    }
+    };
 
     // Indexing
     await Meilisearch.indexForumDocument(testPost);
@@ -43,7 +35,7 @@ describe("Meilisearch forum document indexing", () => {
     expect(searchResult.hits).has.length(1);
 
     // Deleting
-    await Meilisearch.deleteIndexedForumDocument({ params: { id: testPost.id }} as any);
+    await Meilisearch.deleteIndexedForumDocument({ params: { id: testPost.id } } as any);
     await Utils.delay(3000);
 
     // Search
