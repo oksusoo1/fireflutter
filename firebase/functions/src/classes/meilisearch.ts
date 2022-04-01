@@ -4,7 +4,7 @@ import { CommentDocument, PostDocument } from "../interfaces/forum.interface";
 import { MeiliSearch as Meili, SearchParams, SearchResponse } from "meilisearch";
 import { EventContext } from "firebase-functions/v1";
 import { UserRecord } from "firebase-functions/v1/auth";
-import { UserDocument } from "../interfaces/user.interface";
+import { UserModel } from "../interfaces/user.interface";
 
 export class Meilisearch {
   static excludedCategories = ["quiz"];
@@ -152,7 +152,10 @@ export class Meilisearch {
    * @param context Event context
    * @return Promise
    */
-  static async indexCommentUpdate(data: { before: CommentDocument; after: CommentDocument }, context: EventContext) {
+  static async indexCommentUpdate(
+      data: { before: CommentDocument; after: CommentDocument },
+      context: EventContext
+  ) {
     if (data.before.content === data.after.content) return null;
 
     const after = data.after;
@@ -216,7 +219,7 @@ export class Meilisearch {
    * @return promise
    */
   static async indexUserUpdate(
-      changes: { before: UserDocument; after: UserDocument },
+      changes: { before: UserModel; after: UserModel },
       context: EventContext
   ): Promise<any> {
     const before = changes.before;
@@ -225,7 +228,7 @@ export class Meilisearch {
       before.firstName === after.firstName &&
       before.middleName === after.middleName &&
       before.lastName === after.lastName
-      // / Todo: add more ignore condition ? ...
+      // Todo: add more ignore condition ? ...
     ) {
       return null;
     }

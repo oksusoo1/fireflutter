@@ -1,7 +1,7 @@
 import * as functions from "firebase-functions";
 import { Meilisearch } from "../classes/meilisearch";
 import { CommentDocument, PostDocument } from "../interfaces/forum.interface";
-import { UserDocument } from "../interfaces/user.interface";
+import { UserModel } from "../interfaces/user.interface";
 
 /**
  * Indexes a post document when it is created.
@@ -83,8 +83,8 @@ export const updateUserIndex = functions
     .onUpdate((change, context) => {
       return Meilisearch.indexUserUpdate(
           {
-            before: change.before.val() as UserDocument,
-            after: change.after.val() as UserDocument,
+            before: change.before.val() as UserModel,
+            after: change.after.val() as UserModel,
           },
           context
       );

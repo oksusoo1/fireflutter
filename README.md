@@ -130,12 +130,14 @@ Table of contents
 - [Location Service](#location-service)
 - [Cloud Functions](#cloud-functions)
   - [Unit test for Cloud Functions](#unit-test-for-cloud-functions)
+  - [Cloud functions - http trigger, restful api.](#cloud-functions---http-trigger-restful-api)
   - [Meilisearch](#meilisearch)
 - [Backup](#backup)
   - [Firestore backup](#firestore-backup)
 - [Point](#point)
   - [Point settings](#point-settings)
   - [Logic](#logic)
+  - [Point document](#point-document)
   - [Point widgets](#point-widgets)
     - [PointBuilder](#pointbuilder)
     - [MyPointBuilder](#mypointbuilder)
@@ -1537,6 +1539,24 @@ HttpException: Invalid statusCode: 403, uri = https://firebasestorage.googleapis
 
 - `<root>/firebase/functions/tests` folder has all the tests.
 
+
+## Cloud functions - http trigger, restful api.
+
+- Cors and pre-flight.
+  - `ready` function takes care of cors and preflight. and it also takes care of user authentication.
+  - To authenticate a user, call `ready({ req, res, auth: true}, (data) => {})`.
+
+- The callback of `ready` has one arguement that has all the input.
+  - Note that, input may be delivered as query, body, params. and `data` merges all the input and has all input data.
+  - The two following code samples call the cloud function via http and one send data to server as json and the other as query params. Even though their body format are different, the callback parameter `data` of `ready` has same object from the two requests.
+
+```sh
+curl -X POST -H "Content-Type: application/json" "http://localhost:5001/withcenter-test-project/asia-northeast3/inputTest?a=apple&b=banana" -d '{"c":"cherry", "d": "durian"}'
+
+curl -X POST -H "Content-Type: application/x-www-form-urlencoded" "http://localhost:5001/withcenter-test-project/asia-northeast3/inputTest?a=apple&b=banana" -d 'c=cherry&d=durian'
+```
+
+
 ## Meilisearch
 
 https://docs.google.com/document/d/1tSJJt8iJsXNl9vcBqYhKPkiRZR5JFo-SQE2SJ90GItA/edit#heading=h.g94frts1xgxo
@@ -1601,6 +1621,11 @@ https://docs.google.com/document/d/1tSJJt8iJsXNl9vcBqYhKPkiRZR5JFo-SQE2SJ90GItA/
 - Note that, `signIn`, `postCreate` and `commentCreate` has a time limit that it cannot have new point event within x-number of minutes.
   - For instance, if the limit of `postCreate` within 15, then, even if the create many posts within 15 hours, only one will get point event. When the user creates another post after 15 hours, it will take point event again.
 
+
+## Point document
+
+- User point is saved under `/point/<uid>/point` document with `point` and `history`.
+- User point is also saved in user document and it is only because of the flat design. Point saved in user document can be modified by hacker. it does not matter since the real point data is saved in `/post/<uid>/point`.
 
 
 ## Point widgets
