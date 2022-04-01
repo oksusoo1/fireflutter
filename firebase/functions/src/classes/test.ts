@@ -120,33 +120,33 @@ export class Test {
     },
 })
  */
-  // static async createPost(data: any) {
-  //   // if data.category.id comes in, then it will prepare the category to be exist.
-  //   if (data.category && data.category.id) {
-  //     await this.createCategory(data.category);
-  //     // console.log((await catDoc.get()).data());
-  //     // console.log('category id; ', catDoc.id);
-  //   }
+  static async createPost(data: any) {
+    // if data.category.id comes in, then it will prepare the category to be exist.
+    if (data.category && data.category.id) {
+      await this.createCategory(data.category);
+      // console.log((await catDoc.get()).data());
+      // console.log('category id; ', catDoc.id);
+    }
 
-  //   const postData: any = {
-  //     category: data.category && data.category.id ? data.category.id : "test",
-  //     title: data.post && data.post.title ? data.post.title : "create_post",
-  //     uid: data.post && data.post.uid ? data.post.uid : "uid",
-  //     createdAt: Utils.getTimestamp(),
-  //     updatedAt: Utils.getTimestamp(),
-  //   };
+    // const postData: any = {
+    //   category: data.category && data.category.id ? data.category.id : "test",
+    //   title: data.post && data.post.title ? data.post.title : "create_post",
+    //   uid: data.post && data.post.uid ? data.post.uid : "uid",
+    //   createdAt: Utils.getTimestamp(),
+    //   updatedAt: Utils.getTimestamp(),
+    // };
 
-  //   /// create post
+    // / create post
 
-  //   // if (data.post && data.post.id) {
-  //   //   if (data.post.deleted && data.post.deleted === true) {
-  //   //     postData.deleted = true;
-  //   //   }
+    // if (data.post && data.post.id) {
+    //   if (data.post.deleted && data.post.deleted === true) {
+    //     postData.deleted = true;
+    //   }
 
-  //   //   await Ref.postDoc(data.post.id).set(postData, { merge: true });
-  //   //   return Ref.postDoc(data.post.id);
-  //   // } else {
-  //   //   return Ref.postCol.add(postData);
-  //   // }
-  // }
+    //   await Ref.postDoc(data.post.id).set(postData, { merge: true });
+    //   return Ref.postDoc(data.post.id);
+    // } else {
+    //   return Ref.postCol.add(postData);
+    // }
+  }
 }

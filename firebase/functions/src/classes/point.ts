@@ -231,11 +231,16 @@ export class Point {
    * @param {*} uid uid
    * @param {*} point point to update
    */
-  static updateUserPoint(uid: string, point: number) {
-    // console.log("path; ", Ref.userPoint(uid).key);
-    return Ref.userPoint(uid).update({
+  static async updateUserPoint(uid: string, point: number): Promise<any> {
+    await Ref.userPoint(uid).update({
       point: admin.database.ServerValue.increment(point),
       history: admin.database.ServerValue.increment(point),
     });
+    const snapshot = await Ref.userPoint(uid).get();
+    if (snapshot.exists()) {
+      await Ref.userDoc(uid).update({
+        point: snapshot.val().point,
+      });
+    }
   }
 }
