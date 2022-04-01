@@ -152,10 +152,7 @@ export class Meilisearch {
    * @param context Event context
    * @return Promise
    */
-  static async indexCommentUpdate(
-      data: { before: CommentDocument; after: CommentDocument },
-      context: EventContext
-  ) {
+  static async indexCommentUpdate(data: { before: CommentDocument; after: CommentDocument }, context: EventContext) {
     if (data.before.content === data.after.content) return null;
 
     const after = data.after;
@@ -218,10 +215,7 @@ export class Meilisearch {
    * @param context Event context.
    * @return promise
    */
-  static async indexUserUpdate(
-      changes: { before: UserModel; after: UserModel },
-      context: EventContext
-  ): Promise<any> {
+  static async indexUserUpdate(changes: { before: UserModel; after: UserModel }, context: EventContext): Promise<any> {
     const before = changes.before;
     const after = changes.after;
     if (
@@ -269,7 +263,7 @@ export class Meilisearch {
   }
 
   /**
-   * Search
+   * Search - this will run a meilisearch search query.
    *
    * @param index
    * @param data search options
@@ -282,3 +276,4 @@ export class Meilisearch {
     return this.client.index(index).search(data.keyword, data.searchOptions);
   }
 }
+

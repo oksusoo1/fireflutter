@@ -7,16 +7,6 @@ import { FirebaseAppInitializer } from "../firebase-app-initializer";
 
 new FirebaseAppInitializer();
 
-function createTestCommentDocument(data: { id: string; content?: string }): any {
-  return {
-    id: data.id,
-    uid: "test-uid-a",
-    postId: "test-post-id-a",
-    parentId: "test-parent-id-a",
-    content: data.content ?? `${data.id} content`,
-  };
-}
-
 describe("Meilisearch comment document indexing", () => {
   const timestamp = Utils.getTimestamp();
   const params = { id: "comment-" + timestamp };
@@ -28,8 +18,14 @@ describe("Meilisearch comment document indexing", () => {
 
   it("Tests comment create, update and delete indexing", async () => {
     // Create index
-    const testComment = createTestCommentDocument(params);
-    await Meilisearch.indexCommentCreate(testComment, { params: params } as any);
+    const testComment = {
+      id: params.id,
+      uid: "test-uid-a",
+      postId: "test-post-id-a",
+      parentId: "test-parent-id-a",
+      content: `${params.id} content`,
+    };
+    await Meilisearch.indexCommentCreate(testComment as any, { params: params } as any);
     await Utils.delay(3000);
 
     // Search if the post is indexed.
@@ -43,7 +39,15 @@ describe("Meilisearch comment document indexing", () => {
     // Check if original and updated comment do not have same content.
     // Check if search result and updated comment have same content.
     const updatedComment = { ...testComment, title: "post updated title" };
-    await Meilisearch.indexCommentUpdate({ before: testComment, after: updatedComment }, { params: params } as any);
+    await Meilisearch.indexCommentUpdate(
+        {
+          before: testComment as any,
+          after: updatedComment as any,
+        },
+      {
+        params: params,
+      } as any
+    );
     await Utils.delay(3000);
     searchResult = await Meilisearch.search("comments", {
       searchOptions: { filter: ["id = " + testComment.id] },
@@ -113,3 +117,4 @@ describe("Meilisearch comment document indexing", () => {
     await Meilisearch.deleteIndexedCommentDocument({ params: params } as any);
   });
 });
+
