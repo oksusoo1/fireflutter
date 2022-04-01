@@ -26,11 +26,11 @@ describe("Meilisearch forum document indexing", () => {
   it("Test post ignore update", async () => {
     const id = "post-id-a-1" + Utils.getTimestamp();
     await Meilisearch.indexPostUpdate(
-      {
-        before: { title: "title-a", content: "a" } as any,
-        after: { title: "title-b", content: "b", like: 3 } as any,
-      },
-      { params: { id: id } }
+        {
+          before: { title: "title-a", content: "a" } as any,
+          after: { title: "title-b", content: "b", like: 3 } as any,
+        },
+        { params: { id: id } }
     );
 
     await Utils.delay(1500);
@@ -42,11 +42,11 @@ describe("Meilisearch forum document indexing", () => {
     expect(createdData.hits.length).equals(1);
 
     await Meilisearch.indexPostUpdate(
-      {
-        before: { title: "title-b", content: "b", like: 3 } as any,
-        after: { title: "title-b", content: "b", like: 4 } as any,
-      },
-      { params: { id: id } }
+        {
+          before: { title: "title-b", content: "b", like: 3 } as any,
+          after: { title: "title-b", content: "b", like: 4 } as any,
+        },
+        { params: { id: id } }
     );
 
     await Utils.delay(2000);
