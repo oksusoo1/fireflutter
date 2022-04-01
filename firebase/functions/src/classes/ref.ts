@@ -11,6 +11,20 @@ export class Ref {
   static get users() {
     return this.rdb.ref("users");
   }
+
+  /**
+   * Returns user document reference.
+   * @param uid uid
+   * @returns user docuement reference
+   */
+  static userDoc(uid: string) {
+    return this.users.child(uid);
+  }
+  /**
+   * Alias of userDoc
+   * @param uid uid
+   * @returns user docuement reference
+   */
   static user(uid: string) {
     return this.users.child(uid);
   }
