@@ -23,8 +23,8 @@ import { PostDocument } from "../interfaces/forum.interface";
 // https://firebase.google.com/docs/functions/typescript
 
 export const postCreate = functions.region("asia-northeast3").https.onRequest((req, res) => {
-  ready({ req, res, auth: false }, async (data) => {
-    console.log("data; ", data);
+  ready({ req, res, auth: true }, async (data) => {
+    // console.log("data; ", data);
     res.status(200).send(await Post.create(data));
   });
 });

@@ -9,7 +9,7 @@ new FirebaseAppInitializer();
 
 describe("Post create test", () => {
   it("Succed to create a post", async () => {
-    const post = await Post.create({ uid: "a", category: "cat1", title: "yo" } as any);
+    const post = await Post.create({ uid: "a", category: "cat1", title: "yo", a: "apple" } as any);
     expect(post).not.to.be.null;
     expect(post!.category === "cat1").true;
   });
