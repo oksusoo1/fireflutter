@@ -21,6 +21,7 @@
     "test:meilisearch:post-indexing": "mocha --timeout 20000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/meilisearch/post-indexing.spec.ts",
     "test:meilisearch:comment-indexing": "mocha --timeout 20000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/meilisearch/comment-indexing.spec.ts",
     "test:meilisearch:user-indexing": "mocha --timeout 20000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/meilisearch/user-indexing.spec.ts",
+    "test:quiz:test-answer": "mocha --timeout 20000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/quiz/test-answer.spec.ts",
     "test:messagingToken": "mocha --timeout 20000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/messaging/messaging-tokens.spec.ts",
     "test:messagingSubscriber": "mocha --timeout 20000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/messaging/messaging-subscriber.spec.ts"
   },

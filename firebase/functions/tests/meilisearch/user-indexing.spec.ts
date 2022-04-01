@@ -8,55 +8,52 @@ import { FirebaseAppInitializer } from "../firebase-app-initializer";
 new FirebaseAppInitializer();
 
 describe("Meilisearch forum document indexing", () => {
-  const timestamp = Utils.getTimestamp();
-  console.log("timestamp :", timestamp);
-
   it("Prepares test", async () => {
     Test.initIndexFilter("users", ["id"]);
   });
 
-  // it("Test user create, update and delete indexing", async () => {
-  //   const initialData = {
-  //     // should be `uid` since it replicates the firebase event environment
-  //     // where if a user is created, it will trigger with a UserRecord type payload
-  //     // thus `indexUserCreate()` function will use `data.uid`.
-  //     uid: "uid-" + timestamp,
-  //   };
+  it("Test user create, update and delete indexing", async () => {
+    const initialData = {
+      // should be `uid` since it replicates the firebase event environment
+      // where if a user is created, it will trigger with a UserRecord type payload
+      // thus `indexUserCreate()` function will use `data.uid`.
+      uid: "uid-" + Utils.getTimestamp(),
+    };
 
-  //   // Create
-  //   await Meilisearch.indexUserCreate(initialData as any);
-  //   await Utils.delay(3000);
+    // Create
+    await Meilisearch.indexUserCreate(initialData as any);
+    await Utils.delay(3000);
 
-  //   const createdData = await Meilisearch.search("users", {
-  //     searchOptions: { filter: ["id = " + initialData.uid] },
-  //   });
-  //   expect(createdData.hits.length).to.be.equals(1);
+    const createdData = await Meilisearch.search("users", {
+      searchOptions: { filter: ["id = " + initialData.uid] },
+    });
+    expect(createdData.hits.length).to.be.equals(1);
 
-  //   // Update
-  //   const newFirstName = "firstname update";
-  //   await Meilisearch.indexUserUpdate(
-  //     {
-  //       before: initialData as any,
-  //       after: { firstName: newFirstName } as any,
-  //     },
-  //     { params: initialData } as any
-  //   );
-  //   await Utils.delay(3000);
+    // Update
+    const newFirstName = "firstname update";
+    await Meilisearch.indexUserUpdate(
+      {
+        before: initialData as any,
+        after: { firstName: newFirstName } as any,
+      },
+      { params: initialData } as any
+    );
+    await Utils.delay(3000);
 
-  //   const updatedData = await Meilisearch.search("users", {
-  //     searchOptions: { filter: ["id = " + initialData.uid] },
-  //   });
-  //   expect(updatedData.hits.length).to.be.equals(1);
-  //   expect(updatedData.hits[0].firstName).to.be.equals(newFirstName);
+    const updatedData = await Meilisearch.search("users", {
+      searchOptions: { filter: ["id = " + initialData.uid] },
+    });
+    expect(updatedData.hits.length).to.be.equals(1);
+    expect(updatedData.hits[0].firstName).to.be.equals(newFirstName);
 
-  //   // Delete
-  //   await Meilisearch.deleteIndexedUserDocument(initialData as any);
-  //   await Utils.delay(3000);
-  //   const deletedSearch = await Meilisearch.search("users", {
-  //     searchOptions: { filter: ["id = " + initialData.uid] },
-  //   });
-  //   expect(deletedSearch.hits.length).to.be.equals(0);
-  // });
+    // Delete
+    await Meilisearch.deleteIndexedUserDocument(initialData as any);
+    await Utils.delay(3000);
+    const deletedSearch = await Meilisearch.search("users", {
+      searchOptions: { filter: ["id = " + initialData.uid] },
+    });
+    expect(deletedSearch.hits.length).to.be.equals(0);
+  });
 
   it("Test user indexing update ignore", async () => {
     const initialData = {
@@ -104,5 +101,8 @@ describe("Meilisearch forum document indexing", () => {
       searchOptions: { filter: ["id=" + initialData.uid] },
     });
     expect(updateAttemptB.hits[0].updatedAt).to.be.not.equals(createdData.hits[0].updatedAt);
+
+    /// Cleanup
+    await Meilisearch.deleteIndexedUserDocument(initialData as any);
   });
 });

@@ -6,13 +6,6 @@ import { EventContext } from "firebase-functions/v1";
 import { UserRecord } from "firebase-functions/v1/auth";
 import { UserDocument } from "../interfaces/user.interface";
 
-/**
- * TODO: Test
- *
- * - indexUserCreate
- * - indexUserUpdate
- * - deleteIndexedUserDocument
- */
 export class Meilisearch {
   static excludedCategories = ["quiz"];
 
