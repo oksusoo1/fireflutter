@@ -107,8 +107,6 @@ describe("Meilisearch forum document indexing", () => {
     });
     expect(searchResult.hits).has.length(0);
   });
-<<<<<<< HEAD
-=======
 
   it("Test post ignore update", async () => {
     const postId = "post-test-" + timestamp;
@@ -134,5 +132,4 @@ describe("Meilisearch forum document indexing", () => {
 
     expect(updatedData!.updatedAt > meiliIndexedData.hits[0].updatedAt).true;
   });
->>>>>>> typescript
 });
