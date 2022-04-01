@@ -44,10 +44,10 @@ describe("Meilisearch forum document indexing", () => {
     // Update.
     const updatedPost = { ...originalPost, title: "post updated title" };
     Meilisearch.indexPostUpdate(
-      {
-        before: originalPost as any,
-        after: updatedPost as any,
-      },
+        {
+          before: originalPost as any,
+          after: updatedPost as any,
+        },
       { params: params } as any
     );
     await Utils.delay(3000);
@@ -69,10 +69,10 @@ describe("Meilisearch forum document indexing", () => {
 
   it("Test post ignore update", async () => {
     await Meilisearch.indexPostUpdate(
-      {
-        before: { title: "title-a", content: "a" } as any,
-        after: { title: "title-b", content: "b", like: 3 } as any,
-      },
+        {
+          before: { title: "title-a", content: "a" } as any,
+          after: { title: "title-b", content: "b", like: 3 } as any,
+        },
       { params: params } as any
     );
 
@@ -85,10 +85,10 @@ describe("Meilisearch forum document indexing", () => {
     expect(createdData.hits.length).equals(1);
 
     await Meilisearch.indexPostUpdate(
-      {
-        before: { title: "title-b", content: "b", like: 3 } as any,
-        after: { title: "title-b", content: "b", like: 4 } as any,
-      },
+        {
+          before: { title: "title-b", content: "b", like: 3 } as any,
+          after: { title: "title-b", content: "b", like: 4 } as any,
+        },
       { params: params } as any
     );
 
