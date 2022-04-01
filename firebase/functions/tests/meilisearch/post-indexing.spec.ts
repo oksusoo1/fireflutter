@@ -7,10 +7,10 @@ import { FirebaseAppInitializer } from "../firebase-app-initializer";
 
 new FirebaseAppInitializer();
 
-describe("Meilisearch forum document indexing", () => {
+describe("Meilisearch post document indexing", () => {
   const timestamp = Utils.getTimestamp();
   const params = { id: "postId-" + timestamp };
-  console.log("timestamp :", timestamp);
+  // console.log("timestamp :", timestamp);
 
   it("prepares test", async () => {
     await Test.initIndexFilter("posts", ["id"]);

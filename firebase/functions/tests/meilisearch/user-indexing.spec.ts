@@ -7,7 +7,7 @@ import { FirebaseAppInitializer } from "../firebase-app-initializer";
 
 new FirebaseAppInitializer();
 
-describe("Meilisearch forum document indexing", () => {
+describe("Meilisearch user document indexing", () => {
   it("Prepares test", async () => {
     Test.initIndexFilter("users", ["id"]);
   });

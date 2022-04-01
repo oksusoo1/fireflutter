@@ -10,7 +10,7 @@ new FirebaseAppInitializer();
 describe("Meilisearch comment document indexing", () => {
   const timestamp = Utils.getTimestamp();
   const params = { id: "comment-" + timestamp };
-  console.log("timestamp :", timestamp);
+  // console.log("timestamp :", timestamp);
 
   it("prepares test", async () => {
     await Test.initIndexFilter("comments", ["id"]);
