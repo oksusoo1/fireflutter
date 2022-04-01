@@ -6,18 +6,6 @@ import { FirebaseAppInitializer } from "../firebase-app-initializer";
 
 new FirebaseAppInitializer();
 
-function createTestForumDocument(data: {
-  id: string;
-  title?: string;
-  content?: string;
-}): any {
-  return {
-    id: data.id,
-    title: data.title ?? `${data.id} title`,
-    content: data.content ?? `${data.id} content`,
-  };
-}
-
 async function initIndexFilter(index: string) {
   const indexFilters = await Meilisearch.client.index(index).getFilterableAttributes();
 
@@ -31,14 +19,16 @@ describe("Meilisearch forum document indexing", () => {
   const timestamp = Utils.getTimestamp();
   console.log("timestamp :", timestamp);
 
-  it("prepares test", async () => {
+  it("Prepares test", async () => {
     await initIndexFilter("posts-and-comments");
   });
 
-  it("simple forum document indexing and deleting test", async () => {
-    const testPost = createTestForumDocument({
-      id: "postId-" + timestamp,
-    });
+  it("Tests simple forum document indexing and deleting.", async () => {
+    const testPost = {
+      id: `post-id-${timestamp}`,
+      title: "some title",
+      content: "some content",
+    }
 
     // Indexing
     await Meilisearch.indexForumDocument(testPost);
@@ -53,7 +43,7 @@ describe("Meilisearch forum document indexing", () => {
     expect(searchResult.hits).has.length(1);
 
     // Deleting
-    await Meilisearch.deleteIndexedForumDocument(testPost.id!);
+    await Meilisearch.deleteIndexedForumDocument({ params: { id: testPost.id }} as any);
     await Utils.delay(3000);
 
     // Search

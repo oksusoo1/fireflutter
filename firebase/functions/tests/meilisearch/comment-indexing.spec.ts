@@ -37,7 +37,7 @@ describe("Meilisearch comment document indexing", () => {
   it("Tests comment create, update and delete indexing", async () => {
     // Create index
     const testComment = createTestCommentDocument(params);
-    await Meilisearch.indexCommentCreate(testComment, { params: params });
+    await Meilisearch.indexCommentCreate(testComment, { params: params } as any);
     await Utils.delay(3000);
 
     // Search if the post is indexed.
@@ -51,7 +51,7 @@ describe("Meilisearch comment document indexing", () => {
     // Check if original and updated comment do not have same content.
     // Check if search result and updated comment have same content.
     const updatedComment = { ...testComment, title: "post updated title" };
-    await Meilisearch.indexCommentUpdate({ before: testComment, after: updatedComment }, { params: params });
+    await Meilisearch.indexCommentUpdate({ before: testComment, after: updatedComment }, { params: params } as any);
     await Utils.delay(3000);
     searchResult = await Meilisearch.search("comments", {
       searchOptions: { filter: ["id = " + testComment.id] },
@@ -60,7 +60,7 @@ describe("Meilisearch comment document indexing", () => {
     expect(searchResult.hits[0].content).to.be.equals(updatedComment.content);
 
     // Deleting
-    await Meilisearch.deleteIndexedCommentDocument({ params: params });
+    await Meilisearch.deleteIndexedCommentDocument({ params: params } as any);
     await Utils.delay(3000);
 
     // Search
@@ -77,7 +77,7 @@ describe("Meilisearch comment document indexing", () => {
         before: { content: "12345" } as any,
         after: { content: "54321" } as any,
       },
-      { params: params }
+      { params: params } as any
     );
     await Utils.delay(3000);
 
@@ -92,7 +92,7 @@ describe("Meilisearch comment document indexing", () => {
         before: createdData as any,
         after: { ...createdData, like: 2 } as any,
       },
-      { params: params }
+      { params: params } as any
     );
     await Utils.delay(3000);
 
@@ -107,7 +107,7 @@ describe("Meilisearch comment document indexing", () => {
         before: createdData as any,
         after: { content: "again .." } as any,
       },
-      { params: params }
+      { params: params } as any
     );
     await Utils.delay(3000);
 
@@ -118,6 +118,6 @@ describe("Meilisearch comment document indexing", () => {
     expect(createdData.hits[0].updatedAt).to.be.below(anotherUpdate.hits[0].updatedAt);
 
     // Cleanup.
-    await Meilisearch.deleteIndexedCommentDocument({ params: params });
+    await Meilisearch.deleteIndexedCommentDocument({ params: params } as any);
   });
 });
