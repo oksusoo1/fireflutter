@@ -28,5 +28,8 @@ describe("User test", () => {
     const user = await User.get(id);
     const re = await User.authenticate({ uid: user!.id, password: "wrong password" });
     expect(re === ERROR_AUTH_FAILED).true;
+    const right = await User.authenticate({ uid: user!.id, password: user!.password });
+    expect(right === "").true;
+    console.log("uid; ", user!.id, "password; ", user!.password);
   });
 });

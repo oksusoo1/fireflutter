@@ -18,42 +18,42 @@ import { UserModel } from "../interfaces/user.interface";
  * > onPostCreateIndex({uid: 'a'}, {params: {postId: 'p-1'}});
  */
 export const onPostCreateIndex = functions
-  .region("asia-northeast3")
-  .firestore.document("/posts/{id}")
-  .onCreate((snapshot, context) => {
-    return Meilisearch.indexPostCreate(snapshot.data() as PostDocument, context);
-  });
+    .region("asia-northeast3")
+    .firestore.document("/posts/{id}")
+    .onCreate((snapshot, context) => {
+      return Meilisearch.indexPostCreate(snapshot.data() as PostDocument, context);
+    });
 
 export const onPostUpdateIndex = functions
-  .region("asia-northeast3")
-  .firestore.document("/posts/{id}")
-  .onUpdate((change, context) => {
-    const afterData = change.after.data();
-    if (afterData["deleted"]) {
-      return Meilisearch.deleteIndexedPostDocument(context);
-    } else {
-      return Meilisearch.indexPostUpdate(change as any, context);
-    }
-  });
+    .region("asia-northeast3")
+    .firestore.document("/posts/{id}")
+    .onUpdate((change, context) => {
+      const afterData = change.after.data();
+      if (afterData["deleted"]) {
+        return Meilisearch.deleteIndexedPostDocument(context);
+      } else {
+        return Meilisearch.indexPostUpdate(change as any, context);
+      }
+    });
 
 export const onCommentCreateIndex = functions
-  .region("asia-northeast3")
-  .firestore.document("/comments/{id}")
-  .onCreate((snapshot, context) => {
-    return Meilisearch.indexCommentCreate(snapshot.data() as CommentDocument, context);
-  });
+    .region("asia-northeast3")
+    .firestore.document("/comments/{id}")
+    .onCreate((snapshot, context) => {
+      return Meilisearch.indexCommentCreate(snapshot.data() as CommentDocument, context);
+    });
 
 export const onCommentUpdateIndex = functions
-  .region("asia-northeast3")
-  .firestore.document("/comments/{id}")
-  .onUpdate((change, context) => {
-    const afterData = change.after.data();
-    if (afterData["deleted"]) {
-      return Meilisearch.deleteIndexedCommentDocument(context);
-    } else {
-      return Meilisearch.indexCommentUpdate(change as any, context);
-    }
-  });
+    .region("asia-northeast3")
+    .firestore.document("/comments/{id}")
+    .onUpdate((change, context) => {
+      const afterData = change.after.data();
+      if (afterData["deleted"]) {
+        return Meilisearch.deleteIndexedCommentDocument(context);
+      } else {
+        return Meilisearch.indexCommentUpdate(change as any, context);
+      }
+    });
 
 /**
  * Indexes a user document whenever it is created (someone registered a new account).
@@ -78,17 +78,17 @@ export const createUserIndex = functions.auth.user().onCreate((user) => {
  * })
  */
 export const updateUserIndex = functions
-  .region("asia-northeast3")
-  .database.ref("/users/{uid}")
-  .onUpdate((change, context) => {
-    return Meilisearch.indexUserUpdate(
-      {
-        before: change.before.val() as UserModel,
-        after: change.after.val() as UserModel,
-      },
-      context
-    );
-  });
+    .region("asia-northeast3")
+    .database.ref("/users/{uid}")
+    .onUpdate((change, context) => {
+      return Meilisearch.indexUserUpdate(
+          {
+            before: change.before.val() as UserModel,
+            after: change.after.val() as UserModel,
+          },
+          context
+      );
+    });
 
 /**
  * Deletes indexing whenever a user document is deleted (user resignation).

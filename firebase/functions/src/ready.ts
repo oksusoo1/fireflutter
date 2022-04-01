@@ -3,19 +3,18 @@ import * as express from "express";
 import { User } from "./classes/user";
 
 export async function ready(
-    options: {
+  options: {
     req: functions.https.Request;
     res: express.Response;
     auth?: boolean;
   },
-    callback: (data: any) => Promise<void>
+  callback: (data: any) => Promise<void>
 ) {
   const req = options.req;
   const res = options.res;
   res.set("Access-Control-Allow-Origin", "*");
 
   if (req.method === "OPTIONS") {
-    // Send response to OPTIONS requests
     res.set("Access-Control-Allow-Methods", "GET");
     res.set("Access-Control-Allow-Methods", "POST");
     res.set("Access-Control-Allow-Methods", "DELETE");
@@ -30,6 +29,7 @@ export async function ready(
       const re = await User.authenticate(data);
       if (re) {
         res.status(200).send(re);
+        return;
       }
     }
     callback(data).catch((e) => {
