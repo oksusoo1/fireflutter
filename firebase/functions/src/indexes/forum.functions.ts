@@ -17,7 +17,7 @@
 import * as functions from "firebase-functions";
 import { Post } from "../classes/post";
 import { ready } from "../ready";
-import { PostDocument } from "../interfaces/forum.interface";
+import { CommentDocument, PostDocument } from "../interfaces/forum.interface";
 
 // Start writing Firebase Functions
 // https://firebase.google.com/docs/functions/typescript
@@ -27,13 +27,6 @@ export const postCreate = functions.region("asia-northeast3").https.onRequest((r
     res.status(200).send(await Post.create(data));
   });
 });
-
-export const sendMessageOnPostCreate = functions
-  .region("asia-northeast3")
-  .firestore.document("/posts/{postId}")
-  .onCreate((snapshot, context) => {
-    return Post.sendMessageOnPostCreate(snapshot.data() as PostDocument, context);
-  });
 
 export const inputTest = functions.region("asia-northeast3").https.onRequest((req, res) => {
   ready({ req, res, auth: false }, async (data) => {
@@ -47,3 +40,21 @@ export const authTest = functions.region("asia-northeast3").https.onRequest((req
     res.status(200).send(data);
   });
 });
+
+export const sendMessageOnPostCreate = functions
+  .region("asia-northeast3")
+  .firestore.document("/posts/{postId}")
+  .onCreate((snapshot, context) => {
+    return Post.sendMessageOnPostCreate(
+      new PostDocument().fromDocument(snapshot.data(), context.params.postId)
+    );
+  });
+
+export const sendMessageOnCommentCreate = functions
+  .region("asia-northeast3")
+  .firestore.document("/comments/{commentId}")
+  .onCreate((snapshot, context) => {
+    return Post.sendMessageOnCommentCreate(
+      new CommentDocument().fromDocument(snapshot.data(), context.params.commentId)
+    );
+  });

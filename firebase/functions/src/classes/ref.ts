@@ -87,6 +87,9 @@ export class Ref {
   static get commentCol() {
     return this.db.collection("comments");
   }
+  static get categoryCol() {
+    return this.db.collection("categories");
+  }
 
   /**
    * Returns post reference
@@ -103,5 +106,15 @@ export class Ref {
    */
   static commentDoc(id: string) {
     return this.commentCol.doc(id);
+  }
+
+  /**
+   * Returns category referrence
+   *
+   * @param {*} id Category id
+   * @return reference
+   */
+  static categoryDoc(id: string) {
+    return this.categoryCol.doc(id);
   }
 }

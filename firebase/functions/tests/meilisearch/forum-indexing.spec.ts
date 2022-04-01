@@ -12,7 +12,7 @@ describe("Meilisearch forum document indexing", () => {
   // console.log("timestamp :", timestamp);
 
   it("Prepares test", async () => {
-    await Test.initIndexFilter("posts-and-comments", ["id"]);
+    await Test.initMeiliSearchIndexFilter("posts-and-comments", ["id"]);
   });
 
   it("Tests simple forum document indexing and deleting.", async () => {
@@ -28,9 +28,7 @@ describe("Meilisearch forum document indexing", () => {
 
     // Search if the post is indexed.
     // It should exactly contain 1 document, since it is filtered out.
-    let searchResult = await Meilisearch.search("posts-and-comments", {
-      searchOptions: { filter: ["id = " + testPost.id] },
-    });
+    let searchResult = await Meilisearch.search("posts-and-comments", { id: testPost.id });
     // console.log(searchResult);
     expect(searchResult.hits).has.length(1);
 
@@ -40,9 +38,8 @@ describe("Meilisearch forum document indexing", () => {
 
     // Search
     // It should not contain a document since it is should be deleted..
-    searchResult = await Meilisearch.search("posts-and-comments", {
-      searchOptions: { filter: ["id = " + testPost.id] },
-    });
+    searchResult = await Meilisearch.search("posts-and-comments", { id: testPost.id });
     expect(searchResult.hits).has.length(0);
   });
 });
+
