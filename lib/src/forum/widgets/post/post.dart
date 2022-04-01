@@ -52,13 +52,9 @@ class Post extends StatelessWidget {
           },
           padding: padding,
         ),
-        Padding(
-          padding: const EdgeInsets.only(left: 16.0),
-          child: PointBuilder(
-            uid: post.uid,
-            id: post.id,
-            type: 'post',
-          ),
+        Text(
+          '* earned ${post.point} points',
+          style: TextStyle(fontSize: 12, color: Colors.grey.shade300),
         ),
         if (post.summary != '')
           Container(

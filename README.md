@@ -50,7 +50,6 @@ Table of contents
   - [UserService](#userservice)
   - [User setting service](#user-setting-service)
   - [Profile ready](#profile-ready)
-  - [Test users](#test-users)
   - [Phone number sign-in](#phone-number-sign-in)
   - [Email authentication under phone sign-in](#email-authentication-under-phone-sign-in)
     - [Email authentication under phone sign-in logic](#email-authentication-under-phone-sign-in-logic)
@@ -90,6 +89,8 @@ Table of contents
   - [Building fireflutter](#building-fireflutter)
   - [Updating fireflutter while building your app](#updating-fireflutter-while-building-your-app)
 - [Test](#test)
+  - [Test users](#test-users)
+  - [To test user functionality](#to-test-user-functionality)
   - [Test method](#test-method)
   - [Local test on firestore security rules](#local-test-on-firestore-security-rules)
 - [Sample code](#sample-code-1)
@@ -141,7 +142,8 @@ Table of contents
   - [Point settings](#point-settings)
   - [Logic](#logic)
   - [Point document](#point-document)
-  - [Point widgets](#point-widgets)
+  - [Displaying Point](#displaying-point)
+    - [Use point property to dispaly point.](#use-point-property-to-dispaly-point)
     - [PointBuilder](#pointbuilder)
     - [MyPointBuilder](#mypointbuilder)
   - [Senario](#senario)
@@ -497,14 +499,6 @@ UserSettingDoc(
 
 - To know if user's profile is ready or not, use `UserModel.ready` boolean variable.
 
-## Test users
-
-- Create the following four test user accounts with password of `12345a` using email & password sign-in.
-  - `apple@test.com`, `banana@test.com`, `cherry@test.com`, `durian@test.com`
-  - It is better to create test users with user utility. See [User utility](#user-utilities)
-
-- Create an admin with `admin@test.com` as its email and `12345a` as its password.
-  - And set the uid as admin. Read [Setting admin on firestore security rules](#setting-admin-on-firestore-security-rules) to know how to set admin.
 
 ## Phone number sign-in
 
@@ -1064,6 +1058,22 @@ InformService.instance.inform(widget.room.otherUid, {
   - after updating fireflutter, come back to your app and run your app.
 
 # Test
+
+
+## Test users
+
+- Create the following four test user accounts with password of `12345a` using email & password sign-in.
+  - `apple@test.com`, `banana@test.com`, `cherry@test.com`, `durian@test.com`
+  - It is better to create test users with user utility. See [User utility](#user-utilities)
+
+- Create an admin with `admin@test.com` as its email and `12345a` as its password.
+  - And set the uid as admin. Read [Setting admin on firestore security rules](#setting-admin-on-firestore-security-rules) to know how to set admin.
+
+## To test user functionality
+
+- To test on point, by deleting point related document, you can observe(or restart) the point changes.
+  - Delete `/users/<uid>` in realtime database.
+  - Delete `/point/<uid>` in realtime database.
 
 ## Test method
 
@@ -1642,14 +1652,27 @@ https://docs.google.com/document/d/1tSJJt8iJsXNl9vcBqYhKPkiRZR5JFo-SQE2SJ90GItA/
 ## Point document
 
 - User point is saved under `/point/<uid>/point` document with `point` and `history`.
+  - `/point/<uid>/point/point` is the amount of point that the user posseses. This point can be increased or decreased depending on the events.
+  - `/point/<uid>/point/history` is the amout of point that was earned (without deduction) by the user for the life time.
 - User point is also saved in user document and it is only because of the flat design. Point saved in user document can be modified by hacker. it does not matter since the real point data is saved in `/post/<uid>/point`.
 
 
-## Point widgets
+## Displaying Point
+
+### Use point property to dispaly point.
+
+- post and comment have `point` property that was set(generated) by creating post and comment.
+  - So, you can do `Text('* earned ${post.point} points')` to dislay the point of the post or comment.
+- user profile also has `point` property that is only a copy of `/point/<uid>/point/point`.
+  - So, you can do `MyDoc(builder: (u) => Text('Point: ${u.point}'))` to display user point.
 
 ### PointBuilder
 
-- To display point earned by create a post or comment.
+
+- To display point of a user from `/point/<uid>/point/point`, you can use `MyPointBuilder`.
+
+
+- To display point of a post or comment from `/point/<uid>`, you can use `PointBuilder` which displays point earned by post and comment.
 
 ```dart
 PointBuilder(

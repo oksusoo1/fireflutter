@@ -32,13 +32,13 @@ describe("Register point test", () => {
     await User.create(uid, {
       firstName: "fn",
     });
-    // wait sometime for register and get's register bonus.
-    await Utils.delay(2000);
+    // wait at leat 3 seconds for register point to be generated and updated.
+    await Utils.delay(3000);
 
     const point = await Point.getUserPoint(uid);
 
     const user = await User.get(uid);
-    console.log(user);
+    // console.log(user);
     expect(user!.point).equal(point);
   });
 });
