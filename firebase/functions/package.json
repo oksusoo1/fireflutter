@@ -13,6 +13,7 @@
     "test:user": "mocha --timeout 10000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/user/user.spec.ts",
     "test:post:create": "mocha --timeout 10000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/post/create.spec.ts",
     "test:post:create-via-http": "mocha --timeout 10000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/post/create-via-http.spec.ts",
+    "test:comment:create": "mocha --timeout 10000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/comment/create.spec.ts",
     "test:point:sign-in": "mocha --timeout 10000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/point/sign-in.spec.ts",
     "test:point:register": "mocha --timeout 10000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/point/register.spec.ts",
     "test:point:post": "mocha --timeout 10000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/point/post.spec.ts",
