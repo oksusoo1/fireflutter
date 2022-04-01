@@ -66,7 +66,7 @@ export class Meilisearch {
   /**
    * Update a post document index.
    *
-   * @param data post data to index
+   * @param data post data before and after.
    * @param context Event context
    * @return Promise
    *
@@ -146,7 +146,7 @@ export class Meilisearch {
   /**
    * Updates a comment document index.
    *
-   * @param data Document data
+   * @param data comment data before and after.
    * @param context Event context
    * @return Promise
    */
@@ -189,7 +189,7 @@ export class Meilisearch {
   /**
    * Indexes user data coming from create event of auth.
    *
-   * @param {*} data User data to index. It must also contain the users id.
+   * @param data User data to index. It must also contain the users id.
    * @return promise
    */
   static async indexUserCreate(data: UserRecord): Promise<any> {
