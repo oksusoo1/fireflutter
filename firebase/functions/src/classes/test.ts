@@ -61,11 +61,11 @@ export class Test {
   }
 
   /**
-   * Initializes index search filter.
+   * Initializes meilisearch filters for a given index.
    *
    * @param index meilisearch index
    */
-  static async initIndexFilter(index: string, filters: string[]) {
+  static async initMeiliSearchIndexFilter(index: string, filters: string[]) {
     const indexFilters = await Meilisearch.client.index(index).getFilterableAttributes();
 
     if (filters?.length) {
