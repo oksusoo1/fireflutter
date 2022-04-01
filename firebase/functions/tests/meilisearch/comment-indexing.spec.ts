@@ -65,10 +65,10 @@ describe("Meilisearch comment document indexing", () => {
 
   it("Tests comment update ignore", async () => {
     await Meilisearch.indexCommentUpdate(
-      {
-        before: { content: "12345" } as any,
-        after: { content: "54321" } as any,
-      },
+        {
+          before: { content: "12345" } as any,
+          after: { content: "54321" } as any,
+        },
       { params: params } as any
     );
     await Utils.delay(3000);
@@ -80,10 +80,10 @@ describe("Meilisearch comment document indexing", () => {
     expect(createdData.hits.length).equals(1);
 
     await Meilisearch.indexCommentUpdate(
-      {
-        before: createdData as any,
-        after: { ...createdData, like: 2 } as any,
-      },
+        {
+          before: createdData as any,
+          after: { ...createdData, like: 2 } as any,
+        },
       { params: params } as any
     );
     await Utils.delay(3000);
@@ -95,10 +95,10 @@ describe("Meilisearch comment document indexing", () => {
     expect(createdData.hits[0].updatedAt).equal(updatedData.hits[0].updatedAt);
 
     await Meilisearch.indexCommentUpdate(
-      {
-        before: createdData as any,
-        after: { content: "again .." } as any,
-      },
+        {
+          before: createdData as any,
+          after: { content: "again .." } as any,
+        },
       { params: params } as any
     );
     await Utils.delay(3000);
