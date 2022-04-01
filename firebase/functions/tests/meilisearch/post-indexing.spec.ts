@@ -7,16 +7,6 @@ import { FirebaseAppInitializer } from "../firebase-app-initializer";
 
 new FirebaseAppInitializer();
 
-function createTestPostDocument(data: { id: string; uid?: string; title?: string; content?: string }): any {
-  return {
-    id: data.id,
-    uid: data.uid ?? "test-uid",
-    title: data.title ?? `${data.id} title`,
-    content: data.content ?? `${data.id} content`,
-    category: "test-cat",
-  };
-}
-
 describe("Meilisearch forum document indexing", () => {
   const timestamp = Utils.getTimestamp();
   const params = { id: "postId-" + timestamp };
@@ -44,10 +34,10 @@ describe("Meilisearch forum document indexing", () => {
     // Update.
     const updatedPost = { ...originalPost, title: "post updated title" };
     Meilisearch.indexPostUpdate(
-      {
-        before: originalPost as any,
-        after: updatedPost as any,
-      },
+        {
+          before: originalPost as any,
+          after: updatedPost as any,
+        },
       { params: params } as any
     );
     await Utils.delay(3000);
@@ -69,10 +59,10 @@ describe("Meilisearch forum document indexing", () => {
 
   it("Test post ignore update", async () => {
     await Meilisearch.indexPostUpdate(
-      {
-        before: { title: "title-a", content: "a" } as any,
-        after: { title: "title-b", content: "b", like: 3 } as any,
-      },
+        {
+          before: { title: "title-a", content: "a" } as any,
+          after: { title: "title-b", content: "b", like: 3 } as any,
+        },
       { params: params } as any
     );
 
@@ -85,10 +75,10 @@ describe("Meilisearch forum document indexing", () => {
     expect(createdData.hits.length).equals(1);
 
     await Meilisearch.indexPostUpdate(
-      {
-        before: { title: "title-b", content: "b", like: 3 } as any,
-        after: { title: "title-b", content: "b", like: 4 } as any,
-      },
+        {
+          before: { title: "title-b", content: "b", like: 3 } as any,
+          after: { title: "title-b", content: "b", like: 4 } as any,
+        },
       { params: params } as any
     );
 

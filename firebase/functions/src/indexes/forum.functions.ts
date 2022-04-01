@@ -31,8 +31,8 @@ export const postCreate = functions.region("asia-northeast3").https.onRequest((r
 });
 
 export const sendMessageOnPostCreate = functions
-  .region("asia-northeast3")
-  .firestore.document("/posts/{postId}")
-  .onCreate((snapshot, context) => {
-    return Post.sendMessageOnPostCreate(snapshot.data() as PostDocument, context);
-  });
+    .region("asia-northeast3")
+    .firestore.document("/posts/{postId}")
+    .onCreate((snapshot, context) => {
+      return Post.sendMessageOnPostCreate(snapshot.data() as PostDocument, context);
+    });

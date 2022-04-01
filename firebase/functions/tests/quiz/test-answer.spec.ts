@@ -39,23 +39,23 @@ describe("Quiz test", () => {
     });
 
     // user answer questionA with a, expect result true.
-    let questionResultA = await Quiz.testAnswer(
-      {
-        [questionA.id]: {
-          answer: "a",
+    const questionResultA = await Quiz.testAnswer(
+        {
+          [questionA.id]: {
+            answer: "a",
+          },
         },
-      },
       { auth: { uid: uid } } as any
     );
     expect(questionResultA.result).to.be.equal(true);
 
     // user answers questionB with b, expect result false.
     const questionResultB = await Quiz.testAnswer(
-      {
-        [questionB.id]: {
-          answer: "b",
+        {
+          [questionB.id]: {
+            answer: "b",
+          },
         },
-      },
       { auth: { uid: uid } } as any
     );
     expect(questionResultB.result).to.be.equal(false);
@@ -71,9 +71,9 @@ describe("Quiz test", () => {
     let res: any;
     try {
       res = await Quiz.testAnswer(
-        {
-          "testQuiz-id": { answer: "b" },
-        },
+          {
+            "testQuiz-id": { answer: "b" },
+          },
         { auth: { uid: "test-uid" } } as any
       );
     } catch (e) {
@@ -110,11 +110,11 @@ describe("Quiz test", () => {
 
     // user answer 1 time
     let answerResult = await Quiz.testAnswer(
-      {
-        [question.id]: {
-          answer: "a",
+        {
+          [question.id]: {
+            answer: "a",
+          },
         },
-      },
       { auth: { uid: uid } } as any
     );
     expect(answerResult.result).to.be.equal(true);
@@ -123,14 +123,14 @@ describe("Quiz test", () => {
     let re: any;
     try {
       answerResult = await Quiz.testAnswer(
-        {
-          [question.id]: {
-            answer: "b",
+          {
+            [question.id]: {
+              answer: "b",
+            },
           },
-        },
         { auth: { uid: uid } } as any
       );
-    } catch(e) {
+    } catch (e) {
       re = e;
     }
     expect(re.message).to.be.equal(ERROR_CANNOT_ANSWER_SAME_QUESTION_TWICE);

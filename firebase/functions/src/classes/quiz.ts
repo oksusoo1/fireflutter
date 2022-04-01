@@ -24,12 +24,12 @@ export class Quiz {
     // console.log(context);
     // console.log(data);
 
-    
+
     if (!context.auth) {
       throw new functions.https.HttpsError(
-        "failed-precondition",
-        ERROR_LOGIN_FIRST,
-        // User is not logged in,
+          "failed-precondition",
+          ERROR_LOGIN_FIRST,
+          // User is not logged in,
       );
     }
 
@@ -43,9 +43,9 @@ export class Quiz {
     // console.log("quizDoc", quizDoc);
     if (typeof quizDoc === "undefined") {
       throw new functions.https.HttpsError(
-        "failed-precondition",
-        ERROR_NO_QUIZ_BY_THAT_ID
-        // "The quiz document id does not exists.",
+          "failed-precondition",
+          ERROR_NO_QUIZ_BY_THAT_ID
+          // "The quiz document id does not exists.",
       );
     }
 
@@ -62,21 +62,21 @@ export class Quiz {
 
       if (Object.keys(userQuizDoc!).indexOf(quizId) != -1) {
         throw new functions.https.HttpsError(
-          "failed-precondition",
-          ERROR_CANNOT_ANSWER_SAME_QUESTION_TWICE
-          // "The quiz document id does not exists.",
+            "failed-precondition",
+            ERROR_CANNOT_ANSWER_SAME_QUESTION_TWICE
+            // "The quiz document id does not exists.",
         );
       }
     }
 
     await userQuizRef.set(
-      {
-        [quizId]: {
-          answer: userAnswer,
-          result: re,
+        {
+          [quizId]: {
+            answer: userAnswer,
+            result: re,
+          },
         },
-      },
-      { merge: true }
+        { merge: true }
     );
     return {
       quizId: quizId,

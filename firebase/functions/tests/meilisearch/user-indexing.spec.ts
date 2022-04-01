@@ -32,10 +32,10 @@ describe("Meilisearch forum document indexing", () => {
     // Update
     const newFirstName = "firstname update";
     await Meilisearch.indexUserUpdate(
-      {
-        before: initialData as any,
-        after: { firstName: newFirstName } as any,
-      },
+        {
+          before: initialData as any,
+          after: { firstName: newFirstName } as any,
+        },
       { params: initialData } as any
     );
     await Utils.delay(3000);
@@ -61,10 +61,10 @@ describe("Meilisearch forum document indexing", () => {
     };
 
     await Meilisearch.indexUserUpdate(
-      {
-        before: initialData as any,
-        after: { ...initialData, firstName: "Hello" } as any,
-      },
+        {
+          before: initialData as any,
+          after: { ...initialData, firstName: "Hello" } as any,
+        },
       { params: initialData } as any
     );
     await Utils.delay(3000);
@@ -76,10 +76,10 @@ describe("Meilisearch forum document indexing", () => {
     expect(createdData.hits.length).equals(1);
 
     await Meilisearch.indexUserUpdate(
-      {
-        before: createdData as any,
-        after: { ...createdData, photoUrl: "https://abc.com/def.jpg" } as any,
-      },
+        {
+          before: createdData as any,
+          after: { ...createdData, photoUrl: "https://abc.com/def.jpg" } as any,
+        },
       { params: initialData } as any
     );
     await Utils.delay(3000);
@@ -90,10 +90,10 @@ describe("Meilisearch forum document indexing", () => {
     expect(updateAttemptA.hits[0].updatedAt).equals(createdData.hits[0].updatedAt);
 
     await Meilisearch.indexUserUpdate(
-      {
-        before: createdData as any,
-        after: { ...initialData, firstName: "Hello World" } as any,
-      },
+        {
+          before: createdData as any,
+          after: { ...initialData, firstName: "Hello World" } as any,
+        },
       { params: initialData } as any
     );
     await Utils.delay(3000);
@@ -102,7 +102,7 @@ describe("Meilisearch forum document indexing", () => {
     });
     expect(updateAttemptB.hits[0].updatedAt).to.be.not.equals(createdData.hits[0].updatedAt);
 
-    /// Cleanup
+    // / Cleanup
     await Meilisearch.deleteIndexedUserDocument(initialData as any);
   });
 });
