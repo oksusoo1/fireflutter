@@ -23,7 +23,7 @@ export class Meilisearch {
    * @param data data to be index
    * @return Promise<any>
    */
-  static indexForumDocument(data: PostDocument | CommentDocument): Promise<any> {
+  static indexForumDocument(data: any): Promise<any> {
     return this.client.index("posts-and-comments").addDocuments([data]);
   }
 
@@ -46,15 +46,15 @@ export class Meilisearch {
   static async indexPostCreate(data: PostDocument, context: any) {
     if (this.excludedCategories.includes(data.category)) return null;
 
-    const _data: PostDocument = {
+    const _data = {
       id: context.params.id,
       uid: data.uid,
       title: data.title ?? "",
       category: data.category,
       content: Utils.removeHtmlTags(data.content),
-      files: Array.isArray(data.files) ? data.files.join(",") : data.files,
+      files: data.files,
       noOfComments: data.noOfComments ?? 0,
-      deleted: data.deleted ? "Y" : "N",
+      deleted: data.deleted,
       createdAt: Utils.getTimestamp(),
       updatedAt: Utils.getTimestamp(),
     };
@@ -78,8 +78,8 @@ export class Meilisearch {
    * @test tests/meilisearch/post-update.spect.ts
    */
   static async indexPostUpdate(
-      data: { before: PostDocument; after: PostDocument },
-      context: any
+    data: { before: PostDocument; after: PostDocument },
+    context: any
   ): Promise<any> {
     if (this.excludedCategories.includes(data.after.category)) return null;
     if (data.before.title === data.after.title && data.before.content === data.after.content) {
@@ -88,15 +88,15 @@ export class Meilisearch {
 
     const after = data.after;
 
-    const _data: PostDocument = {
+    const _data = {
       id: context.params.id,
       uid: after.uid,
       title: after.title ?? "",
       category: after.category,
       content: Utils.removeHtmlTags(after.content),
-      files: Array.isArray(after.files) ? after.files.join(",") : after.files,
-      noOfComments: after.noOfComments ?? 0,
-      deleted: after.deleted ? "Y" : "N",
+      files: after.files,
+      noOfComments: after.noOfComments,
+      deleted: after.deleted,
       updatedAt: Utils.getTimestamp(),
     };
 
@@ -137,7 +137,7 @@ export class Meilisearch {
       postId: data.postId,
       parentId: data.parentId,
       content: Utils.removeHtmlTags(data.content) ?? "",
-      files: Array.isArray(data.files) ? data.files.join(",") : data.files,
+      files: data.files.join(","),
       createdAt: Utils.getTimestamp(data.createdAt),
       updatedAt: Utils.getTimestamp(data.updatedAt),
     };
@@ -159,20 +159,20 @@ export class Meilisearch {
    * @return Promise
    */
   static async indexCommentUpdate(
-      data: { before: CommentDocument; after: CommentDocument },
-      context: any
+    data: { before: CommentDocument; after: CommentDocument },
+    context: any
   ) {
     if (data.before.content === data.after.content) return null;
 
     const after = data.after;
 
-    const _data: CommentDocument = {
+    const _data = {
       id: context.params.id,
       uid: after.uid,
       postId: after.postId,
       parentId: after.parentId,
       content: Utils.removeHtmlTags(after.content),
-      files: Array.isArray(after.files) ? after.files.join(",") : after.files,
+      files: after.files.join(","),
       updatedAt: Utils.getTimestamp(after.updatedAt),
     };
 
@@ -247,26 +247,9 @@ export class Meilisearch {
    * @returns Search result
    */
   static async search(
-      index: string,
-      data: { keyword?: string; searchOptions?: SearchParams }
+    index: string,
+    data: { keyword?: string; searchOptions?: SearchParams }
   ): Promise<SearchResponse<Record<string, any>>> {
     return this.client.index(index).search(data.keyword, data.searchOptions);
-  }
-
-  // FOR TESTING
-  // TODO: move this code somewhere else.
-  static createTestPostDocument(data: {
-    id: string;
-    uid?: string;
-    title?: string;
-    content?: string;
-  }): PostDocument {
-    return {
-      id: data.id,
-      uid: data.uid ?? "test-uid",
-      title: data.title ?? `${data.id} title`,
-      content: data.content ?? `${data.id} content`,
-      category: "test-cat",
-    };
   }
 }

@@ -7,6 +7,23 @@ import { FirebaseAppInitializer } from "../firebase-app-initializer";
 
 new FirebaseAppInitializer();
 
+// FOR TESTING
+// TODO: move this code somewhere else.
+function createTestPostDocument(data: {
+  id: string;
+  uid?: string;
+  title?: string;
+  content?: string;
+}): any {
+  return {
+    id: data.id,
+    uid: data.uid ?? "test-uid",
+    title: data.title ?? `${data.id} title`,
+    content: data.content ?? `${data.id} content`,
+    category: "test-cat",
+  };
+}
+
 async function initIndexFilter(index: string) {
   const indexFilters = await Meilisearch.client.index(index).getFilterableAttributes();
 
@@ -29,7 +46,7 @@ describe("Meilisearch forum document indexing", () => {
   });
 
   it("simple forum document indexing and deleting test", async () => {
-    const testPost = Meilisearch.createTestPostDocument({
+    const testPost = createTestPostDocument({
       id: "postId-" + timestamp,
     });
 
@@ -60,12 +77,14 @@ describe("Meilisearch forum document indexing", () => {
   it("Test post create, update and delete indexing", async () => {
     const postId = "postId-" + timestamp;
     const params = { id: postId };
-    const originalPost = Meilisearch.createTestPostDocument(params);
+    const originalPost = createTestPostDocument(params);
 
     // Create.
     await Meilisearch.indexPostCreate(originalPost, { params: params });
     await Utils.delay(3000);
-    let searchResult = await Meilisearch.search("posts", { searchOptions: { filter: ["id = " + postId] } });
+    let searchResult = await Meilisearch.search("posts", {
+      searchOptions: { filter: ["id = " + postId] },
+    });
     // console.log(searchResult);
     expect(searchResult.hits).has.length(1);
 
@@ -73,7 +92,9 @@ describe("Meilisearch forum document indexing", () => {
     const updatedPost = { ...originalPost, title: "post updated title" };
     Meilisearch.indexPostUpdate({ before: originalPost, after: updatedPost }, { params: params });
     await Utils.delay(3000);
-    searchResult = await Meilisearch.search("posts", { searchOptions: { filter: ["id = " + postId] } });
+    searchResult = await Meilisearch.search("posts", {
+      searchOptions: { filter: ["id = " + postId] },
+    });
     expect(searchResult.hits).has.length(1);
     expect(searchResult.hits[0].title === updatedPost.title).true;
 
@@ -81,7 +102,9 @@ describe("Meilisearch forum document indexing", () => {
     // Expect index is deleted.
     await Meilisearch.deleteIndexedPostDocument({ params: params });
     await Utils.delay(3000);
-    searchResult = await Meilisearch.search("posts", { searchOptions: { filter: ["id = " + postId] } });
+    searchResult = await Meilisearch.search("posts", {
+      searchOptions: { filter: ["id = " + postId] },
+    });
     expect(searchResult.hits).has.length(0);
   });
 
@@ -102,7 +125,9 @@ describe("Meilisearch forum document indexing", () => {
     console.log("updatedData :", updatedData);
 
     // compare updated data with one indexed on meilisearch.
-    const meiliIndexedData = await Meilisearch.search("posts", { searchOptions: { filter: ["id =" + postId] } });
+    const meiliIndexedData = await Meilisearch.search("posts", {
+      searchOptions: { filter: ["id =" + postId] },
+    });
     console.log("meiliIndexedData :", meiliIndexedData.hits[0]);
 
     expect(updatedData!.updatedAt > meiliIndexedData.hits[0].updatedAt).true;

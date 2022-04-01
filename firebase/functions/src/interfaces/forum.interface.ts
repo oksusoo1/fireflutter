@@ -24,7 +24,7 @@ export class PostDocument {
   files?: string[];
   hasPhoto = false;
   deleted = false;
-  noOfComment = 0;
+  noOfComments = 0;
   year = 0;
   month = 0;
   day = 0;
@@ -47,7 +47,7 @@ export class PostDocument {
     obj.files = doc.files ?? [];
     obj.hasPhoto = doc.hasPhoto;
     obj.deleted = doc.deleted;
-    obj.noOfComment = doc.noOfComment;
+    obj.noOfComments = doc.noOfComment;
     obj.year = doc.year;
     obj.month = doc.month;
     obj.day = doc.day;
