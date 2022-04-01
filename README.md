@@ -115,6 +115,7 @@ Table of contents
     - [Subcategory](#subcategory)
   - [Post](#post-1)
   - [Comment](#comment)
+  - [PostService and PostApi](#postservice-and-postapi)
 - [Push notification](#push-notification)
   - [terms](#terms)
   - [How push notification wokr.](#how-push-notification-wokr)
@@ -1358,6 +1359,14 @@ DynamicLinksService.instance.listen((Uri? deepLink) {
   - `timestamp` is the server time.
 
 
+
+## PostService and PostApi
+
+
+- `PostService` is a helper class to set and get post document data directly to firestore while `PostApi` is a helper class to call cloud function http (restful api) call.
+`PostApi` does not use `Dio` to communicate to cloud function.
+This is because some features like `job` heavily depends on cloud function, it directly call cloud function to make the work straight foward.
+
 # Push notification
 
 - User tokens are saved under `/message-tokens/(tokenId)`
@@ -1515,6 +1524,8 @@ HttpException: Invalid statusCode: 403, uri = https://firebasestorage.googleapis
 - Use this service to get current location positoin.
 
 # Cloud Functions
+
+- Cloud functions are re-written in Typescript by Apr 1, 2022.
 
 - We want to avoid using `cloud functions` as much as possible. But there are some cases that we must use it like sending push notifications.
 - We also use `cloud functions` to send(for indexing) posts and comments into `meilisearch` and our own backend.

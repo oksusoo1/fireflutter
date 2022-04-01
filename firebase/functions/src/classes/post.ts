@@ -6,7 +6,12 @@ import * as weekOfYear from "dayjs/plugin/weekOfYear";
 dayjs.extend(dayOfYear);
 dayjs.extend(weekOfYear);
 
-import { PostCreate, PostDocument } from "../interfaces/forum.interface";
+import {
+  PostCreateParams,
+  PostCreateRequirements,
+  PostDocument,
+} from "../interfaces/forum.interface";
+
 import { Ref } from "./ref";
 import { ERROR_EMPTY_CATEGORY, ERROR_EMPTY_UID } from "../defines";
 import { Messaging } from "./messaging";
@@ -17,17 +22,17 @@ export class Post {
    * @param data post doc data to be created
    * @returns post doc data after create. Note that, it will contain post id.
    */
-  static async create(data: PostCreate): Promise<PostDocument | null> {
+  static async create(data: PostCreateParams): Promise<PostDocument | null> {
     if (!data.uid) throw ERROR_EMPTY_UID;
     if (!data.category) throw ERROR_EMPTY_CATEGORY;
-    const doc: PostCreate = {
+    const doc: PostCreateRequirements = {
       uid: data.uid,
       category: data.category,
       subcategory: data.subcategory,
       title: data.title,
       content: data.content,
       summary: data.summary,
-      files: data.files,
+      files: data.files ?? [],
       hasPhoto: !!data.files,
       deleted: false,
       noOfComment: 0,
@@ -42,12 +47,23 @@ export class Post {
     const ref = await Ref.postCol.add(doc);
     const snapshot = await ref.get();
     if (snapshot.exists) {
-      const docData = snapshot.data()! as PostDocument;
-      docData.id = ref.id;
-      return docData;
+      return new PostDocument().fromDocument(snapshot.data(), ref.id);
+      // const docData = snapshot.data()! as PostDocument;
+      // docData.id = ref.id;
+      // return docData;
     } else {
       return null;
     }
+  }
+
+  static async get(id: string): Promise<null | PostDocument> {
+    const snapshot = await Ref.postDoc(id).get();
+    if (snapshot.exists) {
+      // return snapshot.data() as PostDocument;
+      const data = snapshot.data();
+      if (data) return new PostDocument().fromDocument(data, id);
+    }
+    return null;
   }
 
   static async sendMessageOnPostCreate(data: PostDocument, context: any) {

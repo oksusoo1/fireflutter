@@ -90,18 +90,20 @@ export class Point {
    * Returns point document reference
    * @param data post data
    * @param context context
-   * @returns reference
+   * @returns reference of the point history document
    */
   static async postCreatePoint(data: any, context: any) {
+    // Get data
     const uid = data.uid;
     const postId = context.params.postId;
-    // console.log("uid; ", uid, ", postId", postId);
     const postCreateRef = Ref.pointPostCreate(uid);
+
+    // Time didn't passed from last bonus point event? then don't do point event.
     if ((await this.timePassed(postCreateRef, EventName.postCreate)) === false) return null;
     const point = this.getRandomPoint(EventName.postCreate);
     const docData = { timestamp: Utils.getTimestamp(), point: point };
 
-    // Reference to create a history.
+    // New reference to create a history with postId.
     const ref = postCreateRef.child(postId);
 
     // Check if the post has already point event.
@@ -110,12 +112,23 @@ export class Point {
     const snapshot = await ref.get();
     if (snapshot.exists() && snapshot.val()) return null;
 
-    // Set history and update point.
+    // Set(add) history of post document. so, it will not do it again within the limited time.
     await ref.set(docData);
+    // Update user point.
     await this.updateUserPoint(uid, point);
+    // Update the post with point. So, it can display on screen.
+    await Ref.postDoc(postId).update({ point: point });
+
     return ref;
   }
 
+  /**
+   * Returns point history document of the comment point event.
+   *
+   * @param data comment data (just created)
+   * @param context context
+   * @returns reference of point history of the comment point event.
+   */
   static async commentCreatePoint(data: any, context: any) {
     const uid = data.uid;
     const commentId = context.params.commentId;
@@ -137,7 +150,13 @@ export class Point {
 
     // Set history and update point.
     await ref.set(docData);
+
+    // Update user point
     await this.updateUserPoint(uid, point);
+
+    // Update the post with point. So, it can display on screen.
+    await Ref.commentDoc(commentId).update({ point: point });
+
     return ref;
   }
 

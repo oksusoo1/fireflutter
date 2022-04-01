@@ -3,7 +3,8 @@ import 'package:fireflutter/fireflutter.dart';
 
 /// PostApi
 ///
-/// It handles the restful api call from firebase cloud functions
+/// PostApi differs from PostService in the manner of communicating between backend.
+/// See details on readme.md
 class PostApi {
   static PostApi? _instance;
   static PostApi get instance {
