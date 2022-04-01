@@ -219,7 +219,6 @@ export class Meilisearch {
       before.lastName === after.lastName &&
       before.gender === after.gender &&
       before.photoUrl === after.photoUrl
-      // Todo: add or remove ignore condition ? ...
     ) {
       return null;
     }
@@ -231,7 +230,6 @@ export class Meilisearch {
       firstName: after.firstName ?? "",
       middleName: after.middleName ?? "",
       lastName: after.lastName ?? "",
-      birthday: after.birthday ?? 0,
       updatedAt: Utils.getTimestamp(),
     };
 
