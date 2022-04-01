@@ -136,6 +136,7 @@ Table of contents
 - [Point](#point)
   - [Point settings](#point-settings)
   - [Logic](#logic)
+  - [Point document](#point-document)
   - [Point widgets](#point-widgets)
     - [PointBuilder](#pointbuilder)
     - [MyPointBuilder](#mypointbuilder)
@@ -1601,6 +1602,11 @@ https://docs.google.com/document/d/1tSJJt8iJsXNl9vcBqYhKPkiRZR5JFo-SQE2SJ90GItA/
 - Note that, `signIn`, `postCreate` and `commentCreate` has a time limit that it cannot have new point event within x-number of minutes.
   - For instance, if the limit of `postCreate` within 15, then, even if the create many posts within 15 hours, only one will get point event. When the user creates another post after 15 hours, it will take point event again.
 
+
+## Point document
+
+- User point is saved under `/point/<uid>/point` document with `point` and `history`.
+- User point is also saved in user document and it is only because of the flat design. Point saved in user document can be modified by hacker. it does not matter since the real point data is saved in `/post/<uid>/point`.
 
 
 ## Point widgets

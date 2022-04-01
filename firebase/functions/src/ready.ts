@@ -3,12 +3,12 @@ import * as express from "express";
 import { User } from "./classes/user";
 
 export async function ready(
-  options: {
+    options: {
     req: functions.https.Request;
     res: express.Response;
     auth?: boolean;
   },
-  callback: (data: any) => Promise<void>
+    callback: (data: any) => Promise<void>
 ) {
   const req = options.req;
   const res = options.res;
@@ -27,7 +27,7 @@ export async function ready(
     const data = Object.assign({}, req.body, req.query);
 
     if (options.auth) {
-      const re = User.authenticate(data);
+      const re = await User.authenticate(data);
       if (re) {
         res.status(200).send(re);
       }
