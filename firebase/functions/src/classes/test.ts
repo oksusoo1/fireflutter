@@ -1,6 +1,7 @@
-import { UserDocument } from "../interfaces/user.interface";
+import { UserCreate, UserModel } from "../interfaces/user.interface";
 import { Ref } from "./ref";
 import { ERROR_USER_EXISTS } from "../defines";
+import { Meilisearch } from "../classes/meilisearch";
 
 export class Test {
   /**
@@ -14,7 +15,7 @@ export class Test {
    * @example create a user.
    * test.createTestUser(userA).then((v) => console.log(v));
    */
-  static async createTestUser(uid: string, data?: UserDocument) {
+  static async createTestUser(uid: string, data?: UserModel) {
     // check if the user of uid exists, then return null
 
     const ref = await Ref.user(uid).get();
@@ -22,7 +23,7 @@ export class Test {
 
     const timestamp = new Date().getTime();
 
-    const userData: UserDocument = {
+    const userData: UserCreate = {
       nickname: "testUser" + timestamp,
       firstName: "firstName" + timestamp,
       lastName: "lastName" + timestamp,
@@ -45,8 +46,8 @@ export class Test {
    */
   static async createTestUserAndGetDoc(
     uid: string,
-    data?: UserDocument
-  ): Promise<UserDocument> {
+    data?: UserModel
+  ): Promise<UserModel> {
     const ref = await this.createTestUser(uid, data);
     const snapshot = await ref.get();
     return snapshot.val();
@@ -60,5 +61,27 @@ export class Test {
    */
   static async deleteTestUser(uid: string) {
     return Ref.rdb.ref("users").child(uid).remove();
+  }
+
+  /**
+   * Initializes index search filter.
+   *
+   * @param index meilisearch index
+   */
+  static async initIndexFilter(index: string, filters: string[]) {
+    const indexFilters = await Meilisearch.client
+      .index(index)
+      .getFilterableAttributes();
+
+    if (filters?.length) {
+      filters.forEach((f) => {
+        if (!indexFilters.includes(f)) {
+          indexFilters.push(f);
+        }
+      });
+      await Meilisearch.client
+        .index(index)
+        .updateFilterableAttributes(indexFilters);
+    }
   }
 }
