@@ -5,14 +5,25 @@ import { EventName, Point, randomPoint } from "../../src/classes/point";
 import { FirebaseAppInitializer } from "../firebase-app-initializer";
 import { Utils } from "../../src/classes/utils";
 import { Comment } from "../../src/classes/comment";
+import { User } from "../../src/classes/user";
 
 new FirebaseAppInitializer();
 
 const uid = "user-" + Utils.getTimestamp();
 describe("Comment point test", () => {
   it("Comment create event test - uid: " + uid, async () => {
+    await User.create(uid, {
+      firstName: "fn",
+    });
+    await User.get(uid);
+
+    // wait sometime for register and get's register bonus.
+    await Utils.delay(2000);
+
     // Get my point first,
     const startingPoint = await Point.getUserPoint(uid);
+
+    // console.log("startingPoint; ", startingPoint);
 
     // console.log("startingPoint; ", startingPoint);
 
@@ -31,6 +42,7 @@ describe("Comment point test", () => {
     expect(ref).not.to.be.null;
     const data = (await ref!.get()).val();
     const pointAfterCreate = await Point.getUserPoint(uid);
+    // console.log("pointAfterCreate; ", pointAfterCreate);
     expect(startingPoint + data.point === pointAfterCreate).true;
 
     // check if the comment doc has point.
@@ -62,8 +74,12 @@ describe("Comment point test", () => {
 
     expect(ref2).not.to.be.null;
     const data2 = (await ref2!.get()).val();
-    const pointAfterCreate2 = await Point.getUserPoint(uid);
-    expect(startingPoint + data.point + data2.point === pointAfterCreate2).true;
+    const point2 = await Point.getUserPoint(uid);
+
+    // console.log(startingPoint, data.point);
+    // console.log(point2);
+
+    expect(startingPoint + data.point + data2.point === point2).true;
 
     // Expect failure.
     // After 1.5 seconds later, do it again and expect failure since `within` time has not passed.
@@ -84,5 +100,8 @@ describe("Comment point test", () => {
     const pointAfterCreate3 = await Point.getUserPoint(uid);
     expect(startingPoint + comment!.point + data2.point + comment3!.point === pointAfterCreate3)
         .true;
+
+    const user = await User.get(uid);
+    expect(user!.point).equal(pointAfterCreate3);
   });
 });

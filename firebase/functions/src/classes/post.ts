@@ -107,8 +107,8 @@ export class Post {
 
     // Don't send the same message twice to topic subscribers and comment notifyees.
     const userUids = await Messaging.getCommentNotifyeeWithoutTopicSubscriber(
-      ancestorsUid.join(","),
-      topic
+        ancestorsUid.join(","),
+        topic
     );
     console.log(userUids);
     // get users tokens

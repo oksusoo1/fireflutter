@@ -5,12 +5,21 @@ import { EventName, Point, randomPoint } from "../../src/classes/point";
 import { FirebaseAppInitializer } from "../firebase-app-initializer";
 import { Utils } from "../../src/classes/utils";
 import { Post } from "../../src/classes/post";
+import { User } from "../../src/classes/user";
 
 new FirebaseAppInitializer();
 
 const uid = "user-" + Utils.getTimestamp();
 describe("Post point test", () => {
   it("Post create event test - uid: " + uid, async () => {
+    await User.create(uid, {
+      firstName: "fn",
+    });
+    await User.get(uid);
+
+    // wait sometime for register and get's register bonus.
+    await Utils.delay(2000);
+
     // Get my point first,
     const startingPoint = await Point.getUserPoint(uid);
 
@@ -64,11 +73,14 @@ describe("Post point test", () => {
     const ref3 = await Point.postCreatePoint({ uid: uid }, { params: { postId: postId3 } });
     expect(ref3 === null).true;
     const pointAfterCreate3 = await Point.getUserPoint(uid);
-    console.log(
-        startingPoint + post!.point + data2!.point + " === " + pointAfterCreate3,
-        "postId; ",
-        postId
-    );
+    // console.log(
+    //   startingPoint + post!.point + data2!.point + " === " + pointAfterCreate3,
+    //   "postId; ",
+    //   postId
+    // );
     expect(startingPoint + post!.point + data2!.point === pointAfterCreate3).true;
+
+    const user = await User.get(uid);
+    expect(user!.point).equal(pointAfterCreate3);
   });
 });

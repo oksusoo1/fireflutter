@@ -3,7 +3,7 @@ import { Ref } from "./ref";
 import { ERROR_USER_EXISTS } from "../defines";
 import { Meilisearch } from "../classes/meilisearch";
 import { Utils } from "./utils";
-import { CategoryDocument, PostCreateParams, PostDocument } from "../interfaces/forum.interface";
+import { CategoryDocument } from "../interfaces/forum.interface";
 
 export class Test {
   /**
@@ -136,7 +136,7 @@ export class Test {
       updatedAt: Utils.getTimestamp(),
     };
 
-    /// create post
+    // / create post
 
     // if (data.post && data.post.id) {
     //   if (data.post.deleted && data.post.deleted === true) {
