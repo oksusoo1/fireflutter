@@ -33,12 +33,18 @@ export class UserModel {
     o.updatedAt = doc.updatedAt ?? 0;
     o.point = doc.point ?? 0;
 
-    // ! warning. this is very week password, but it is difficult to guess.
     o.password = this.generatePassword(o);
 
     return o;
   }
 
+  /**
+   *
+   * ! warning. this is very week password, but it is difficult to guess.
+   *
+   * @param doc user model
+   * @returns password string
+   */
   static generatePassword(doc: UserModel) {
     return doc.id + "-" + doc.registeredAt + "-" + doc.updatedAt + "-" + doc.point;
   }
