@@ -14,6 +14,8 @@ import 'package:fe/screens/admin/translatoins.screen.dart';
 import 'package:fe/screens/forum/post.list.screen.dart';
 import 'package:fe/screens/forum/post.form.screen.dart';
 import 'package:fe/screens/forum/post.view.screen.dart';
+import 'package:fe/screens/job/job.edit.screen.dart';
+import 'package:fe/screens/job/job.list.screen.dart';
 import 'package:fe/screens/search/search.screen.dart';
 import 'package:fe/screens/setting/notification.setting.dart';
 import 'package:fe/service/app.service.dart';
@@ -69,6 +71,8 @@ final Map<String, RouteFunction> routes = {
   PushNotificationScreen.routeName: (context, arguments) =>
       PushNotificationScreen(arguments: arguments),
   PostViewScreen.routeName: (context, arguments) => PostViewScreen(arguments: arguments),
+  JobListScreen.routeName: (context, arguments) => JobListScreen(arguments: arguments),
+  JobEditScreen.routeName: (context, arguments) => JobEditScreen(arguments: arguments),
 };
 
 void main() async {

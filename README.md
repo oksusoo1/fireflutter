@@ -50,7 +50,6 @@ Table of contents
   - [UserService](#userservice)
   - [User setting service](#user-setting-service)
   - [Profile ready](#profile-ready)
-  - [Test users](#test-users)
   - [Phone number sign-in](#phone-number-sign-in)
   - [Email authentication under phone sign-in](#email-authentication-under-phone-sign-in)
     - [Email authentication under phone sign-in logic](#email-authentication-under-phone-sign-in-logic)
@@ -90,6 +89,8 @@ Table of contents
   - [Building fireflutter](#building-fireflutter)
   - [Updating fireflutter while building your app](#updating-fireflutter-while-building-your-app)
 - [Test](#test)
+  - [Test users](#test-users)
+  - [To test user functionality](#to-test-user-functionality)
   - [Test method](#test-method)
   - [Local test on firestore security rules](#local-test-on-firestore-security-rules)
 - [Sample code](#sample-code-1)
@@ -115,6 +116,7 @@ Table of contents
     - [Subcategory](#subcategory)
   - [Post](#post-1)
   - [Comment](#comment)
+  - [PostService and PostApi](#postservice-and-postapi)
 - [Push notification](#push-notification)
   - [terms](#terms)
   - [How push notification wokr.](#how-push-notification-wokr)
@@ -129,13 +131,19 @@ Table of contents
 - [Location Service](#location-service)
 - [Cloud Functions](#cloud-functions)
   - [Unit test for Cloud Functions](#unit-test-for-cloud-functions)
+  - [Cloud functions - http trigger, restful api.](#cloud-functions---http-trigger-restful-api)
+  - [Ready](#ready)
+  - [Post create](#post-create)
+    - [Cloud functions Sample codes](#cloud-functions-sample-codes)
   - [Meilisearch](#meilisearch)
 - [Backup](#backup)
   - [Firestore backup](#firestore-backup)
 - [Point](#point)
   - [Point settings](#point-settings)
   - [Logic](#logic)
-  - [Point widgets](#point-widgets)
+  - [Point document](#point-document)
+  - [Displaying Point](#displaying-point)
+    - [Use point property to dispaly point.](#use-point-property-to-dispaly-point)
     - [PointBuilder](#pointbuilder)
     - [MyPointBuilder](#mypointbuilder)
   - [Senario](#senario)
@@ -491,14 +499,6 @@ UserSettingDoc(
 
 - To know if user's profile is ready or not, use `UserModel.ready` boolean variable.
 
-## Test users
-
-- Create the following four test user accounts with password of `12345a` using email & password sign-in.
-  - `apple@test.com`, `banana@test.com`, `cherry@test.com`, `durian@test.com`
-  - It is better to create test users with user utility. See [User utility](#user-utilities)
-
-- Create an admin with `admin@test.com` as its email and `12345a` as its password.
-  - And set the uid as admin. Read [Setting admin on firestore security rules](#setting-admin-on-firestore-security-rules) to know how to set admin.
 
 ## Phone number sign-in
 
@@ -1059,6 +1059,22 @@ InformService.instance.inform(widget.room.otherUid, {
 
 # Test
 
+
+## Test users
+
+- Create the following four test user accounts with password of `12345a` using email & password sign-in.
+  - `apple@test.com`, `banana@test.com`, `cherry@test.com`, `durian@test.com`
+  - It is better to create test users with user utility. See [User utility](#user-utilities)
+
+- Create an admin with `admin@test.com` as its email and `12345a` as its password.
+  - And set the uid as admin. Read [Setting admin on firestore security rules](#setting-admin-on-firestore-security-rules) to know how to set admin.
+
+## To test user functionality
+
+- To test on point, by deleting point related document, you can observe(or restart) the point changes.
+  - Delete `/users/<uid>` in realtime database.
+  - Delete `/point/<uid>` in realtime database.
+
 ## Test method
 
 - Since the Firebase libraries need to run on an actual device or emulator, we developped our own unit test & UI test.
@@ -1358,6 +1374,14 @@ DynamicLinksService.instance.listen((Uri? deepLink) {
   - `timestamp` is the server time.
 
 
+
+## PostService and PostApi
+
+
+- `PostService` is a helper class to set and get post document data directly to firestore while `PostApi` is a helper class to call cloud function http (restful api) call.
+`PostApi` does not use `Dio` to communicate to cloud function.
+This is because some features like `job` heavily depends on cloud function, it directly call cloud function to make the work straight foward.
+
 # Push notification
 
 - User tokens are saved under `/message-tokens/(tokenId)`
@@ -1516,6 +1540,8 @@ HttpException: Invalid statusCode: 403, uri = https://firebasestorage.googleapis
 
 # Cloud Functions
 
+- Cloud functions are re-written in Typescript by Apr 1, 2022.
+
 - We want to avoid using `cloud functions` as much as possible. But there are some cases that we must use it like sending push notifications.
 - We also use `cloud functions` to send(for indexing) posts and comments into `meilisearch` and our own backend.
   - And we think, sending posts and comments into different palce can be done by flutter app, we may remove those cloud functions in the future.
@@ -1525,6 +1551,38 @@ HttpException: Invalid statusCode: 403, uri = https://firebasestorage.googleapis
 ## Unit test for Cloud Functions
 
 - `<root>/firebase/functions/tests` folder has all the tests.
+
+
+## Cloud functions - http trigger, restful api.
+
+
+## Ready
+
+- Cors and pre-flight.
+  - `ready` function takes care of cors and preflight. and it also takes care of user authentication.
+  - To authenticate a user, call `ready({ req, res, auth: true}, (data) => {})`.
+
+- The callback of `ready` has one arguement that has all the input.
+  - Note that, input may be delivered as query, body, params. and `data` merges all the input and has all input data.
+  - The two following code samples call the cloud function via http and one send data to server as json and the other as query params. Even though their body format are different, the callback parameter `data` of `ready` has same object from the two requests.
+
+```sh
+curl -X POST -H "Content-Type: application/json" "http://localhost:5001/withcenter-test-project/asia-northeast3/inputTest?a=apple&b=banana" -d '{"c":"cherry", "d": "durian"}'
+
+curl -X POST -H "Content-Type: application/x-www-form-urlencoded" "http://localhost:5001/withcenter-test-project/asia-northeast3/inputTest?a=apple&b=banana" -d 'c=cherry&d=durian'
+```
+
+- You need to use `ready` on http call only.
+
+
+## Post create
+
+- To create a post, you need to provide uid and password. See the test code how you can provide password.
+
+### Cloud functions Sample codes
+
+- See `tests` folder for the sample code. These sample codes are the best examples you can refer.
+
 
 ## Meilisearch
 
@@ -1591,12 +1649,30 @@ https://docs.google.com/document/d/1tSJJt8iJsXNl9vcBqYhKPkiRZR5JFo-SQE2SJ90GItA/
   - For instance, if the limit of `postCreate` within 15, then, even if the create many posts within 15 hours, only one will get point event. When the user creates another post after 15 hours, it will take point event again.
 
 
+## Point document
 
-## Point widgets
+- User point is saved under `/point/<uid>/point` document with `point` and `history`.
+  - `/point/<uid>/point/point` is the amount of point that the user posseses. This point can be increased or decreased depending on the events.
+  - `/point/<uid>/point/history` is the amout of point that was earned (without deduction) by the user for the life time.
+- User point is also saved in user document and it is only because of the flat design. Point saved in user document can be modified by hacker. it does not matter since the real point data is saved in `/post/<uid>/point`.
+
+
+## Displaying Point
+
+### Use point property to dispaly point.
+
+- post and comment have `point` property that was set(generated) by creating post and comment.
+  - So, you can do `Text('* earned ${post.point} points')` to dislay the point of the post or comment.
+- user profile also has `point` property that is only a copy of `/point/<uid>/point/point`.
+  - So, you can do `MyDoc(builder: (u) => Text('Point: ${u.point}'))` to display user point.
 
 ### PointBuilder
 
-- To display point earned by create a post or comment.
+
+- To display point of a user from `/point/<uid>/point/point`, you can use `MyPointBuilder`.
+
+
+- To display point of a post or comment from `/point/<uid>`, you can use `PointBuilder` which displays point earned by post and comment.
 
 ```dart
 PointBuilder(
