@@ -100,3 +100,5 @@ export 'src/location/location.service.dart';
 export 'src/point/point.builder.dart';
 export 'src/point/my_point.builder.dart';
 export 'src/forum/job/job.edit.form.dart';
+
+export 'src/forum/post.api.dart';
