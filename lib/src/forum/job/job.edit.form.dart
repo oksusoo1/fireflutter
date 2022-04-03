@@ -1,4 +1,4 @@
-import 'package:fireflutter/src/forum/post.api.dart';
+import '../../../fireflutter.dart';
 import 'package:flutter/material.dart';
 
 class JobEditForm extends StatefulWidget {

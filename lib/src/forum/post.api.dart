@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import 'package:fireflutter/fireflutter.dart';
+import '../../fireflutter.dart';
 
 /// PostApi
 ///
@@ -27,7 +27,7 @@ class PostApi {
     };
     print('data; $data');
     try {
-      var response = await dio.post(
+      await dio.post(
         'http://www.goog0002le.com',
         data: data,
       );
