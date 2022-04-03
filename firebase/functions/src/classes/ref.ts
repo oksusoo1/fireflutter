@@ -45,9 +45,10 @@ export class Ref {
   }
 
   /**
-   * Returns the reference of point register of the user of uid
+   * Returns the reference of register bonus point document of the user of uid
    *
-   * Use this function to get user's register point document.
+   * Use this function to get user's register point document where the register
+   * bonus point is(will be) saved.
    *
    * @param {*} uid uid
    */

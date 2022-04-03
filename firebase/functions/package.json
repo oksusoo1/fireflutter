@@ -19,6 +19,7 @@
     "test:point:register": "mocha --timeout 20000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/point/register.spec.ts",
     "test:point:post": "mocha --timeout 20000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/point/post.spec.ts",
     "test:point:comment": "mocha --timeout 20000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/point/comment.spec.ts",
+    "test:point:list": "mocha --timeout 20000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/point/list.spec.ts",
     "test:storage:file-upload": "mocha --timeout 20000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/storage/file-upload.spec.ts",
     "test:utils:removeHtmlTags": "mocha --timeout 20000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/utils/removeHtmlTags.spec.ts",
     "test:meilisearch:test-indexing": "mocha --timeout 20000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/meilisearch/*.spec.ts",

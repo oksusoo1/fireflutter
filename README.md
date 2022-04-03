@@ -146,6 +146,7 @@ Table of contents
     - [Use point property to dispaly point.](#use-point-property-to-dispaly-point)
     - [PointBuilder](#pointbuilder)
     - [MyPointBuilder](#mypointbuilder)
+  - [Displaying point history](#displaying-point-history)
   - [Senario](#senario)
 
 # TODOs
@@ -1625,7 +1626,8 @@ https://docs.google.com/document/d/1tSJJt8iJsXNl9vcBqYhKPkiRZR5JFo-SQE2SJ90GItA/
 
 ## Point settings
 
-- There are 4 point event.
+- There are 4 point event triggered by user activity.
+  - And there are might be more point event later like point increase by payment.
 - Each point event criteria is set to `randomPoint` in `lib.js`
 - On each event, the cloud funtion will randomly generate point between `min` and `max`. `min` is the minimum point and `max` is the maximum point.
 - Some event has `within` property. `within` property has seconds that if the action happens again within that seconds, there will be no point event.
@@ -1697,6 +1699,25 @@ PointBuilder(
 ### MyPointBuilder
 
 - For display login user's point, use `MyPointBuilder`.
+
+
+## Displaying point history
+
+- Point history are scattered around `/point/<uid>` folder in realtime database.
+  - `/point/<uid>/register` is the register bonus point.
+  - `/point/<uid>/signIn` is the sign-in bonus point folder.
+  - `/point/<uid>/commentCreate` is the comment creation bonus point folder.
+  - `/ponit/<uid>/postCreate` is the post creation bons point folder.
+
+- There might be more point event like `payment` in the future.
+
+- You can use `pointHistory` http cloud function to get point histories by monthly.
+  - For instance, `pointHistory?year=2022&month=4` will give the point change list on April, 2022.
+
+- The unit test for this is in `tests/point/list.spec.ts`.
+
+
+
 
 
 
