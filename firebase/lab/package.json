@@ -4,7 +4,10 @@
   "description": "",
   "main": "create.test.user.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "meilisearch:reindexing:users": "ts-node meilisearch-reindexing.ts users",
+    "meilisearch:reindexing:posts": "ts-node meilisearch-reindexing.ts posts",
+    "meilisearch:reindexing:comments": "ts-node meilisearch-reindexing.ts comments"
   },
   "keywords": [],
   "author": "",
