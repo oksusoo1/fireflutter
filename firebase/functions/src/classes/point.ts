@@ -267,7 +267,7 @@ export class Point {
    *
    * @note month starts with 1 and ends with 12, while on the test code the month is between 0 and 11.
    */
-  static async list(data: any): Promise<Array<PointHistory>> {
+  static async history(data: any): Promise<Array<PointHistory>> {
     const startAt = dayjs()
       .year(data.year)
       .month(data.month - 1)
