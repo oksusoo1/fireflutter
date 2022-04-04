@@ -27,3 +27,11 @@ export interface MessagePayload {
     };
   };
 }
+
+export interface OnCommentCreateResponse {
+  topicResponse: string;
+  tokenResponse: {
+    success: number;
+    error: number;
+  };
+}

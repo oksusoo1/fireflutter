@@ -2,11 +2,7 @@ import * as admin from "firebase-admin";
 
 import { Ref } from "./ref";
 import { ERROR_EMPTY_UID } from "../defines";
-import {
-  CommentCreateParams,
-  CommentCreateRequirements,
-  CommentDocument,
-} from "../interfaces/forum.interface";
+import { CommentCreateParams, CommentCreateRequirements, CommentDocument } from "../interfaces/forum.interface";
 
 export class Comment {
   /**
