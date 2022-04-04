@@ -23,10 +23,7 @@ export class Messaging {
    * @returns array of tokens
    */
   static async getTokens(uid: string): Promise<string[]> {
-    const snapshot = await Ref.messageTokens
-      .orderByChild("uid")
-      .equalTo(uid)
-      .get();
+    const snapshot = await Ref.messageTokens.orderByChild("uid").equalTo(uid).get();
     if (!snapshot.exists()) return [];
     const val = snapshot.val();
     return Object.keys(val);
@@ -51,15 +48,10 @@ export class Messaging {
    * @param {*} topic topic
    * @returns UIDs of ancestors.
    */
-  static async getCommentNotifyeeWithoutTopicSubscriber(
-    uids: string,
-    topic: string
-  ) {
+  static async getCommentNotifyeeWithoutTopicSubscriber(uids: string, topic: string) {
     const _uids = uids.split(",");
     const promises: Promise<boolean>[] = [];
-    _uids.forEach((uid) =>
-      promises.push(this.userHasSusbscriptionOff(uid, topic))
-    );
+    _uids.forEach((uid) => promises.push(this.userHasSusbscriptionOff(uid, topic)));
     const result = await Promise.all(promises);
 
     const re = [];
@@ -92,10 +84,7 @@ export class Messaging {
    * @param topic topic
    * @returns Promise<boolean>
    */
-  static async userHasSusbscription(
-    uid: string,
-    topic: string
-  ): Promise<boolean> {
+  static async userHasSusbscription(uid: string, topic: string): Promise<boolean> {
     // / Get all the topics of the user
     const snapshot = await Ref.userSetting(uid, "topic").get();
     if (snapshot.exists() === false) return false;
@@ -109,10 +98,7 @@ export class Messaging {
    * @param topic topic
    * @returns Promise<boolean>
    */
-  static async userHasSusbscriptionOff(
-    uid: string,
-    topic: string
-  ): Promise<boolean> {
+  static async userHasSusbscriptionOff(uid: string, topic: string): Promise<boolean> {
     // / Get all the topics of the user
     const snapshot = await Ref.userSetting(uid, "topic").get();
     if (snapshot.exists() === false) return false;
@@ -131,9 +117,7 @@ export class Messaging {
     const _uids = uids.split(",");
     const promises: Promise<boolean>[] = [];
 
-    _uids.forEach((uid) =>
-      promises.push(this.userHasSusbscriptionOff(uid, topic))
-    );
+    _uids.forEach((uid) => promises.push(this.userHasSusbscriptionOff(uid, topic)));
     const results = await Promise.all(promises);
 
     const re = [];
@@ -155,11 +139,7 @@ export class Messaging {
       data: {
         id: query.postId ? query.postId : query.id ? query.id : "",
         type: query.type ? query.type : "",
-        senderUid: query.senderUid
-          ? query.senderUid
-          : query.uid
-          ? query.uid
-          : "",
+        senderUid: query.senderUid ? query.senderUid : query.uid ? query.uid : "",
         badge: query.badge ? query.badge : "",
       },
       notification: {
@@ -184,8 +164,7 @@ export class Messaging {
 
     if (res.notification.body != "") {
       res.notification.body = Utils.removeHtmlTags(res.notification.body) ?? "";
-      res.notification.body =
-        Utils.decodeHTMLEntities(res.notification.body) ?? "";
+      res.notification.body = Utils.decodeHTMLEntities(res.notification.body) ?? "";
       res.notification.body = res.notification.body.substring(0, 255);
     }
 
@@ -199,8 +178,11 @@ export class Messaging {
   static async sendingMessageToTokens(
     tokens: Array<string>,
     payload: MessagePayload
-  ) {
-    if (tokens.length == 0) return [];
+  ): Promise<{
+    success: number;
+    error: number;
+  }> {
+    if (tokens.length == 0) return { success: 0, error: 0 };
 
     // / sendMulticast supports 500 token per batch only.
     const chunks = Utils.chunk(tokens, 500);
@@ -208,10 +190,7 @@ export class Messaging {
     const sendToDevicePromise = [];
     for (const c of chunks) {
       // Send notifications to all tokens.
-      const newPayload: messaging.MulticastMessage = Object.assign(
-        { tokens: c },
-        payload as any
-      );
+      const newPayload: messaging.MulticastMessage = Object.assign({ tokens: c }, payload as any);
       sendToDevicePromise.push(admin.messaging().sendMulticast(newPayload));
     }
     const sendDevice = await Promise.all(sendToDevicePromise);
@@ -239,9 +218,7 @@ export class Messaging {
             error.code === "messaging/registration-token-not-registered" ||
             error.code === "messaging/invalid-argument"
           ) {
-            tokensToRemove.push(
-              Ref.messageTokens.child(chunks[i][index]).remove()
-            );
+            tokensToRemove.push(Ref.messageTokens.child(chunks[i][index]).remove());
           }
         }
       });

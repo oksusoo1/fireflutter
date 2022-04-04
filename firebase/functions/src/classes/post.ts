@@ -11,6 +11,7 @@ import { CommentDocument, PostDocument } from "../interfaces/forum.interface";
 import { Ref } from "./ref";
 import { ERROR_EMPTY_CATEGORY, ERROR_EMPTY_UID } from "../defines";
 import { Messaging } from "./messaging";
+import { OnCommentCreateResponse } from "../interfaces/messaging.interface";
 
 export class Post {
   /**
@@ -75,9 +76,9 @@ export class Post {
     return admin.messaging().send(payload);
   }
 
-  static async sendMessageOnCommentCreate(data: CommentDocument) {
-    const post = await this.get(data.id);
-    if (!post) return;
+  static async sendMessageOnCommentCreate(data: CommentDocument): Promise<OnCommentCreateResponse | null> {
+    const post = await this.get(data.postId);
+    if (!post) return null;
 
     const messageData: any = {
       title: "New Comment: ",
@@ -86,18 +87,17 @@ export class Post {
       type: "post",
       uid: data.uid,
     };
-    console.log(messageData);
+    // console.log(messageData);
 
     const topic = "comments_" + post.category;
 
     // send push notification to topics
-    // const sendToTopicRes = await admin
-    //   .messaging()
-    //   .send(Messaging.topicPayload(topic, messageData));
-    // console.log(sendToTopicRes);
+    const sendToTopicRes = await admin.messaging().send(Messaging.topicPayload(topic, messageData));
+    console.log(sendToTopicRes);
 
     // get comment ancestors
     const ancestorsUid = await Post.getCommentAncestors(data.id, data.uid);
+    console.log("ancestorsUid");
     console.log(ancestorsUid);
 
     // add the post uid if the comment author is not the post author
@@ -106,34 +106,31 @@ export class Post {
     }
 
     // Don't send the same message twice to topic subscribers and comment notifyees.
-    const userUids = await Messaging.getCommentNotifyeeWithoutTopicSubscriber(
-      ancestorsUid.join(","),
-      topic
-    );
+    const userUids = await Messaging.getCommentNotifyeeWithoutTopicSubscriber(ancestorsUid.join(","), topic);
+    console.log("getCommentNotifyeeWithoutTopicSubscriber");
     console.log(userUids);
     // get users tokens
     const tokens = await Messaging.getTokensFromUids(userUids.join(","));
+    console.log("tokens");
     console.log(tokens);
 
-    // const sendToTokenRes = await Messaging.sendingMessageToTokens(
-    //   tokens,
-    //   Messaging.preMessagePayload(messageData)
-    // );
-    // return {
-    //   // topicResponse: sendToTopicRes,
-    //   tokenResponse: sendToTokenRes,
-    // };
+    const sendToTokenRes = await Messaging.sendingMessageToTokens(tokens, Messaging.preMessagePayload(messageData));
+    return {
+      topicResponse: sendToTopicRes,
+      tokenResponse: sendToTokenRes,
+    };
   }
 
   // get comment ancestor by getting parent comment until it reach the root comment
   // return the uids of the author
   static async getCommentAncestors(id: string, authorUid: string) {
-    let comment = new CommentDocument().fromDocument(await Ref.commentDoc(id).get(), id);
+    const c = await Ref.commentDoc(id).get();
+    let comment = new CommentDocument().fromDocument(c.data(), id);
     const uids = [];
     while (comment.postId != comment.parentId) {
       const com = await Ref.commentDoc(comment.parentId).get();
       if (!com.exists) continue;
-      comment = new CommentDocument().fromDocument(com, comment.parentId);
+      comment = new CommentDocument().fromDocument(com.data(), comment.parentId);
       if (comment.uid == authorUid) continue; // skip the author's uid.
       uids.push(comment.uid);
     }
