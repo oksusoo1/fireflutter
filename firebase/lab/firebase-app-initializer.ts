@@ -5,7 +5,11 @@ export class FirebaseAppInitializer {
   constructor() {
     try {
       admin.initializeApp({
-        credential: admin.credential.cert(config.adminSdkKey),
+        credential: admin.credential.cert({
+          projectId: config.adminSdkKey.project_id,
+          privateKey: config.adminSdkKey.private_key,
+          clientEmail: config.adminSdkKey.client_email
+        }),
         databaseURL: config.databaseURL,
         storageBucket: config.storageBucket,
       });
