@@ -149,10 +149,11 @@ export class Meilisearch {
     }
 
     // Print total size/number of document collection.
+    console.log("re-indexing " + docs.size + " documents under " + indexId + " index.");
     let count = 1;
     let success = 0;
     let fail = 0;
-    console.log("re-indexing " + docs.size + " documents under " + indexId + " index.");
+    const categories = [];
     for (const doc of docs.docs) {
       const data = doc.data();
 
@@ -187,25 +188,34 @@ export class Meilisearch {
       try {
         await Promise.all(promises);
         success++;
+        if (data.category && !categories.includes(data.category)) {
+          categories.push(data.category);
+        }
         console.log("[INDEXED]: " + count + " | " + doc.id, data.title ?? data.content);
       } catch (error) {
         fail += 1;
-        console.error("[FAILED TO INDEX]: " + count + " | " + doc.id);
+        console.error("[FAILED]: " + count + " | " + doc.id);
       }
       count++;
     }
 
     this.logSummary(indexId, docs.size, success, fail);
+    if (indexId === this.POST_INDEX) {
+      console.log("Categories from indexed post documents :" + categories.join(", "));
+    }
   }
 
   /**
    * Print out a summary of indexing.
-   *
+   * 
+   * @param indexId Index ID.
+   * @param total total document size.
    * @param success number of success document re-indexed.
    * @param fail number of failed document re-indexed.
    */
   static logSummary(indexId: string, total: number, success: number, fail: number) {
-    console.log("================\nDone re-indexing " + total + " documents under" + indexId + " index.");
+    console.log("============================");
+    console.log("Done re-indexing " + total + " documents under" + indexId + " index.");
     console.log("Success: " + success + " documents.");
     if (fail) {
       console.log("Fail: " + fail + " documents.");
