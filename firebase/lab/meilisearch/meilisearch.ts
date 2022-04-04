@@ -16,6 +16,9 @@ export class Meilisearch {
   static readonly POST_INDEX = "posts";
   static readonly USER_INDEX = "users";
 
+  static readonly FORUM_INDEXES = [this.COMMENT_INDEX, this.POST_INDEX];
+  static readonly INDEXES = [...this.FORUM_INDEXES, this.USER_INDEX];
+
   static readonly client = new Meili({
     host: "http://wonderfulkorea.kr:7700",
   });
@@ -41,6 +44,11 @@ export class Meilisearch {
    */
   static async deleteIndexedDocuments(indexId: string) {
     console.log("Deleting documents under " + indexId + " index.");
+
+    if (this.FORUM_INDEXES.includes(indexId)) {
+      await this.forumIndex.deleteAllDocuments();
+    }
+
     return this.client.index(indexId).deleteAllDocuments();
   }
 
@@ -53,20 +61,27 @@ export class Meilisearch {
    *  defaults to `false`.
    */
   static async reIndex(indexId: string, deleteDocs: boolean = false): Promise<void> {
+    // If index is wrong return.
+    if (!this.INDEXES.includes(indexId)) {
+      console.log("INDEX NOT FOUND FOR ", indexId);
+      return;
+    }
+
+    // If delete docs option is true, delete documents first.
     if (deleteDocs) {
       await this.deleteIndexedDocuments(indexId);
     }
 
-    if (indexId === this.USER_INDEX) {
-      // re-index users
-      await this.indexUsers();
-    } else if (this.POST_INDEX == indexId || this.COMMENT_INDEX == indexId) {
+    if (this.FORUM_INDEXES.includes(indexId)) {
       // re-index forum
+      // await this.indexForum(indexId);
       await this.indexForum(indexId);
     } else {
-      console.log("INDEX NOT FOUND FOR ", indexId);
+      // re-index users
+      // await this.indexUsers();
+      await this.indexUsers();
+      console.log("users reindex");
     }
-    process.exit(0);
   }
 
   /**
@@ -98,7 +113,7 @@ export class Meilisearch {
 
       // console.log(_data);
       console.log("[INDEXING]: " + count + " | " + key, _data.firstName);
-      await this.usersIndex.addDocuments([_data]);
+      // await this.usersIndex.addDocuments([_data]);
       count++;
     }
   }
@@ -155,7 +170,7 @@ export class Meilisearch {
 
       // console.log(_data);
       console.log("[INDEXING]: " + count + " | " + doc.id, data.title ?? data.content);
-      await Promise.all(promises);
+      // await Promise.all(promises);
       count++;
     }
   }

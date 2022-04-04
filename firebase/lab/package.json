@@ -5,9 +5,9 @@
   "main": "create.test.user.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "meilisearch:reindexing:users": "ts-node meilisearch-reindexing.ts users",
-    "meilisearch:reindexing:posts": "ts-node meilisearch-reindexing.ts posts",
-    "meilisearch:reindexing:comments": "ts-node meilisearch-reindexing.ts comments"
+    "meilisearch:reindex:users": "ts-node meilisearch-reindex.ts users",
+    "meilisearch:reindex:posts": "ts-node meilisearch-reindex.ts posts",
+    "meilisearch:reindex:comments": "ts-node meilisearch-reindex.ts comments"
   },
   "keywords": [],
   "author": "",
