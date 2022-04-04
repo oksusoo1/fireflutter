@@ -1,3 +1,4 @@
+import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
 
 class PointHistoryScreen extends StatelessWidget {
@@ -9,7 +10,9 @@ class PointHistoryScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text('Point History')),
-      body: Container(),
+      body: Container(
+        child: PointHistory(),
+      ),
     );
   }
 }
