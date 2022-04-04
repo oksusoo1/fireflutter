@@ -12,3 +12,5 @@ export * from "./indexes/point.functions";
 export * from "./indexes/forum.functions";
 export * from "./indexes/storage.functions";
 export * from "./indexes/meilisearch.functions";
+export * from "./indexes/messaging.functions";
+export * from "./indexes/admin.functions";

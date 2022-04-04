@@ -87,18 +87,15 @@ export class Post {
       type: "post",
       uid: data.uid,
     };
-    // console.log(messageData);
 
+    // console.log(messageData);
     const topic = "comments_" + post.category;
 
     // send push notification to topics
     const sendToTopicRes = await admin.messaging().send(Messaging.topicPayload(topic, messageData));
-    console.log(sendToTopicRes);
 
     // get comment ancestors
     const ancestorsUid = await Post.getCommentAncestors(data.id, data.uid);
-    console.log("ancestorsUid");
-    console.log(ancestorsUid);
 
     // add the post uid if the comment author is not the post author
     if (post.uid != data.uid && !ancestorsUid.includes(post.uid)) {
@@ -107,12 +104,9 @@ export class Post {
 
     // Don't send the same message twice to topic subscribers and comment notifyees.
     const userUids = await Messaging.getCommentNotifyeeWithoutTopicSubscriber(ancestorsUid.join(","), topic);
-    console.log("getCommentNotifyeeWithoutTopicSubscriber");
-    console.log(userUids);
+
     // get users tokens
     const tokens = await Messaging.getTokensFromUids(userUids.join(","));
-    console.log("tokens");
-    console.log(tokens);
 
     const sendToTokenRes = await Messaging.sendingMessageToTokens(tokens, Messaging.preMessagePayload(messageData));
     return {
