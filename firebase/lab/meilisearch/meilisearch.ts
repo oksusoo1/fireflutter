@@ -290,10 +290,10 @@ export class Meilisearch {
    * @param total total document size.
    */
   static printSummary(result: IndexingResult, indexId: string, total: number) {
-    console.log("===================================================");
+    console.log("==============================================================");
 
     // Total documents.
-    console.log(`Total of ${total} documents under ${indexId} database.`);
+    console.log(`Total of ${total} documents under '${indexId}' collection on database.`);
 
     // Deleted.
     if (result.deleted) console.log(`[MARK AS DELETED]: ${result.deleted} documents.`);
@@ -312,6 +312,6 @@ export class Meilisearch {
     if (result.remarks) {
       console.log(`[REMARKS]: ${result.remarks}`);
     }
-    console.log("===================================================");
+    console.log("\n");
   }
 }
