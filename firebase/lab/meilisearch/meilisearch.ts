@@ -16,8 +16,8 @@ export class Meilisearch {
   static readonly POST_INDEX = "posts";
   static readonly USER_INDEX = "users";
 
-  static readonly FORUM_INDEXES = [this.COMMENT_INDEX, this.POST_INDEX];
-  static readonly INDEXES = [...this.FORUM_INDEXES, this.USER_INDEX];
+  static readonly FORUM_INDEXES = ["posts", "comments"];
+  static readonly INDEXES = ["posts", "comments", "users"];
 
   static readonly client = new Meili({
     host: "http://wonderfulkorea.kr:7700",
@@ -49,7 +49,7 @@ export class Meilisearch {
       await this.forumIndex.deleteAllDocuments();
     }
 
-    return this.client.index(indexId).deleteAllDocuments();
+    await this.client.index(indexId).deleteAllDocuments();
   }
 
   /**
