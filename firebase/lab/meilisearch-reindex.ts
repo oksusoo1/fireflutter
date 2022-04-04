@@ -1,5 +1,5 @@
 import { Meilisearch } from "./meilisearch/meilisearch";
-const indexUid = process.argv[2];
+const indexId = process.argv[2];
 const deleteOpt = process.argv[3];
 
 // run with npm, add (-- -dd) options to delete existing indexed documents.
@@ -12,14 +12,11 @@ const deleteOpt = process.argv[3];
 // ts-node meilisearch-reindex.ts posts -dd
 // ts-node meilisearch-reindex.ts comments -dd
 
-if (!indexUid) {
+if (!indexId) {
   console.log("[NOTICE]: Please provide an index. It's either posts, comments, users.");
   process.exit(-1);
 } else {
-  Meilisearch.reIndex(indexUid, Meilisearch.deleteOptions.includes(deleteOpt))
-    .then((val) => {
-      console.log("Done re-indexing " + indexUid + " documents.");
-      process.exit(0);
-    })
+  Meilisearch.reIndex(indexId, Meilisearch.deleteOptions.includes(deleteOpt))
+    .then((val) => process.exit(0))
     .catch((e) => console.error(e));
 }

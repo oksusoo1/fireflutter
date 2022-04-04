@@ -96,8 +96,9 @@ export class Meilisearch {
     }
 
     console.log("Re-indexing " + docs.numChildren() + " of user documents.");
-    // const dataList: UserModel[] = Object.entries(docs.val())
     let count = 1;
+    let success = 0;
+    let fail = 0;
     for (const [key, value] of Object.entries<UserModel>(docs.val())) {
       const _data = {
         id: key,
@@ -108,16 +109,17 @@ export class Meilisearch {
         photoUrl: value.photoUrl ?? "",
       };
 
-      // console.log(_data);
       try {
-        const re = await this.usersIndex.addDocuments([_data]);
-        console.log(re.type);
-        console.log("[INDEXED]: " + count + " | " + key, _data.firstName);
+        await this.usersIndex.addDocuments([_data]);
+        success++;
+        console.log("[SUCCESS]: " + count + " | " + key, _data.firstName);
       } catch (error) {
-        console.error("[FAILED TO INDEX]: " + count + " | " + key, _data.firstName);
+        fail++;
+        console.error("[FAILED]: " + count + " | " + key, `Error: ${error}`);
       }
       count++;
     }
+    this.logSummary(this.USER_INDEX, docs.numChildren(), success, fail);
   }
 
   /**
@@ -146,6 +148,8 @@ export class Meilisearch {
 
     // Print total size/number of document collection.
     let count = 1;
+    let success = 0;
+    let fail = 0;
     console.log("re-indexing " + docs.size + " documents under " + indexId + " index.");
     for (const doc of docs.docs) {
       const data = doc.data();
@@ -176,10 +180,29 @@ export class Meilisearch {
         promises.push(this.commentsIndex.addDocuments([_data]));
       }
 
-      // console.log(_data);
-      console.log("[INDEXING]: " + count + " | " + doc.id, data.title ?? data.content);
-      await Promise.all(promises);
+      try {
+        await Promise.all(promises);
+        success++;
+        console.log("[INDEXING]: " + count + " | " + doc.id, data.title ?? data.content);
+      } catch (error) {
+        fail += 1;
+        console.error("[FAILED TO INDEX]: " + count + " | " + doc.id);
+      }
       count++;
     }
+
+    this.logSummary(indexId, docs.size, success, fail);
+  }
+
+  /**
+   * Print out a summary of indexing.
+   *
+   * @param success number of success document re-indexed.
+   * @param fail number of failed document re-indexed.
+   */
+  static logSummary(indexId: string, total: number, success: number, fail: number) {
+    console.log("================\nDone re-indexing " + total + " documents under" + indexId + " index.");
+    console.log("Success: " + success + " documents.");
+    console.log("Fail: " + fail + " documents.");
   }
 }
