@@ -113,7 +113,7 @@ export class Meilisearch {
 
       // console.log(_data);
       console.log("[INDEXING]: " + count + " | " + key, _data.firstName);
-      // await this.usersIndex.addDocuments([_data]);
+      await this.usersIndex.addDocuments([_data]);
       count++;
     }
   }
@@ -170,7 +170,7 @@ export class Meilisearch {
 
       // console.log(_data);
       console.log("[INDEXING]: " + count + " | " + doc.id, data.title ?? data.content);
-      // await Promise.all(promises);
+      await Promise.all(promises);
       count++;
     }
   }
