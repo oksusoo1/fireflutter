@@ -10,7 +10,7 @@ const fsdb = admin.firestore();
 const rdb = admin.database();
 
 export class Meilisearch {
-  static readonly deleteOptions = ["-dd", "-deleteDocs"];
+  static readonly deleteOptions = ["-dd"];
 
   static readonly COMMENT_INDEX = "comments";
   static readonly POST_INDEX = "posts";
