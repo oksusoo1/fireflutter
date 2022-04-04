@@ -49,7 +49,7 @@ export class Meilisearch {
       await this.forumIndex.deleteAllDocuments();
     }
 
-    await this.client.index(indexId).deleteAllDocuments();
+    return this.client.index(indexId).deleteAllDocuments();
   }
 
   /**
@@ -74,13 +74,10 @@ export class Meilisearch {
 
     if (this.FORUM_INDEXES.includes(indexId)) {
       // re-index forum
-      // await this.indexForum(indexId);
       await this.indexForum(indexId);
     } else {
       // re-index users
-      // await this.indexUsers();
       await this.indexUsers();
-      console.log("users reindex");
     }
   }
 
@@ -112,8 +109,13 @@ export class Meilisearch {
       };
 
       // console.log(_data);
-      console.log("[INDEXING]: " + count + " | " + key, _data.firstName);
-      await this.usersIndex.addDocuments([_data]);
+      try {
+        const re = await this.usersIndex.addDocuments([_data]);
+        console.log(re.type);
+        console.log("[INDEXED]: " + count + " | " + key, _data.firstName);
+      } catch (error) {
+        console.error("[FAILED TO INDEX]: " + count + " | " + key, _data.firstName);
+      }
       count++;
     }
   }
@@ -127,8 +129,14 @@ export class Meilisearch {
   static async indexForum(indexId: string): Promise<void> {
     const col = fsdb.collection(indexId);
 
+    let query = col.where("deleted", "==", false);
+
+    // exclude quizzes/questions
+    if (indexId == this.POST_INDEX) {
+      query = query.where("category", "!=", "quiz");
+    }
     // Read documents (exclude deleted documents).
-    const docs = await col.where("deleted", "==", false).get();
+    const docs = await query.get();
 
     // Nothing to index.
     if (docs.empty) {
