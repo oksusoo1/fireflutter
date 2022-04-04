@@ -5,20 +5,20 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "Simulator - iPhone 13 Pro Max - iMac",
+      "program": "example/lib/main.dart",
+      "args": ["--dart-define", "KEY=VALUE"],
+      "request": "launch",
+      "type": "dart",
+      "deviceId": "D32774C2-814C-4ADC-BD59-1BB6E6D9F917"
+    },
+    {
       "name": "Simulator - iPhone 12 Pro Max - iMac",
       "program": "example/lib/main.dart",
       "args": ["--dart-define", "KEY=VALUE"],
       "request": "launch",
       "type": "dart",
       "deviceId": "62C87ED8-8EC6-4CE7-A3DC-E7AAF8608CAE"
-    },
-    {
-      "name": "iPhone 13 Pro Max - iMac",
-      "program": "example/lib/main.dart",
-      "args": ["--dart-define", "KEY=VALUE"],
-      "request": "launch",
-      "type": "dart",
-      "deviceId": "D32774C2-814C-4ADC-BD59-1BB6E6D9F917"
     },
     {
       "name": "Simulator - iPhone 12 Pro Max - A",

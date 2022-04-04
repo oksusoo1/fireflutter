@@ -16,6 +16,7 @@ class UserModel with FirestoreMixin, DatabaseMixin {
     this.photoUrl = '',
     this.birthday = 0,
     this.gender = '',
+    this.point = 0,
     this.profileReady = 90000000000000,
     this.isAdmin = false,
     this.disabled = false,
@@ -64,6 +65,8 @@ class UserModel with FirestoreMixin, DatabaseMixin {
   String middleName;
   String lastName;
   String nickname;
+
+  int point;
 
   int registeredAt;
   int updatedAt;
@@ -137,6 +140,7 @@ class UserModel with FirestoreMixin, DatabaseMixin {
       photoUrl: data['photoUrl'] ?? '',
       birthday: data['birthday'] ?? 0,
       gender: data['gender'] ?? '',
+      point: data['point'] ?? 0,
       profileReady: data['profileReady'] ?? 0,
       registeredAt: data['registeredAt'] ?? 0,
       updatedAt: data['updatedAt'] ?? 0,
@@ -208,6 +212,7 @@ class UserModel with FirestoreMixin, DatabaseMixin {
     photoUrl = u.photoUrl;
     birthday = u.birthday;
     gender = u.gender;
+    point = u.point;
     profileReady = u.profileReady;
     registeredAt = u.registeredAt;
     updatedAt = u.updatedAt;

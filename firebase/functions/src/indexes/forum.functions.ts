@@ -42,19 +42,19 @@ export const authTest = functions.region("asia-northeast3").https.onRequest((req
 });
 
 export const sendMessageOnPostCreate = functions
-  .region("asia-northeast3")
-  .firestore.document("/posts/{postId}")
-  .onCreate((snapshot, context) => {
-    return Post.sendMessageOnPostCreate(
-      new PostDocument().fromDocument(snapshot.data(), context.params.postId)
-    );
-  });
+    .region("asia-northeast3")
+    .firestore.document("/posts/{postId}")
+    .onCreate((snapshot, context) => {
+      return Post.sendMessageOnPostCreate(
+          new PostDocument().fromDocument(snapshot.data(), context.params.postId)
+      );
+    });
 
 export const sendMessageOnCommentCreate = functions
-  .region("asia-northeast3")
-  .firestore.document("/comments/{commentId}")
-  .onCreate((snapshot, context) => {
-    return Post.sendMessageOnCommentCreate(
-      new CommentDocument().fromDocument(snapshot.data(), context.params.commentId)
-    );
-  });
+    .region("asia-northeast3")
+    .firestore.document("/comments/{commentId}")
+    .onCreate((snapshot, context) => {
+      return Post.sendMessageOnCommentCreate(
+          new CommentDocument().fromDocument(snapshot.data(), context.params.commentId)
+      );
+    });

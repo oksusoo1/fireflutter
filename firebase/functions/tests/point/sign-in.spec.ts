@@ -4,6 +4,7 @@ import { expect } from "chai";
 import { EventName, Point, randomPoint } from "../../src/classes/point";
 import { FirebaseAppInitializer } from "../firebase-app-initializer";
 import { Utils } from "../../src/classes/utils";
+import { User } from "../../src/classes/user";
 
 new FirebaseAppInitializer();
 
@@ -36,6 +37,8 @@ describe("Sign-in point test", () => {
         updatedPoint,
         `startingPoint:${startingPoint} vs updatedPoint:${updatedPoint}`
     );
+    const user = await User.get(uid);
+    expect(user!.point).equal(updatedPoint);
   });
 
   it("sign-in point fail test", async () => {

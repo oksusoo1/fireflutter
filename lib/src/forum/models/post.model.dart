@@ -18,6 +18,7 @@ class PostModel with FirestoreMixin, ForumBase {
     this.noOfComments = 0,
     this.hasPhoto = false,
     this.files = const [],
+    this.point = 0,
     this.like = 0,
     this.dislike = 0,
     this.deleted = false,
@@ -70,6 +71,8 @@ class PostModel with FirestoreMixin, ForumBase {
   bool isHtmlContent;
   List<String> files;
 
+  int point;
+
   int like;
   int dislike;
 
@@ -109,6 +112,7 @@ class PostModel with FirestoreMixin, ForumBase {
       files: new List<String>.from(data['files']),
       deleted: data['deleted'] ?? false,
       uid: data['uid'] ?? '',
+      point: data['point'] ?? 0,
       like: data['like'] ?? 0,
       dislike: data['dislike'] ?? 0,
       year: data['year'] ?? 0,
@@ -169,6 +173,7 @@ class PostModel with FirestoreMixin, ForumBase {
       'files': files,
       'deleted': deleted,
       'uid': uid,
+      'point': point,
       'like': like,
       'dislike': dislike,
       'year': year,
