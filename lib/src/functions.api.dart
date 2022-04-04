@@ -1,7 +1,5 @@
-import '../fireflutter.dart';
-
 import 'package:dio/dio.dart';
-import '../../fireflutter.dart';
+import '../fireflutter.dart';
 
 /// FunctionsApi
 ///
