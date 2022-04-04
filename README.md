@@ -1589,7 +1589,10 @@ curl -X POST -H "Content-Type: application/x-www-form-urlencoded" "http://localh
 
 https://docs.google.com/document/d/1tSJJt8iJsXNl9vcBqYhKPkiRZR5JFo-SQE2SJ90GItA/edit#heading=h.g94frts1xgxo
 
+## Re-indexing documents
 
+- Forum and user documents can be re-indexed if needed.
+- see `meilisearch-reindex.ts` for more info.
 
 # Backup
 
