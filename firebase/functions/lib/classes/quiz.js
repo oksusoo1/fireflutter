@@ -20,21 +20,16 @@ class Quiz {
      *  - `false` if not.
      */
     static async testAnswer(data, context) {
-        // console.log(context);
-        // console.log(data);
         if (!context.auth) {
             throw new functions.https.HttpsError("failed-precondition", defines_1.ERROR_LOGIN_FIRST);
         }
         const quizId = Object.keys(data)[0];
         const userAnswer = data[quizId].answer;
-        // console.log("quizId; ", quizId, userAnswer);
         // 1.
         const quizDoc = (await ref_1.Ref.db.collection("/posts/").doc(quizId).get()).data();
         // console.log("quizDoc", quizDoc);
         if (typeof quizDoc === "undefined") {
-            throw new functions.https.HttpsError("failed-precondition", defines_1.ERROR_NO_QUIZ_BY_THAT_ID
-            // "The quiz document id does not exists.",
-            );
+            throw new functions.https.HttpsError("failed-precondition", defines_1.ERROR_NO_QUIZ_BY_THAT_ID);
         }
         // 2.
         const re = quizDoc.answer === userAnswer;
@@ -45,9 +40,7 @@ class Quiz {
         if (userQuizData.exists) {
             const userQuizDoc = userQuizData.data();
             if (Object.keys(userQuizDoc).indexOf(quizId) != -1) {
-                throw new functions.https.HttpsError("failed-precondition", defines_1.ERROR_CANNOT_ANSWER_SAME_QUESTION_TWICE
-                // "The quiz document id does not exists.",
-                );
+                throw new functions.https.HttpsError("failed-precondition", defines_1.ERROR_CANNOT_ANSWER_SAME_QUESTION_TWICE);
             }
         }
         await userQuizRef.set({

@@ -70,9 +70,9 @@ class Post {
         return admin.messaging().send(payload);
     }
     static async sendMessageOnCommentCreate(data) {
-        const post = await this.get(data.id);
+        const post = await this.get(data.postId);
         if (!post)
-            return;
+            return null;
         const messageData = {
             title: "New Comment: ",
             body: post.content,
@@ -80,45 +80,37 @@ class Post {
             type: "post",
             uid: data.uid,
         };
-        console.log(messageData);
+        // console.log(messageData);
         const topic = "comments_" + post.category;
         // send push notification to topics
-        // const sendToTopicRes = await admin
-        //   .messaging()
-        //   .send(Messaging.topicPayload(topic, messageData));
-        // console.log(sendToTopicRes);
+        const sendToTopicRes = await admin.messaging().send(messaging_1.Messaging.topicPayload(topic, messageData));
         // get comment ancestors
         const ancestorsUid = await Post.getCommentAncestors(data.id, data.uid);
-        console.log(ancestorsUid);
         // add the post uid if the comment author is not the post author
         if (post.uid != data.uid && !ancestorsUid.includes(post.uid)) {
             ancestorsUid.push(post.uid);
         }
         // Don't send the same message twice to topic subscribers and comment notifyees.
         const userUids = await messaging_1.Messaging.getCommentNotifyeeWithoutTopicSubscriber(ancestorsUid.join(","), topic);
-        console.log(userUids);
         // get users tokens
         const tokens = await messaging_1.Messaging.getTokensFromUids(userUids.join(","));
-        console.log(tokens);
-        // const sendToTokenRes = await Messaging.sendingMessageToTokens(
-        //   tokens,
-        //   Messaging.preMessagePayload(messageData)
-        // );
-        // return {
-        //   // topicResponse: sendToTopicRes,
-        //   tokenResponse: sendToTokenRes,
-        // };
+        const sendToTokenRes = await messaging_1.Messaging.sendingMessageToTokens(tokens, messaging_1.Messaging.preMessagePayload(messageData));
+        return {
+            topicResponse: sendToTopicRes,
+            tokenResponse: sendToTokenRes,
+        };
     }
     // get comment ancestor by getting parent comment until it reach the root comment
     // return the uids of the author
     static async getCommentAncestors(id, authorUid) {
-        let comment = new forum_interface_1.CommentDocument().fromDocument(await ref_1.Ref.commentDoc(id).get(), id);
+        const c = await ref_1.Ref.commentDoc(id).get();
+        let comment = new forum_interface_1.CommentDocument().fromDocument(c.data(), id);
         const uids = [];
         while (comment.postId != comment.parentId) {
             const com = await ref_1.Ref.commentDoc(comment.parentId).get();
             if (!com.exists)
                 continue;
-            comment = new forum_interface_1.CommentDocument().fromDocument(com, comment.parentId);
+            comment = new forum_interface_1.CommentDocument().fromDocument(com.data(), comment.parentId);
             if (comment.uid == authorUid)
                 continue; // skip the author's uid.
             uids.push(comment.uid);

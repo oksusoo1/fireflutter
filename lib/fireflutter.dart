@@ -103,3 +103,7 @@ export 'src/forum/job/job.edit.form.dart';
 
 export 'src/forum/post.api.dart';
 export 'src/point/point.history.dart';
+export 'src/point/point.api.dart';
+
+export 'src/functions.api.dart';
+export 'src/point/point.history.model.dart';

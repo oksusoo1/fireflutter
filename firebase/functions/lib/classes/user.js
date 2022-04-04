@@ -5,7 +5,11 @@ const defines_1 = require("../defines");
 const user_interface_1 = require("../interfaces/user.interface");
 const ref_1 = require("./ref");
 const utils_1 = require("./utils");
+const admin = require("firebase-admin");
 class User {
+    static get auth() {
+        return admin.auth();
+    }
     static async create(uid, data) {
         data.updatedAt = utils_1.Utils.getTimestamp();
         data.registeredAt = utils_1.Utils.getTimestamp();
@@ -43,6 +47,55 @@ class User {
             return user_interface_1.UserModel.fromJson(val, uid);
         }
         return null;
+    }
+    static async isAdmin(context) {
+        const doc = await ref_1.Ref.adminDoc.get();
+        const admins = doc.data();
+        if (!context)
+            return false;
+        if (!context.auth)
+            return false;
+        if (!context.auth.uid)
+            return false;
+        if (!admins)
+            return false;
+        if (!admins[context.auth.uid])
+            return false;
+        return true;
+    }
+    static async enableUser(data, context) {
+        if (!this.isAdmin(context)) {
+            return {
+                code: "ERROR_YOU_ARE_NOT_ADMIN",
+                message: "To manage user, you need to sign-in as an admin.",
+            };
+        }
+        try {
+            const user = await this.auth.updateUser(data.uid, { disabled: false });
+            if (user.disabled == false)
+                await ref_1.Ref.users.child(data.uid).update({ disabled: false });
+            return { code: "success", result: user };
+        }
+        catch (e) {
+            return { code: "error", message: e };
+        }
+    }
+    static async disableUser(data, context) {
+        if (!this.isAdmin(context)) {
+            return {
+                code: "ERROR_YOU_ARE_NOT_ADMIN",
+                message: "To manage user, you need to sign-in as an admin.",
+            };
+        }
+        try {
+            const user = await this.auth.updateUser(data.uid, { disabled: true });
+            if (user.disabled == true)
+                await ref_1.Ref.users.child(data.uid).update({ disabled: true });
+            return { code: "success", result: user };
+        }
+        catch (e) {
+            return { code: "error", message: e };
+        }
     }
 }
 exports.User = User;

@@ -21,4 +21,6 @@ __exportStar(require("./indexes/point.functions"), exports);
 __exportStar(require("./indexes/forum.functions"), exports);
 __exportStar(require("./indexes/storage.functions"), exports);
 __exportStar(require("./indexes/meilisearch.functions"), exports);
+__exportStar(require("./indexes/messaging.functions"), exports);
+__exportStar(require("./indexes/admin.functions"), exports);
 //# sourceMappingURL=index.js.map

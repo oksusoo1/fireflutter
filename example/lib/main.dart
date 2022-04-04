@@ -172,6 +172,11 @@ class _MainAppState extends State<MainApp> {
       } else {
         InformService.instance.dispose();
       }
+
+      FunctionsApi.instance.init(
+        serverUrl: "https://asia-northeast3-withcenter-test-project.cloudfunctions.net/",
+        onError: error,
+      );
     });
 
     /// Listen to reminder

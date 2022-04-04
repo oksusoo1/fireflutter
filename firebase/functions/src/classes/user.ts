@@ -2,8 +2,13 @@ import { ERROR_AUTH_FAILED, ERROR_EMPTY_PASSWORD, ERROR_EMPTY_UID } from "../def
 import { UserCreate, UserModel } from "../interfaces/user.interface";
 import { Ref } from "./ref";
 import { Utils } from "./utils";
+import * as admin from "firebase-admin";
 
 export class User {
+  static get auth() {
+    return admin.auth();
+  }
+
   static async create(uid: string, data: UserCreate) {
     data.updatedAt = Utils.getTimestamp();
     data.registeredAt = Utils.getTimestamp();
@@ -41,5 +46,48 @@ export class User {
     }
 
     return null;
+  }
+
+  static async isAdmin(context: any) {
+    const doc = await Ref.adminDoc.get();
+    const admins = doc.data();
+    if (!context) return false;
+    if (!context.auth) return false;
+    if (!context.auth.uid) return false;
+    if (!admins) return false;
+    if (!admins[context.auth.uid]) return false;
+    return true;
+  }
+
+  static async enableUser(data: any, context: any) {
+    if (!this.isAdmin(context)) {
+      return {
+        code: "ERROR_YOU_ARE_NOT_ADMIN",
+        message: "To manage user, you need to sign-in as an admin.",
+      };
+    }
+    try {
+      const user = await this.auth.updateUser(data.uid, { disabled: false });
+      if (user.disabled == false) await Ref.users.child(data.uid).update({ disabled: false });
+      return { code: "success", result: user };
+    } catch (e) {
+      return { code: "error", message: e };
+    }
+  }
+
+  static async disableUser(data: any, context: any) {
+    if (!this.isAdmin(context)) {
+      return {
+        code: "ERROR_YOU_ARE_NOT_ADMIN",
+        message: "To manage user, you need to sign-in as an admin.",
+      };
+    }
+    try {
+      const user = await this.auth.updateUser(data.uid, { disabled: true });
+      if (user.disabled == true) await Ref.users.child(data.uid).update({ disabled: true });
+      return { code: "success", result: user };
+    } catch (e) {
+      return { code: "error", message: e };
+    }
   }
 }

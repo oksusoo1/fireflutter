@@ -1,8 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.pointEventCommentCreate = exports.pointEventPostCreate = exports.pointEventRegister = exports.pointEventSignIn = void 0;
+exports.pointHistory = exports.pointEventCommentCreate = exports.pointEventPostCreate = exports.pointEventRegister = exports.pointEventSignIn = void 0;
 const functions = require("firebase-functions");
 const point_1 = require("../classes/point");
+const ready_1 = require("../ready");
 /**
  * Listens for a user sign in and do point event.
  * A doc will be created at /point/{uid}/signIn/{pushId}
@@ -53,5 +54,10 @@ exports.pointEventCommentCreate = functions
     .firestore.document("/comments/{commentId}")
     .onCreate((snapshot, context) => {
     return point_1.Point.commentCreatePoint(snapshot.data(), context);
+});
+exports.pointHistory = functions.region("asia-northeast3").https.onRequest((req, res) => {
+    ready_1.ready({ req, res, auth: true }, async (data) => {
+        res.status(200).send(await point_1.Point.history(data));
+    });
 });
 //# sourceMappingURL=point.functions.js.map

@@ -13,4 +13,6 @@ mixin DatabaseMixin {
       FirebaseDatabase.instance.ref('settings').child('translations');
 
   DatabaseReference get messageTokensRef => FirebaseDatabase.instance.ref('message-tokens');
+
+  DatabaseReference userPointRef(String uid) => pointRef.child(uid);
 }
