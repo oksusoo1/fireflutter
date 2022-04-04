@@ -187,7 +187,7 @@ export class Meilisearch {
       try {
         await Promise.all(promises);
         success++;
-        console.log("[INDEXING]: " + count + " | " + doc.id, data.title ?? data.content);
+        console.log("[INDEXED]: " + count + " | " + doc.id, data.title ?? data.content);
       } catch (error) {
         fail += 1;
         console.error("[FAILED TO INDEX]: " + count + " | " + doc.id);
@@ -207,6 +207,8 @@ export class Meilisearch {
   static logSummary(indexId: string, total: number, success: number, fail: number) {
     console.log("================\nDone re-indexing " + total + " documents under" + indexId + " index.");
     console.log("Success: " + success + " documents.");
-    console.log("Fail: " + fail + " documents.");
+    if (fail) {
+      console.log("Fail: " + fail + " documents.");
+    }
   }
 }
