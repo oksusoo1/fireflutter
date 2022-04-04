@@ -137,4 +137,10 @@ describe("Point history test with: " + uid, () => {
     const all9 = await Point.list({ year: 2022, month: 3, uid: uid });
     expect(all9).to.be.an("array").lengthOf(9);
   });
+
+  it("History order test", async () => {
+    console.log(
+      "@TODO: 여기서 부터 - 시간 순서로 데이터를 가져오는 테스트. 오름차순 정렬로 보여준다."
+    );
+  });
 });
