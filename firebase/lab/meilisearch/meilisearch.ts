@@ -101,6 +101,8 @@ export class Meilisearch {
     let fail = 0;
     for (const [key, value] of Object.entries<UserModel>(docs.val())) {
       const _data = {
+        // If id contains symbols other than "-" and "_" it will not be indexed, an error will not occur.
+        // It will simply get ignored.
         id: key,
         gender: value.gender ?? "",
         firstName: value.firstName ?? "",
@@ -156,6 +158,8 @@ export class Meilisearch {
 
       // Forum index document.
       const _data = {
+        // If id contains symbols other than "-" and "_" it will not be indexed, an error will not occur.
+        // It will simply get ignored.
         id: doc.id,
         uid: data.uid,
         content: Utils.removeHtmlTags(data.content) ?? "",
