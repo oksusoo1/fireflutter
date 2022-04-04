@@ -1,5 +1,5 @@
 import * as admin from "firebase-admin";
-import { config } from "../src/fireflutter.config";
+import { config } from "../functions/src/fireflutter.config";
 
 export class FirebaseAppInitializer {
   constructor() {
@@ -11,10 +11,8 @@ export class FirebaseAppInitializer {
       });
 
       admin.firestore().settings({ ignoreUndefinedProperties: true });
-
-      console.log("admin; ", admin);
     } catch (e) {
-      // console.error("initialization failed; ", e);
+      console.error("initialization failed; ", e);
     }
   }
 }

@@ -42,9 +42,9 @@
   "dependencies": {
     "axios": "^0.26.1",
     "dayjs": "^1.11.0",
-    "meilisearch": "^0.25.0",
-    "firebase-admin": "^9.8.0",
-    "firebase-functions": "^3.14.1"
+    "firebase-admin": "^10.0.2",
+    "firebase-functions": "^3.14.1",
+    "meilisearch": "^0.25.0"
   },
   "devDependencies": {
     "@types/chai": "^4.3.0",

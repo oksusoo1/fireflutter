@@ -8,6 +8,7 @@ import 'package:fe/screens/help/help.screen.dart';
 import 'package:fe/screens/job/job.list.screen.dart';
 import 'package:fe/screens/phone_sign_in/phone_sign_in.screen.dart';
 import 'package:fe/screens/phone_sign_in_ui/phone_sign_in_ui.screen.dart';
+import 'package:fe/screens/point_history/point_history.screen.dart';
 import 'package:fe/screens/reminder/reminder.edit.screen.dart';
 import 'package:fe/screens/setting/notification.setting.dart';
 import 'package:fe/service/app.service.dart';
@@ -100,8 +101,14 @@ class _HomeScreenState extends State<HomeScreen> {
                           children: [
                             const EmailButton(),
                             ElevatedButton(
-                                onPressed: AppService.instance.openProfile,
-                                child: const Text('Profile')),
+                              onPressed: AppService.instance.openProfile,
+                              child: const Text('Profile'),
+                            ),
+                            ElevatedButton(
+                              onPressed: () =>
+                                  AppService.instance.open(PointHistoryScreen.routeName),
+                              child: const Text('Point History'),
+                            ),
                             ElevatedButton(
                               onPressed: () => UserService.instance
                                   .signOut(), //  FirebaseAuth.instance.signOut(),

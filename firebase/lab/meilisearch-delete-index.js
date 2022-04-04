@@ -11,8 +11,6 @@ if (!indexUid) {
   process.exit(-1);
 }
 
-// // An index is where the documents are stored.
-// const index = client.index("posts");
 client
   .deleteIndex(indexUid)
   .then((v) => {
@@ -21,13 +19,3 @@ client
   .catch((e) => {
     console.log(e);
   });
-
-// client.deleteIndex("comments").catch((e) => {
-//   console.log(e);
-// });
-// client.deleteIndex("posts-and-comments").catch((e) => {
-//   console.log(e);
-// });
-// client.deleteIndex("users").catch((e) => {
-//   console.log(e);
-// });

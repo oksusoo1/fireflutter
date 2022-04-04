@@ -4,7 +4,13 @@
   "description": "",
   "main": "create.test.user.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "meilisearch:reindex:users": "ts-node meilisearch-reindex.ts users",
+    "meilisearch:reindex:posts": "ts-node meilisearch-reindex.ts posts",
+    "meilisearch:reindex:comments": "ts-node meilisearch-reindex.ts comments",
+    "meilisearch:delete-index:users": "ts-node meilisearch-delete-index.ts users",
+    "meilisearch:delete-index:posts": "ts-node meilisearch-delete-index.ts posts",
+    "meilisearch:delete-index:comments": "ts-node meilisearch-delete-index.ts comments"
   },
   "keywords": [],
   "author": "",

@@ -47,14 +47,13 @@ class Meilisearch {
         };
         const promises = [];
         promises.push(this.client.index("posts").addDocuments([_data]));
-        // promises.push(axios.post("http://wonderfulkorea.kr:7700/indexes/posts/documents", _data));
         promises.push(this.indexForumDocument(_data));
         return Promise.all(promises);
     }
     /**
      * Update a post document index.
      *
-     * @param data post data to index
+     * @param data post data before and after.
      * @param context Event context
      * @return Promise
      *
@@ -117,14 +116,13 @@ class Meilisearch {
         };
         const promises = [];
         promises.push(this.client.index("comments").addDocuments([_data]));
-        // promises.push(axios.post("http://wonderfulkorea.kr:7700/indexes/comments/documents", _data));
         promises.push(this.indexForumDocument(_data));
         return Promise.all(promises);
     }
     /**
      * Updates a comment document index.
      *
-     * @param data Document data
+     * @param data comment data before and after.
      * @param context Event context
      * @return Promise
      */
@@ -143,7 +141,6 @@ class Meilisearch {
         };
         const promises = [];
         promises.push(this.client.index("comments").updateDocuments([_data]));
-        // promises.push(axios.post("http://wonderfulkorea.kr:7700/indexes/comments/documents", _data));
         promises.push(this.indexForumDocument(_data));
         return Promise.all(promises);
     }
@@ -156,14 +153,13 @@ class Meilisearch {
     static async deleteIndexedCommentDocument(context) {
         const promises = [];
         promises.push(this.client.index("comments").deleteDocument(context.params.id));
-        // promises.push(axios.delete("http://wonderfulkorea.kr:7700/indexes/comments/documents/" + id));
         promises.push(this.deleteIndexedForumDocument(context));
         return Promise.all(promises);
     }
     /**
      * Indexes user data coming from create event of auth.
      *
-     * @param {*} data User data to index. It must also contain the users id.
+     * @param data User data to index. It must also contain the users id.
      * @return promise
      */
     static async indexUserCreate(data) {
@@ -175,7 +171,6 @@ class Meilisearch {
             updatedAt: utils_1.Utils.getTimestamp(),
         };
         return this.client.index("users").addDocuments([_data]);
-        // return axios.post("http://wonderfulkorea.kr:7700/indexes/users/documents", _data);
     }
     /**
      * Indexes user data coming from realtime database update.
@@ -185,14 +180,14 @@ class Meilisearch {
      * @return promise
      */
     static async indexUserUpdate(changes, context) {
-        var _a, _b, _c, _d, _e, _f;
+        var _a, _b, _c, _d, _e;
         const before = changes.before;
         const after = changes.after;
         if (before.firstName === after.firstName &&
             before.middleName === after.middleName &&
-            before.lastName === after.lastName
-        // Todo: add more ignore condition ? ...
-        ) {
+            before.lastName === after.lastName &&
+            before.gender === after.gender &&
+            before.photoUrl === after.photoUrl) {
             return null;
         }
         const _data = {
@@ -202,11 +197,9 @@ class Meilisearch {
             firstName: (_c = after.firstName) !== null && _c !== void 0 ? _c : "",
             middleName: (_d = after.middleName) !== null && _d !== void 0 ? _d : "",
             lastName: (_e = after.lastName) !== null && _e !== void 0 ? _e : "",
-            birthday: (_f = after.birthday) !== null && _f !== void 0 ? _f : 0,
             updatedAt: utils_1.Utils.getTimestamp(),
         };
         return this.client.index("users").addDocuments([_data]);
-        // return axios.post("http://wonderfulkorea.kr:7700/indexes/users/documents", _data);
     }
     /**
      * Deletes user related documents on realtime database and meilisearch indexing.

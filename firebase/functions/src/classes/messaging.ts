@@ -177,8 +177,8 @@ export class Messaging {
   }
 
   static async sendingMessageToTokens(
-    tokens: Array<string>,
-    payload: MessagePayload
+      tokens: Array<string>,
+      payload: MessagePayload
   ): Promise<{
     success: number;
     error: number;

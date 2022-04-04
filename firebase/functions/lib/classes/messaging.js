@@ -22,10 +22,7 @@ class Messaging {
      * @returns array of tokens
      */
     static async getTokens(uid) {
-        const snapshot = await ref_1.Ref.messageTokens
-            .orderByChild("uid")
-            .equalTo(uid)
-            .get();
+        const snapshot = await ref_1.Ref.messageTokens.orderByChild("uid").equalTo(uid).get();
         if (!snapshot.exists())
             return [];
         const val = snapshot.val();
@@ -134,11 +131,7 @@ class Messaging {
             data: {
                 id: query.postId ? query.postId : query.id ? query.id : "",
                 type: query.type ? query.type : "",
-                senderUid: query.senderUid ?
-                    query.senderUid :
-                    query.uid ?
-                        query.uid :
-                        "",
+                senderUid: query.senderUid ? query.senderUid : query.uid ? query.uid : "",
                 badge: query.badge ? query.badge : "",
             },
             notification: {
@@ -172,7 +165,7 @@ class Messaging {
     }
     static async sendingMessageToTokens(tokens, payload) {
         if (tokens.length == 0)
-            return [];
+            return { success: 0, error: 0 };
         // / sendMulticast supports 500 token per batch only.
         const chunks = utils_1.Utils.chunk(tokens, 500);
         const sendToDevicePromise = [];

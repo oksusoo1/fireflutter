@@ -16,6 +16,7 @@ import 'package:fe/screens/forum/post.form.screen.dart';
 import 'package:fe/screens/forum/post.view.screen.dart';
 import 'package:fe/screens/job/job.edit.screen.dart';
 import 'package:fe/screens/job/job.list.screen.dart';
+import 'package:fe/screens/point_history/point_history.screen.dart';
 import 'package:fe/screens/search/search.screen.dart';
 import 'package:fe/screens/setting/notification.setting.dart';
 import 'package:fe/service/app.service.dart';
@@ -73,6 +74,7 @@ final Map<String, RouteFunction> routes = {
   PostViewScreen.routeName: (context, arguments) => PostViewScreen(arguments: arguments),
   JobListScreen.routeName: (context, arguments) => JobListScreen(arguments: arguments),
   JobEditScreen.routeName: (context, arguments) => JobEditScreen(arguments: arguments),
+  PointHistoryScreen.routeName: (context, arguments) => PointHistoryScreen(),
 };
 
 void main() async {
@@ -170,6 +172,11 @@ class _MainAppState extends State<MainApp> {
       } else {
         InformService.instance.dispose();
       }
+
+      FunctionsApi.instance.init(
+        serverUrl: "https://asia-northeast3-withcenter-test-project.cloudfunctions.net/",
+        onError: error,
+      );
     });
 
     /// Listen to reminder
