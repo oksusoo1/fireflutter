@@ -1,4 +1,4 @@
-import { FirebaseAppInitializer } from "../functions/tests/firebase-app-initializer";
+import { FirebaseAppInitializer } from "./firebase-app-initializer";
 import * as admin from "firebase-admin";
 
 new FirebaseAppInitializer();
@@ -6,10 +6,6 @@ new FirebaseAppInitializer();
 console.log("admin; ", admin);
 
 const db = admin.firestore();
-
-console.log(db);
-
-// "use strict";
 
 // const admin = require("firebase-admin");
 // const Axios = require("axios");
