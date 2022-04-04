@@ -302,6 +302,10 @@ export class Point {
       endAt
     );
 
+    // After getting the point, it orders by timestamp.
+
+    history.sort((a, b) => a.timestamp - b.timestamp);
+
     return history;
   }
 
