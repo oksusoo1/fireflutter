@@ -14,7 +14,7 @@ export class FirebaseAppInitializer {
 
       console.log("admin; ", admin);
     } catch (e) {
-      console.error("initialization failed; ", e);
+      // console.error("initialization failed; ", e);
     }
   }
 }
