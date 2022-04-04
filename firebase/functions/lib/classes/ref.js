@@ -12,6 +12,9 @@ class Ref {
     static get users() {
         return this.rdb.ref("users");
     }
+    static get adminDoc() {
+        return this.db.collection("settings").doc("admins");
+    }
     /**
      * Returns user document reference.
      * @param uid uid

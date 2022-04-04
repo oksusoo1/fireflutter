@@ -84,23 +84,16 @@ class Post {
         const topic = "comments_" + post.category;
         // send push notification to topics
         const sendToTopicRes = await admin.messaging().send(messaging_1.Messaging.topicPayload(topic, messageData));
-        console.log(sendToTopicRes);
         // get comment ancestors
         const ancestorsUid = await Post.getCommentAncestors(data.id, data.uid);
-        console.log("ancestorsUid");
-        console.log(ancestorsUid);
         // add the post uid if the comment author is not the post author
         if (post.uid != data.uid && !ancestorsUid.includes(post.uid)) {
             ancestorsUid.push(post.uid);
         }
         // Don't send the same message twice to topic subscribers and comment notifyees.
         const userUids = await messaging_1.Messaging.getCommentNotifyeeWithoutTopicSubscriber(ancestorsUid.join(","), topic);
-        console.log("getCommentNotifyeeWithoutTopicSubscriber");
-        console.log(userUids);
         // get users tokens
         const tokens = await messaging_1.Messaging.getTokensFromUids(userUids.join(","));
-        console.log("tokens");
-        console.log(tokens);
         const sendToTokenRes = await messaging_1.Messaging.sendingMessageToTokens(tokens, messaging_1.Messaging.preMessagePayload(messageData));
         return {
             topicResponse: sendToTopicRes,

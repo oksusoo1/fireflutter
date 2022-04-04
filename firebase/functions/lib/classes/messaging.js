@@ -49,13 +49,16 @@ class Messaging {
     static async getCommentNotifyeeWithoutTopicSubscriber(uids, topic) {
         const _uids = uids.split(",");
         const promises = [];
-        _uids.forEach((uid) => promises.push(this.userHasSusbscriptionOff(uid, topic)));
+        _uids.forEach((uid) => promises.push(this.userHasSusbscription(uid, topic)));
         const result = await Promise.all(promises);
         const re = [];
         for (const i in result) {
             // / Get anscestors who subscribed to 'comment notification' and didn't subscribe to the topic.
-            if (!result[i]) {
-                re.push(uids[i]);
+            if (result[i]) {
+                // subscribed to topic, dont send message via token.
+            }
+            else {
+                re.push(_uids[i]);
             }
         }
         return re;
@@ -202,6 +205,66 @@ class Messaging {
         });
         await Promise.all(tokensToRemove);
         return { success: successCount, error: errorCount };
+    }
+    static async sendMessageToTopic(query) {
+        const payload = this.topicPayload(query.topic, query);
+        try {
+            const res = await admin.messaging().send(payload);
+            return { code: "success", result: res };
+        }
+        catch (e) {
+            return { code: "error", message: e };
+        }
+    }
+    static async sendMessageToTokens(query) {
+        const payload = this.preMessagePayload(query);
+        //
+        // check if token is empty throw error
+        try {
+            const res = await this.sendingMessageToTokens(query.tokens.split(","), payload);
+            return { code: "success", result: res };
+        }
+        catch (e) {
+            return { code: "error", message: e };
+        }
+    }
+    /**
+     * if subscription exist then remove user who turned of the subscription.
+     */
+    static async sendMessageToUsers(query) {
+        const payload = this.preMessagePayload(query);
+        let uids;
+        if (query.subscription) {
+            uids = (await this.removeUserHasSubscriptionOff(query.uids, query.subscription)).join(",");
+        }
+        else {
+            uids = query.uids;
+        }
+        const tokens = await this.getTokensFromUids(uids);
+        try {
+            const res = await this.sendingMessageToTokens(tokens, payload);
+            return { code: "success", result: res };
+        }
+        catch (e) {
+            return { code: "error", message: e };
+        }
+    }
+    static async getTopicSubscriber(uids, topic) {
+        const _uids = uids.split(",");
+        const promises = [];
+        _uids.forEach((uid) => promises.push(this.userHasSusbscription(uid, topic)));
+        const result = await Promise.all(promises);
+        const re = [];
+        for (const i in result) {
+            // check if user subscribe to topic
+            if (result[i]) {
+                re.push(_uids[i]);
+            }
+        }
+        return re;
+    }
+    static async subscribeToTopic(tokens, topic) {
+        return admin.messaging().subscribeToTopic(tokens, topic);
     }
 }
 exports.Messaging = Messaging;
