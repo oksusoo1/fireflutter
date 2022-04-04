@@ -10,7 +10,7 @@ const fsdb = admin.firestore();
 const rdb = admin.database();
 
 export class Meilisearch {
-  static readonly deleteOptions = ["-dd", "-deleteDocs"];
+  static readonly deleteOptions = ["-dd"];
 
   static readonly COMMENT_INDEX = "comments";
   static readonly POST_INDEX = "posts";
@@ -49,7 +49,7 @@ export class Meilisearch {
       await this.forumIndex.deleteAllDocuments();
     }
 
-    await this.client.index(indexId).deleteAllDocuments();
+    return this.client.index(indexId).deleteAllDocuments();
   }
 
   /**
@@ -74,13 +74,10 @@ export class Meilisearch {
 
     if (this.FORUM_INDEXES.includes(indexId)) {
       // re-index forum
-      // await this.indexForum(indexId);
       await this.indexForum(indexId);
     } else {
       // re-index users
-      // await this.indexUsers();
       await this.indexUsers();
-      console.log("users reindex");
     }
   }
 
@@ -99,10 +96,13 @@ export class Meilisearch {
     }
 
     console.log("Re-indexing " + docs.numChildren() + " of user documents.");
-    // const dataList: UserModel[] = Object.entries(docs.val())
     let count = 1;
+    let success = 0;
+    let fail = 0;
     for (const [key, value] of Object.entries<UserModel>(docs.val())) {
       const _data = {
+        // If id contains symbols other than "-" and "_" it will not be indexed, an error will not occur.
+        // It will simply get ignored.
         id: key,
         gender: value.gender ?? "",
         firstName: value.firstName ?? "",
@@ -111,11 +111,17 @@ export class Meilisearch {
         photoUrl: value.photoUrl ?? "",
       };
 
-      // console.log(_data);
-      console.log("[INDEXING]: " + count + " | " + key, _data.firstName);
-      // await this.usersIndex.addDocuments([_data]);
+      try {
+        await this.usersIndex.addDocuments([_data]);
+        success++;
+        console.log("[SUCCESS]: " + count + " | " + key, _data.firstName);
+      } catch (error) {
+        fail++;
+        console.error("[FAILED]: " + count + " | " + key, `Error: ${error}`);
+      }
       count++;
     }
+    this.logSummary(this.USER_INDEX, docs.numChildren(), success, fail);
   }
 
   /**
@@ -127,8 +133,14 @@ export class Meilisearch {
   static async indexForum(indexId: string): Promise<void> {
     const col = fsdb.collection(indexId);
 
+    let query = col.where("deleted", "==", false);
+
+    // exclude quizzes/questions
+    if (indexId == this.POST_INDEX) {
+      query = query.where("category", "!=", "quiz");
+    }
     // Read documents (exclude deleted documents).
-    const docs = await col.where("deleted", "==", false).get();
+    const docs = await query.get();
 
     // Nothing to index.
     if (docs.empty) {
@@ -138,12 +150,16 @@ export class Meilisearch {
 
     // Print total size/number of document collection.
     let count = 1;
+    let success = 0;
+    let fail = 0;
     console.log("re-indexing " + docs.size + " documents under " + indexId + " index.");
     for (const doc of docs.docs) {
       const data = doc.data();
 
       // Forum index document.
       const _data = {
+        // If id contains symbols other than "-" and "_" it will not be indexed, an error will not occur.
+        // It will simply get ignored.
         id: doc.id,
         uid: data.uid,
         content: Utils.removeHtmlTags(data.content) ?? "",
@@ -168,10 +184,31 @@ export class Meilisearch {
         promises.push(this.commentsIndex.addDocuments([_data]));
       }
 
-      // console.log(_data);
-      console.log("[INDEXING]: " + count + " | " + doc.id, data.title ?? data.content);
-      // await Promise.all(promises);
+      try {
+        await Promise.all(promises);
+        success++;
+        console.log("[INDEXED]: " + count + " | " + doc.id, data.title ?? data.content);
+      } catch (error) {
+        fail += 1;
+        console.error("[FAILED TO INDEX]: " + count + " | " + doc.id);
+      }
       count++;
+    }
+
+    this.logSummary(indexId, docs.size, success, fail);
+  }
+
+  /**
+   * Print out a summary of indexing.
+   *
+   * @param success number of success document re-indexed.
+   * @param fail number of failed document re-indexed.
+   */
+  static logSummary(indexId: string, total: number, success: number, fail: number) {
+    console.log("================\nDone re-indexing " + total + " documents under" + indexId + " index.");
+    console.log("Success: " + success + " documents.");
+    if (fail) {
+      console.log("Fail: " + fail + " documents.");
     }
   }
 }
