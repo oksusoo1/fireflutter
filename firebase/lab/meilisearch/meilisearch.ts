@@ -9,15 +9,23 @@ new FirebaseAppInitializer();
 const fsdb = admin.firestore();
 const rdb = admin.database();
 
+export interface IndexingResult {
+  success: number;
+  failedDocs: string[];
+  deleted?: number;
+  remarks?: string;
+}
 export class Meilisearch {
+  static readonly FORUM_SCOPE = "forum";
+  static readonly USERS_SCOPE = "users";
   static readonly deleteOptions = ["-dd"];
 
   static readonly COMMENT_INDEX = "comments";
   static readonly POST_INDEX = "posts";
   static readonly USER_INDEX = "users";
+  static readonly EXCLUDED_CATEGORIES = ["quiz"];
 
   static readonly FORUM_INDEXES = ["posts", "comments"];
-  static readonly INDEXES = ["posts", "comments", "users"];
 
   static readonly client = new Meili({
     host: "http://wonderfulkorea.kr:7700",
@@ -44,39 +52,44 @@ export class Meilisearch {
    */
   static async deleteIndexedDocuments(indexId: string) {
     console.log("Deleting documents under " + indexId + " index.");
-
-    if (this.FORUM_INDEXES.includes(indexId)) {
-      await this.forumIndex.deleteAllDocuments();
-    }
-
     return this.client.index(indexId).deleteAllDocuments();
+  }
+
+  /**
+   * Deletes documents under 'posts-and-comments' index.
+   */
+  static async deleteForumDocuments() {
+    return this.forumIndex.deleteAllDocuments();
   }
 
   /**
    * Re-indexes documents under given index ID if it is valid or exists.
    *
-   * @param indexId Index ID
+   * @param scope A scope of which the re-indexing process will be executed.
    * @param deleteDocs Delete documents option.
    *  If set to `true` it will delete documents under given index first before proceeding with re-indexing process.
    *  defaults to `false`.
    */
-  static async reIndex(indexId: string, deleteDocs: boolean = false): Promise<void> {
+  static async reIndexDocuments(scope: string, deleteDocs: boolean = false): Promise<void> {
     // If index is wrong return.
-    if (!this.INDEXES.includes(indexId)) {
-      console.log("INDEX NOT FOUND FOR ", indexId);
+    if (![this.FORUM_SCOPE, this.USERS_SCOPE].includes(scope)) {
+      console.log(`No indexing process found for ${scope}.`);
       return;
     }
 
-    // If delete docs option is true, delete documents first.
-    if (deleteDocs) {
-      await this.deleteIndexedDocuments(indexId);
-    }
+    if (scope == this.FORUM_SCOPE) {
+      if (deleteDocs) {
+        await this.deleteForumDocuments();
+        await this.deleteIndexedDocuments(this.POST_INDEX);
+        await this.deleteIndexedDocuments(this.COMMENT_INDEX);
+      }
 
-    if (this.FORUM_INDEXES.includes(indexId)) {
-      // re-index forum
-      await this.indexForum(indexId);
+      await this.indexForum(this.POST_INDEX);
+      await this.indexForum(this.COMMENT_INDEX);
     } else {
-      // re-index users
+      if (deleteDocs) {
+        await this.deleteIndexedDocuments(this.USER_INDEX);
+      }
       await this.indexUsers();
     }
   }
@@ -96,9 +109,8 @@ export class Meilisearch {
     }
 
     console.log("Re-indexing " + docs.numChildren() + " of user documents.");
-    let count = 1;
     let success = 0;
-    let fail = 0;
+    let failed: string[] = [];
     for (const [key, value] of Object.entries<UserModel>(docs.val())) {
       const _data = {
         // If id contains symbols other than "-" and "_" it will not be indexed, an error will not occur.
@@ -114,14 +126,13 @@ export class Meilisearch {
       try {
         await this.usersIndex.addDocuments([_data]);
         success++;
-        console.log("[SUCCESS]: " + count + " | " + key, _data.firstName);
+        console.log(`[SUCCESS]: ${key} | ${_data.firstName}`);
       } catch (error) {
-        fail++;
-        console.error("[FAILED]: " + count + " | " + key, `Error: ${error}`);
+        console.error(`[FAILED]: ${key} | Error - ${error}`);
+        failed.push(key);
       }
-      count++;
     }
-    this.logSummary(this.USER_INDEX, docs.numChildren(), success, fail);
+    this.printSummary({ success: success, failedDocs: failed }, this.USER_INDEX, docs.numChildren());
   }
 
   /**
@@ -132,30 +143,53 @@ export class Meilisearch {
    */
   static async indexForum(indexId: string): Promise<void> {
     const col = fsdb.collection(indexId);
-
-    let query = col.where("deleted", "==", false);
-
-    // exclude quizzes/questions
-    if (indexId == this.POST_INDEX) {
-      query = query.where("category", "!=", "quiz");
-    }
-    // Read documents (exclude deleted documents).
-    const docs = await query.get();
+    const docsSnapshot = await col.get();
 
     // Nothing to index.
-    if (docs.empty) {
-      console.log("[NOTICE]: No documents found under " + indexId + " index.");
+    if (docsSnapshot.empty) {
+      console.log("[NOTICE]: No documents found under `posts` index.");
       return;
     }
 
-    // Print total size/number of document collection.
-    console.log("re-indexing " + docs.size + " documents under " + indexId + " index.");
-    let count = 1;
+    console.log(`Re-indexing ${docsSnapshot.size} documents under "${indexId}" index.`);
+
+    let res: IndexingResult;
+    if (indexId === this.POST_INDEX) {
+      res = await this.indexPostDocuments(docsSnapshot.docs);
+    } else {
+      res = await this.indexCommentDocuments(docsSnapshot.docs);
+    }
+
+    this.printSummary(res, indexId, docsSnapshot.size);
+  }
+
+  /**
+   * Indexes post documents.
+   *
+   * @param docs Document collection.
+   */
+  static async indexPostDocuments(docs: Array<any>): Promise<IndexingResult> {
     let success = 0;
-    let fail = 0;
-    const categories = [];
-    for (const doc of docs.docs) {
+    let deleted = 0;
+    let quizDocs = 0;
+    const failedIds: string[] = [];
+
+    const categories: string[] = [];
+
+    for (const doc of docs) {
       const data = doc.data();
+
+      // skip deleted data.
+      if (data.deleted && data.delete == true) {
+        deleted++;
+        continue;
+      }
+
+      // skip excluded categories.
+      if (data.category && this.EXCLUDED_CATEGORIES.includes(data.category)) {
+        quizDocs++;
+        continue;
+      }
 
       // Forum index document.
       const _data = {
@@ -163,62 +197,121 @@ export class Meilisearch {
         // It will simply get ignored.
         id: doc.id,
         uid: data.uid,
+        title: data.title ?? "",
         content: Utils.removeHtmlTags(data.content) ?? "",
         files: data.files && data.files.length ? data.files.join(",") : "",
         createdAt: Utils.getTimestamp(data.createdAt),
         updatedAt: Utils.getTimestamp(data.updatedAt),
       } as any;
 
-      if (indexId == this.POST_INDEX) {
-        // add necessary data if indexing for posts.
-        _data.title = data.title ?? "";
-      } else {
-        // add necessary data if indexing for comments.
-        _data.postId = data.postId;
-        _data.parentId = data.parentId;
-      }
-
-      const promises = [this.forumIndex.addDocuments([_data])];
-      if (indexId == this.POST_INDEX) {
-        promises.push(this.postsIndex.addDocuments([_data]));
-      } else {
-        promises.push(this.commentsIndex.addDocuments([_data]));
-      }
+      const promises = [this.forumIndex.addDocuments([_data]), this.postsIndex.addDocuments([_data])];
+      const titleLog = data.title?.length ? _data.title.substring(0, 15) : "";
 
       try {
         await Promise.all(promises);
-        success++;
         if (data.category && !categories.includes(data.category)) {
           categories.push(data.category);
         }
-        console.log("[INDEXED]: " + count + " | " + doc.id, data.title ?? data.content);
+        console.log(`[INDEXED]: ${doc.id} | ${titleLog}...`);
+        success++;
       } catch (error) {
-        fail += 1;
-        console.error("[FAILED]: " + count + " | " + doc.id);
+        console.error(`[FAILED]: ${doc.id} | Reason: ${error}`);
+        failedIds.push(doc.id);
       }
-      count++;
     }
 
-    this.logSummary(indexId, docs.size, success, fail);
-    if (indexId === this.POST_INDEX) {
-      console.log("Categories from indexed post documents :" + categories.join(", "));
+    return {
+      success: success,
+      failedDocs: failedIds,
+      deleted: deleted,
+      remarks: `\n - ${quizDocs} 'quiz' documents.\n - Categories from indexed posts - ${categories.join(", ")}`,
+    };
+  }
+
+  /**
+   * Indexes comment documents from firestore database.
+   *
+   * @param docs Document array.
+   * @returns summary of indexing result.
+   */
+  static async indexCommentDocuments(docs: Array<any>): Promise<IndexingResult> {
+    let success = 0;
+    let deleted = 0;
+    const failedIds: string[] = [];
+
+    for (const doc of docs) {
+      const data = doc.data();
+
+      // skip deleted data.
+      if (data.deleted && data.deleted == true) {
+        deleted++;
+        continue;
+      }
+
+      // Forum index document.
+      const _data = {
+        // If id contains symbols other than "-" and "_" it will not be indexed, an error will not occur.
+        // It will simply get ignored.
+        id: doc.id,
+        uid: data.uid,
+        postId: data.postId,
+        parentId: data.parentId,
+        content: Utils.removeHtmlTags(data.content) ?? "",
+        files: data.files && data.files.length ? data.files.join(",") : "",
+        createdAt: Utils.getTimestamp(data.createdAt),
+        updatedAt: Utils.getTimestamp(data.updatedAt),
+      } as any;
+
+      const promises = [this.forumIndex.addDocuments([_data]), this.commentsIndex.addDocuments([_data])];
+      const contentLog = data.content?.length ? _data.content.substring(0, 15) : "";
+
+      try {
+        await Promise.all(promises);
+        console.log(`[INDEXED]: ${doc.id} | ${contentLog}...`);
+        success++;
+      } catch (error) {
+        console.error(`[FAILED]: ${doc.id} | Reason: ${error}`);
+        failedIds.push(doc.id);
+      }
     }
+
+    return {
+      success: success,
+      failedDocs: failedIds,
+      deleted: deleted,
+    };
   }
 
   /**
    * Print out a summary of indexing.
-   * 
+   *
+   * @param result result of indexing.
    * @param indexId Index ID.
    * @param total total document size.
-   * @param success number of success document re-indexed.
-   * @param fail number of failed document re-indexed.
    */
-  static logSummary(indexId: string, total: number, success: number, fail: number) {
-    console.log("============================");
-    console.log("Done re-indexing " + total + " documents under" + indexId + " index.");
-    console.log("Success: " + success + " documents.");
-    if (fail) {
-      console.log("Fail: " + fail + " documents.");
+  static printSummary(result: IndexingResult, indexId: string, total: number) {
+    console.log("===================================================");
+
+    // Total documents.
+    console.log(`Total of ${total} documents under ${indexId} database.`);
+
+    // Deleted.
+    if (result.deleted) console.log(`[MARK AS DELETED]: ${result.deleted} documents.`);
+
+    // Successful indexed.
+    console.log(`[SUCCESSFULLY INDEXED]: ${result.success} documents.`);
+
+    // Failed indexing.
+    if (result.failedDocs.length) {
+      console.log("[FAILED INDEXING]");
+      console.log(`- Failed to index ${result.failedDocs.length} documents.`);
+      console.log(`- Document IDs: ${result.failedDocs.join(", ")}`);
     }
+
+    // Remarks
+    if (result.remarks) {
+      console.log(`[REMARKS]: ${result.remarks}`);
+    }
+    console.log("===================================================");
   }
 }

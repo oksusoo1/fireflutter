@@ -1,0 +1,17 @@
+Re-indexing summary (April 4, 2022):
+
+===================================================
+Done re-indexing 33 documents under users index.
+[SUCCESSFUL INDEXING]: 33 out of 33 documents.
+
+===================================================
+Done re-indexing 948 documents under posts index.
+[SUCCESSFUL INDEXING]: 764 out of 948 documents.
+[REMARKS]:
+ - 184 'quiz' documents.
+ - Categories from indexed posts - meetupIdea, share, job, eating, travel, discussion, learnKorea, meetup, buyandsell, visa, qna, business, guideBook, yo1, reminder, faq, meetupEvents
+
+===================================================
+Done re-indexing 110 documents under comments index.
+[MARK AS DELETED]: 34 out of 110 documents.
+[SUCCESSFUL INDEXING]: 76 out of 110 documents.
