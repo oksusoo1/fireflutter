@@ -59,6 +59,6 @@ export const pointEventCommentCreate = functions
 
 export const pointHistory = functions.region("asia-northeast3").https.onRequest((req, res) => {
   ready({ req, res, auth: true }, async (data) => {
-    res.status(200).send(await Point.list(data));
+    res.status(200).send(await Point.history(data));
   });
 });
