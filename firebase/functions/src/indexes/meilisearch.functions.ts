@@ -28,12 +28,33 @@ export const onPostUpdateIndex = functions
     .region("asia-northeast3")
     .firestore.document("/posts/{id}")
     .onUpdate((change, context) => {
+      const beforeData = change.before.data();
       const afterData = change.after.data();
       if (afterData["deleted"]) {
         return Meilisearch.deleteIndexedPostDocument(context);
       } else {
-        return Meilisearch.indexPostUpdate(change as any, context);
+        return Meilisearch.indexPostUpdate(
+        {
+          before: beforeData,
+          after: afterData,
+        } as any,
+        context
+        );
       }
+    });
+
+/**
+ * @note
+ * on flutter app:
+ *  - Posts without a comment will be deleted literally. so it comes here.
+ *  - But, if it have a comment, it will simply update the field `deleted` to true.
+ *    - see @onPostUpdateIndex
+ */
+export const onPostDeleteIndex = functions
+    .region("asia-northeast3")
+    .firestore.document("/posts/{id}")
+    .onDelete((_snapshot, context) => {
+      return Meilisearch.deleteIndexedPostDocument(context);
     });
 
 export const onCommentCreateIndex = functions
@@ -47,13 +68,27 @@ export const onCommentUpdateIndex = functions
     .region("asia-northeast3")
     .firestore.document("/comments/{id}")
     .onUpdate((change, context) => {
+      const beforeData = change.before.data();
       const afterData = change.after.data();
       if (afterData["deleted"]) {
         return Meilisearch.deleteIndexedCommentDocument(context);
       } else {
-        return Meilisearch.indexCommentUpdate(change as any, context);
+        return Meilisearch.indexCommentUpdate(
+        {
+          before: beforeData,
+          after: afterData,
+        } as any,
+        context
+        );
       }
     });
+
+// export const onCommentDeleteIndex = functions
+//     .region("asia-northeast3")
+//     .firestore.document("/posts/{id}")
+//     .onDelete((_snapshot, context) => {
+//       return Meilisearch.deleteIndexedCommentDocument(context);
+//     });
 
 /**
  * Indexes a user document whenever it is created (someone registered a new account).
@@ -100,3 +135,4 @@ export const updateUserIndex = functions
 export const deleteUserIndex = functions.auth.user().onDelete((user) => {
   return Meilisearch.deleteIndexedUserDocument(user);
 });
+
