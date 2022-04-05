@@ -1,5 +1,3 @@
-import 'package:dio/dio.dart';
-
 import '../../../fireflutter.dart';
 import 'package:flutter/material.dart';
 
