@@ -11,7 +11,7 @@ class Meilisearch {
      * @return Promise<any>
      */
     static indexForumDocument(data) {
-        return this.client.index("posts-and-comments").addDocuments([data]);
+        return this.client.index(this.FORUM_INDEX).addDocuments([data]);
     }
     /**
      * Deletes meilisearch document indexing from [posts-and-comments] index.
@@ -20,7 +20,7 @@ class Meilisearch {
      * @return Promise
      */
     static deleteIndexedForumDocument(context) {
-        return this.client.index("posts-and-comments").deleteDocument(context.params.id);
+        return this.client.index(this.FORUM_INDEX).deleteDocument(context.params.id);
     }
     /**
      * Creates a post document index.
@@ -28,9 +28,19 @@ class Meilisearch {
      * @param data post data to index
      * @param context Event context
      * @return Promise
+     *
+     * @note
+     *  - posts with a non existing category will not be indexed.
+     *  - posts with `quiz` category will not be indexed.
      */
     static async indexPostCreate(data, context) {
         var _a, _b, _c;
+        const cats = await ref_1.Ref.categoryCol.get();
+        const categories = cats.docs.map((doc) => doc.id);
+        // don't index posts with unknown category.
+        if (categories.includes(data.category) == false)
+            return null;
+        // don't index posts under excluded categories, like `quiz`.
         if (this.excludedCategories.includes(data.category))
             return null;
         const _data = {
@@ -46,7 +56,7 @@ class Meilisearch {
             updatedAt: utils_1.Utils.getTimestamp(),
         };
         const promises = [];
-        promises.push(this.client.index("posts").addDocuments([_data]));
+        promises.push(this.client.index(this.POSTS_INDEX).addDocuments([_data]));
         promises.push(this.indexForumDocument(_data));
         return Promise.all(promises);
     }
@@ -57,12 +67,24 @@ class Meilisearch {
      * @param context Event context
      * @return Promise
      *
+     * @note
+     *  - posts with a non existing category will not be indexed.
+     *  - posts with `quiz` category will not be indexed.
+     *  - posts with the same title and content before and after update will not be indexed.
+     *
      * @test tests/meilisearch/post-update.spect.ts
      */
     static async indexPostUpdate(data, context) {
         var _a;
+        const cats = await ref_1.Ref.categoryCol.get();
+        const categories = cats.docs.map((doc) => doc.id);
+        // don't index posts with unknown category.
+        if (categories.includes(data.after.category) == false)
+            return null;
+        // don't index posts with category matching from list of excluded categories.
         if (this.excludedCategories.includes(data.after.category))
             return null;
+        // don't index posts if both post and title didn't change.
         if (data.before.title === data.after.title && data.before.content === data.after.content) {
             return null;
         }
@@ -79,7 +101,7 @@ class Meilisearch {
             updatedAt: utils_1.Utils.getTimestamp(),
         };
         const promises = [];
-        promises.push(this.client.index("posts").updateDocuments([_data]));
+        promises.push(this.client.index(this.POSTS_INDEX).updateDocuments([_data]));
         promises.push(this.indexForumDocument(_data));
         return Promise.all(promises);
     }
@@ -91,7 +113,7 @@ class Meilisearch {
      */
     static async deleteIndexedPostDocument(context) {
         const promises = [];
-        promises.push(this.client.index("posts").deleteDocument(context.params.id));
+        promises.push(this.client.index(this.POSTS_INDEX).deleteDocument(context.params.id));
         promises.push(this.deleteIndexedForumDocument(context));
         return Promise.all(promises);
     }
@@ -101,9 +123,15 @@ class Meilisearch {
      * @param data Document data
      * @param context Event context
      * @return Promise
+     *
+     * @note
+     *  - comments without postId or parentId will not be indexed.
      */
     static async indexCommentCreate(data, context) {
         var _a;
+        // don't index comments without postId or parentId.
+        if (!data.postId || !data.parentId)
+            return null;
         const _data = {
             id: context.params.id,
             uid: data.uid,
@@ -115,7 +143,7 @@ class Meilisearch {
             updatedAt: utils_1.Utils.getTimestamp(),
         };
         const promises = [];
-        promises.push(this.client.index("comments").addDocuments([_data]));
+        promises.push(this.client.index(this.COMMENTS_INDEX).addDocuments([_data]));
         promises.push(this.indexForumDocument(_data));
         return Promise.all(promises);
     }
@@ -129,6 +157,9 @@ class Meilisearch {
     static async indexCommentUpdate(data, context) {
         if (data.before.content === data.after.content)
             return null;
+        // don't index comments without postId or parentId.
+        if (!data.after.postId || !data.after.parentId)
+            return null;
         const after = data.after;
         const _data = {
             id: context.params.id,
@@ -140,7 +171,7 @@ class Meilisearch {
             updatedAt: utils_1.Utils.getTimestamp(after.updatedAt),
         };
         const promises = [];
-        promises.push(this.client.index("comments").updateDocuments([_data]));
+        promises.push(this.client.index(this.COMMENTS_INDEX).updateDocuments([_data]));
         promises.push(this.indexForumDocument(_data));
         return Promise.all(promises);
     }
@@ -152,7 +183,7 @@ class Meilisearch {
      */
     static async deleteIndexedCommentDocument(context) {
         const promises = [];
-        promises.push(this.client.index("comments").deleteDocument(context.params.id));
+        promises.push(this.client.index(this.COMMENTS_INDEX).deleteDocument(context.params.id));
         promises.push(this.deleteIndexedForumDocument(context));
         return Promise.all(promises);
     }
@@ -170,7 +201,7 @@ class Meilisearch {
             registeredAt: utils_1.Utils.getTimestamp(),
             updatedAt: utils_1.Utils.getTimestamp(),
         };
-        return this.client.index("users").addDocuments([_data]);
+        return this.client.index(this.USERS_INDEX).addDocuments([_data]);
     }
     /**
      * Indexes user data coming from realtime database update.
@@ -199,7 +230,7 @@ class Meilisearch {
             lastName: (_e = after.lastName) !== null && _e !== void 0 ? _e : "",
             updatedAt: utils_1.Utils.getTimestamp(),
         };
-        return this.client.index("users").addDocuments([_data]);
+        return this.client.index(this.USERS_INDEX).addDocuments([_data]);
     }
     /**
      * Deletes user related documents on realtime database and meilisearch indexing.
@@ -213,10 +244,10 @@ class Meilisearch {
         // Remove user data under it's uid from:
         // - 'users' and 'user-settings' realtime database,
         // - 'quiz-history' firestore database.
-        promises.push(ref_1.Ref.rdb.ref("users").child(uid).remove());
-        promises.push(ref_1.Ref.rdb.ref("user-settings").child(uid).remove());
-        promises.push(ref_1.Ref.db.collection("quiz-history").doc(uid).delete());
-        promises.push(this.client.index("users").deleteDocument(uid));
+        promises.push(ref_1.Ref.rdb.ref(this.USERS_INDEX).child(uid).remove());
+        promises.push(ref_1.Ref.rdb.ref(this.USER_SETTINGS).child(uid).remove());
+        promises.push(ref_1.Ref.db.collection(this.QUIZ_HISTORY).doc(uid).delete());
+        promises.push(this.client.index(this.USERS_INDEX).deleteDocument(uid));
         return Promise.all(promises);
     }
     /**
@@ -237,6 +268,12 @@ class Meilisearch {
 }
 exports.Meilisearch = Meilisearch;
 Meilisearch.excludedCategories = ["quiz"];
+Meilisearch.USERS_INDEX = "users";
+Meilisearch.FORUM_INDEX = "posts-and-comments";
+Meilisearch.POSTS_INDEX = "posts";
+Meilisearch.COMMENTS_INDEX = "comments";
+Meilisearch.USER_SETTINGS = "user-settings";
+Meilisearch.QUIZ_HISTORY = "quiz-history";
 Meilisearch.client = new meilisearch_1.MeiliSearch({
     host: "http://wonderfulkorea.kr:7700",
 });
