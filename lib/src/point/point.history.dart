@@ -4,13 +4,19 @@ import 'package:flutter/material.dart';
 class PointHistory extends StatefulWidget {
   const PointHistory({
     Key? key,
+    required this.year,
+    required this.month,
   }) : super(key: key);
+
+  final int year;
+  final int month;
   @override
   State<PointHistory> createState() => _PointHistoryState();
 }
 
 class _PointHistoryState extends State<PointHistory> {
   List<PointHistoryModel> histories = [];
+  bool loading = false;
 
   @override
   void initState() {
@@ -21,8 +27,11 @@ class _PointHistoryState extends State<PointHistory> {
 
   init() async {
     try {
-      histories = await PointApi.instance.getHistory(year: 2022, month: 4);
-      setState(() {});
+      loading = true;
+      histories = await PointApi.instance.getHistory(year: widget.year, month: widget.month);
+      setState(() {
+        loading = false;
+      });
     } catch (e) {
       FunctionsApi.instance.onError(e.toString());
     }
@@ -30,19 +39,25 @@ class _PointHistoryState extends State<PointHistory> {
 
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
-        itemCount: histories.length,
-        itemBuilder: ((context, index) {
-          PointHistoryModel history = histories[index];
+    return loading
+        ? Center(
+            child: CircularProgressIndicator.adaptive(),
+          )
+        : histories.length == 0
+            ? Text("No point history for this month")
+            : ListView.builder(
+                itemCount: histories.length,
+                itemBuilder: ((context, index) {
+                  PointHistoryModel history = histories[index];
 
-          /// TODO: 년도와 날짜 선택 가능하게 처리
-          final d = DateTime.fromMillisecondsSinceEpoch(history.timestamp * 1000);
-          return ListTile(
-            title: Text(_text(history.eventName)),
-            subtitle: Text(
-                "Point. ${history.point} at ${d.year}-${d.month}-${d.day} ${d.hour}:${d.minute}:${d.second}"),
-          );
-        }));
+                  final d = DateTime.fromMillisecondsSinceEpoch(history.timestamp * 1000);
+                  return ListTile(
+                    title: Text(_text(history.eventName)),
+                    subtitle: Text(
+                        "Point. ${history.point} at ${d.year}-${d.month}-${d.day} ${d.hour}:${d.minute}:${d.second}"),
+                  );
+                }),
+              );
   }
 
   _text(String t) {
