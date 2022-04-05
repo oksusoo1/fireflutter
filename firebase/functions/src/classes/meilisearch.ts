@@ -46,8 +46,19 @@ export class Meilisearch {
    * @param data post data to index
    * @param context Event context
    * @return Promise
+   * 
+   * @note
+   *  - posts with a non existing category will not be indexed.
+   *  - posts with `qna` category will not be indexed.
    */
   static async indexPostCreate(data: PostDocument, context: EventContext) {
+
+    const cats = await Ref.categoryCol.get();
+    const categories: string[] =  cats.docs.map((doc) => doc.id);
+
+    // don't index posts with unknown category.
+    if (categories.includes(data.category) == false) return null;
+    // don't index posts under excluded categories, like `quiz`.
     if (this.excludedCategories.includes(data.category)) return null;
 
     const _data = {
@@ -78,13 +89,25 @@ export class Meilisearch {
    * @param context Event context
    * @return Promise
    *
+   * @note
+   *  - posts with a non existing category will not be indexed.
+   *  - posts with `qna` category will not be indexed.
+   *  - posts with the same title and content before and after update will not be indexed.
+   * 
    * @test tests/meilisearch/post-update.spect.ts
    */
   static async indexPostUpdate(
-      data: { before: PostDocument; after: PostDocument },
-      context: EventContext
+    data: { before: PostDocument; after: PostDocument },
+    context: EventContext
   ): Promise<any> {
+    const cats = await Ref.categoryCol.get();
+    const categories: string[] =  cats.docs.map((doc) => doc.id);
+
+    // don't index posts with unknown category.
+    if (categories.includes(data.after.category) == false) return null;
+    // don't index posts with category matching from list of excluded categories.
     if (this.excludedCategories.includes(data.after.category)) return null;
+    // don't index posts if both post and title didn't change.
     if (data.before.title === data.after.title && data.before.content === data.after.content) {
       return null;
     }
@@ -132,6 +155,9 @@ export class Meilisearch {
    * @return Promise
    */
   static async indexCommentCreate(data: CommentDocument, context: EventContext) {
+    // don't index comments without postId or parentId.
+    if (!data.postId || !data.parentId) return null;
+
     const _data = {
       id: context.params.id,
       uid: data.uid,
@@ -160,6 +186,8 @@ export class Meilisearch {
    */
   static async indexCommentUpdate(data: { before: CommentDocument; after: CommentDocument }, context: EventContext) {
     if (data.before.content === data.after.content) return null;
+    // don't index comments without postId or parentId.
+    if (!data.after.postId || !data.after.parentId) return null;
 
     const after = data.after;
 
@@ -272,8 +300,8 @@ export class Meilisearch {
    * @returns Search result
    */
   static async search(
-      index: string,
-      data: { keyword?: string; id?: string }
+    index: string,
+    data: { keyword?: string; id?: string }
   ): Promise<SearchResponse<Record<string, any>>> {
     const searchFilters = [];
 
