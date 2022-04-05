@@ -177,8 +177,8 @@ export class Messaging {
   }
 
   static async sendingMessageToTokens(
-    tokens: Array<string>,
-    payload: MessagePayload
+      tokens: Array<string>,
+      payload: MessagePayload
   ): Promise<{
     success: number;
     error: number;
@@ -288,8 +288,8 @@ export class Messaging {
   }
 
   static async subscribeToTopic(
-    tokens: string,
-    topic: string
+      tokens: string,
+      topic: string
   ): Promise<admin.messaging.MessagingTopicManagementResponse> {
     return admin.messaging().subscribeToTopic(tokens, topic);
   }
