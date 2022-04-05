@@ -49,7 +49,7 @@ export class Meilisearch {
    * 
    * @note
    *  - posts with a non existing category will not be indexed.
-   *  - posts with `qna` category will not be indexed.
+   *  - posts with `quiz` category will not be indexed.
    */
   static async indexPostCreate(data: PostDocument, context: EventContext) {
 
@@ -91,7 +91,7 @@ export class Meilisearch {
    *
    * @note
    *  - posts with a non existing category will not be indexed.
-   *  - posts with `qna` category will not be indexed.
+   *  - posts with `quiz` category will not be indexed.
    *  - posts with the same title and content before and after update will not be indexed.
    * 
    * @test tests/meilisearch/post-update.spect.ts
@@ -153,6 +153,9 @@ export class Meilisearch {
    * @param data Document data
    * @param context Event context
    * @return Promise
+   * 
+   * @note
+   *  - comments without postId or parentId will not be indexed.
    */
   static async indexCommentCreate(data: CommentDocument, context: EventContext) {
     // don't index comments without postId or parentId.
