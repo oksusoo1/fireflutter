@@ -3,9 +3,6 @@ import { expect } from "chai";
 import { Test } from "../../src/classes/test";
 import { Meilisearch } from "../../src/classes/meilisearch";
 import { Utils } from "../../src/classes/utils";
-import { FirebaseAppInitializer } from "../firebase-app-initializer";
-
-new FirebaseAppInitializer();
 
 describe("Meilisearch post document indexing", () => {
   const timestamp = Utils.getTimestamp();

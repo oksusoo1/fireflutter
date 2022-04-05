@@ -19,7 +19,7 @@ class Quiz {
      *  - `true` if the user answered correctly.
      *  - `false` if not.
      */
-    static async testAnswer(data, context) {
+    static async userAnswer(data, context) {
         if (!context.auth) {
             throw new functions.https.HttpsError("failed-precondition", defines_1.ERROR_LOGIN_FIRST);
         }
