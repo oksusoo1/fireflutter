@@ -37,7 +37,7 @@ class FunctionsApi {
 
   /// Request and return the data.
   ///
-  /// If there is any error, it throws the error.
+  /// See details in README.md
   Future request(String functionName, [Map<String, dynamic> data = const {}]) async {
     final dio = new Dio();
     data['uid'] = UserService.instance.uid;

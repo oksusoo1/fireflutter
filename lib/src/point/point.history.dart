@@ -45,9 +45,10 @@ class _PointHistoryState extends State<PointHistory> {
           )
         : histories.length == 0
             ? Center(child: Text("No point history for this month"))
-            : ListView.builder(
+            : ListView.separated(
                 itemCount: histories.length,
-                itemBuilder: ((context, index) {
+                separatorBuilder: (context, index) => Divider(),
+                itemBuilder: (context, index) {
                   PointHistoryModel history = histories[index];
 
                   final d = DateTime.fromMillisecondsSinceEpoch(history.timestamp * 1000);
@@ -58,7 +59,7 @@ class _PointHistoryState extends State<PointHistory> {
                       style: TextStyle(fontSize: 12),
                     ),
                   );
-                }),
+                },
               );
   }
 

@@ -46,34 +46,51 @@ typedef RouteFunction = Widget Function(BuildContext, Map);
 final Map<String, RouteFunction> routes = {
   HomeScreen.routeName: (context, arguments) => const HomeScreen(),
   SignInWidget.routeName: (context, arguments) => const SignInWidget(),
-  PhoneSignInScreen.routeName: (context, arguments) => const PhoneSignInScreen(),
+  PhoneSignInScreen.routeName: (context, arguments) =>
+      const PhoneSignInScreen(),
   SmsCodeScreen.routeName: (context, arguments) => const SmsCodeScreen(),
-  PhoneSignInUIScreen.routeName: (context, arguments) => const PhoneSignInUIScreen(),
+  PhoneSignInUIScreen.routeName: (context, arguments) =>
+      const PhoneSignInUIScreen(),
   SmsCodeUIScreen.routeName: (context, arguments) => const SmsCodeUIScreen(),
-  HelpScreen.routeName: (context, arguments) => HelpScreen(arguments: arguments),
-  ProfileScreen.routeName: (context, arguments) => ProfileScreen(key: profileScreenKey),
-  PostListScreen.routeName: (context, arguments) => PostListScreen(arguments: arguments),
-  PostFormScreen.routeName: (context, arguments) => PostFormScreen(arguments: arguments),
+  HelpScreen.routeName: (context, arguments) =>
+      HelpScreen(arguments: arguments),
+  ProfileScreen.routeName: (context, arguments) =>
+      ProfileScreen(key: profileScreenKey),
+  PostListScreen.routeName: (context, arguments) =>
+      PostListScreen(arguments: arguments),
+  PostFormScreen.routeName: (context, arguments) =>
+      PostFormScreen(arguments: arguments),
   AdminScreen.routeName: (context, arguments) => AdminScreen(),
-  NotificationSettingScreen.routeName: (context, arguments) => NotificationSettingScreen(),
+  NotificationSettingScreen.routeName: (context, arguments) =>
+      NotificationSettingScreen(),
   ReportPostManagementScreen.routeName: (context, arguments) =>
       ReportPostManagementScreen(arguments: arguments),
   CategoryScreen.routeName: (context, arguments) => CategoryScreen(),
-  ChatRoomScreen.routeName: (context, arguments) => ChatRoomScreen(arguments: arguments),
+  ChatRoomScreen.routeName: (context, arguments) =>
+      ChatRoomScreen(arguments: arguments),
   ChatRoomsScreen.routeName: (context, arguments) => ChatRoomsScreen(),
-  ChatRoomsBlockedScreen.routeName: (context, arguments) => ChatRoomsBlockedScreen(),
-  FriendMapScreen.routeName: (context, arguments) => FriendMapScreen(arguments: arguments),
+  ChatRoomsBlockedScreen.routeName: (context, arguments) =>
+      ChatRoomsBlockedScreen(),
+  FriendMapScreen.routeName: (context, arguments) =>
+      FriendMapScreen(arguments: arguments),
   ReminderEditScreen.routeName: (context, arguments) => ReminderEditScreen(),
-  ReportScreen.routeName: (context, arguments) => ReportScreen(arguments: arguments),
-  EmailVerificationScreen.routeName: (context, arguments) => EmailVerificationScreen(),
+  ReportScreen.routeName: (context, arguments) =>
+      ReportScreen(arguments: arguments),
+  EmailVerificationScreen.routeName: (context, arguments) =>
+      EmailVerificationScreen(),
   TranslationsScreen.routeName: (context, arguments) => TranslationsScreen(),
-  PostListScreenV2.routeName: (context, arguments) => PostListScreenV2(arguments: arguments),
-  AdminSearchSettingsScreen.routeName: (context, arguments) => AdminSearchSettingsScreen(),
+  PostListScreenV2.routeName: (context, arguments) =>
+      PostListScreenV2(arguments: arguments),
+  AdminSearchSettingsScreen.routeName: (context, arguments) =>
+      AdminSearchSettingsScreen(),
   PushNotificationScreen.routeName: (context, arguments) =>
       PushNotificationScreen(arguments: arguments),
-  PostViewScreen.routeName: (context, arguments) => PostViewScreen(arguments: arguments),
-  JobListScreen.routeName: (context, arguments) => JobListScreen(arguments: arguments),
-  JobEditScreen.routeName: (context, arguments) => JobEditScreen(arguments: arguments),
+  PostViewScreen.routeName: (context, arguments) =>
+      PostViewScreen(arguments: arguments),
+  JobListScreen.routeName: (context, arguments) =>
+      JobListScreen(arguments: arguments),
+  JobEditScreen.routeName: (context, arguments) =>
+      JobEditScreen(arguments: arguments),
   PointHistoryScreen.routeName: (context, arguments) => PointHistoryScreen(),
 };
 
@@ -172,7 +189,8 @@ class _MainAppState extends State<MainApp> {
       }
 
       FunctionsApi.instance.init(
-        serverUrl: "https://asia-northeast3-withcenter-test-project.cloudfunctions.net/",
+        serverUrl:
+            "https://asia-northeast3-withcenter-test-project.cloudfunctions.net/",
         onError: error,
       );
     });
@@ -257,7 +275,8 @@ class _MainAppState extends State<MainApp> {
       initialRoute: HomeScreen.routeName,
       onGenerateRoute: (settings) {
         return MaterialPageRoute(
-          builder: (c) => routes[settings.name]!(c, (settings.arguments ?? {}) as Map),
+          builder: (c) =>
+              routes[settings.name]!(c, (settings.arguments ?? {}) as Map),
         );
       },
     );
