@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteUserIndex = exports.updateUserIndex = exports.createUserIndex = exports.onCommentUpdateIndex = exports.onCommentCreateIndex = exports.onPostUpdateIndex = exports.onPostCreateIndex = void 0;
+exports.deleteUserIndex = exports.updateUserIndex = exports.createUserIndex = exports.onCommentUpdateIndex = exports.onCommentCreateIndex = exports.onPostDeleteIndex = exports.onPostUpdateIndex = exports.onPostCreateIndex = void 0;
 const functions = require("firebase-functions");
 const meilisearch_1 = require("../classes/meilisearch");
 /**
@@ -27,13 +27,30 @@ exports.onPostUpdateIndex = functions
     .region("asia-northeast3")
     .firestore.document("/posts/{id}")
     .onUpdate((change, context) => {
+    const beforeData = change.before.data();
     const afterData = change.after.data();
     if (afterData["deleted"]) {
         return meilisearch_1.Meilisearch.deleteIndexedPostDocument(context);
     }
     else {
-        return meilisearch_1.Meilisearch.indexPostUpdate(change, context);
+        return meilisearch_1.Meilisearch.indexPostUpdate({
+            before: beforeData,
+            after: afterData,
+        }, context);
     }
+});
+/**
+ * @note
+ * on flutter app:
+ *  - Posts without a comment will be deleted literally. so it comes here.
+ *  - But, if it have a comment, it will simply update the field `deleted` to true.
+ *    - see @onPostUpdateIndex
+ */
+exports.onPostDeleteIndex = functions
+    .region("asia-northeast3")
+    .firestore.document("/posts/{id}")
+    .onDelete((_snapshot, context) => {
+    return meilisearch_1.Meilisearch.deleteIndexedPostDocument(context);
 });
 exports.onCommentCreateIndex = functions
     .region("asia-northeast3")
@@ -45,14 +62,24 @@ exports.onCommentUpdateIndex = functions
     .region("asia-northeast3")
     .firestore.document("/comments/{id}")
     .onUpdate((change, context) => {
+    const beforeData = change.before.data();
     const afterData = change.after.data();
     if (afterData["deleted"]) {
         return meilisearch_1.Meilisearch.deleteIndexedCommentDocument(context);
     }
     else {
-        return meilisearch_1.Meilisearch.indexCommentUpdate(change, context);
+        return meilisearch_1.Meilisearch.indexCommentUpdate({
+            before: beforeData,
+            after: afterData,
+        }, context);
     }
 });
+// export const onCommentDeleteIndex = functions
+//     .region("asia-northeast3")
+//     .firestore.document("/posts/{id}")
+//     .onDelete((_snapshot, context) => {
+//       return Meilisearch.deleteIndexedCommentDocument(context);
+//     });
 /**
  * Indexes a user document whenever it is created (someone registered a new account).
  *
