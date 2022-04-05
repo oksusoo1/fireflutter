@@ -20,7 +20,7 @@ export class Quiz {
    *  - `true` if the user answered correctly.
    *  - `false` if not.
    */
-  static async testAnswer(data: QuizAnswer, context: CallableContext): Promise<QuizResult> {
+  static async userAnswer(data: QuizAnswer, context: CallableContext): Promise<QuizResult> {
     if (!context.auth) {
       throw new functions.https.HttpsError(
           "failed-precondition",

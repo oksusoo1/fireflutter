@@ -23,4 +23,5 @@ __exportStar(require("./indexes/storage.functions"), exports);
 __exportStar(require("./indexes/meilisearch.functions"), exports);
 __exportStar(require("./indexes/messaging.functions"), exports);
 __exportStar(require("./indexes/admin.functions"), exports);
+__exportStar(require("./indexes/quiz.functions"), exports);
 //# sourceMappingURL=index.js.map
