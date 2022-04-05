@@ -28,33 +28,20 @@ export const postCreate = functions.region("asia-northeast3").https.onRequest((r
   });
 });
 
-export const inputTest = functions.region("asia-northeast3").https.onRequest((req, res) => {
-  ready({ req, res, auth: false }, async (data) => {
-    res.status(200).send(data);
-  });
-});
-
-export const authTest = functions.region("asia-northeast3").https.onRequest((req, res) => {
-  ready({ req, res, auth: true }, async (data) => {
-    console.log("data; ", data);
-    res.status(200).send(data);
-  });
-});
-
 export const sendMessageOnPostCreate = functions
-    .region("asia-northeast3")
-    .firestore.document("/posts/{postId}")
-    .onCreate((snapshot, context) => {
-      return Post.sendMessageOnPostCreate(
-          new PostDocument().fromDocument(snapshot.data(), context.params.postId)
-      );
-    });
+  .region("asia-northeast3")
+  .firestore.document("/posts/{postId}")
+  .onCreate((snapshot, context) => {
+    return Post.sendMessageOnPostCreate(
+      new PostDocument().fromDocument(snapshot.data(), context.params.postId)
+    );
+  });
 
 export const sendMessageOnCommentCreate = functions
-    .region("asia-northeast3")
-    .firestore.document("/comments/{commentId}")
-    .onCreate((snapshot, context) => {
-      return Post.sendMessageOnCommentCreate(
-          new CommentDocument().fromDocument(snapshot.data(), context.params.commentId)
-      );
-    });
+  .region("asia-northeast3")
+  .firestore.document("/comments/{commentId}")
+  .onCreate((snapshot, context) => {
+    return Post.sendMessageOnCommentCreate(
+      new CommentDocument().fromDocument(snapshot.data(), context.params.commentId)
+    );
+  });

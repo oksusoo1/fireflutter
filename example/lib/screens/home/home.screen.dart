@@ -145,6 +145,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 },
               ),
               const Divider(),
+              ServerTime(),
+              const Divider(),
               const Text('Test users;'),
               Wrap(
                 alignment: WrapAlignment.spaceAround,
@@ -442,6 +444,35 @@ class _HomeScreenState extends State<HomeScreen> {
   testOnForum() async {
     // final tag = DateTime.now().toString().split('.').last;
     // PostService.instance.create(title: 'title-$tag', content: 'content-$tag');
+  }
+}
+
+class ServerTime extends StatefulWidget {
+  const ServerTime({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  State<ServerTime> createState() => _ServerTimeState();
+}
+
+class _ServerTimeState extends State<ServerTime> {
+  Map? data;
+  @override
+  void initState() {
+    super.initState();
+    FunctionsApi.instance.request('inputTest', {'a': 'apple', 'b': 'banana'}).then((value) {
+      setState(() {
+        data = value;
+      });
+    }).catchError((e) {
+      error(e);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Text("Cloud functions server time: ${data?['b']}");
   }
 }
 

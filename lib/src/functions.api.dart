@@ -5,6 +5,7 @@ import '../fireflutter.dart';
 
 /// FunctionsApi
 ///
+/// See README.md for details.
 class FunctionsApi {
   static FunctionsApi? _instance;
   static FunctionsApi get instance {

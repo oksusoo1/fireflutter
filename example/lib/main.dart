@@ -99,6 +99,11 @@ class _MainAppState extends State<MainApp> {
   void initState() {
     super.initState();
 
+    FunctionsApi.instance.init(
+      serverUrl: "https://asia-northeast3-withcenter-test-project.cloudfunctions.net/",
+      onError: error,
+    );
+
     /// Instantiate UserService & see debug print message
     if (UserService.instance.user.isAdmin) {
       print('The user is admin...');
@@ -170,11 +175,6 @@ class _MainAppState extends State<MainApp> {
       } else {
         InformService.instance.dispose();
       }
-
-      FunctionsApi.instance.init(
-        serverUrl: "https://asia-northeast3-withcenter-test-project.cloudfunctions.net/",
-        onError: error,
-      );
     });
 
     /// Listen to reminder
