@@ -38,10 +38,10 @@ describe("Meilisearch comment document indexing", () => {
     // Check if search result and updated comment have same content.
     const updatedComment = { ...testComment, title: "post updated title" };
     await Meilisearch.indexCommentUpdate(
-      {
-        before: testComment as any,
-        after: updatedComment as any,
-      },
+        {
+          before: testComment as any,
+          after: updatedComment as any,
+        },
       {
         params: params,
       } as any
@@ -69,10 +69,10 @@ describe("Meilisearch comment document indexing", () => {
     } as any;
 
     await Meilisearch.indexCommentUpdate(
-      {
-        before: { ...testComment, content: "12345" } as any,
-        after: { ...testComment, content: "54321" } as any,
-      },
+        {
+          before: { ...testComment, content: "12345" } as any,
+          after: { ...testComment, content: "54321" } as any,
+        },
       { params: params } as any
     );
     await Utils.delay(3000);
@@ -81,10 +81,10 @@ describe("Meilisearch comment document indexing", () => {
     expect(createdData.hits.length).equals(1);
 
     await Meilisearch.indexCommentUpdate(
-      {
-        before: testComment as any,
-        after: { ...testComment, like: 2 } as any,
-      },
+        {
+          before: testComment as any,
+          after: { ...testComment, like: 2 } as any,
+        },
       { params: params } as any
     );
     await Utils.delay(3000);
@@ -93,10 +93,10 @@ describe("Meilisearch comment document indexing", () => {
     expect(createdData.hits[0].updatedAt).equal(updatedData.hits[0].updatedAt);
 
     await Meilisearch.indexCommentUpdate(
-      {
-        before: { ...testComment, content: "54321" } as any,
-        after: { ...testComment, content: "again .." } as any,
-      },
+        {
+          before: { ...testComment, content: "54321" } as any,
+          after: { ...testComment, content: "again .." } as any,
+        },
       { params: params } as any
     );
     await Utils.delay(3000);
@@ -160,10 +160,10 @@ describe("Meilisearch comment document indexing", () => {
 
     // no postId and parentId
     await Meilisearch.indexCommentUpdate(
-      {
-        before: {} as any,
-        after: testComment,
-      },
+        {
+          before: {} as any,
+          after: testComment,
+        },
       { params: params } as any
     );
     await Utils.delay(3000);
@@ -174,10 +174,10 @@ describe("Meilisearch comment document indexing", () => {
     // with postId, no parentId
     testComment.postId = "testpostId";
     await Meilisearch.indexCommentUpdate(
-      {
-        before: {} as any,
-        after: testComment,
-      },
+        {
+          before: {} as any,
+          after: testComment,
+        },
       { params: params } as any
     );
     await Utils.delay(3000);
@@ -189,10 +189,10 @@ describe("Meilisearch comment document indexing", () => {
     testComment.postId = "";
     testComment.parentId = "testParentId";
     await Meilisearch.indexCommentUpdate(
-      {
-        before: {} as any,
-        after: testComment,
-      },
+        {
+          before: {} as any,
+          after: testComment,
+        },
       { params: params } as any
     );
     await Utils.delay(3000);

@@ -33,10 +33,10 @@ describe("Meilisearch post document indexing", () => {
     // Update.
     const updatedPost = { ...originalPost, title: "post updated title" };
     Meilisearch.indexPostUpdate(
-      {
-        before: originalPost as any,
-        after: updatedPost as any,
-      },
+        {
+          before: originalPost as any,
+          after: updatedPost as any,
+        },
       { params: params } as any
     );
     await Utils.delay(3000);
@@ -60,10 +60,10 @@ describe("Meilisearch post document indexing", () => {
     } as any;
 
     await Meilisearch.indexPostUpdate(
-      {
-        before: testPost as any,
-        after: { ...testPost, like: 3 } as any,
-      },
+        {
+          before: testPost as any,
+          after: { ...testPost, like: 3 } as any,
+        },
       { params: params } as any
     );
     await Utils.delay(3000);
@@ -72,10 +72,10 @@ describe("Meilisearch post document indexing", () => {
     expect(searchData.hits.length).equals(0);
 
     await Meilisearch.indexPostUpdate(
-      {
-        before: { ...testPost, like: 3 } as any,
-        after: { ...testPost, like: 4 } as any,
-      },
+        {
+          before: { ...testPost, like: 3 } as any,
+          after: { ...testPost, like: 4 } as any,
+        },
       { params: params } as any
     );
     await Utils.delay(3000);
@@ -134,10 +134,10 @@ describe("Meilisearch post document indexing", () => {
 
     // no category (undefined)
     await Meilisearch.indexPostUpdate(
-      {
-        before: { title: "title-a", content: "a", category: "qna" } as any,
-        after: testPost as any,
-      },
+        {
+          before: { title: "title-a", content: "a", category: "qna" } as any,
+          after: testPost as any,
+        },
       { params: params } as any
     );
     await Utils.delay(3000);
