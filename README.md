@@ -1595,8 +1595,29 @@ FunctionsApi.instance.init(
 );
 ```
 
+- Secondly, you can request to cloud functions like below.
 
+```dart
+class _ServerTimeState extends State<ServerTime> {
+  Map? data;
+  @override
+  void initState() {
+    super.initState();
+    FunctionsApi.instance.request('inputTest', {'a': 'apple', 'b': 'banana'}).then((value) {
+      setState(() {
+        data = value;
+      });
+    }).catchError((e) {
+      error(e);
+    });
+  }
 
+  @override
+  Widget build(BuildContext context) {
+    return Text("Cloud functions server time: ${data?['b']}");
+  }
+}
+```
 
 
 ### Error handling on http trigger

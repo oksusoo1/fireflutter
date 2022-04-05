@@ -457,22 +457,19 @@ class ServerTime extends StatefulWidget {
 }
 
 class _ServerTimeState extends State<ServerTime> {
-  Map? data;
+  String? data;
   @override
   void initState() {
     super.initState();
-    FunctionsApi.instance.request('inputTest', {'a': 'apple', 'b': 'banana'}).then((value) {
-      setState(() {
-        data = value;
-      });
-    }).catchError((e) {
-      error(e);
-    });
+    FunctionsApi.instance
+        .request('serverTime')
+        .then((value) => setState(() => data = value))
+        .catchError((e) => error(e));
   }
 
   @override
   Widget build(BuildContext context) {
-    return Text("Cloud functions server time: ${data?['b']}");
+    return Text("Cloud functions server time: $data");
   }
 }
 

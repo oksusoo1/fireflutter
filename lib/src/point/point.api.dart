@@ -15,7 +15,7 @@ class PointApi {
   }) async {
     if (UserService.instance.notSignIn) throw ERROR_NOT_SIGN_IN;
 
-    final res = await FunctionsApi.instance.request('pointHistory', {
+    final res = await FunctionsApi.instance.request('pointHistory', data: {
       'year': year.toString(),
       'month': month.toString(),
     });

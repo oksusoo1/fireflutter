@@ -38,11 +38,17 @@ class FunctionsApi {
   /// Request and return the data.
   ///
   /// See details in README.md
-  Future request(String functionName, [Map<String, dynamic> data = const {}]) async {
+  Future request(
+    String functionName, {
+    Map<String, dynamic> data = const {},
+    bool addAuth = false,
+  }) async {
     final dio = new Dio();
-    data['uid'] = UserService.instance.uid;
-    data['password'] = password;
 
+    if (addAuth) {
+      data['uid'] = UserService.instance.uid;
+      data['password'] = password;
+    }
     final httpsUri = Uri(queryParameters: data);
 
     log(FunctionsApi.instance.serverUrl + functionName + httpsUri.toString());
@@ -52,10 +58,15 @@ class FunctionsApi {
         FunctionsApi.instance.serverUrl + functionName,
         data: data,
       );
+
       if (res.data is String && (res.data as String).startsWith('ERROR_')) {
         throw res.data;
-      } else if (res.data['code'] == 'error') {
+      } else if (res.data is Map && res.data['code'] != null && res.data['code'] != '') {
         throw res.data['message'];
+      } else if (res.data is String &&
+          (res.data as String).contains('code') &&
+          (res.data as String).contains('ERR_')) {
+        throw res.data;
       } else {
         return res.data;
       }

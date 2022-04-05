@@ -14,28 +14,28 @@ class SendPushNotificationService {
     // );
     return FunctionsApi.instance.request(
       'sendMessageToAll',
-      data,
+      data: data,
     );
   }
 
   sendToToken(Map<String, dynamic> data) async {
     return FunctionsApi.instance.request(
       'sendMessageToTokens',
-      data,
+      data: data,
     );
   }
 
   sendToTopic(Map<String, dynamic> data) async {
     return FunctionsApi.instance.request(
       'sendMessageToTopic',
-      data,
+      data: data,
     );
   }
 
   sendToUsers(Map<String, dynamic> data) async {
     return FunctionsApi.instance.request(
       'sendMessageToUsers',
-      data,
+      data: data,
     );
   }
 }

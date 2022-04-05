@@ -74,10 +74,10 @@ class User {
             const user = await this.auth.updateUser(data.uid, { disabled: false });
             if (user.disabled == false)
                 await ref_1.Ref.users.child(data.uid).update({ disabled: false });
-            return { code: "success", result: user };
+            return user;
         }
         catch (e) {
-            return { code: "error", message: e };
+            return { code: "error", message: e.message };
         }
     }
     static async disableUser(data, context) {
@@ -91,10 +91,10 @@ class User {
             const user = await this.auth.updateUser(data.uid, { disabled: true });
             if (user.disabled == true)
                 await ref_1.Ref.users.child(data.uid).update({ disabled: true });
-            return { code: "success", result: user };
+            return user;
         }
         catch (e) {
-            return { code: "error", message: e };
+            return { code: "error", message: e.message };
         }
     }
 }
