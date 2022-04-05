@@ -121,6 +121,8 @@ export class Meilisearch {
         middleName: value.middleName ?? "",
         lastName: value.lastName ?? "",
         photoUrl: value.photoUrl ?? "",
+        registeredAt: value.registeredAt,
+        updatedAt: value.updatedAt,
       };
 
       try {
@@ -200,8 +202,8 @@ export class Meilisearch {
         title: data.title ?? "",
         content: Utils.removeHtmlTags(data.content) ?? "",
         files: data.files && data.files.length ? data.files.join(",") : "",
-        createdAt: Utils.getTimestamp(data.createdAt),
-        updatedAt: Utils.getTimestamp(data.updatedAt),
+        createdAt: data.createdAt,
+        updatedAt: data.updatedAt,
       } as any;
 
       const promises = [this.forumIndex.addDocuments([_data]), this.postsIndex.addDocuments([_data])];
@@ -258,8 +260,8 @@ export class Meilisearch {
         parentId: data.parentId,
         content: Utils.removeHtmlTags(data.content) ?? "",
         files: data.files && data.files.length ? data.files.join(",") : "",
-        createdAt: Utils.getTimestamp(data.createdAt),
-        updatedAt: Utils.getTimestamp(data.updatedAt),
+        createdAt: data.createdAt,
+        updatedAt: data.updatedAt,
       } as any;
 
       const promises = [this.forumIndex.addDocuments([_data]), this.commentsIndex.addDocuments([_data])];

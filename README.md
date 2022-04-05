@@ -132,10 +132,13 @@ Table of contents
 - [Cloud Functions](#cloud-functions)
   - [Unit test for Cloud Functions](#unit-test-for-cloud-functions)
   - [Cloud functions - http trigger, restful api.](#cloud-functions---http-trigger-restful-api)
-  - [Ready](#ready)
+    - [Ready](#ready)
+    - [Request and data handling](#request-and-data-handling)
+    - [Error handling on http trigger](#error-handling-on-http-trigger)
   - [Post create](#post-create)
     - [Cloud functions Sample codes](#cloud-functions-sample-codes)
   - [Meilisearch](#meilisearch)
+  - [Re-indexing documents](#re-indexing-documents)
 - [Backup](#backup)
   - [Firestore backup](#firestore-backup)
 - [Point](#point)
@@ -1557,7 +1560,7 @@ HttpException: Invalid statusCode: 403, uri = https://firebasestorage.googleapis
 ## Cloud functions - http trigger, restful api.
 
 
-## Ready
+### Ready
 
 - Cors and pre-flight.
   - `ready` function takes care of cors and preflight. and it also takes care of user authentication.
@@ -1574,6 +1577,18 @@ curl -X POST -H "Content-Type: application/x-www-form-urlencoded" "http://localh
 ```
 
 - You need to use `ready` on http call only.
+
+
+### Request and data handling
+
+- To request using http call to cloud functions, use `FunctionsApi.instance.request` method.
+- It will return the data that the clound function sends back to client.
+- When there is an error it will throw an exception.
+
+### Error handling on http trigger
+
+- If the cloud function method send any string begins with `ERROR_` or an object with `{code: '...'}`, then it is considered as an error and an exception will be thrown.
+
 
 
 ## Post create

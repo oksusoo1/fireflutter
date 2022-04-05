@@ -9,6 +9,14 @@ import { UserModel } from "../interfaces/user.interface";
 export class Meilisearch {
   static excludedCategories = ["quiz"];
 
+  static readonly USERS_INDEX = "users";
+  static readonly FORUM_INDEX = "posts-and-comments";
+  static readonly POSTS_INDEX = "posts";
+  static readonly COMMENTS_INDEX = "comments";
+
+  static readonly USER_SETTINGS = "user-settings";
+  static readonly QUIZ_HISTORY = "quiz-history";
+
   static client = new Meili({
     host: "http://wonderfulkorea.kr:7700",
   });
@@ -19,7 +27,7 @@ export class Meilisearch {
    * @return Promise<any>
    */
   static indexForumDocument(data: any): Promise<any> {
-    return this.client.index("posts-and-comments").addDocuments([data]);
+    return this.client.index(this.FORUM_INDEX).addDocuments([data]);
   }
 
   /**
@@ -29,7 +37,7 @@ export class Meilisearch {
    * @return Promise
    */
   static deleteIndexedForumDocument(context: EventContext) {
-    return this.client.index("posts-and-comments").deleteDocument(context.params.id);
+    return this.client.index(this.FORUM_INDEX).deleteDocument(context.params.id);
   }
 
   /**
@@ -57,7 +65,7 @@ export class Meilisearch {
 
     const promises = [];
 
-    promises.push(this.client.index("posts").addDocuments([_data]));
+    promises.push(this.client.index(this.POSTS_INDEX).addDocuments([_data]));
     promises.push(this.indexForumDocument(_data));
 
     return Promise.all(promises);
@@ -97,7 +105,7 @@ export class Meilisearch {
 
     const promises = [];
 
-    promises.push(this.client.index("posts").updateDocuments([_data]));
+    promises.push(this.client.index(this.POSTS_INDEX).updateDocuments([_data]));
     promises.push(this.indexForumDocument(_data));
 
     return Promise.all(promises);
@@ -111,7 +119,7 @@ export class Meilisearch {
    */
   static async deleteIndexedPostDocument(context: EventContext) {
     const promises = [];
-    promises.push(this.client.index("posts").deleteDocument(context.params.id));
+    promises.push(this.client.index(this.POSTS_INDEX).deleteDocument(context.params.id));
     promises.push(this.deleteIndexedForumDocument(context));
     return Promise.all(promises);
   }
@@ -137,7 +145,7 @@ export class Meilisearch {
 
     const promises = [];
 
-    promises.push(this.client.index("comments").addDocuments([_data]));
+    promises.push(this.client.index(this.COMMENTS_INDEX).addDocuments([_data]));
     promises.push(this.indexForumDocument(_data));
 
     return Promise.all(promises);
@@ -167,7 +175,7 @@ export class Meilisearch {
 
     const promises = [];
 
-    promises.push(this.client.index("comments").updateDocuments([_data]));
+    promises.push(this.client.index(this.COMMENTS_INDEX).updateDocuments([_data]));
     promises.push(this.indexForumDocument(_data));
 
     return Promise.all(promises);
@@ -181,7 +189,7 @@ export class Meilisearch {
    */
   static async deleteIndexedCommentDocument(context: EventContext) {
     const promises = [];
-    promises.push(this.client.index("comments").deleteDocument(context.params.id));
+    promises.push(this.client.index(this.COMMENTS_INDEX).deleteDocument(context.params.id));
     promises.push(this.deleteIndexedForumDocument(context));
     return Promise.all(promises);
   }
@@ -200,7 +208,7 @@ export class Meilisearch {
       updatedAt: Utils.getTimestamp(),
     };
 
-    return this.client.index("users").addDocuments([_data]);
+    return this.client.index(this.USERS_INDEX).addDocuments([_data]);
   }
 
   /**
@@ -233,7 +241,7 @@ export class Meilisearch {
       updatedAt: Utils.getTimestamp(),
     };
 
-    return this.client.index("users").addDocuments([_data]);
+    return this.client.index(this.USERS_INDEX).addDocuments([_data]);
   }
 
   /**
@@ -249,10 +257,10 @@ export class Meilisearch {
     // Remove user data under it's uid from:
     // - 'users' and 'user-settings' realtime database,
     // - 'quiz-history' firestore database.
-    promises.push(Ref.rdb.ref("users").child(uid).remove());
-    promises.push(Ref.rdb.ref("user-settings").child(uid).remove());
-    promises.push(Ref.db.collection("quiz-history").doc(uid).delete());
-    promises.push(this.client.index("users").deleteDocument(uid));
+    promises.push(Ref.rdb.ref(this.USERS_INDEX).child(uid).remove());
+    promises.push(Ref.rdb.ref(this.USER_SETTINGS).child(uid).remove());
+    promises.push(Ref.db.collection(this.QUIZ_HISTORY).doc(uid).delete());
+    promises.push(this.client.index(this.USERS_INDEX).deleteDocument(uid));
     return Promise.all(promises);
   }
 

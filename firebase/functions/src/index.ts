@@ -14,3 +14,4 @@ export * from "./indexes/storage.functions";
 export * from "./indexes/meilisearch.functions";
 export * from "./indexes/messaging.functions";
 export * from "./indexes/admin.functions";
+export * from "./indexes/quiz.functions";

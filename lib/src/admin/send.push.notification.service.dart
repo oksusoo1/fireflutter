@@ -1,4 +1,4 @@
-import 'package:dio/dio.dart';
+import '../../fireflutter.dart';
 
 class SendPushNotificationService {
   static SendPushNotificationService? _instance;
@@ -7,37 +7,35 @@ class SendPushNotificationService {
     return _instance!;
   }
 
-  late String _serverUrl;
-
-  init({required String serverUrl}) {
-    _serverUrl = serverUrl;
-  }
-
-  sendToAll(Map<String, dynamic>? data) async {
-    return Dio().get(
-      _serverUrl + '/sendMessageToAll',
-      queryParameters: data,
+  sendToAll(Map<String, dynamic> data) async {
+    // return Dio().get(
+    //   _serverUrl + '/sendMessageToAll',
+    //   queryParameters: data,
+    // );
+    return FunctionsApi.instance.request(
+      'sendMessageToAll',
+      data,
     );
   }
 
-  sendToToken(Map<String, dynamic>? data) async {
-    return Dio().get(
-      _serverUrl + '/sendMessageToTokens',
-      queryParameters: data,
+  sendToToken(Map<String, dynamic> data) async {
+    return FunctionsApi.instance.request(
+      'sendMessageToTokens',
+      data,
     );
   }
 
-  sendToTopic(Map<String, dynamic>? data) async {
-    return Dio().get(
-      _serverUrl + '/sendMessageToTopic',
-      queryParameters: data,
+  sendToTopic(Map<String, dynamic> data) async {
+    return FunctionsApi.instance.request(
+      'sendMessageToTopic',
+      data,
     );
   }
 
-  sendToUsers(Map<String, dynamic>? data) async {
-    return Dio().get(
-      _serverUrl + '/sendMessageToUsers',
-      queryParameters: data,
+  sendToUsers(Map<String, dynamic> data) async {
+    return FunctionsApi.instance.request(
+      'sendMessageToUsers',
+      data,
     );
   }
 }
