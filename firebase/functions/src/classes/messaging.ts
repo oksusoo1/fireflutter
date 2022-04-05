@@ -234,7 +234,7 @@ export class Messaging {
       const res = await admin.messaging().send(payload);
       return { code: "success", result: res };
     } catch (e) {
-      return { code: "error", message: e };
+      return { code: "error", message: (e as Error).message };
     }
   }
 
@@ -248,7 +248,7 @@ export class Messaging {
       const res = await this.sendingMessageToTokens(query.tokens.split(","), payload);
       return { code: "success", result: res };
     } catch (e) {
-      return { code: "error", message: e };
+      return { code: "error", message: (e as Error).message };
     }
   }
   /**
@@ -267,7 +267,7 @@ export class Messaging {
       const res = await this.sendingMessageToTokens(tokens, payload);
       return { code: "success", result: res };
     } catch (e) {
-      return { code: "error", message: e };
+      return { code: "error", message: (e as Error).message };
     }
   }
 
@@ -287,7 +287,10 @@ export class Messaging {
     return re;
   }
 
-  static async subscribeToTopic(tokens: string, topic: string): Promise<messaging.MessagingTopicManagementResponse> {
+  static async subscribeToTopic(
+    tokens: string,
+    topic: string
+  ): Promise<messaging.MessagingTopicManagementResponse> {
     return admin.messaging().subscribeToTopic(tokens, topic);
   }
 }
