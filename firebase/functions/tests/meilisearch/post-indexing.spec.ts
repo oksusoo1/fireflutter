@@ -85,14 +85,10 @@ describe("Meilisearch post document indexing", () => {
   });
 
   it("Test create ignore for unknown categories.", async () => {
-    const testPost: {
-      id: string;
-      title: string;
-      category?: string;
-    } = {
+    const testPost = {
       id: params.id,
       title: `${params.id} title`,
-    };
+    } as any;
 
     // no category (undefined)
     await Meilisearch.indexPostCreate(testPost as any, { params: params } as any);
@@ -114,6 +110,16 @@ describe("Meilisearch post document indexing", () => {
     searchData = await Meilisearch.search("posts", { id: testPost.id });
 
     expect(searchData.hits.length).to.be.equals(0);
+
+    // success
+    testPost.category = "qna";
+    await Meilisearch.indexPostCreate(testPost as any, { params: params } as any);
+    await Utils.delay(3000);
+    searchData = await Meilisearch.search("posts", { id: testPost.id });
+
+    expect(searchData.hits.length).to.be.equals(1);
+
+    Meilisearch.deleteIndexedPostDocument({ params: params } as any);
   });
 
   it("Test update ignore for unknown categories.", async () => {

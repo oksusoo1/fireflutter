@@ -46,15 +46,14 @@ export class Meilisearch {
    * @param data post data to index
    * @param context Event context
    * @return Promise
-   * 
+   *
    * @note
    *  - posts with a non existing category will not be indexed.
    *  - posts with `quiz` category will not be indexed.
    */
   static async indexPostCreate(data: PostDocument, context: EventContext) {
-
     const cats = await Ref.categoryCol.get();
-    const categories: string[] =  cats.docs.map((doc) => doc.id);
+    const categories: string[] = cats.docs.map((doc) => doc.id);
 
     // don't index posts with unknown category.
     if (categories.includes(data.category) == false) return null;
@@ -93,15 +92,15 @@ export class Meilisearch {
    *  - posts with a non existing category will not be indexed.
    *  - posts with `quiz` category will not be indexed.
    *  - posts with the same title and content before and after update will not be indexed.
-   * 
+   *
    * @test tests/meilisearch/post-update.spect.ts
    */
   static async indexPostUpdate(
-    data: { before: PostDocument; after: PostDocument },
-    context: EventContext
+      data: { before: PostDocument; after: PostDocument },
+      context: EventContext
   ): Promise<any> {
     const cats = await Ref.categoryCol.get();
-    const categories: string[] =  cats.docs.map((doc) => doc.id);
+    const categories: string[] = cats.docs.map((doc) => doc.id);
 
     // don't index posts with unknown category.
     if (categories.includes(data.after.category) == false) return null;
@@ -153,7 +152,7 @@ export class Meilisearch {
    * @param data Document data
    * @param context Event context
    * @return Promise
-   * 
+   *
    * @note
    *  - comments without postId or parentId will not be indexed.
    */
@@ -303,8 +302,8 @@ export class Meilisearch {
    * @returns Search result
    */
   static async search(
-    index: string,
-    data: { keyword?: string; id?: string }
+      index: string,
+      data: { keyword?: string; id?: string }
   ): Promise<SearchResponse<Record<string, any>>> {
     const searchFilters = [];
 

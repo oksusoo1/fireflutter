@@ -38,10 +38,10 @@ describe("Meilisearch comment document indexing", () => {
     // Check if search result and updated comment have same content.
     const updatedComment = { ...testComment, title: "post updated title" };
     await Meilisearch.indexCommentUpdate(
-        {
-          before: testComment as any,
-          after: updatedComment as any,
-        },
+      {
+        before: testComment as any,
+        after: updatedComment as any,
+      },
       {
         params: params,
       } as any
@@ -138,6 +138,17 @@ describe("Meilisearch comment document indexing", () => {
 
     searchData = await Meilisearch.search("comments", { id: params.id });
     expect(searchData.hits.length).equals(0);
+
+    // success
+    testComment.postId = "testPostId";
+    testComment.parentId = "testParentId";
+    await Meilisearch.indexCommentCreate(testComment, { params: params } as any);
+    await Utils.delay(3000);
+
+    searchData = await Meilisearch.search("comments", { id: params.id });
+    expect(searchData.hits.length).equals(1);
+
+    Meilisearch.deleteIndexedCommentDocument({ params: params } as any);
   });
 
   it("Tests comment ignore index when no postId or parentId", async () => {
