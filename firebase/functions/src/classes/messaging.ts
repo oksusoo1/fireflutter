@@ -1,5 +1,5 @@
 import * as admin from "firebase-admin";
-import { messaging } from "firebase-admin";
+// import { messaging } from "firebase-admin";
 import { MessagePayload } from "../interfaces/messaging.interface";
 import { Ref } from "./ref";
 import { Utils } from "./utils";
@@ -129,10 +129,10 @@ export class Messaging {
     return re;
   }
 
-  static topicPayload(topic: string, query: any): messaging.TopicMessage {
+  static topicPayload(topic: string, query: any): admin.messaging.TopicMessage {
     const payload = this.preMessagePayload(query);
     payload["topic"] = "/topics/" + topic;
-    return payload as messaging.TopicMessage;
+    return payload as admin.messaging.TopicMessage;
   }
 
   static preMessagePayload(query: any) {
@@ -177,8 +177,8 @@ export class Messaging {
   }
 
   static async sendingMessageToTokens(
-      tokens: Array<string>,
-      payload: MessagePayload
+    tokens: Array<string>,
+    payload: MessagePayload
   ): Promise<{
     success: number;
     error: number;
@@ -191,7 +191,7 @@ export class Messaging {
     const sendToDevicePromise = [];
     for (const c of chunks) {
       // Send notifications to all tokens.
-      const newPayload: messaging.MulticastMessage = Object.assign({ tokens: c }, payload as any);
+      const newPayload: admin.messaging.MulticastMessage = Object.assign({ tokens: c }, payload as any);
       sendToDevicePromise.push(admin.messaging().sendMulticast(newPayload));
     }
     const sendDevice = await Promise.all(sendToDevicePromise);
@@ -287,7 +287,10 @@ export class Messaging {
     return re;
   }
 
-  static async subscribeToTopic(tokens: string, topic: string): Promise<messaging.MessagingTopicManagementResponse> {
+  static async subscribeToTopic(
+    tokens: string,
+    topic: string
+  ): Promise<admin.messaging.MessagingTopicManagementResponse> {
     return admin.messaging().subscribeToTopic(tokens, topic);
   }
 }

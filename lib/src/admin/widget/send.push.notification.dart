@@ -1,11 +1,8 @@
-import 'package:dio/dio.dart';
-
 import '../../../fireflutter.dart';
 import 'package:flutter/material.dart';
 
 class SendPushNotification extends StatefulWidget {
-  const SendPushNotification({Key? key, required this.onError, this.arguments})
-      : super(key: key);
+  const SendPushNotification({Key? key, required this.onError, this.arguments}) : super(key: key);
 
   final Function onError;
   final Map? arguments;
@@ -65,8 +62,7 @@ class _SendPushNotificationState extends State<SendPushNotification> {
             title: DropdownButton(
               isExpanded: true,
               value: sendOption,
-              items: dropdownItem.keys
-                  .map<DropdownMenuItem<String>>((String value) {
+              items: dropdownItem.keys.map<DropdownMenuItem<String>>((String value) {
                 return DropdownMenuItem<String>(
                   value: value,
                   child: Text(
@@ -155,21 +151,21 @@ class _SendPushNotificationState extends State<SendPushNotification> {
     }
 
     try {
-      Response<dynamic>? res;
+      Map<String, dynamic> data = {};
+
       if (sendOption == 'all') {
-        res = await SendPushNotificationService.instance.sendToAll(req);
+        data = await SendPushNotificationService.instance.sendToAll(req);
       } else if (sendOption == 'topic') {
         req['topic'] = topic.text;
-        res = await SendPushNotificationService.instance.sendToTopic(req);
+        data = await SendPushNotificationService.instance.sendToTopic(req);
       } else if (sendOption == 'tokens') {
         req['tokens'] = tokens.text;
-        res = await SendPushNotificationService.instance.sendToToken(req);
+        data = await SendPushNotificationService.instance.sendToToken(req);
       } else if (sendOption == 'uids') {
         req['uids'] = uids.text;
-        res = await SendPushNotificationService.instance.sendToUsers(req);
+        data = await SendPushNotificationService.instance.sendToUsers(req);
       }
 
-      Map<String, dynamic> data = res!.data;
       String msg = '';
       if (data['code'] == 'success') {
         if (sendOption == 'tokens' || sendOption == 'uids') {

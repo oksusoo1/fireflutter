@@ -3,12 +3,12 @@ import * as express from "express";
 import { User } from "./classes/user";
 
 export async function ready(
-    options: {
+  options: {
     req: functions.https.Request;
     res: express.Response;
     auth?: boolean;
   },
-    callback: (data: any) => Promise<void>
+  callback: (data: any) => Promise<void>
 ) {
   const req = options.req;
   const res = options.res;

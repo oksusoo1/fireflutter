@@ -8,10 +8,14 @@ class PointHistoryScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final d = DateTime.now();
     return Scaffold(
       appBar: AppBar(title: Text('Point History')),
       body: Container(
-        child: PointHistory(),
+        child: PointHistory(
+          year: d.year,
+          month: d.month,
+        ),
       ),
     );
   }

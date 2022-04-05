@@ -47,7 +47,12 @@ class PostModel with FirestoreMixin, ForumBase {
 
   String title;
   String get displayTitle {
-    return deleted ? 'post-title-deleted' : title;
+    final _title = deleted ? 'post-title-deleted' : title;
+    if (_title.trim() == '') {
+      return id;
+    } else {
+      return _title;
+    }
   }
 
   String content;
@@ -109,7 +114,7 @@ class PostModel with FirestoreMixin, ForumBase {
       isHtmlContent: html,
       noOfComments: data['noOfComments'] ?? 0,
       hasPhoto: data['hasPhoto'] ?? false,
-      files: new List<String>.from(data['files']),
+      files: new List<String>.from(data['files'] ?? []),
       deleted: data['deleted'] ?? false,
       uid: data['uid'] ?? '',
       point: data['point'] ?? 0,

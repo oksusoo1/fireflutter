@@ -16,14 +16,10 @@ class PointApi {
     if (UserService.instance.notSignIn) throw ERROR_NOT_SIGN_IN;
 
     final res = await FunctionsApi.instance.request('pointHistory', {
-      'year': year,
-      'month': month,
+      'year': year.toString(),
+      'month': month.toString(),
     });
 
-    if (res.data is String && (res.data as String).startsWith('ERROR_')) {
-      throw res.data;
-    }
-
-    return (res.data as List).map((e) => PointHistoryModel.fromJson(e)).toList();
+    return (res as List).map((e) => PointHistoryModel.fromJson(e)).toList();
   }
 }
