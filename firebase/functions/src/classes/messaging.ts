@@ -232,7 +232,7 @@ export class Messaging {
     const payload = this.topicPayload(query.topic, query);
     try {
       const res = await admin.messaging().send(payload);
-      return res;
+      return { messageId: res };
     } catch (e) {
       return { code: "error", message: e };
     }
