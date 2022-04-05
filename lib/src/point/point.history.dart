@@ -44,7 +44,7 @@ class _PointHistoryState extends State<PointHistory> {
             child: CircularProgressIndicator.adaptive(),
           )
         : histories.length == 0
-            ? Text("No point history for this month")
+            ? Center(child: Text("No point history for this month"))
             : ListView.builder(
                 itemCount: histories.length,
                 itemBuilder: ((context, index) {
@@ -54,7 +54,9 @@ class _PointHistoryState extends State<PointHistory> {
                   return ListTile(
                     title: Text(_text(history.eventName)),
                     subtitle: Text(
-                        "Point. ${history.point} at ${d.year}-${d.month}-${d.day} ${d.hour}:${d.minute}:${d.second}"),
+                      "Point. ${history.point} at ${d.year}-${d.month}-${d.day} ${d.hour}:${d.minute}:${d.second}",
+                      style: TextStyle(fontSize: 12),
+                    ),
                   );
                 }),
               );

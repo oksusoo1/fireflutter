@@ -7,40 +7,34 @@ class SendPushNotificationService {
     return _instance!;
   }
 
-  late String _serverUrl;
-
-  init({required String serverUrl}) {
-    _serverUrl = serverUrl;
-  }
-
   sendToAll(Map<String, dynamic> data) async {
     // return Dio().get(
     //   _serverUrl + '/sendMessageToAll',
     //   queryParameters: data,
     // );
     return FunctionsApi.instance.request(
-      _serverUrl + '/sendMessageToAll',
+      'sendMessageToAll',
       data,
     );
   }
 
   sendToToken(Map<String, dynamic> data) async {
     return FunctionsApi.instance.request(
-      _serverUrl + '/sendMessageToTokens',
+      'sendMessageToTokens',
       data,
     );
   }
 
   sendToTopic(Map<String, dynamic> data) async {
     return FunctionsApi.instance.request(
-      _serverUrl + '/sendMessageToTopic',
+      'sendMessageToTopic',
       data,
     );
   }
 
   sendToUsers(Map<String, dynamic> data) async {
     return FunctionsApi.instance.request(
-      _serverUrl + '/sendMessageToUsers',
+      'sendMessageToUsers',
       data,
     );
   }
