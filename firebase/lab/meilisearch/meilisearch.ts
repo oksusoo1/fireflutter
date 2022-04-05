@@ -121,6 +121,8 @@ export class Meilisearch {
         middleName: value.middleName ?? "",
         lastName: value.lastName ?? "",
         photoUrl: value.photoUrl ?? "",
+        registeredAt: value.registeredAt,
+        updatedAt: value.updatedAt,
       };
 
       try {
