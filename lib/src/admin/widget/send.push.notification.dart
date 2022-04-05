@@ -167,12 +167,12 @@ class _SendPushNotificationState extends State<SendPushNotification> {
       }
 
       String msg = '';
-      if (data['code'] == 'success') {
+      if (!data['code']) {
         if (sendOption == 'tokens' || sendOption == 'uids') {
-          int s = data['result']['success'];
-          int f = data['result']['error'];
+          int s = data['success'];
+          int f = data['error'];
           msg = "Send count $s Success, $f Fail.";
-        } else if (data['result']['messageId'] != null) {
+        } else if (data['messageId'] != null) {
           msg = 'Push send Success';
         } else {
           msg = 'Push send didnt return proper data';
