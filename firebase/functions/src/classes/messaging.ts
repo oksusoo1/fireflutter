@@ -232,7 +232,7 @@ export class Messaging {
     const payload = this.topicPayload(query.topic, query);
     try {
       const res = await admin.messaging().send(payload);
-      return { code: "success", result: res };
+      return res;
     } catch (e) {
       return { code: "error", message: e };
     }
@@ -246,7 +246,7 @@ export class Messaging {
     // check if token is empty throw error
     try {
       const res = await this.sendingMessageToTokens(query.tokens.split(","), payload);
-      return { code: "success", result: res };
+      return res;
     } catch (e) {
       return { code: "error", message: e };
     }
@@ -265,7 +265,7 @@ export class Messaging {
     const tokens = await this.getTokensFromUids(uids);
     try {
       const res = await this.sendingMessageToTokens(tokens, payload);
-      return { code: "success", result: res };
+      return res;
     } catch (e) {
       return { code: "error", message: e };
     }
