@@ -202,8 +202,8 @@ export class Meilisearch {
         title: data.title ?? "",
         content: Utils.removeHtmlTags(data.content) ?? "",
         files: data.files && data.files.length ? data.files.join(",") : "",
-        createdAt: Utils.getTimestamp(data.createdAt),
-        updatedAt: Utils.getTimestamp(data.updatedAt),
+        createdAt: data.createdAt ? Utils.getTimestamp(data.createdAt) : null,
+        updatedAt: data.updatedAt ? Utils.getTimestamp(data.updatedAt) : null,
       } as any;
 
       const promises = [this.forumIndex.addDocuments([_data]), this.postsIndex.addDocuments([_data])];
@@ -260,8 +260,8 @@ export class Meilisearch {
         parentId: data.parentId,
         content: Utils.removeHtmlTags(data.content) ?? "",
         files: data.files && data.files.length ? data.files.join(",") : "",
-        createdAt: Utils.getTimestamp(data.createdAt),
-        updatedAt: Utils.getTimestamp(data.updatedAt),
+        createdAt: data.createdAt ? Utils.getTimestamp(data.createdAt) : null,
+        updatedAt: data.updatedAt ? Utils.getTimestamp(data.updatedAt) : null,
       } as any;
 
       const promises = [this.forumIndex.addDocuments([_data]), this.commentsIndex.addDocuments([_data])];
