@@ -55,7 +55,7 @@ describe("Send push notification test", () => {
     // expect(re!.result!.success).equal(2);
     // expect(re!.result!.error).equal(1);
 
-    let ret = await Messaging.sendMessageToTokens({
+    const ret = await Messaging.sendMessageToTokens({
       tokens: validToken1,
       title: "push title test via token 1",
       body: "push body test via token 1",

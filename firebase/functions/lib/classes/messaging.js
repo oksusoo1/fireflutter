@@ -213,7 +213,7 @@ class Messaging {
             return { code: "success", result: res };
         }
         catch (e) {
-            return { code: "error", message: e };
+            return { code: "error", message: e.message };
         }
     }
     static async sendMessageToTokens(query) {
@@ -225,7 +225,7 @@ class Messaging {
             return { code: "success", result: res };
         }
         catch (e) {
-            return { code: "error", message: e };
+            return { code: "error", message: e.message };
         }
     }
     /**
@@ -246,7 +246,7 @@ class Messaging {
             return { code: "success", result: res };
         }
         catch (e) {
-            return { code: "error", message: e };
+            return { code: "error", message: e.message };
         }
     }
     static async getTopicSubscriber(uids, topic) {
