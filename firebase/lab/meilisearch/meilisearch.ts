@@ -3,6 +3,8 @@ import { Index, MeiliSearch as Meili } from "meilisearch";
 import * as admin from "firebase-admin";
 
 import { UserModel } from "../../functions/src/interfaces/user.interface";
+import { PostDocument, CommentDocument } from "../../functions/src/interfaces/forum.interface";
+import { Ref } from "../../functions/src/classes/ref";
 import { Utils } from "../../functions/src/classes/utils";
 
 new FirebaseAppInitializer();
@@ -141,7 +143,8 @@ export class Meilisearch {
    * Reindexes document under given indexId.
    *
    * @param indexId index
-   * @returns
+   * @returns 
+   * 
    */
   static async indexForum(indexId: string): Promise<void> {
     const col = fsdb.collection(indexId);
@@ -169,21 +172,35 @@ export class Meilisearch {
    * Indexes post documents.
    *
    * @param docs Document collection.
+   * @returns indexing summary.
+   * 
+   * @note
+   *  - posts with a non existing category will not be indexed.
+   *  - posts with `quiz` category will not be indexed.
    */
   static async indexPostDocuments(docs: Array<any>): Promise<IndexingResult> {
+    const cats = await Ref.categoryCol.get();
+    const dbCategories: string[] = cats.docs.map((doc) => doc.id);
+
     let success = 0;
     let deleted = 0;
+    let unknownCategory = 0;
     let quizDocs = 0;
     const failedIds: string[] = [];
-
     const categories: string[] = [];
 
     for (const doc of docs) {
-      const data = doc.data();
+      const data = doc.data() as PostDocument;
 
       // skip deleted data.
-      if (data.deleted && data.delete == true) {
+      if (data.deleted && data.deleted == true) {
         deleted++;
+        continue;
+      }
+
+      // don't index posts with unknown category.
+      if (dbCategories.includes(data.category) == false) {
+        unknownCategory++;
         continue;
       }
 
@@ -226,7 +243,9 @@ export class Meilisearch {
       success: success,
       failedDocs: failedIds,
       deleted: deleted,
-      remarks: `\n - ${quizDocs} 'quiz' documents.\n - Categories from indexed posts - ${categories.join(", ")}`,
+      remarks: `\n ${unknownCategory} documents with unknown category \n - ${quizDocs} 'quiz' documents.\n - Categories from indexed posts - ${categories.join(
+        ", "
+      )}`,
     };
   }
 
@@ -235,18 +254,28 @@ export class Meilisearch {
    *
    * @param docs Document array.
    * @returns summary of indexing result.
+   * 
+   * @note
+   *  - comments without postId or parentId will not be indexed.
    */
   static async indexCommentDocuments(docs: Array<any>): Promise<IndexingResult> {
     let success = 0;
     let deleted = 0;
+    let noPostOrParentId = 0;
     const failedIds: string[] = [];
 
     for (const doc of docs) {
-      const data = doc.data();
+      const data = doc.data() as CommentDocument;
 
       // skip deleted data.
       if (data.deleted && data.deleted == true) {
         deleted++;
+        continue;
+      }
+
+      // don't index comments without postId or parentId.
+      if (!data.postId || !data.parentId) {
+        noPostOrParentId++;
         continue;
       }
 
@@ -281,6 +310,7 @@ export class Meilisearch {
       success: success,
       failedDocs: failedIds,
       deleted: deleted,
+      remarks: ` - ${noPostOrParentId} comments without parentId or postId`,
     };
   }
 

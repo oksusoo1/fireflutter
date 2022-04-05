@@ -16,7 +16,7 @@ export class FirebaseAppInitializer {
 
       admin.firestore().settings({ ignoreUndefinedProperties: true });
 
-      console.log("admin; ", admin);
+      // console.log("admin; ", admin);
     } catch (e) {
       // console.error("initialization failed; ", e);
     }
