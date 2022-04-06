@@ -10,6 +10,7 @@ dayjs.extend(weekOfYear);
 const ref_1 = require("./ref");
 const defines_1 = require("../defines");
 const messaging_1 = require("./messaging");
+const storage_1 = require("./storage");
 class Post {
     /**
      *
@@ -83,6 +84,41 @@ class Post {
         if (updated === null)
             throw defines_1.ERROR_UPDATE_FAILED;
         return updated;
+    }
+    static async delete(data) {
+        var _a;
+        const id = data.id;
+        // 1. get the post.
+        const post = await this.get(id);
+        // 2. if it's null(not exists), throw ERROR_POST_NOT_EXITS,
+        if (post === null)
+            throw defines_1.ERROR_POST_NOT_EXIST;
+        // 3. check uid and if it's not the same of the document, throw ERROR_NOT_YOUR_POST;
+        if (post.uid !== data.uid)
+            throw defines_1.ERROR_NOT_YOUR_POST;
+        // 4. if the post had been marked as deleted, then throw ERROR_ALREADY_DELETED.
+        if (post.deleted && post.deleted === true)
+            throw defines_1.ERROR_ALREADY_DELETED;
+        // 5. if post has files, delete files from firebase storage.
+        if ((_a = post.files) === null || _a === void 0 ? void 0 : _a.length) {
+            for (const url of post.files) {
+                await storage_1.Storage.deleteFileFromUrl(url);
+            }
+        }
+        const postRef = ref_1.Ref.postDoc(id);
+        if (!post.noOfComments) {
+            // 6.A if there is no comment, then delete the post.
+            await postRef.delete();
+            return id;
+        }
+        else {
+            // 6.B or if there is a comment, then mark it as deleted. (deleted=true)
+            post.title = "";
+            post.content = "";
+            post.deleted = true;
+            await postRef.update(post);
+        }
+        return id;
     }
     /**
      * Returns a post as PostDocument or null if the post does not exists.

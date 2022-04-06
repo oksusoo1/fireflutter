@@ -72,7 +72,7 @@ export class Storage {
    * @param url
    * @returns
    */
-  static getFileFromUrl(url: string) {
+  static getFileRefFromUrl(url: string) {
     if (url.startsWith("http")) {
       url = this.getFilePathFromUrl(url);
     }
@@ -124,7 +124,9 @@ export class Storage {
    * It will also delete thumbnail files if existing.
    *
    * @param url url path of the file.
-   * @returns
+   * @returns void
+   *
+   * TODO: test
    */
   static async deleteFileFromUrl(url: string): Promise<void> {
     // If it's not a file from firebase storage, it does not do anything.
@@ -135,7 +137,7 @@ export class Storage {
     if (url.startsWith("http")) {
       url = this.getFilePathFromUrl(url);
     }
-    const file = admin.storage().bucket().file(url);
+    const file = this.getFileRefFromUrl(url);
     const isExists = await file.exists();
     if (isExists[0]) await file.delete();
 
@@ -143,7 +145,7 @@ export class Storage {
     if (this.isImageUrl(url)) {
       // delete associating thumbnail url.
       const thumbnailUrl = this.getThumbnailUrl(url);
-      const thumbFile = admin.storage().bucket().file(thumbnailUrl);
+      const thumbFile = this.getFileRefFromUrl(thumbnailUrl);
       const thumbExists = await thumbFile.exists();
       if (thumbExists[0]) await thumbFile.delete();
     }

@@ -98,34 +98,36 @@ export class Post {
   }
 
   static async delete(data: { id: string; uid: string }): Promise<string> {
+    // 1. id must be present. if not throw ERROR_EMPTY_ID;
+    if (!data.id) throw ERROR_EMPTY_ID;
+
     const id = data.id;
-    // 1. get the post.
+    // 2. get the post.
     const post = await this.get(id);
 
-    // 2. if it's null(not exists), throw ERROR_POST_NOT_EXITS,
+    // 3. if it's null(not exists), throw ERROR_POST_NOT_EXITS,
     if (post === null) throw ERROR_POST_NOT_EXIST;
 
-    // 3. check uid and if it's not the same of the document, throw ERROR_NOT_YOUR_POST;
+    // 4. check uid and if it's not the same of the document, throw ERROR_NOT_YOUR_POST;
     if (post.uid !== data.uid) throw ERROR_NOT_YOUR_POST;
 
-    // 4. if the post had been marked as deleted, then throw ERROR_ALREADY_DELETED.
+    // 5. if the post had been marked as deleted, then throw ERROR_ALREADY_DELETED.
     if (post.deleted && post.deleted === true) throw ERROR_ALREADY_DELETED;
 
-    // 5. if post has files, delete files from firebase storage.
+    // 6. if post has files, delete files from firebase storage.
     if (post.files?.length) {
-      for (const url in post.files) {
+      for (const url of post.files) {
         await Storage.deleteFileFromUrl(url);
       }
     }
 
     const postRef = Ref.postDoc(id);
-    // 6.A if there is no comment, then delete the post.
     if (!post.noOfComments) {
+      // 7.A if there is no comment, then delete the post.
       await postRef.delete();
       return id;
-    }
-    // 6.B or if there is a comment, then mark it as deleted. (deleted=true)
-    else {
+    } else {
+      // 8.B or if there is a comment, then mark it as deleted. (deleted=true)
       post.title = "";
       post.content = "";
       post.deleted = true;
@@ -219,3 +221,4 @@ export class Post {
     return uids.filter((v, i, a) => a.indexOf(v) === i); // remove duplicate
   }
 }
+
