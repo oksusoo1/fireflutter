@@ -12,30 +12,18 @@ class SendPushNotificationService {
     //   _serverUrl + '/sendMessageToAll',
     //   queryParameters: data,
     // );
-    return FunctionsApi.instance.request(
-      'sendMessageToAll',
-      data: data,
-    );
+    return FunctionsApi.instance.request('sendMessageToAll', data: data, addAuth: true);
   }
 
   sendToToken(Map<String, dynamic> data) async {
-    return FunctionsApi.instance.request(
-      'sendMessageToTokens',
-      data: data,
-    );
+    return FunctionsApi.instance.request('sendMessageToTokens', data: data, addAuth: true);
   }
 
   sendToTopic(Map<String, dynamic> data) async {
-    return FunctionsApi.instance.request(
-      'sendMessageToTopic',
-      data: data,
-    );
+    return FunctionsApi.instance.request('sendMessageToTopic', data: data, addAuth: true);
   }
 
   sendToUsers(Map<String, dynamic> data) async {
-    return FunctionsApi.instance.request(
-      'sendMessageToUsers',
-      data: data,
-    );
+    return FunctionsApi.instance.request('sendMessageToUsers', data: data, addAuth: true);
   }
 }
