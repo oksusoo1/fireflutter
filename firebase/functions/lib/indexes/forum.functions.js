@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.sendMessageOnCommentCreate = exports.sendMessageOnPostCreate = exports.postCreate = void 0;
+exports.sendMessageOnCommentCreate = exports.sendMessageOnPostCreate = exports.postUpdate = exports.postCreate = void 0;
 /**
  * @file foum.functions.ts
  *
@@ -25,6 +25,11 @@ const ready_1 = require("../ready");
 exports.postCreate = functions.region("asia-northeast3").https.onRequest((req, res) => {
     ready_1.ready({ req, res, auth: true }, async (data) => {
         res.status(200).send(await post_1.Post.create(data));
+    });
+});
+exports.postUpdate = functions.region("asia-northeast3").https.onRequest((req, res) => {
+    ready_1.ready({ req, res, auth: true }, async (data) => {
+        res.status(200).send(await post_1.Post.update(data));
     });
 });
 exports.sendMessageOnPostCreate = functions

@@ -5,6 +5,9 @@ fireflutter.config.ts
 backup.json
 backup*.json
 
+firebase/functions/lib/**/*.js
+firebase/functions/lib/**/*.js.map
+
 # Miscellaneous
 *.class
 *.log

@@ -80,7 +80,11 @@ export class Post {
     const id = data.id;
     delete data.id;
     data.updatedAt = admin.firestore.FieldValue.serverTimestamp();
-    if (data.files && data.files.length) data.hasPhoto = true;
+    if (data.files && data.files.length) {
+      data.hasPhoto = true;
+    } else {
+      data.hasPhoto = false;
+    }
     await Ref.postDoc(id).update(data);
     return await this.get(id);
   }
