@@ -39,9 +39,17 @@ describe("Post update test", () => {
     expect(post!.title === "title").true;
     expect(post!.a === "apple").true;
   });
-  it("Input test", async () => {
+  it("Input test with empty object", async () => {
     try {
       await Post.update({});
+      expect.fail();
+    } catch (e) {
+      expect(e).equals(ERROR_EMPTY_ID);
+    }
+  });
+  it("Input test with wrong id", async () => {
+    try {
+      await Post.update({ id: "abc" });
       expect.fail();
     } catch (e) {
       expect(e).equals(ERROR_EMPTY_ID);
