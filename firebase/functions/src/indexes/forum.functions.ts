@@ -39,5 +39,5 @@ export const sendMessageOnCommentCreate = functions
   .region("asia-northeast3")
   .firestore.document("/comments/{commentId}")
   .onCreate((snapshot, context) => {
-    return Post.sendMessageOnCommentCreate(snapshot.data() as CommentDocument);
+    return Post.sendMessageOnCommentCreate(snapshot.data() as CommentDocument, context.params.commentId);
   });

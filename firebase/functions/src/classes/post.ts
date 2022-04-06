@@ -105,9 +105,7 @@ export class Post {
     return admin.messaging().send(payload);
   }
 
-  static async sendMessageOnCommentCreate(
-    data: CommentDocument
-  ): Promise<OnCommentCreateResponse | null> {
+  static async sendMessageOnCommentCreate(data: CommentDocument, id: string): Promise<OnCommentCreateResponse | null> {
     const post = await this.get(data.postId);
     if (!post) return null;
 
@@ -126,7 +124,7 @@ export class Post {
     const sendToTopicRes = await admin.messaging().send(Messaging.topicPayload(topic, messageData));
 
     // get comment ancestors
-    const ancestorsUid = await Post.getCommentAncestors(data.id, data.uid);
+    const ancestorsUid = await Post.getCommentAncestors(id, data.uid);
 
     // add the post uid if the comment author is not the post author
     if (post.uid != data.uid && !ancestorsUid.includes(post.uid)) {
@@ -134,18 +132,12 @@ export class Post {
     }
 
     // Don't send the same message twice to topic subscribers and comment notifyees.
-    const userUids = await Messaging.getCommentNotifyeeWithoutTopicSubscriber(
-      ancestorsUid.join(","),
-      topic
-    );
+    const userUids = await Messaging.getCommentNotifyeeWithoutTopicSubscriber(ancestorsUid.join(","), topic);
 
     // get users tokens
     const tokens = await Messaging.getTokensFromUids(userUids.join(","));
 
-    const sendToTokenRes = await Messaging.sendingMessageToTokens(
-      tokens,
-      Messaging.preMessagePayload(messageData)
-    );
+    const sendToTokenRes = await Messaging.sendingMessageToTokens(tokens, Messaging.preMessagePayload(messageData));
     return {
       topicResponse: sendToTopicRes,
       tokenResponse: sendToTokenRes,
