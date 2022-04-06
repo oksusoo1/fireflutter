@@ -25,7 +25,6 @@ class Post {
             throw defines_1.ERROR_EMPTY_CATEGORY;
         // get all the data from client.
         const doc = data;
-        delete doc.password;
         // default data
         doc.hasPhoto = !!doc.files;
         doc.deleted = false;

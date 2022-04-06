@@ -1667,6 +1667,12 @@ class _ServerTimeState extends State<ServerTime> {
 
 - To create a post, you need to provide uid and password. See the test code how you can provide password.
 
+- It saves some time information like `year, month, day, dayOfYear, week, createdAt, updatedAt` for better filtering and sorting.
+
+- App can save extra values, so it can store additional fields for different services.
+
+
+
 ### Cloud functions Sample codes
 
 - See `tests` folder for the sample code. These sample codes are the best examples you can refer.
