@@ -135,7 +135,7 @@ Table of contents
     - [Ready](#ready)
     - [Request and data handling](#request-and-data-handling)
     - [Error handling on http trigger](#error-handling-on-http-trigger)
-  - [Post create](#post-create)
+    - [Post create](#post-create)
     - [Cloud functions Sample codes](#cloud-functions-sample-codes)
   - [Meilisearch](#meilisearch)
   - [Re-indexing documents](#re-indexing-documents)
@@ -1559,6 +1559,10 @@ HttpException: Invalid statusCode: 403, uri = https://firebasestorage.googleapis
 
 ## Cloud functions - http trigger, restful api.
 
+- There are helper classes for cloud functions http call that ends with `Api`. Most (or all) of Firebase client helper classes ends with `Service`.
+  - For instance,
+    - `PostApi` is the http call helper class while `PostService` is firebase client helper class.
+
 
 ### Ready
 
@@ -1647,13 +1651,27 @@ class _ServerTimeState extends State<ServerTime> {
 
 ### Error handling on http trigger
 
-- If the cloud function method send any string begins with `ERROR_` or an object with `{code: '...'}`, then it is considered as an error and an exception will be thrown.
+- If the cloud function method sends any string begins with `ERROR_` or an object with `{code: '...'}` back to client, then it is considered as an `app error` and an exception will be thrown.
+- If the `reqeust` gets a string that contains `code` and `ERR_`, then it is considered as a `firebase erro` and and exception will be thrown.
+- The `request` may get an error from `Dio` service and that will also throw an error.
 
 
 
-## Post create
+### Post create
+
+- App can call `postCreate` via http to create a post.
+  - This can be used in all cases. But since we have `Post` model and `PostService` for flutter app, flutter app may not need to use this.
+  - But it is way better to use `postCreate` via http in Flutter app also.
+  - And use it everywhere like in Node.js, Vue.js, PHP, or from anywhere.
+  - This is a recommended way of creating a post.
 
 - To create a post, you need to provide uid and password. See the test code how you can provide password.
+
+- It saves some time information like `year, month, day, dayOfYear, week, createdAt, updatedAt` for better filtering and sorting.
+
+- App can save extra values, so it can store additional fields for different services.
+
+
 
 ### Cloud functions Sample codes
 

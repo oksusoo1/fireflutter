@@ -11,12 +11,15 @@ new FirebaseAppInitializer();
 describe("Send message on post create test", () => {
   it("Sende Message on create", async () => {
     const postId = "onCreatePost" + Utils.getTimestamp();
-    const post = new PostDocument().fromDocument(
-        { uid: "onCreate", category: "cat1test", title: "Hello" },
-        postId
-    );
+    const post: PostDocument = {
+      id: postId,
+      uid: "onCreate",
+      category: "cat1test",
+      title: "Hello",
+    };
+
     expect(post.id).equal(postId);
-    const res = await Post.sendMessageOnPostCreate(post);
+    const res = await Post.sendMessageOnPostCreate(post, postId);
     expect(res).to.be.an("string");
     expect(res).include("project/");
   });

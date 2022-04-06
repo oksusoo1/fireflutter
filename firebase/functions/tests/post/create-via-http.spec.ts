@@ -9,7 +9,7 @@ import { FirebaseAppInitializer } from "../firebase-app-initializer";
 import {
   ERROR_EMPTY_UID,
   ERROR_EMPTY_PASSWORD,
-  ERROR_AUTH_FAILED,
+  ERROR_WRONG_PASSWORD,
   ERROR_EMPTY_CATEGORY,
 } from "../../src/defines";
 import { Utils } from "../../src/classes/utils";
@@ -18,8 +18,8 @@ import { User } from "../../src/classes/user";
 
 new FirebaseAppInitializer();
 
-// const endpoint = "http://localhost:5001/withcenter-test-project/asia-northeast3/postCreate";
-const endpoint = "https://asia-northeast3-withcenter-test-project.cloudfunctions.net/postCreate";
+const endpoint = "http://localhost:5001/withcenter-test-project/asia-northeast3/postCreate";
+// const endpoint = "https://asia-northeast3-withcenter-test-project.cloudfunctions.net/postCreate";
 describe("Post create via http call", () => {
   it("empty uid", async () => {
     const res = await axios.post(endpoint);
@@ -29,25 +29,29 @@ describe("Post create via http call", () => {
     const res = await axios.post(endpoint, { uid: "uid" });
     expect(res.data).equals(ERROR_EMPTY_PASSWORD);
   });
-  it("auth failed", async () => {
+  it("fail - wrong password", async () => {
     const res = await axios.post(endpoint, { uid: "uid", password: "wrong-password" });
-    expect(res.data).equals(ERROR_AUTH_FAILED);
+    expect(res.data).equals(ERROR_WRONG_PASSWORD);
   });
   it("post create success", async () => {
+    // Create a test user for creating a post.
     const id = "test-user-" + Utils.getTimestamp();
     await User.create(id, {
       firstName: "fn",
     });
     const user = await User.get(id);
 
+    // test empty category
     const res = await axios.post(endpoint, {
       uid: user!.id,
-      password: user!.password,
+      password: User.generatePassword(user),
     });
     expect(res.data).equals(ERROR_EMPTY_CATEGORY);
+
+    // test creating a post
     const res2 = await axios.post(endpoint, {
       uid: user!.id,
-      password: user!.password,
+      password: User.generatePassword(user),
       category: "cat1",
       a: "apple",
       b: "banana",
@@ -55,6 +59,7 @@ describe("Post create via http call", () => {
     const post = res2.data as any;
     expect(post.uid).equals(id);
     expect(post["a"]).equals("apple");
-    console.log(post);
+
+    expect(post.password === undefined).true;
   });
 });

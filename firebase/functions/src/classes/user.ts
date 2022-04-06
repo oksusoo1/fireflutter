@@ -1,5 +1,5 @@
-import { ERROR_AUTH_FAILED, ERROR_EMPTY_PASSWORD, ERROR_EMPTY_UID } from "../defines";
-import { UserCreate, UserModel } from "../interfaces/user.interface";
+import { ERROR_WRONG_PASSWORD, ERROR_EMPTY_PASSWORD, ERROR_EMPTY_UID } from "../defines";
+import { UserCreate, UserDocument } from "../interfaces/user.interface";
 import { Ref } from "./ref";
 import { Utils } from "./utils";
 import * as admin from "firebase-admin";
@@ -27,31 +27,35 @@ export class User {
       return ERROR_EMPTY_PASSWORD;
     } else {
       const user = await this.get(data.uid);
-      if (user?.password === data.password) return "";
-      else return ERROR_AUTH_FAILED;
+      const password = this.generatePassword(user);
+      console.log(password, data.password);
+      if (password === data.password) return "";
+      else return ERROR_WRONG_PASSWORD;
     }
   }
 
   /**
    * Returns user document as in User class
    * @param uid uid of user
-   * @returns user document class
+   * @returns user document or empty map.
    */
-  static async get(uid: string): Promise<UserModel | null> {
+  static async get(uid: string): Promise<UserDocument> {
     const snapshot = await Ref.userDoc(uid).get();
 
     if (snapshot.exists()) {
-      const val = snapshot.val();
-      return UserModel.fromJson(val, uid);
+      const val = snapshot.val() as UserDocument;
+      val.id = uid;
+      return val;
     }
 
-    return null;
+    return {} as UserDocument;
   }
 
   static async isAdmin(context: any) {
     const doc = await Ref.adminDoc.get();
     const admins = doc.data();
     if (!context) return false;
+    if (context.empty) return false;
     if (!context.auth) return false;
     if (!context.auth.uid) return false;
     if (!admins) return false;
@@ -60,7 +64,7 @@ export class User {
   }
 
   static async enableUser(data: any, context: any) {
-    if (!this.isAdmin(context)) {
+    if (!(await this.isAdmin(context))) {
       return {
         code: "ERROR_YOU_ARE_NOT_ADMIN",
         message: "To manage user, you need to sign-in as an admin.",
@@ -75,8 +79,17 @@ export class User {
     }
   }
 
-  static async disableUser(data: any, context: any) {
-    if (!this.isAdmin(context)) {
+  static async disableUser(
+    data: any,
+    context: any
+  ): Promise<
+    | admin.auth.UserRecord
+    | {
+        code: string;
+        message: string;
+      }
+  > {
+    if (!(await this.isAdmin(context))) {
       return {
         code: "ERROR_YOU_ARE_NOT_ADMIN",
         message: "To manage user, you need to sign-in as an admin.",
@@ -89,5 +102,16 @@ export class User {
     } catch (e) {
       return { code: "error", message: (e as Error).message };
     }
+  }
+
+  /**
+   *
+   * ! warning. this is very week password, but it is difficult to guess.
+   *
+   * @param doc user model
+   * @returns password string
+   */
+  static generatePassword(doc: UserDocument): string {
+    return doc.id + "-" + doc.registeredAt + "-" + doc.updatedAt + "-" + (doc.point ?? 0);
   }
 }

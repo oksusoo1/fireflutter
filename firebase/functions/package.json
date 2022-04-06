@@ -13,6 +13,10 @@
     "test:user": "mocha --timeout 20000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/user/user.spec.ts",
     "test:post:create": "mocha --timeout 20000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/post/create.spec.ts",
     "test:post:create-via-http": "mocha --timeout 20000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/post/create-via-http.spec.ts",
+    "test:post:update": "mocha --timeout 20000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/post/update.spec.ts",
+    "test:post:update-via-http": "mocha --timeout 20000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/post/update-via-http.spec.ts",
+    "test:post": "mocha --timeout 20000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/post/*.spec.ts",
+    
     "test:comment:create": "mocha --timeout 20000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/comment/create.spec.ts",
     "test:point": "mocha --timeout 20000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/point/*.spec.ts",
     "test:point:sign-in": "mocha --timeout 20000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/point/sign-in.spec.ts",
@@ -28,12 +32,16 @@
     "test:meilisearch:comment-indexing": "mocha --timeout 20000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/meilisearch/comment-indexing.spec.ts",
     "test:meilisearch:user-indexing": "mocha --timeout 20000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/meilisearch/user-indexing.spec.ts",
     "test:quiz:test-answer": "mocha --timeout 20000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/quiz/test-answer.spec.ts",
-    "test:messagingToken": "mocha --timeout 20000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/messaging/messaging-tokens.spec.ts",
+    
     "test:messaging": "mocha --timeout 70000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/messaging/messaging.spec.ts",
+    "test:messaging:token": "mocha --timeout 20000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/messaging/messaging-tokens.spec.ts",
     "test:messaging:send": "mocha --timeout 70000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/messaging/messaging-send.spec.ts",
     "test:messagingSubscriber": "mocha --timeout 20000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/messaging/messaging-subscriber.spec.ts",
+
     "test:post:oncreate:sendmessage": "mocha --timeout 20000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/post/post-send-message-on-create.spec.ts",
-    "test:comment:oncreate:sendmessage": "mocha --timeout 20000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/comment/comment-send-message-on-create.spec.ts"
+    "test:comment:oncreate:sendmessage": "mocha --timeout 20000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/comment/comment-send-message-on-create.spec.ts",
+
+    "test:user:management": "mocha --timeout 20000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/user/user-management.spec.ts"
   },
   "engines": {
     "node": "16"

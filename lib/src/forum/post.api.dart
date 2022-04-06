@@ -12,6 +12,7 @@ class PostApi {
     return _instance!;
   }
 
+  /// Create a post
   Future create({
     required String category,
     String? title,

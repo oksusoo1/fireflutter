@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.sendMessageOnCommentCreate = exports.sendMessageOnPostCreate = exports.postCreate = void 0;
+exports.sendMessageOnCommentCreate = exports.sendMessageOnPostCreate = exports.postUpdate = exports.postCreate = void 0;
 /**
  * @file foum.functions.ts
  *
@@ -20,7 +20,6 @@ exports.sendMessageOnCommentCreate = exports.sendMessageOnPostCreate = exports.p
 const functions = require("firebase-functions");
 const post_1 = require("../classes/post");
 const ready_1 = require("../ready");
-const forum_interface_1 = require("../interfaces/forum.interface");
 // Start writing Firebase Functions
 // https://firebase.google.com/docs/functions/typescript
 exports.postCreate = functions.region("asia-northeast3").https.onRequest((req, res) => {
@@ -28,16 +27,21 @@ exports.postCreate = functions.region("asia-northeast3").https.onRequest((req, r
         res.status(200).send(await post_1.Post.create(data));
     });
 });
+exports.postUpdate = functions.region("asia-northeast3").https.onRequest((req, res) => {
+    ready_1.ready({ req, res, auth: true }, async (data) => {
+        res.status(200).send(await post_1.Post.update(data));
+    });
+});
 exports.sendMessageOnPostCreate = functions
     .region("asia-northeast3")
     .firestore.document("/posts/{postId}")
     .onCreate((snapshot, context) => {
-    return post_1.Post.sendMessageOnPostCreate(new forum_interface_1.PostDocument().fromDocument(snapshot.data(), context.params.postId));
+    return post_1.Post.sendMessageOnPostCreate(snapshot.data(), context.params.postId);
 });
 exports.sendMessageOnCommentCreate = functions
     .region("asia-northeast3")
     .firestore.document("/comments/{commentId}")
     .onCreate((snapshot, context) => {
-    return post_1.Post.sendMessageOnCommentCreate(new forum_interface_1.CommentDocument().fromDocument(snapshot.data(), context.params.commentId));
+    return post_1.Post.sendMessageOnCommentCreate(snapshot.data(), context.params.commentId);
 });
 //# sourceMappingURL=forum.functions.js.map
