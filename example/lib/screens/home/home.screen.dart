@@ -457,7 +457,7 @@ class ServerTime extends StatefulWidget {
 }
 
 class _ServerTimeState extends State<ServerTime> {
-  String? data;
+  Map? data;
   @override
   void initState() {
     super.initState();
@@ -469,7 +469,8 @@ class _ServerTimeState extends State<ServerTime> {
 
   @override
   Widget build(BuildContext context) {
-    return Text("Cloud functions server time: $data");
+    return Text(
+        "Sserver time: ${DateTime.fromMillisecondsSinceEpoch(data?['timestamp'] * 1000).toString()}");
   }
 }
 
