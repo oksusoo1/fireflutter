@@ -102,6 +102,7 @@ export class Post {
     // 4. if there is no comment, then delete the post.
     // 4.5 or if there is a comment, then mark it as deleted. (deleted=true)
     // 5. if the post had been marked as deleted, then throw ERROR_ALREADY_DELETED.
+    return "";
   }
   /**
    * Returns a post as PostDocument or null if the post does not exists.
