@@ -10,6 +10,7 @@ import { CommentDocument, PostDocument } from "../interfaces/forum.interface";
 
 import { Ref } from "./ref";
 import {
+  ERROR_ALREADY_DELETED,
   ERROR_CREATE_FAILED,
   ERROR_EMPTY_CATEGORY,
   ERROR_EMPTY_ID,
@@ -20,6 +21,7 @@ import {
 } from "../defines";
 import { Messaging } from "./messaging";
 import { OnCommentCreateResponse } from "../interfaces/messaging.interface";
+import { Storage } from "./storage";
 
 export class Post {
   /**
@@ -96,12 +98,41 @@ export class Post {
   }
 
   static async delete(data: { id: string; uid: string }): Promise<string> {
-    // 1. get the post and if it's null(not exists), throw ERROR_POST_NOT_EXITS,
-    // 2. check uid and if it's not the same of the document, throw ERROR_NOT_YOUR_POST;
-    // 3. delete files from firebase storage.
-    // 4. if there is no comment, then delete the post.
-    // 4.5 or if there is a comment, then mark it as deleted. (deleted=true)
-    // 5. if the post had been marked as deleted, then throw ERROR_ALREADY_DELETED.
+    const id = data.id;
+    // 1. get the post.
+    const post = await this.get(id);
+
+    // 2. if it's null(not exists), throw ERROR_POST_NOT_EXITS,
+    if (post === null) throw ERROR_POST_NOT_EXIST;
+
+    // 3. check uid and if it's not the same of the document, throw ERROR_NOT_YOUR_POST;
+    if (post.uid !== data.uid) throw ERROR_NOT_YOUR_POST;
+
+    // 4. if the post had been marked as deleted, then throw ERROR_ALREADY_DELETED.
+    if (post.deleted && post.deleted === true) throw ERROR_ALREADY_DELETED;
+
+    // 5. if post has files, delete files from firebase storage.
+    if (post.files?.length) {
+      for (const url in post.files) {
+        await Storage.deleteFileFromUrl(url);
+      }
+    }
+
+    const postRef = Ref.postDoc(id);
+    // 6.A if there is no comment, then delete the post.
+    if (!post.noOfComments) {
+      await postRef.delete();
+      return id;
+    }
+    // 6.B or if there is a comment, then mark it as deleted. (deleted=true)
+    else {
+      post.title = "";
+      post.content = "";
+      post.deleted = true;
+      await postRef.update(post);
+    }
+
+    return id;
   }
   /**
    * Returns a post as PostDocument or null if the post does not exists.
@@ -133,10 +164,7 @@ export class Post {
     return admin.messaging().send(payload);
   }
 
-  static async sendMessageOnCommentCreate(
-    data: CommentDocument,
-    id: string
-  ): Promise<OnCommentCreateResponse | null> {
+  static async sendMessageOnCommentCreate(data: CommentDocument, id: string): Promise<OnCommentCreateResponse | null> {
     const post = await this.get(data.postId);
     if (!post) return null;
 
@@ -163,18 +191,12 @@ export class Post {
     }
 
     // Don't send the same message twice to topic subscribers and comment notifyees.
-    const userUids = await Messaging.getCommentNotifyeeWithoutTopicSubscriber(
-      ancestorsUid.join(","),
-      topic
-    );
+    const userUids = await Messaging.getCommentNotifyeeWithoutTopicSubscriber(ancestorsUid.join(","), topic);
 
     // get users tokens
     const tokens = await Messaging.getTokensFromUids(userUids.join(","));
 
-    const sendToTokenRes = await Messaging.sendingMessageToTokens(
-      tokens,
-      Messaging.preMessagePayload(messageData)
-    );
+    const sendToTokenRes = await Messaging.sendingMessageToTokens(tokens, Messaging.preMessagePayload(messageData));
     return {
       topicResponse: sendToTopicRes,
       tokenResponse: sendToTokenRes,

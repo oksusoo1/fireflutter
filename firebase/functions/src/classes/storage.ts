@@ -65,4 +65,41 @@ export class Storage {
     const parts = token[0].split("/");
     return parts[parts.length - 1].replaceAll("%2F", "/");
   }
+
+  /**
+   * Gets file reference from url.
+   *
+   * @param url
+   * @returns
+   */
+  static getFileFromUrl(url: string) {
+    if (url.startsWith("http")) {
+      url = this.getFilePathFromUrl(url);
+    }
+    return admin.storage().bucket().file(url);
+  }
+
+  /**
+   * Deletes a file from a url.
+   *
+   * @param url
+   * @returns
+   *
+   * TODO: test
+   */
+  static async deleteFileFromUrl(url: string): Promise<void> {
+    // If it's not a file from firebase storage, it does not do anything.
+    if (url.includes("firebasestorage.googleapis.com") == false) {
+      return;
+    }
+
+    if (url.startsWith("http")) {
+      url = this.getFilePathFromUrl(url);
+    }
+    const file = admin.storage().bucket().file(url);
+    const isExists = await file.exists();
+    if (isExists[0]) await file.delete();
+    else return;
+  }
 }
+
