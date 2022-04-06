@@ -9,13 +9,20 @@ dayjs.extend(weekOfYear);
 import { CommentDocument, PostDocument } from "../interfaces/forum.interface";
 
 import { Ref } from "./ref";
-import { ERROR_EMPTY_CATEGORY, ERROR_EMPTY_UID } from "../defines";
+import {
+  ERROR_EMPTY_CATEGORY,
+  ERROR_EMPTY_ID,
+  ERROR_EMPTY_UID,
+  ERROR_NOT_YOUR_POST,
+  ERROR_POST_NOT_EXIST,
+} from "../defines";
 import { Messaging } from "./messaging";
 import { OnCommentCreateResponse } from "../interfaces/messaging.interface";
 
 export class Post {
   /**
    *
+   * @see README.md for details.
    * @param data post doc data to be created
    * @returns post doc data after create. Note that, it will contain post id.
    */
@@ -26,8 +33,6 @@ export class Post {
 
     // get all the data from client.
     const doc: { [key: string]: any } = data as any;
-
-    delete doc.password;
 
     // default data
     doc.hasPhoto = !!doc.files;
@@ -48,35 +53,61 @@ export class Post {
     // return the document object of newly created post.
     const snapshot = await ref.get();
     if (snapshot.exists) {
-      return new PostDocument().fromDocument(snapshot.data(), ref.id);
+      const postData = snapshot.data() as PostDocument;
+      postData.id = ref.id;
+      return postData;
     } else {
       return null;
     }
   }
 
+  static async update(data: any): Promise<PostDocument | null> {
+    if (!data.id) throw ERROR_EMPTY_ID;
+    const post = await this.get(data.id);
+    if (post === null) throw ERROR_POST_NOT_EXIST;
+    if (post.uid !== data.uid) throw ERROR_NOT_YOUR_POST;
+
+    const id = data.id;
+    delete data.id;
+    data.updatedAt = admin.firestore.FieldValue.serverTimestamp();
+    if (data.files && data.files.length) data.hasPhoto = true;
+    await Ref.postDoc(id).update(data);
+    return await this.get(id);
+  }
+
+  /**
+   * Returns a post as PostDocument or null if the post does not exists.
+   * @param id post id
+   * @returns post document or null
+   */
   static async get(id: string): Promise<null | PostDocument> {
     const snapshot = await Ref.postDoc(id).get();
     if (snapshot.exists) {
       // return snapshot.data() as PostDocument;
       const data = snapshot.data();
-      if (data) return new PostDocument().fromDocument(data, id);
+      if (data) {
+        data.id = id;
+        return data as PostDocument;
+      }
     }
     return null;
   }
 
-  static async sendMessageOnPostCreate(data: PostDocument) {
+  static async sendMessageOnPostCreate(data: PostDocument, id: string) {
     const category = data.category;
     const payload = Messaging.topicPayload("posts_" + category, {
-      title: data.title ? data.title : "",
-      body: data.content ? data.content : "",
-      postId: data.id,
+      title: data.title ?? "",
+      body: data.content ?? "",
+      postId: id,
       type: "post",
       uid: data.uid,
     });
     return admin.messaging().send(payload);
   }
 
-  static async sendMessageOnCommentCreate(data: CommentDocument): Promise<OnCommentCreateResponse | null> {
+  static async sendMessageOnCommentCreate(
+    data: CommentDocument
+  ): Promise<OnCommentCreateResponse | null> {
     const post = await this.get(data.postId);
     if (!post) return null;
 
@@ -103,12 +134,18 @@ export class Post {
     }
 
     // Don't send the same message twice to topic subscribers and comment notifyees.
-    const userUids = await Messaging.getCommentNotifyeeWithoutTopicSubscriber(ancestorsUid.join(","), topic);
+    const userUids = await Messaging.getCommentNotifyeeWithoutTopicSubscriber(
+      ancestorsUid.join(","),
+      topic
+    );
 
     // get users tokens
     const tokens = await Messaging.getTokensFromUids(userUids.join(","));
 
-    const sendToTokenRes = await Messaging.sendingMessageToTokens(tokens, Messaging.preMessagePayload(messageData));
+    const sendToTokenRes = await Messaging.sendingMessageToTokens(
+      tokens,
+      Messaging.preMessagePayload(messageData)
+    );
     return {
       topicResponse: sendToTopicRes,
       tokenResponse: sendToTokenRes,
@@ -119,12 +156,12 @@ export class Post {
   // return the uids of the author
   static async getCommentAncestors(id: string, authorUid: string) {
     const c = await Ref.commentDoc(id).get();
-    let comment = new CommentDocument().fromDocument(c.data(), id);
+    let comment = c.data() as CommentDocument;
     const uids = [];
     while (comment.postId != comment.parentId) {
       const com = await Ref.commentDoc(comment.parentId).get();
       if (!com.exists) continue;
-      comment = new CommentDocument().fromDocument(com.data(), comment.parentId);
+      comment = com.data() as CommentDocument;
       if (comment.uid == authorUid) continue; // skip the author's uid.
       uids.push(comment.uid);
     }

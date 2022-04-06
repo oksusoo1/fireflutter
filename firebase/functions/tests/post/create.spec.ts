@@ -16,10 +16,10 @@ describe("Post create test", () => {
       title: "yo",
       a: "apple",
     } as any);
+    // console.log(post);
     expect(post).not.to.be.null;
     expect(post!.category === "cat1").true;
-    expect((post as any).password === undefined).true;
-    // console.log(post);
+    expect(post!.a === "apple").true;
   });
   it("Fail - ERROR_EMPTY_UID", async () => {
     try {

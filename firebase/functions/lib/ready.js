@@ -24,6 +24,9 @@ async function ready(options, callback) {
                 return;
             }
         }
+        /// Delete password if exists.
+        if (data.password)
+            delete data.password;
         callback(data).catch((e) => {
             res.status(200).send(e);
         });
