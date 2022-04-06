@@ -61,6 +61,13 @@ export class Post {
     }
   }
 
+  /**
+   * Updates a post
+   * @param data data to update the post
+   * - data.id as post id is required.
+   * - data.uid as post owner's uid is required.
+   * @returns the post as PostDocument
+   */
   static async update(data: any): Promise<PostDocument | null> {
     if (!data.id) throw ERROR_EMPTY_ID;
     const post = await this.get(data.id);

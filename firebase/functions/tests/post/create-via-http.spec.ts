@@ -9,7 +9,7 @@ import { FirebaseAppInitializer } from "../firebase-app-initializer";
 import {
   ERROR_EMPTY_UID,
   ERROR_EMPTY_PASSWORD,
-  ERROR_AUTH_FAILED,
+  ERROR_WRONG_PASSWORD,
   ERROR_EMPTY_CATEGORY,
 } from "../../src/defines";
 import { Utils } from "../../src/classes/utils";
@@ -29,9 +29,9 @@ describe("Post create via http call", () => {
     const res = await axios.post(endpoint, { uid: "uid" });
     expect(res.data).equals(ERROR_EMPTY_PASSWORD);
   });
-  it("auth failed", async () => {
+  it("fail - wrong password", async () => {
     const res = await axios.post(endpoint, { uid: "uid", password: "wrong-password" });
-    expect(res.data).equals(ERROR_AUTH_FAILED);
+    expect(res.data).equals(ERROR_WRONG_PASSWORD);
   });
   it("post create success", async () => {
     // Create a test user for creating a post.
@@ -44,14 +44,14 @@ describe("Post create via http call", () => {
     // test empty category
     const res = await axios.post(endpoint, {
       uid: user!.id,
-      password: user!.password,
+      password: User.generatePassword(user),
     });
     expect(res.data).equals(ERROR_EMPTY_CATEGORY);
 
     // test creating a post
     const res2 = await axios.post(endpoint, {
       uid: user!.id,
-      password: user!.password,
+      password: User.generatePassword(user),
       category: "cat1",
       a: "apple",
       b: "banana",

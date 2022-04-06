@@ -4,7 +4,7 @@ import { CommentDocument, PostDocument } from "../interfaces/forum.interface";
 import { MeiliSearch as Meili, SearchResponse } from "meilisearch";
 import { EventContext } from "firebase-functions/v1";
 import { UserRecord } from "firebase-functions/v1/auth";
-import { UserModel } from "../interfaces/user.interface";
+import { UserDocument } from "../interfaces/user.interface";
 
 export class Meilisearch {
   static excludedCategories = ["quiz"];
@@ -96,8 +96,8 @@ export class Meilisearch {
    * @test tests/meilisearch/post-update.spect.ts
    */
   static async indexPostUpdate(
-      data: { before: PostDocument; after: PostDocument },
-      context: EventContext
+    data: { before: PostDocument; after: PostDocument },
+    context: EventContext
   ): Promise<any> {
     const cats = await Ref.categoryCol.get();
     const dbCategories: string[] = cats.docs.map((doc) => doc.id);
@@ -186,7 +186,10 @@ export class Meilisearch {
    * @param context Event context
    * @return Promise
    */
-  static async indexCommentUpdate(data: { before: CommentDocument; after: CommentDocument }, context: EventContext) {
+  static async indexCommentUpdate(
+    data: { before: CommentDocument; after: CommentDocument },
+    context: EventContext
+  ) {
     if (data.before.content === data.after.content) return null;
     // don't index comments without postId or parentId.
     if (!data.after.postId || !data.after.parentId) return null;
@@ -248,7 +251,10 @@ export class Meilisearch {
    * @param context Event context.
    * @return promise
    */
-  static async indexUserUpdate(changes: { before: UserModel; after: UserModel }, context: EventContext): Promise<any> {
+  static async indexUserUpdate(
+    changes: { before: UserDocument; after: UserDocument },
+    context: EventContext
+  ): Promise<any> {
     const before = changes.before;
     const after = changes.after;
     if (
@@ -302,8 +308,8 @@ export class Meilisearch {
    * @returns Search result
    */
   static async search(
-      index: string,
-      data: { keyword?: string; id?: string }
+    index: string,
+    data: { keyword?: string; id?: string }
   ): Promise<SearchResponse<Record<string, any>>> {
     const searchFilters = [];
 
@@ -314,4 +320,3 @@ export class Meilisearch {
     });
   }
 }
-

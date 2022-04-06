@@ -1,4 +1,4 @@
-import { UserCreate, UserModel } from "../interfaces/user.interface";
+import { UserCreate, UserDocument } from "../interfaces/user.interface";
 import { Ref } from "./ref";
 import { ERROR_USER_EXISTS } from "../defines";
 import { Meilisearch } from "../classes/meilisearch";
@@ -17,7 +17,7 @@ export class Test {
    * @example create a user.
    * test.createTestUser(userA).then((v) => console.log(v));
    */
-  static async createTestUser(uid: string, data?: UserModel) {
+  static async createTestUser(uid: string, data?: UserDocument) {
     // check if the user of uid exists, then return null
 
     const ref = await Ref.user(uid).get();
@@ -46,7 +46,7 @@ export class Test {
    * @param data data
    * @returns document object
    */
-  static async createTestUserAndGetDoc(uid: string, data?: UserModel): Promise<UserModel> {
+  static async createTestUserAndGetDoc(uid: string, data?: UserDocument): Promise<UserDocument> {
     const ref = await this.createTestUser(uid, data);
     const snapshot = await ref.get();
     return snapshot.val();
