@@ -16,7 +16,6 @@ export const authTest = functions.region("asia-northeast3").https.onRequest((req
 
 export const serverTime = functions.region("asia-northeast3").https.onRequest((req, res) => {
   ready({ req, res, auth: false }, async () => {
-    /// @from here.
     res.status(200).send({ timestamp: Utils.getTimestamp() });
   });
 });
