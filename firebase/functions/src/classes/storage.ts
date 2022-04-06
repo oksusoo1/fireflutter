@@ -80,12 +80,51 @@ export class Storage {
   }
 
   /**
-   * Deletes a file from a url.
+   * Gets the thumbnail URL of a file.
+   *
+   * @param url is the original url.
+   * @returns thumbnail url.
+   *
+   */
+  static getThumbnailUrl(url: string) {
+    let _tempUrl = url;
+    if (_tempUrl.indexOf("?") > 0) {
+      _tempUrl = _tempUrl.split("?")[0];
+    }
+    const basename = _tempUrl.split("/").pop();
+    const filename = basename!.split(".")[0];
+    return _tempUrl.replace(basename!, `${filename}_200x200.webp`) + "?alt=media";
+  }
+
+  /**
+   * Check where or not a file url is an image url (not thumbnail url).
    *
    * @param url
    * @returns
+   */
+  static isImageUrl(url: string): boolean {
+    const t = url.toLowerCase();
+    if (t.endsWith(".jpg")) return true;
+    if (t.endsWith(".jpeg")) return true;
+    if (t.endsWith(".png")) return true;
+    if (t.endsWith(".gif")) return true;
+
+    if (
+      t.startsWith("http") &&
+      (t.includes(".jpg") || t.includes(".jpeg") || t.includes(".png") || t.includes(".gif"))
+    ) {
+      return true;
+    }
+    return false;
+  }
+
+  /**
+   * Deletes a file from a url.
    *
-   * TODO: test
+   * It will also delete thumbnail files if existing.
+   *
+   * @param url url path of the file.
+   * @returns
    */
   static async deleteFileFromUrl(url: string): Promise<void> {
     // If it's not a file from firebase storage, it does not do anything.
@@ -99,7 +138,17 @@ export class Storage {
     const file = admin.storage().bucket().file(url);
     const isExists = await file.exists();
     if (isExists[0]) await file.delete();
-    else return;
+
+    // if that is the original url.
+    if (this.isImageUrl(url)) {
+      // delete associating thumbnail url.
+      const thumbnailUrl = this.getThumbnailUrl(url);
+      const thumbFile = admin.storage().bucket().file(thumbnailUrl);
+      const thumbExists = await thumbFile.exists();
+      if (thumbExists[0]) await thumbFile.delete();
+    }
+
+    return;
   }
 }
 
