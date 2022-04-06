@@ -24,9 +24,12 @@ export class Post {
    *
    * @see README.md for details.
    * @param data post doc data to be created
-   * @returns post doc data after create. Note that, it will contain post id.
+   * @returns
+   * - post doc as in PostDocument interface after create. Note that, it will contain post id.
+   * - Or empty map object if it fails somehow on creating.
+   * @note exception will be thrown on error.
    */
-  static async create(data: any): Promise<PostDocument | null> {
+  static async create(data: any): Promise<PostDocument> {
     // check up
     if (!data.uid) throw ERROR_EMPTY_UID;
     if (!data.category) throw ERROR_EMPTY_CATEGORY;
@@ -57,7 +60,7 @@ export class Post {
       postData.id = ref.id;
       return postData;
     } else {
-      return null;
+      return {} as PostDocument;
     }
   }
 

@@ -20,7 +20,7 @@ export interface CategoryDocument {
  * ```
  */
 export interface PostDocument {
-  id: string;
+  id?: string;
   uid: string;
   category: string;
   subcategory?: string;
@@ -28,17 +28,17 @@ export interface PostDocument {
   content?: string;
   summary?: string;
   files?: string[];
-  hasPhoto: boolean;
-  deleted: boolean;
-  noOfComments: number;
-  year: number;
-  month: number;
-  day: number;
-  dayOfYear: number;
-  week: number;
+  hasPhoto?: boolean;
+  deleted?: boolean;
+  noOfComments?: number;
+  year?: number;
+  month?: number;
+  day?: number;
+  dayOfYear?: number;
+  week?: number;
   createdAt?: admin.firestore.FieldValue;
   updatedAt?: admin.firestore.FieldValue;
-  point: number;
+  point?: number;
   [key: string]: any;
 }
 
