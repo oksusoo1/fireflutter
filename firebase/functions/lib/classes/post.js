@@ -15,7 +15,10 @@ class Post {
      *
      * @see README.md for details.
      * @param data post doc data to be created
-     * @returns post doc data after create. Note that, it will contain post id.
+     * @returns
+     * - post doc as in PostDocument interface after create. Note that, it will contain post id.
+     * - Or empty map object if it fails somehow on creating.
+     * @note exception will be thrown on error.
      */
     static async create(data) {
         // check up
@@ -46,7 +49,7 @@ class Post {
             return postData;
         }
         else {
-            return null;
+            return {};
         }
     }
     /**
@@ -67,8 +70,12 @@ class Post {
         const id = data.id;
         delete data.id;
         data.updatedAt = admin.firestore.FieldValue.serverTimestamp();
-        if (data.files && data.files.length)
+        if (data.files && data.files.length) {
             data.hasPhoto = true;
+        }
+        else {
+            data.hasPhoto = false;
+        }
         await ref_1.Ref.postDoc(id).update(data);
         return await this.get(id);
     }

@@ -28,6 +28,7 @@ export class User {
     } else {
       const user = await this.get(data.uid);
       const password = this.generatePassword(user);
+      console.log(password, data.password);
       if (password === data.password) return "";
       else return ERROR_WRONG_PASSWORD;
     }
