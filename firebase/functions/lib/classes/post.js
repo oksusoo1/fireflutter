@@ -84,6 +84,16 @@ class Post {
             throw defines_1.ERROR_UPDATE_FAILED;
         return updated;
     }
+    static async delete(data) {
+        console.log(data);
+        // 1. get the post and if it's null(not exists), throw ERROR_POST_NOT_EXITS,
+        // 2. check uid and if it's not the same of the document, throw ERROR_NOT_YOUR_POST;
+        // 3. delete files from firebase storage.
+        // 4. if there is no comment, then delete the post.
+        // 4.5 or if there is a comment, then mark it as deleted. (deleted=true)
+        // 5. if the post had been marked as deleted, then throw ERROR_ALREADY_DELETED.
+        return "";
+    }
     /**
      * Returns a post as PostDocument or null if the post does not exists.
      * @param id post id

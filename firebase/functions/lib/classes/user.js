@@ -28,6 +28,9 @@ class User {
         }
         else {
             const user = await this.get(data.uid);
+            if (user === null) {
+                return defines_1.ERROR_USER_NOT_FOUND;
+            }
             const password = this.generatePassword(user);
             if (password === data.password)
                 return "";
@@ -47,7 +50,7 @@ class User {
             val.id = uid;
             return val;
         }
-        return {};
+        return null;
     }
     static async isAdmin(context) {
         const doc = await ref_1.Ref.adminDoc.get();
