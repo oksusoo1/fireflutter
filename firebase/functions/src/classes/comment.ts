@@ -2,7 +2,11 @@ import * as admin from "firebase-admin";
 
 import { Ref } from "./ref";
 import { ERROR_EMPTY_UID } from "../defines";
-import { CommentCreateParams, CommentCreateRequirements, CommentDocument } from "../interfaces/forum.interface";
+import {
+  CommentCreateParams,
+  CommentCreateRequirements,
+  CommentDocument,
+} from "../interfaces/forum.interface";
 
 export class Comment {
   /**
@@ -27,7 +31,9 @@ export class Comment {
     const ref = await Ref.commentCol.add(doc);
     const snapshot = await ref.get();
     if (snapshot.exists) {
-      return new CommentDocument().fromDocument(snapshot.data(), ref.id);
+      const comment = snapshot.data() as CommentDocument;
+      comment.id = ref.id;
+      return comment;
     } else {
       return null;
     }
@@ -36,7 +42,9 @@ export class Comment {
   static async get(id: string): Promise<null | CommentDocument> {
     const snapshot = await Ref.commentDoc(id).get();
     if (snapshot.exists) {
-      return new CommentDocument().fromDocument(snapshot.data(), id);
+      const comment = snapshot.data() as CommentDocument;
+      comment.id = id;
+      return comment;
     }
     return null;
   }

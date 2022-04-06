@@ -4,7 +4,6 @@ exports.Comment = void 0;
 const admin = require("firebase-admin");
 const ref_1 = require("./ref");
 const defines_1 = require("../defines");
-const forum_interface_1 = require("../interfaces/forum.interface");
 class Comment {
     /**
      * Creates a comment
@@ -30,7 +29,9 @@ class Comment {
         const ref = await ref_1.Ref.commentCol.add(doc);
         const snapshot = await ref.get();
         if (snapshot.exists) {
-            return new forum_interface_1.CommentDocument().fromDocument(snapshot.data(), ref.id);
+            const comment = snapshot.data();
+            comment.id = ref.id;
+            return comment;
         }
         else {
             return null;
@@ -39,7 +40,9 @@ class Comment {
     static async get(id) {
         const snapshot = await ref_1.Ref.commentDoc(id).get();
         if (snapshot.exists) {
-            return new forum_interface_1.CommentDocument().fromDocument(snapshot.data(), id);
+            const comment = snapshot.data();
+            comment.id = id;
+            return comment;
         }
         return null;
     }

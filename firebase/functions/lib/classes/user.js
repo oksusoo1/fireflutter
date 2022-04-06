@@ -2,7 +2,6 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.User = void 0;
 const defines_1 = require("../defines");
-const user_interface_1 = require("../interfaces/user.interface");
 const ref_1 = require("./ref");
 const utils_1 = require("./utils");
 const admin = require("firebase-admin");
@@ -29,24 +28,26 @@ class User {
         }
         else {
             const user = await this.get(data.uid);
-            if ((user === null || user === void 0 ? void 0 : user.password) === data.password)
+            const password = this.generatePassword(user);
+            if (password === data.password)
                 return "";
             else
-                return defines_1.ERROR_AUTH_FAILED;
+                return defines_1.ERROR_WRONG_PASSWORD;
         }
     }
     /**
      * Returns user document as in User class
      * @param uid uid of user
-     * @returns user document class
+     * @returns user document or empty map.
      */
     static async get(uid) {
         const snapshot = await ref_1.Ref.userDoc(uid).get();
         if (snapshot.exists()) {
             const val = snapshot.val();
-            return user_interface_1.UserModel.fromJson(val, uid);
+            val.id = uid;
+            return val;
         }
-        return null;
+        return {};
     }
     static async isAdmin(context) {
         const doc = await ref_1.Ref.adminDoc.get();
@@ -96,6 +97,17 @@ class User {
         catch (e) {
             return { code: "error", message: e.message };
         }
+    }
+    /**
+     *
+     * ! warning. this is very week password, but it is difficult to guess.
+     *
+     * @param doc user model
+     * @returns password string
+     */
+    static generatePassword(doc) {
+        var _a;
+        return doc.id + "-" + doc.registeredAt + "-" + doc.updatedAt + "-" + ((_a = doc.point) !== null && _a !== void 0 ? _a : 0);
     }
 }
 exports.User = User;

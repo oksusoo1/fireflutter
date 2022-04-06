@@ -1,53 +1,22 @@
 /**
  *
  */
-export class UserModel {
-  id = "";
-  isAdmin = false;
-  lastName = "";
-  firstName = "";
-  middleName = "";
-  nickname = "";
-  registeredAt = 0;
-  updatedAt = 0;
-  point = 0;
+export interface UserDocument {
+  id: string;
+  isAdmin: boolean;
+  lastName: string;
+  firstName: string;
+  middleName: string;
+  nickname: string;
+  registeredAt: number;
+  updatedAt: number;
+  point: number;
 
-  photoUrl = "";
-  gender = "";
-  birthday = 0;
+  photoUrl: string;
+  gender: string;
+  birthday: number;
 
-  password = "";
-
-  static fromJson(doc: UserModel, id: string): UserModel {
-    const o = new UserModel();
-    o.id = id;
-    o.isAdmin = doc.isAdmin ?? false;
-    o.lastName = doc.lastName ?? "";
-    o.firstName = doc.firstName ?? "";
-    o.middleName = doc.middleName ?? "";
-    o.nickname = doc.nickname ?? "";
-    o.photoUrl = doc.photoUrl ?? "";
-    o.gender = doc.gender ?? "";
-    o.birthday = doc.birthday ?? 0;
-    o.registeredAt = doc.registeredAt ?? 0;
-    o.updatedAt = doc.updatedAt ?? 0;
-    o.point = doc.point ?? 0;
-
-    o.password = this.generatePassword(o);
-
-    return o;
-  }
-
-  /**
-   *
-   * ! warning. this is very week password, but it is difficult to guess.
-   *
-   * @param doc user model
-   * @returns password string
-   */
-  static generatePassword(doc: UserModel) {
-    return doc.id + "-" + doc.registeredAt + "-" + doc.updatedAt + "-" + doc.point;
-  }
+  password?: string;
 }
 
 export interface UserCreate {

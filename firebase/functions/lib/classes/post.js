@@ -7,13 +7,13 @@ const dayOfYear = require("dayjs/plugin/dayOfYear");
 const weekOfYear = require("dayjs/plugin/weekOfYear");
 dayjs.extend(dayOfYear);
 dayjs.extend(weekOfYear);
-const forum_interface_1 = require("../interfaces/forum.interface");
 const ref_1 = require("./ref");
 const defines_1 = require("../defines");
 const messaging_1 = require("./messaging");
 class Post {
     /**
      *
+     * @see README.md for details.
      * @param data post doc data to be created
      * @returns post doc data after create. Note that, it will contain post id.
      */
@@ -41,28 +41,61 @@ class Post {
         // return the document object of newly created post.
         const snapshot = await ref.get();
         if (snapshot.exists) {
-            return new forum_interface_1.PostDocument().fromDocument(snapshot.data(), ref.id);
+            const postData = snapshot.data();
+            postData.id = ref.id;
+            return postData;
         }
         else {
             return null;
         }
     }
+    /**
+     * Updates a post
+     * @param data data to update the post
+     * - data.id as post id is required.
+     * - data.uid as post owner's uid is required.
+     * @returns the post as PostDocument
+     */
+    static async update(data) {
+        if (!data.id)
+            throw defines_1.ERROR_EMPTY_ID;
+        const post = await this.get(data.id);
+        if (post === null)
+            throw defines_1.ERROR_POST_NOT_EXIST;
+        if (post.uid !== data.uid)
+            throw defines_1.ERROR_NOT_YOUR_POST;
+        const id = data.id;
+        delete data.id;
+        data.updatedAt = admin.firestore.FieldValue.serverTimestamp();
+        if (data.files && data.files.length)
+            data.hasPhoto = true;
+        await ref_1.Ref.postDoc(id).update(data);
+        return await this.get(id);
+    }
+    /**
+     * Returns a post as PostDocument or null if the post does not exists.
+     * @param id post id
+     * @returns post document or null
+     */
     static async get(id) {
         const snapshot = await ref_1.Ref.postDoc(id).get();
         if (snapshot.exists) {
             // return snapshot.data() as PostDocument;
             const data = snapshot.data();
-            if (data)
-                return new forum_interface_1.PostDocument().fromDocument(data, id);
+            if (data) {
+                data.id = id;
+                return data;
+            }
         }
         return null;
     }
-    static async sendMessageOnPostCreate(data) {
+    static async sendMessageOnPostCreate(data, id) {
+        var _a, _b;
         const category = data.category;
         const payload = messaging_1.Messaging.topicPayload("posts_" + category, {
-            title: data.title ? data.title : "",
-            body: data.content ? data.content : "",
-            postId: data.id,
+            title: (_a = data.title) !== null && _a !== void 0 ? _a : "",
+            body: (_b = data.content) !== null && _b !== void 0 ? _b : "",
+            postId: id,
             type: "post",
             uid: data.uid,
         });
@@ -103,13 +136,13 @@ class Post {
     // return the uids of the author
     static async getCommentAncestors(id, authorUid) {
         const c = await ref_1.Ref.commentDoc(id).get();
-        let comment = new forum_interface_1.CommentDocument().fromDocument(c.data(), id);
+        let comment = c.data();
         const uids = [];
         while (comment.postId != comment.parentId) {
             const com = await ref_1.Ref.commentDoc(comment.parentId).get();
             if (!com.exists)
                 continue;
-            comment = new forum_interface_1.CommentDocument().fromDocument(com.data(), comment.parentId);
+            comment = com.data();
             if (comment.uid == authorUid)
                 continue; // skip the author's uid.
             uids.push(comment.uid);
