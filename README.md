@@ -1619,6 +1619,31 @@ class _ServerTimeState extends State<ServerTime> {
 }
 ```
 
+- This is another example code of displaying server time
+
+```dart
+class _ServerTimeState extends State<ServerTime> {
+  Map? data;
+  @override
+  void initState() {
+    super.initState();
+    FunctionsApi.instance
+        .request('serverTime')
+        .then((value) => setState(() => data = value))
+        .catchError((e) => error(e));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+        "Sserver time: ${DateTime.fromMillisecondsSinceEpoch(data?['timestamp'] * 1000).toString()}");
+  }
+}
+```
+
+
+
+
 
 ### Error handling on http trigger
 
