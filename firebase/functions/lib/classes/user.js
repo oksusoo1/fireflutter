@@ -54,6 +54,8 @@ class User {
         const admins = doc.data();
         if (!context)
             return false;
+        if (context.empty)
+            return false;
         if (!context.auth)
             return false;
         if (!context.auth.uid)
@@ -65,7 +67,7 @@ class User {
         return true;
     }
     static async enableUser(data, context) {
-        if (!this.isAdmin(context)) {
+        if (!(await this.isAdmin(context))) {
             return {
                 code: "ERROR_YOU_ARE_NOT_ADMIN",
                 message: "To manage user, you need to sign-in as an admin.",
@@ -82,7 +84,7 @@ class User {
         }
     }
     static async disableUser(data, context) {
-        if (!this.isAdmin(context)) {
+        if (!(await this.isAdmin(context))) {
             return {
                 code: "ERROR_YOU_ARE_NOT_ADMIN",
                 message: "To manage user, you need to sign-in as an admin.",

@@ -1,4 +1,9 @@
-import { ERROR_WRONG_PASSWORD, ERROR_EMPTY_PASSWORD, ERROR_EMPTY_UID } from "../defines";
+import {
+  ERROR_WRONG_PASSWORD,
+  ERROR_EMPTY_PASSWORD,
+  ERROR_EMPTY_UID,
+  ERROR_USER_NOT_FOUND,
+} from "../defines";
 import { UserCreate, UserDocument } from "../interfaces/user.interface";
 import { Ref } from "./ref";
 import { Utils } from "./utils";
@@ -27,6 +32,9 @@ export class User {
       return ERROR_EMPTY_PASSWORD;
     } else {
       const user = await this.get(data.uid);
+      if (user === null) {
+        return ERROR_USER_NOT_FOUND;
+      }
       const password = this.generatePassword(user);
       if (password === data.password) return "";
       else return ERROR_WRONG_PASSWORD;
@@ -38,7 +46,7 @@ export class User {
    * @param uid uid of user
    * @returns user document or empty map.
    */
-  static async get(uid: string): Promise<UserDocument> {
+  static async get(uid: string): Promise<UserDocument | null> {
     const snapshot = await Ref.userDoc(uid).get();
 
     if (snapshot.exists()) {
@@ -47,7 +55,7 @@ export class User {
       return val;
     }
 
-    return {} as UserDocument;
+    return null;
   }
 
   static async isAdmin(context: any) {
@@ -79,8 +87,8 @@ export class User {
   }
 
   static async disableUser(
-      data: any,
-      context: any
+    data: any,
+    context: any
   ): Promise<
     | admin.auth.UserRecord
     | {

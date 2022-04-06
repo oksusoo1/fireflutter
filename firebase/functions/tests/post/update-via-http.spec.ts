@@ -8,7 +8,12 @@ import { Utils } from "../../src/classes/utils";
 import { User } from "../../src/classes/user";
 import { PostDocument } from "../../src/interfaces/forum.interface";
 import { Post } from "../../src/classes/post";
-import { ERROR_EMPTY_PASSWORD, ERROR_EMPTY_UID, ERROR_POST_NOT_EXIST, ERROR_WRONG_PASSWORD } from "../../src/defines";
+import {
+  ERROR_EMPTY_PASSWORD,
+  ERROR_EMPTY_UID,
+  ERROR_POST_NOT_EXIST,
+  ERROR_WRONG_PASSWORD,
+} from "../../src/defines";
 import { UserDocument } from "../../src/interfaces/user.interface";
 
 new FirebaseAppInitializer();
@@ -17,8 +22,7 @@ const endpoint = "http://localhost:5001/withcenter-test-project/asia-northeast3/
 // const endpoint = "https://asia-northeast3-withcenter-test-project.cloudfunctions.net/postUpdate";
 
 let post: PostDocument;
-let user: UserDocument;
-let password: string;
+let user: UserDocument | null;
 const uid = "test-user-" + Utils.getTimestamp();
 
 describe("Post update via http call", () => {
@@ -27,8 +31,13 @@ describe("Post update via http call", () => {
       firstName: "fn",
     });
     user = await User.get(uid);
-    password = User.generatePassword(user);
-    console.log(`password: ${password}`);
+    if (user === null) {
+      expect.fail("User not exist by that uid.");
+    }
+
+    const password = User.generatePassword(user);
+    // console.log("password; ", password);
+
     post = await Post.create({
       uid: user.id,
       password: password,
@@ -37,8 +46,8 @@ describe("Post update via http call", () => {
     } as any);
 
     expect(post).not.to.be.null;
-    expect(post!.category === "cat1").true;
-    expect(post!.title === "title").true;
+    expect(post.category === "cat1").true;
+    expect(post.title === "title").true;
   });
 
   it("empty uid", async () => {
@@ -53,12 +62,17 @@ describe("Post update via http call", () => {
     const res = await axios.post(endpoint, { uid: "uid", password: "wrong-password" });
     expect(res.data).equals(ERROR_WRONG_PASSWORD);
   });
+
   it("fail - wrong post id (post does not exists)", async () => {
+    user = await User.get(uid!);
+    const password = User.generatePassword(user!);
+    // console.log("password; ", password);
     const res = await axios.post(endpoint, {
       id: "wrong-postid-does-not-exists",
       uid: uid,
       password: password,
     });
+
     expect(res.data).equals(ERROR_POST_NOT_EXIST);
   });
 });

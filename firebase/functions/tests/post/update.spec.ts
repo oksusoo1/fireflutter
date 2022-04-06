@@ -27,6 +27,7 @@ describe("Post update test", () => {
       firstName: "fn",
     });
     const user = await User.get(uid);
+    if (user === null) expect.fail();
 
     post = await Post.create({
       uid: user.id,
@@ -66,23 +67,23 @@ describe("Post update test", () => {
   });
   it("Input test with correct uid", async () => {
     const res = await Post.update({ id: post.id, uid: post.uid });
-    expect(res!).to.be.not.null;
-    expect(res!.id).to.be.not.null;
+    expect(res).to.be.not.null;
+    expect(res.id).to.be.not.null;
   });
   it("Input test update data (title, content, noOfComments)", async () => {
     // title
     const title = "post test title - " + Utils.getTimestamp();
     const titleUpdate = await Post.update({ id: post.id, uid: post.uid, title });
-    expect(titleUpdate!.title).to.be.equals(title);
+    expect(titleUpdate.title).to.be.equals(title);
 
     // content
     const content = "post test content - " + Utils.getTimestamp();
     const contentUpdate = await Post.update({ id: post.id, uid: post.uid, content });
-    expect(contentUpdate!.content).to.be.equals(content);
+    expect(contentUpdate.content).to.be.equals(content);
 
     // number of comments
     const noOfCommentsUpdate = await Post.update({ id: post.id, uid: post.uid, noOfComments: 5 });
-    expect(noOfCommentsUpdate!.noOfComments).to.be.equals(5);
+    expect(noOfCommentsUpdate.noOfComments).to.be.equals(5);
   });
   it("Input test update files to affect hasPhoto", async () => {
     let hasPhotoUpdate = await Post.update({ id: post.id, uid: post.uid, files: ["test"] });
@@ -93,11 +94,17 @@ describe("Post update test", () => {
   });
   it("Input test updateAt changes", async () => {
     const updateA = await Post.update({ id: post.id, uid: post.uid, like: 2 });
-    expect(updateA!.like).to.be.not.equals(post.like);
-    expect(updateA!.updatedAt).to.be.not.equals(post.updatedAt);
+    expect(updateA.like).to.be.not.equals(post.like);
+    expect(updateA.updatedAt).to.be.not.equals(post.updatedAt);
+
+    await Utils.delay(1000);
 
     const updateB = await Post.update({ id: post.id, uid: post.uid, like: 3 });
-    expect(updateB!.like).to.be.greaterThan(updateA!.like);
-    expect(updateB!.updatedAt).to.be.not.equals(updateA!.updatedAt);
+    expect(updateB.like).to.be.greaterThan(updateA.like);
+    expect(updateB.updatedAt).to.be.not.equals(updateA.updatedAt);
+
+    expect((updateB.updatedAt! as any)["_seconds"]).to.be.greaterThan(
+      (updateA.updatedAt! as any)["_seconds"]
+    );
   });
 });

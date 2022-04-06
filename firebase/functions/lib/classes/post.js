@@ -17,7 +17,7 @@ class Post {
      * @param data post doc data to be created
      * @returns
      * - post doc as in PostDocument interface after create. Note that, it will contain post id.
-     * - Or empty map object if it fails somehow on creating.
+     * - Or it will throw an exception on failing post creation.
      * @note exception will be thrown on error.
      */
     static async create(data) {
@@ -49,7 +49,7 @@ class Post {
             return postData;
         }
         else {
-            return {};
+            throw defines_1.ERROR_CREATE_FAILED;
         }
     }
     /**
@@ -58,6 +58,8 @@ class Post {
      * - data.id as post id is required.
      * - data.uid as post owner's uid is required.
      * @returns the post as PostDocument
+     *
+     * @note it throws exceptions on error.
      */
     static async update(data) {
         if (!data.id)
@@ -77,12 +79,15 @@ class Post {
             data.hasPhoto = false;
         }
         await ref_1.Ref.postDoc(id).update(data);
-        return await this.get(id);
+        const updated = await this.get(id);
+        if (updated === null)
+            throw defines_1.ERROR_UPDATE_FAILED;
+        return updated;
     }
     /**
      * Returns a post as PostDocument or null if the post does not exists.
      * @param id post id
-     * @returns post document or null
+     * @returns post document or null if the post does not exitss.
      */
     static async get(id) {
         const snapshot = await ref_1.Ref.postDoc(id).get();

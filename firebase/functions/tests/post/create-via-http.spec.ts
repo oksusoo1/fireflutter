@@ -35,17 +35,19 @@ describe("Post create via http call", () => {
   });
   it("post create success", async () => {
     // Create a test user for creating a post.
-    const id = "test-user-" + Utils.getTimestamp();
+    const id = "pcs-1-" + Utils.getTimestamp();
     await User.create(id, {
       firstName: "fn",
     });
     const user = await User.get(id);
+    if (user === null) expect.fail();
 
     // test empty category
     const res = await axios.post(endpoint, {
       uid: user!.id,
       password: User.generatePassword(user),
     });
+
     expect(res.data).equals(ERROR_EMPTY_CATEGORY);
 
     // test creating a post
