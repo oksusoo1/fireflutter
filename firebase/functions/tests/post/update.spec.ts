@@ -19,7 +19,7 @@ import { ERROR_EMPTY_ID, ERROR_NOT_YOUR_POST, ERROR_POST_NOT_EXIST } from "../..
 new FirebaseAppInitializer();
 
 let post: PostDocument;
-let uid = "test-user-" + Utils.getTimestamp();
+const uid = "test-user-" + Utils.getTimestamp();
 
 describe("Post update test", () => {
   it("Prepare a post for updating (by creating a user)", async () => {

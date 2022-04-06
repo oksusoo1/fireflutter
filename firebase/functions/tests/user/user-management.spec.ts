@@ -41,7 +41,7 @@ describe("Admin User management test", () => {
     };
     expect(re["code"]).equal(ERROR_YOU_ARE_NOT_ADMIN, "should be error since user not provided");
 
-    let ret = (await User.disableUser({ uid: userB }, { auth: { uid: userA } })) as admin.auth.UserRecord;
+    const ret = (await User.disableUser({ uid: userB }, { auth: { uid: userA } })) as admin.auth.UserRecord;
     const c = (await User.disableUser({ uid: userC }, { auth: { uid: userA } })) as admin.auth.UserRecord;
     expect(ret["uid"]).equal(userB, "userB uid");
     expect(ret["disabled"]).equal(true, "userB must be disabled true");

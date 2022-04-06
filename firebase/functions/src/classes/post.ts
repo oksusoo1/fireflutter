@@ -10,11 +10,13 @@ import { CommentDocument, PostDocument } from "../interfaces/forum.interface";
 
 import { Ref } from "./ref";
 import {
+  ERROR_CREATE_FAILED,
   ERROR_EMPTY_CATEGORY,
   ERROR_EMPTY_ID,
   ERROR_EMPTY_UID,
   ERROR_NOT_YOUR_POST,
   ERROR_POST_NOT_EXIST,
+  ERROR_UPDATE_FAILED,
 } from "../defines";
 import { Messaging } from "./messaging";
 import { OnCommentCreateResponse } from "../interfaces/messaging.interface";
@@ -26,7 +28,7 @@ export class Post {
    * @param data post doc data to be created
    * @returns
    * - post doc as in PostDocument interface after create. Note that, it will contain post id.
-   * - Or empty map object if it fails somehow on creating.
+   * - Or it will throw an exception on failing post creation.
    * @note exception will be thrown on error.
    */
   static async create(data: any): Promise<PostDocument> {
@@ -60,7 +62,7 @@ export class Post {
       postData.id = ref.id;
       return postData;
     } else {
-      return {} as PostDocument;
+      throw ERROR_CREATE_FAILED;
     }
   }
 
@@ -70,8 +72,10 @@ export class Post {
    * - data.id as post id is required.
    * - data.uid as post owner's uid is required.
    * @returns the post as PostDocument
+   *
+   * @note it throws exceptions on error.
    */
-  static async update(data: any): Promise<PostDocument | null> {
+  static async update(data: any): Promise<PostDocument> {
     if (!data.id) throw ERROR_EMPTY_ID;
     const post = await this.get(data.id);
     if (post === null) throw ERROR_POST_NOT_EXIST;
@@ -86,15 +90,17 @@ export class Post {
       data.hasPhoto = false;
     }
     await Ref.postDoc(id).update(data);
-    return await this.get(id);
+    const updated = await this.get(id);
+    if (updated === null) throw ERROR_UPDATE_FAILED;
+    return updated;
   }
 
   /**
    * Returns a post as PostDocument or null if the post does not exists.
    * @param id post id
-   * @returns post document or null
+   * @returns post document or null if the post does not exitss.
    */
-  static async get(id: string): Promise<null | PostDocument> {
+  static async get(id: string): Promise<PostDocument | null> {
     const snapshot = await Ref.postDoc(id).get();
     if (snapshot.exists) {
       // return snapshot.data() as PostDocument;
@@ -119,7 +125,10 @@ export class Post {
     return admin.messaging().send(payload);
   }
 
-  static async sendMessageOnCommentCreate(data: CommentDocument, id: string): Promise<OnCommentCreateResponse | null> {
+  static async sendMessageOnCommentCreate(
+      data: CommentDocument,
+      id: string
+  ): Promise<OnCommentCreateResponse | null> {
     const post = await this.get(data.postId);
     if (!post) return null;
 
@@ -146,12 +155,18 @@ export class Post {
     }
 
     // Don't send the same message twice to topic subscribers and comment notifyees.
-    const userUids = await Messaging.getCommentNotifyeeWithoutTopicSubscriber(ancestorsUid.join(","), topic);
+    const userUids = await Messaging.getCommentNotifyeeWithoutTopicSubscriber(
+        ancestorsUid.join(","),
+        topic
+    );
 
     // get users tokens
     const tokens = await Messaging.getTokensFromUids(userUids.join(","));
 
-    const sendToTokenRes = await Messaging.sendingMessageToTokens(tokens, Messaging.preMessagePayload(messageData));
+    const sendToTokenRes = await Messaging.sendingMessageToTokens(
+        tokens,
+        Messaging.preMessagePayload(messageData)
+    );
     return {
       topicResponse: sendToTopicRes,
       tokenResponse: sendToTokenRes,

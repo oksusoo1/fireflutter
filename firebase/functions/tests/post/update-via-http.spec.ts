@@ -19,7 +19,7 @@ const endpoint = "http://localhost:5001/withcenter-test-project/asia-northeast3/
 let post: PostDocument;
 let user: UserDocument;
 let password: string;
-let uid = "test-user-" + Utils.getTimestamp();
+const uid = "test-user-" + Utils.getTimestamp();
 
 describe("Post update via http call", () => {
   it("Prepare a post for updating (by creating a user)", async () => {
@@ -54,11 +54,10 @@ describe("Post update via http call", () => {
     expect(res.data).equals(ERROR_WRONG_PASSWORD);
   });
   it("fail - wrong post id (post does not exists)", async () => {
-    
     const res = await axios.post(endpoint, {
-      id: 'wrong-postid-does-not-exists',
+      id: "wrong-postid-does-not-exists",
       uid: uid,
-      password: password
+      password: password,
     });
     expect(res.data).equals(ERROR_POST_NOT_EXIST);
   });
