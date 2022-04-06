@@ -16,6 +16,7 @@
     "test:post:update": "mocha --timeout 20000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/post/update.spec.ts",
     "test:post:update-via-http": "mocha --timeout 20000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/post/update-via-http.spec.ts",
     "test:post:delete": "mocha --timeout 20000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/post/delete.spec.ts",
+    "test:post:delete-via-http": "mocha --timeout 20000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/post/delete-via-http.spec.ts",
     "test:post": "mocha --timeout 20000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/post/*.spec.ts",
     
     "test:comment:create": "mocha --timeout 20000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/comment/create.spec.ts",
