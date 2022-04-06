@@ -28,18 +28,17 @@ describe("Post update via http call", () => {
     });
     user = await User.get(uid);
     password = User.generatePassword(user);
+    console.log(`password: ${password}`);
     post = await Post.create({
       uid: user.id,
       password: password,
       category: "cat1",
       title: "title",
-      a: "apple",
     } as any);
 
     expect(post).not.to.be.null;
     expect(post!.category === "cat1").true;
     expect(post!.title === "title").true;
-    expect(post!.a === "apple").true;
   });
 
   it("empty uid", async () => {
@@ -57,7 +56,7 @@ describe("Post update via http call", () => {
   it("fail - wrong post id (post does not exists)", async () => {
     
     const res = await axios.post(endpoint, {
-      id: 'abc-123-efg',
+      id: 'wrong-postid-does-not-exists',
       uid: uid,
       password: password
     });
