@@ -96,8 +96,8 @@ export class Meilisearch {
    * @test tests/meilisearch/post-update.spect.ts
    */
   static async indexPostUpdate(
-    data: { before: PostDocument; after: PostDocument },
-    context: EventContext
+      data: { before: PostDocument; after: PostDocument },
+      context: EventContext
   ): Promise<any> {
     const cats = await Ref.categoryCol.get();
     const dbCategories: string[] = cats.docs.map((doc) => doc.id);
@@ -187,8 +187,8 @@ export class Meilisearch {
    * @return Promise
    */
   static async indexCommentUpdate(
-    data: { before: CommentDocument; after: CommentDocument },
-    context: EventContext
+      data: { before: CommentDocument; after: CommentDocument },
+      context: EventContext
   ) {
     if (data.before.content === data.after.content) return null;
     // don't index comments without postId or parentId.
@@ -252,8 +252,8 @@ export class Meilisearch {
    * @return promise
    */
   static async indexUserUpdate(
-    changes: { before: UserDocument; after: UserDocument },
-    context: EventContext
+      changes: { before: UserDocument; after: UserDocument },
+      context: EventContext
   ): Promise<any> {
     const before = changes.before;
     const after = changes.after;
@@ -308,8 +308,8 @@ export class Meilisearch {
    * @returns Search result
    */
   static async search(
-    index: string,
-    data: { keyword?: string; id?: string }
+      index: string,
+      data: { keyword?: string; id?: string }
   ): Promise<SearchResponse<Record<string, any>>> {
     const searchFilters = [];
 

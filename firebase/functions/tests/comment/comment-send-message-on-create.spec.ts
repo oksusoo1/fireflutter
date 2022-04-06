@@ -60,7 +60,7 @@ describe("Send message on comment create test", () => {
     const tokens = await Messaging.getTokensFromUids(userUids.join(","));
     expect(tokens).is.empty;
 
-    const res1 = await Post.sendMessageOnCommentCreate(comment2!);
+    const res1 = await Post.sendMessageOnCommentCreate(comment2!, comment2!.id);
     if (res1) {
       expect(res1.topicResponse).not.empty.include("/project");
       expect(res1.tokenResponse.success).equal(0);
@@ -71,7 +71,8 @@ describe("Send message on comment create test", () => {
 
     await Messaging.updateToken(a, "fake-token-1");
     await Messaging.updateToken(b, "fake-token-2");
-    const res2 = await Post.sendMessageOnCommentCreate(comment2!);
+    const res2 = await Post.sendMessageOnCommentCreate(comment2!, comment2!.id);
+    // console.log(res2);
     if (res2) {
       expect(res2.topicResponse).not.empty.include("/project");
       expect(res2.tokenResponse.success).equal(0);
@@ -83,7 +84,7 @@ describe("Send message on comment create test", () => {
     await Messaging.updateToken(a, "fake-token-1");
     await Messaging.updateToken(b, "fake-token-2");
     await Ref.userSetting(b, "topic").set({ ["comments_" + post!.category]: true });
-    const res3 = await Post.sendMessageOnCommentCreate(comment2!);
+    const res3 = await Post.sendMessageOnCommentCreate(comment2!, comment2!.id);
     if (res3) {
       expect(res3.topicResponse).not.empty.include("/project");
       expect(res3.tokenResponse.success).equal(0);

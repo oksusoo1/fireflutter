@@ -108,7 +108,7 @@ class Post {
         });
         return admin.messaging().send(payload);
     }
-    static async sendMessageOnCommentCreate(data) {
+    static async sendMessageOnCommentCreate(data, id) {
         const post = await this.get(data.postId);
         if (!post)
             return null;
@@ -124,7 +124,7 @@ class Post {
         // send push notification to topics
         const sendToTopicRes = await admin.messaging().send(messaging_1.Messaging.topicPayload(topic, messageData));
         // get comment ancestors
-        const ancestorsUid = await Post.getCommentAncestors(data.id, data.uid);
+        const ancestorsUid = await Post.getCommentAncestors(id, data.uid);
         // add the post uid if the comment author is not the post author
         if (post.uid != data.uid && !ancestorsUid.includes(post.uid)) {
             ancestorsUid.push(post.uid);
