@@ -15,7 +15,10 @@ class Post {
      *
      * @see README.md for details.
      * @param data post doc data to be created
-     * @returns post doc data after create. Note that, it will contain post id.
+     * @returns
+     * - post doc as in PostDocument interface after create. Note that, it will contain post id.
+     * - Or empty map object if it fails somehow on creating.
+     * @note exception will be thrown on error.
      */
     static async create(data) {
         // check up
@@ -46,7 +49,7 @@ class Post {
             return postData;
         }
         else {
-            return null;
+            return {};
         }
     }
     /**
@@ -101,7 +104,7 @@ class Post {
         });
         return admin.messaging().send(payload);
     }
-    static async sendMessageOnCommentCreate(data) {
+    static async sendMessageOnCommentCreate(data, id) {
         const post = await this.get(data.postId);
         if (!post)
             return null;
@@ -117,7 +120,7 @@ class Post {
         // send push notification to topics
         const sendToTopicRes = await admin.messaging().send(messaging_1.Messaging.topicPayload(topic, messageData));
         // get comment ancestors
-        const ancestorsUid = await Post.getCommentAncestors(data.id, data.uid);
+        const ancestorsUid = await Post.getCommentAncestors(id, data.uid);
         // add the post uid if the comment author is not the post author
         if (post.uid != data.uid && !ancestorsUid.includes(post.uid)) {
             ancestorsUid.push(post.uid);

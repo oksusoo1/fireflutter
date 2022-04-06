@@ -54,6 +54,7 @@ export class User {
     const doc = await Ref.adminDoc.get();
     const admins = doc.data();
     if (!context) return false;
+    if (context.empty) return false;
     if (!context.auth) return false;
     if (!context.auth.uid) return false;
     if (!admins) return false;
@@ -62,7 +63,7 @@ export class User {
   }
 
   static async enableUser(data: any, context: any) {
-    if (!this.isAdmin(context)) {
+    if (!(await this.isAdmin(context))) {
       return {
         code: "ERROR_YOU_ARE_NOT_ADMIN",
         message: "To manage user, you need to sign-in as an admin.",
@@ -77,8 +78,17 @@ export class User {
     }
   }
 
-  static async disableUser(data: any, context: any) {
-    if (!this.isAdmin(context)) {
+  static async disableUser(
+    data: any,
+    context: any
+  ): Promise<
+    | admin.auth.UserRecord
+    | {
+        code: string;
+        message: string;
+      }
+  > {
+    if (!(await this.isAdmin(context))) {
       return {
         code: "ERROR_YOU_ARE_NOT_ADMIN",
         message: "To manage user, you need to sign-in as an admin.",

@@ -37,6 +37,6 @@ exports.sendMessageOnCommentCreate = functions
     .region("asia-northeast3")
     .firestore.document("/comments/{commentId}")
     .onCreate((snapshot, context) => {
-    return post_1.Post.sendMessageOnCommentCreate(snapshot.data());
+    return post_1.Post.sendMessageOnCommentCreate(snapshot.data(), context.params.commentId);
 });
 //# sourceMappingURL=forum.functions.js.map
