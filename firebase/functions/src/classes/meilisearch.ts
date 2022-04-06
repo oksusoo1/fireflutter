@@ -53,10 +53,10 @@ export class Meilisearch {
    */
   static async indexPostCreate(data: PostDocument, context: EventContext) {
     const cats = await Ref.categoryCol.get();
-    const categories: string[] = cats.docs.map((doc) => doc.id);
+    const dbCategories: string[] = cats.docs.map((doc) => doc.id);
 
     // don't index posts with unknown category.
-    if (categories.includes(data.category) == false) return null;
+    if (dbCategories.includes(data.category) == false) return null;
     // don't index posts under excluded categories, like `quiz`.
     if (this.excludedCategories.includes(data.category)) return null;
 
@@ -100,10 +100,10 @@ export class Meilisearch {
       context: EventContext
   ): Promise<any> {
     const cats = await Ref.categoryCol.get();
-    const categories: string[] = cats.docs.map((doc) => doc.id);
+    const dbCategories: string[] = cats.docs.map((doc) => doc.id);
 
     // don't index posts with unknown category.
-    if (categories.includes(data.after.category) == false) return null;
+    if (dbCategories.includes(data.after.category) == false) return null;
     // don't index posts with category matching from list of excluded categories.
     if (this.excludedCategories.includes(data.after.category)) return null;
     // don't index posts if both post and title didn't change.

@@ -36,9 +36,9 @@ class Meilisearch {
     static async indexPostCreate(data, context) {
         var _a, _b, _c;
         const cats = await ref_1.Ref.categoryCol.get();
-        const categories = cats.docs.map((doc) => doc.id);
+        const dbCategories = cats.docs.map((doc) => doc.id);
         // don't index posts with unknown category.
-        if (categories.includes(data.category) == false)
+        if (dbCategories.includes(data.category) == false)
             return null;
         // don't index posts under excluded categories, like `quiz`.
         if (this.excludedCategories.includes(data.category))
@@ -77,9 +77,9 @@ class Meilisearch {
     static async indexPostUpdate(data, context) {
         var _a;
         const cats = await ref_1.Ref.categoryCol.get();
-        const categories = cats.docs.map((doc) => doc.id);
+        const dbCategories = cats.docs.map((doc) => doc.id);
         // don't index posts with unknown category.
-        if (categories.includes(data.after.category) == false)
+        if (dbCategories.includes(data.after.category) == false)
             return null;
         // don't index posts with category matching from list of excluded categories.
         if (this.excludedCategories.includes(data.after.category))

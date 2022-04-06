@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.sendMessageOnCommentCreate = exports.sendMessageOnPostCreate = exports.authTest = exports.inputTest = exports.postCreate = void 0;
+exports.sendMessageOnCommentCreate = exports.sendMessageOnPostCreate = exports.postCreate = void 0;
 /**
  * @file foum.functions.ts
  *
@@ -26,17 +26,6 @@ const forum_interface_1 = require("../interfaces/forum.interface");
 exports.postCreate = functions.region("asia-northeast3").https.onRequest((req, res) => {
     ready_1.ready({ req, res, auth: true }, async (data) => {
         res.status(200).send(await post_1.Post.create(data));
-    });
-});
-exports.inputTest = functions.region("asia-northeast3").https.onRequest((req, res) => {
-    ready_1.ready({ req, res, auth: false }, async (data) => {
-        res.status(200).send(data);
-    });
-});
-exports.authTest = functions.region("asia-northeast3").https.onRequest((req, res) => {
-    ready_1.ready({ req, res, auth: true }, async (data) => {
-        console.log("data; ", data);
-        res.status(200).send(data);
     });
 });
 exports.sendMessageOnPostCreate = functions

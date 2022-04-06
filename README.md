@@ -1582,8 +1582,43 @@ curl -X POST -H "Content-Type: application/x-www-form-urlencoded" "http://localh
 ### Request and data handling
 
 - To request using http call to cloud functions, use `FunctionsApi.instance.request` method.
-- It will return the data that the clound function sends back to client.
-- When there is an error it will throw an exception.
+  - It will return the data that the clound function sends back to client.
+  - When there is an error it will throw an exception.
+
+
+- First, initialize the cloud function server url before using the api.
+
+```dart
+FunctionsApi.instance.init(
+  serverUrl: "https://asia-northeast3-withcenter-test-project.cloudfunctions.net/",
+  onError: error,
+);
+```
+
+- Secondly, you can request to cloud functions like below.
+
+```dart
+class _ServerTimeState extends State<ServerTime> {
+  Map? data;
+  @override
+  void initState() {
+    super.initState();
+    FunctionsApi.instance.request('inputTest', {'a': 'apple', 'b': 'banana'}).then((value) {
+      setState(() {
+        data = value;
+      });
+    }).catchError((e) {
+      error(e);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Text("Cloud functions server time: ${data?['b']}");
+  }
+}
+```
+
 
 ### Error handling on http trigger
 
