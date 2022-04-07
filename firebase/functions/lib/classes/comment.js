@@ -4,6 +4,7 @@ exports.Comment = void 0;
 const admin = require("firebase-admin");
 const ref_1 = require("./ref");
 const defines_1 = require("../defines");
+const storage_1 = require("./storage");
 class Comment {
     /**
      * Creates a comment
@@ -89,9 +90,19 @@ class Comment {
         if (comment.uid !== data.uid)
             throw defines_1.ERROR_NOT_YOUR_COMMENT;
         if (comment.files && comment.files.length > 0) {
+<<<<<<< HEAD
             // delete files and thumbnails
         }
         await ref_1.Ref.commentDoc(id).update({ content: "", deleted: true });
+=======
+            for (const url of comment.files) {
+                await storage_1.Storage.deleteFileFromUrl(url);
+            }
+        }
+        comment.content = "";
+        comment.deleted = true;
+        await ref_1.Ref.commentDoc(id).update(comment);
+>>>>>>> 271ac902eaaf5641a22c91cdca0112522308c00d
         return { id };
     }
     static async get(id) {

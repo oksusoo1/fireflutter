@@ -3,11 +3,20 @@ import { expect } from "chai";
 
 import { FirebaseAppInitializer } from "../firebase-app-initializer";
 import { Comment } from "../../src/classes/comment";
-// import { ERROR_EMPTY_CATEGORY, ERROR_EMPTY_UID } from "../../src/defines";
+import { ERROR_EMPTY_UID } from "../../src/defines";
 
 new FirebaseAppInitializer();
 
 describe("comment create test", () => {
+  it("fail - empty uid", async () => {
+    try {
+      await Comment.create({} as any);
+      expect.fail();
+    } catch (e) {
+      expect(e).equals(ERROR_EMPTY_UID);
+    }
+  });
+
   it("Succed to create a comment", async () => {
     const comment = await Comment.create({
       uid: "a",
@@ -21,3 +30,4 @@ describe("comment create test", () => {
     expect(comment!.uid).equals("a");
   });
 });
+
