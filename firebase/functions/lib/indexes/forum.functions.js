@@ -20,10 +20,7 @@ exports.sendMessageOnCommentCreate = exports.sendMessageOnPostCreate = exports.c
 const functions = require("firebase-functions");
 const ready_1 = require("../ready");
 const post_1 = require("../classes/post");
-<<<<<<< HEAD
-=======
 const comment_1 = require("../classes/comment");
->>>>>>> 271ac902eaaf5641a22c91cdca0112522308c00d
 // Start writing Firebase Functions
 // https://firebase.google.com/docs/functions/typescript
 exports.postCreate = functions.region("asia-northeast3").https.onRequest((req, res) => {

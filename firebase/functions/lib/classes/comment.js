@@ -90,11 +90,6 @@ class Comment {
         if (comment.uid !== data.uid)
             throw defines_1.ERROR_NOT_YOUR_COMMENT;
         if (comment.files && comment.files.length > 0) {
-<<<<<<< HEAD
-            // delete files and thumbnails
-        }
-        await ref_1.Ref.commentDoc(id).update({ content: "", deleted: true });
-=======
             for (const url of comment.files) {
                 await storage_1.Storage.deleteFileFromUrl(url);
             }
@@ -102,7 +97,6 @@ class Comment {
         comment.content = "";
         comment.deleted = true;
         await ref_1.Ref.commentDoc(id).update(comment);
->>>>>>> 271ac902eaaf5641a22c91cdca0112522308c00d
         return { id };
     }
     static async get(id) {
