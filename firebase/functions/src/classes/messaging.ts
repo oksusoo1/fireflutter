@@ -1,5 +1,10 @@
 import * as admin from "firebase-admin";
-// import { messaging } from "firebase-admin";
+import {
+  ERROR_EMPTY_TOKENS,
+  ERROR_EMPTY_TOPIC,
+  ERROR_EMPTY_UIDS,
+  ERROR_TITLE_AND_BODY_CANT_BE_BOTH_EMPTY,
+} from "../defines";
 import { MessagePayload } from "../interfaces/messaging.interface";
 import { Ref } from "./ref";
 import { Utils } from "./utils";
@@ -136,15 +141,16 @@ export class Messaging {
   }
 
   static preMessagePayload(query: any) {
+    if (!query.title && !query.body) throw ERROR_TITLE_AND_BODY_CANT_BE_BOTH_EMPTY;
     const res: MessagePayload = {
       data: {
         id: query.postId ? query.postId : query.id ? query.id : "",
-        type: query.type ? query.type : "",
-        senderUid: query.senderUid ? query.senderUid : query.uid ? query.uid : "",
-        badge: query.badge ? query.badge : "",
+        type: query.type ?? "",
+        senderUid: query.senderUid ?? query.uid ?? "",
+        badge: query.badge ?? "",
       },
       notification: {
-        title: query.title ? query.title : "",
+        title: query.title ?? "",
         body: query.body ? query.body : query.content ? query.content : "",
       },
       android: {
@@ -177,8 +183,8 @@ export class Messaging {
   }
 
   static async sendingMessageToTokens(
-      tokens: Array<string>,
-      payload: MessagePayload
+    tokens: Array<string>,
+    payload: MessagePayload
   ): Promise<{
     success: number;
     error: number;
@@ -191,10 +197,7 @@ export class Messaging {
     const sendToDevicePromise = [];
     for (const c of chunks) {
       // Send notifications to all tokens.
-      const newPayload: admin.messaging.MulticastMessage = Object.assign(
-          { tokens: c },
-        payload as any
-      );
+      const newPayload: admin.messaging.MulticastMessage = Object.assign({ tokens: c }, payload as any);
       sendToDevicePromise.push(admin.messaging().sendMulticast(newPayload));
     }
     const sendDevice = await Promise.all(sendToDevicePromise);
@@ -232,6 +235,7 @@ export class Messaging {
   }
 
   static async sendMessageToTopic(query: any) {
+    if (!query.topic) throw ERROR_EMPTY_TOPIC;
     const payload = this.topicPayload(query.topic, query);
     try {
       const res = await admin.messaging().send(payload);
@@ -242,11 +246,8 @@ export class Messaging {
   }
 
   static async sendMessageToTokens(query: any) {
+    if (!query.tokens) throw ERROR_EMPTY_TOKENS;
     const payload = this.preMessagePayload(query);
-
-    //
-
-    // check if token is empty throw error
     try {
       const res = await this.sendingMessageToTokens(query.tokens.split(","), payload);
       return res;
@@ -258,6 +259,7 @@ export class Messaging {
    * if subscription exist then remove user who turned of the subscription.
    */
   static async sendMessageToUsers(query: any) {
+    if (!query.uids) throw ERROR_EMPTY_UIDS;
     const payload = this.preMessagePayload(query);
     let uids: string;
     if (query.subscription) {
@@ -291,8 +293,8 @@ export class Messaging {
   }
 
   static async subscribeToTopic(
-      tokens: string,
-      topic: string
+    tokens: string,
+    topic: string
   ): Promise<admin.messaging.MessagingTopicManagementResponse> {
     return admin.messaging().subscribeToTopic(tokens, topic);
   }

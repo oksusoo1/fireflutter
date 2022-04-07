@@ -5,7 +5,7 @@ export interface MessagePayload {
     id?: string;
     type?: string;
     senderUid?: string;
-    badge?: number;
+    badge?: string;
   };
   notification: {
     title: string;
