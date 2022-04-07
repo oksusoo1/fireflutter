@@ -13,6 +13,7 @@ import 'package:fe/screens/profile/profile.screen.dart';
 import 'package:fe/service/global.keys.dart';
 import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
+import 'package:dio/dio.dart';
 
 class AppService {
   static AppService? _instance;
@@ -99,5 +100,63 @@ class AppService {
       'target': target,
       'id': id,
     });
+  }
+
+  Future getAddresses(String keyword) async {
+    final url =
+        "https://www.juso.go.kr/addrlink/addrEngApi.do?currentPage=1&countPerPage=10&keyword=$keyword&confmKey=U01TX0FVVEgyMDIyMDQwNzIyMDI0MDExMjQzNzE=&resultType=json";
+    final dio = Dio();
+
+    final res = await dio.get(url);
+
+    print(res.data);
+  }
+
+  Future inputAddress(context) async {
+    return showDialog(
+      context: context,
+      builder: (context) {
+        final input = TextEditingController();
+        return StatefulBuilder(
+            builder: ((context, setState) => AlertDialog(
+                  title: Text('Yo'),
+                  content: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Row(
+                        children: [
+                          Expanded(
+                            child: TextField(
+                              controller: input,
+                              decoration: InputDecoration(label: Text("input address")),
+                              onSubmitted: (s) {
+                                getAddresses(s);
+                              },
+                            ),
+                          ),
+                          IconButton(
+                            onPressed: () => getAddresses(input.text),
+                            icon: Icon(Icons.send),
+                          )
+                        ],
+                      ),
+                      Text(
+                        'i.e) 536-9, Sinsa-dong',
+                        style: TextStyle(
+                          fontSize: 11,
+                        ),
+                      )
+                    ],
+                  ),
+                  actions: [
+                    ElevatedButton(
+                      onPressed: () {},
+                      child: Text('Select'),
+                    ),
+                  ],
+                )));
+      },
+    );
   }
 }

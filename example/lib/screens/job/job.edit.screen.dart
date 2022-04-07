@@ -1,5 +1,6 @@
 import 'package:extended/extended.dart';
 import 'package:fe/screens/forum/forum.mixin.dart';
+import 'package:fe/screens/job/job.edit.form.dart';
 import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
 

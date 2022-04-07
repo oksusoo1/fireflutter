@@ -1,4 +1,5 @@
-import '../../../fireflutter.dart';
+import 'package:fe/service/app.service.dart';
+import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
 
 class JobEditForm extends StatefulWidget {
@@ -20,8 +21,6 @@ class _JobEditFormState extends State<JobEditForm> {
   final email = TextEditingController();
   final jobCategory = TextEditingController();
   final workingHours = TextEditingController();
-  final provinceOrCity = TextEditingController();
-  final cityOrDistrict = TextEditingController();
   final detailAddress = TextEditingController();
   final aboutUs = TextEditingController();
   final numberOfHiring = TextEditingController();
@@ -59,24 +58,11 @@ class _JobEditFormState extends State<JobEditForm> {
             labelText: "Email address",
           ),
         ),
-        TextField(
-          controller: provinceOrCity,
-          decoration: InputDecoration(
-            labelText: "Province / City",
-          ),
-        ),
-        TextField(
-          controller: cityOrDistrict,
-          decoration: InputDecoration(
-            labelText: "City",
-          ),
-        ),
-        TextField(
-          controller: detailAddress,
-          decoration: InputDecoration(
-            labelText: "Detail address",
-          ),
-        ),
+        ElevatedButton(
+            onPressed: () {
+              AppService.instance.inputAddress(context);
+            },
+            child: Text('Input address')),
         TextField(
           controller: jobCategory,
           decoration: InputDecoration(
@@ -142,8 +128,6 @@ class _JobEditFormState extends State<JobEditForm> {
                 'email': email.text,
                 'jobCategory': jobCategory.text,
                 'workingHours': workingHours.text,
-                'provinceOrCity': provinceOrCity.text,
-                'cityOrDistrict': cityOrDistrict.text,
                 'detailAddress': detailAddress.text,
                 'aboutUs': aboutUs.text,
                 'numberOfHiring': numberOfHiring.text,

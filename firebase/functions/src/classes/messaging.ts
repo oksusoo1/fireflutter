@@ -95,7 +95,8 @@ export class Messaging {
     const snapshot = await Ref.userSetting(uid, "topic").get();
     if (snapshot.exists() === false) return false;
     const val = snapshot.val();
-    return val && val[topic] != undefined && val[topic] == true;
+    if (!val) return false;
+    return !!val[topic];
   }
 
   /**
@@ -110,7 +111,14 @@ export class Messaging {
     console.log(snapshot.exists());
     if (snapshot.exists() === false) return false;
     const val = snapshot.val();
-    return val && val[topic] != undefined && val[topic] == false;
+
+    if (!val) return false;
+    // If it's undefined, then user didn't subscribed ever since.
+    if (typeof val[topic] === undefined) return false;
+    // If it's false, then it is disabled manually by the user.
+    if (val[topic] === false) return true;
+    // If it's true, then the topic is subscribed.
+    return false;
   }
 
   /**
@@ -184,8 +192,8 @@ export class Messaging {
   }
 
   static async sendingMessageToTokens(
-      tokens: Array<string>,
-      payload: MessagePayload
+    tokens: Array<string>,
+    payload: MessagePayload
   ): Promise<{
     success: number;
     error: number;
@@ -299,8 +307,8 @@ export class Messaging {
   }
 
   static async subscribeToTopic(
-      tokens: string,
-      topic: string
+    tokens: string,
+    topic: string
   ): Promise<admin.messaging.MessagingTopicManagementResponse> {
     return admin.messaging().subscribeToTopic(tokens, topic);
   }
