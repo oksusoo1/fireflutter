@@ -125,7 +125,7 @@ describe("Messaging test", () => {
   //   // userB comment to userA post
   //   // functions onCommentCreate send push notification and remove invalid tokens
   //   // userA should only have 2 token(valid) after onCreate
-  //   const base = 1; // put 100
+  //   const base = 100; // put 100
   //   it("Sending messages of " + 5 * base + " tokens", async () => {
   //     const userA = "userA" + Utils.getTimestamp();
   //     const userB = "userB" + Utils.getTimestamp();
