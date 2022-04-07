@@ -167,7 +167,7 @@ class _SendPushNotificationState extends State<SendPushNotification> {
       }
 
       String msg = '';
-      if (!data['code']) {
+      if (data['code'] == null) {
         if (sendOption == 'tokens' || sendOption == 'uids') {
           int s = data['success'];
           int f = data['error'];
