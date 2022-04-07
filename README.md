@@ -1651,9 +1651,15 @@ class _ServerTimeState extends State<ServerTime> {
 
 ### Error handling on http trigger
 
-- If the cloud function method sends any string begins with `ERROR_` or an object with `{code: '...'}` back to client, then it is considered as an `app error` and an exception will be thrown.
-- If the `reqeust` gets a string that contains `code` and `ERR_`, then it is considered as a `firebase erro` and and exception will be thrown.
+- If the http cloud function method sends any string (or num) then, it will be an error.
+- The http cloud funtion method must send an object back to the client. Note that if there is an error on cloud function, then a string of json-encrypted will be returned and it will be parsed as JSON on client end.
+- If there is an error, `code` as the key and value as the error information will be returned.
 - The `request` may get an error from `Dio` service and that will also throw an error.
+
+- Example of error response from http cloud function
+  - `{ code: 'ERROR_EMPTY_UID' }`
+
+- Note, the helper classes may still return a string of error and it would be encapsulated as error response object in `ready`.
 
 
 

@@ -52,15 +52,15 @@ describe("Post update via http call", () => {
 
   it("empty uid", async () => {
     const res = await axios.post(endpoint);
-    expect(res.data).equals(ERROR_EMPTY_UID);
+    expect(res.data.code).equals(ERROR_EMPTY_UID);
   });
   it("empty password", async () => {
     const res = await axios.post(endpoint, { uid: "uid" });
-    expect(res.data).equals(ERROR_EMPTY_PASSWORD);
+    expect(res.data.code).equals(ERROR_EMPTY_PASSWORD);
   });
   it("fail - wrong password", async () => {
     const res = await axios.post(endpoint, { uid: "uid", password: "wrong-password" });
-    expect(res.data).equals(ERROR_USER_NOT_FOUND);
+    expect(res.data.code).equals(ERROR_USER_NOT_FOUND);
   });
 
   it("fail - wrong post id (post does not exists)", async () => {
@@ -73,6 +73,6 @@ describe("Post update via http call", () => {
       password: password,
     });
 
-    expect(res.data).equals(ERROR_POST_NOT_EXIST);
+    expect(res.data.code).equals(ERROR_POST_NOT_EXIST);
   });
 });

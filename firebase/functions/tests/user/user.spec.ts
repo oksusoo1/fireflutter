@@ -30,7 +30,7 @@ describe("User test", () => {
     const re = await User.authenticate({ uid: user!.id, password: "wrong password" });
     expect(re === ERROR_WRONG_PASSWORD).true;
 
-    const password = User.generatePassword(user);
+    const password = User.generatePassword(user!);
     const right = await User.authenticate({ uid: user!.id, password: password });
 
     expect(right === "", right).true;

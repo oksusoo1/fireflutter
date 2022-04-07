@@ -97,7 +97,7 @@ export class Post {
     return updated;
   }
 
-  static async delete(data: { id: string; uid: string }): Promise<string> {
+  static async delete(data: { id: string; uid: string }): Promise<{ id: string }> {
     // 1. id must be present. if not throw ERROR_EMPTY_ID;
     if (!data.id) throw ERROR_EMPTY_ID;
 
@@ -125,7 +125,7 @@ export class Post {
     if (!post.noOfComments) {
       // 7.A if there is no comment, then delete the post.
       await postRef.delete();
-      return id;
+      return { id: id };
     } else {
       // 8.B or if there is a comment, then mark it as deleted. (deleted=true)
       post.title = "";
@@ -134,7 +134,7 @@ export class Post {
       await postRef.update(post);
     }
 
-    return id;
+    return { id: id };
   }
   /**
    * Returns a post as PostDocument or null if the post does not exists.
@@ -167,8 +167,8 @@ export class Post {
   }
 
   static async sendMessageOnCommentCreate(
-      data: CommentDocument,
-      id: string
+    data: CommentDocument,
+    id: string
   ): Promise<OnCommentCreateResponse | null> {
     const post = await this.get(data.postId);
     if (!post) return null;
@@ -197,16 +197,16 @@ export class Post {
 
     // Don't send the same message twice to topic subscribers and comment notifyees.
     const userUids = await Messaging.getCommentNotifyeeWithoutTopicSubscriber(
-        ancestorsUid.join(","),
-        topic
+      ancestorsUid.join(","),
+      topic
     );
 
     // get users tokens
     const tokens = await Messaging.getTokensFromUids(userUids.join(","));
 
     const sendToTokenRes = await Messaging.sendingMessageToTokens(
-        tokens,
-        Messaging.preMessagePayload(messageData)
+      tokens,
+      Messaging.preMessagePayload(messageData)
     );
     return {
       topicResponse: sendToTopicRes,
@@ -230,4 +230,3 @@ export class Post {
     return uids.filter((v, i, a) => a.indexOf(v) === i); // remove duplicate
   }
 }
-

@@ -92,19 +92,20 @@ describe("Post update test", () => {
     hasPhotoUpdate = await Post.update({ id: post.id, uid: post.uid, files: [] });
     expect(hasPhotoUpdate!.hasPhoto).to.be.equals(false);
   });
+
   it("Input test updateAt changes", async () => {
     const updateA = await Post.update({ id: post.id, uid: post.uid, like: 2 });
     expect(updateA.like).to.be.not.equals(post.like);
     expect(updateA.updatedAt).to.be.not.equals(post.updatedAt);
 
-    await Utils.delay(1000);
+    await Utils.delay(1100);
 
     const updateB = await Post.update({ id: post.id, uid: post.uid, like: 3 });
     expect(updateB.like).to.be.greaterThan(updateA.like);
     expect(updateB.updatedAt).to.be.not.equals(updateA.updatedAt);
 
     expect((updateB.updatedAt! as any)["_seconds"]).to.be.greaterThan(
-        (updateA.updatedAt! as any)["_seconds"]
+      (updateA.updatedAt! as any)["_seconds"]
     );
   });
 });

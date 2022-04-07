@@ -2,6 +2,14 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ready = void 0;
 const user_1 = require("./classes/user");
+function sanitizeError(e) {
+    if (typeof e === "string" && e.startsWith("ERROR_")) {
+        return { code: e };
+    }
+    else {
+        return e;
+    }
+}
 async function ready(options, callback) {
     const req = options.req;
     const res = options.res;
@@ -20,7 +28,7 @@ async function ready(options, callback) {
         if (options.auth) {
             const re = await user_1.User.authenticate(data);
             if (re) {
-                res.status(200).send(re);
+                res.status(200).send(sanitizeError(re));
                 return;
             }
         }
@@ -28,7 +36,7 @@ async function ready(options, callback) {
         if (data.password)
             delete data.password;
         callback(data).catch((e) => {
-            res.status(200).send(e);
+            res.status(200).send(sanitizeError(e));
         });
     }
 }

@@ -17,7 +17,7 @@ class User {
     /**
      * Authenticates user with id and password.
      * @param data input data that has uid and password
-     * @returns Error string on error. Empty string on success.
+     * @returns Error string on error(not throwing as an exception). Empty string on success.
      */
     static async authenticate(data) {
         if (!data.uid) {
@@ -111,8 +111,7 @@ class User {
      * @returns password string
      */
     static generatePassword(doc) {
-        var _a;
-        return doc.id + "-" + doc.registeredAt + "-" + doc.updatedAt + "-" + ((_a = doc.point) !== null && _a !== void 0 ? _a : 0);
+        return doc.id + "-" + doc.registeredAt + "-" + doc.updatedAt;
     }
 }
 exports.User = User;

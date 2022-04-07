@@ -37,6 +37,39 @@ class Comment {
             return null;
         }
     }
+    /**
+     * Updates a comment
+     *
+     * @param data comment data to update with.
+     * @returns updated comment doc data.
+     */
+    static async update(data) {
+        if (!data.id)
+            throw defines_1.ERROR_EMPTY_ID;
+        if (!data.uid)
+            throw defines_1.ERROR_EMPTY_UID;
+        const id = data.id;
+        const comment = await this.get(id);
+        if (comment === null)
+            throw defines_1.ERROR_COMMENT_NOT_EXISTS;
+        if (comment.uid !== data.uid)
+            throw defines_1.ERROR_NOT_YOUR_COMMENT;
+        delete data.id;
+        // updatedAt
+        data.updatedAt = admin.firestore.FieldValue.serverTimestamp();
+        // hasPhoto
+        if (data.files && data.files.length) {
+            data.hasPhoto = true;
+        }
+        else {
+            data.hasPhoto = false;
+        }
+        await ref_1.Ref.commentDoc(id).update(data);
+        const updated = await this.get(id);
+        if (updated === null)
+            throw defines_1.ERROR_UPDATE_FAILED;
+        return updated;
+    }
     static async get(id) {
         const snapshot = await ref_1.Ref.commentDoc(id).get();
         if (snapshot.exists) {

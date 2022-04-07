@@ -2,6 +2,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Storage = void 0;
 const admin = require("firebase-admin");
+///
+///
 class Storage {
     /**
      * Update post or comment id on the file meta.
@@ -74,10 +76,8 @@ class Storage {
      * @returns
      */
     static getFileRefFromUrl(url) {
-        if (url.startsWith("http")) {
-            url = this.getFilePathFromUrl(url);
-        }
-        return admin.storage().bucket().file(url);
+        const path = this.getFilePathFromUrl(url);
+        return admin.storage().bucket().file(path);
     }
     /**
      * Gets the thumbnail URL of a file.
@@ -122,19 +122,16 @@ class Storage {
      *
      * It will also delete thumbnail files if existing.
      *
-     * @param url url path of the file.
+     * @param url url of the file.
      * @returns void
      *
-     * TODO: test
      */
     static async deleteFileFromUrl(url) {
         // If it's not a file from firebase storage, it does not do anything.
-        if (url.includes("firebasestorage.googleapis.com") == false) {
+        if (this.isFirebaseStorageUrl(url) === false)
             return;
-        }
-        if (url.startsWith("http")) {
-            url = this.getFilePathFromUrl(url);
-        }
+        if (url.startsWith("http") === false)
+            return;
         const file = this.getFileRefFromUrl(url);
         const isExists = await file.exists();
         if (isExists[0])
@@ -149,6 +146,10 @@ class Storage {
                 await thumbFile.delete();
         }
         return;
+    }
+    /// Return true if the message is a URL of uploaded file in Firebase Storage.
+    static isFirebaseStorageUrl(url) {
+        return url.includes("firebasestorage.googleapis.com");
     }
 }
 exports.Storage = Storage;

@@ -23,7 +23,7 @@ export class User {
   /**
    * Authenticates user with id and password.
    * @param data input data that has uid and password
-   * @returns Error string on error. Empty string on success.
+   * @returns Error string on error(not throwing as an exception). Empty string on success.
    */
   static async authenticate(data: { uid: string; password: string }): Promise<string> {
     if (!data.uid) {
@@ -87,8 +87,8 @@ export class User {
   }
 
   static async disableUser(
-      data: any,
-      context: any
+    data: any,
+    context: any
   ): Promise<
     | admin.auth.UserRecord
     | {
@@ -119,6 +119,6 @@ export class User {
    * @returns password string
    */
   static generatePassword(doc: UserDocument): string {
-    return doc.id + "-" + doc.registeredAt + "-" + doc.updatedAt + "-" + (doc.point ?? 0);
+    return doc.id + "-" + doc.registeredAt + "-" + doc.updatedAt;
   }
 }

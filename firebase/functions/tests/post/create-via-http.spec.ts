@@ -23,15 +23,15 @@ const endpoint = "http://localhost:5001/withcenter-test-project/asia-northeast3/
 describe("Post create via http call", () => {
   it("empty uid", async () => {
     const res = await axios.post(endpoint);
-    expect(res.data).equals(ERROR_EMPTY_UID);
+    expect(res.data.code).equals(ERROR_EMPTY_UID);
   });
   it("empty password", async () => {
     const res = await axios.post(endpoint, { uid: "uid" });
-    expect(res.data).equals(ERROR_EMPTY_PASSWORD);
+    expect(res.data.code).equals(ERROR_EMPTY_PASSWORD);
   });
   it("fail - wrong password", async () => {
     const res = await axios.post(endpoint, { uid: "uid", password: "wrong-password" });
-    expect(res.data).equals(ERROR_USER_NOT_FOUND);
+    expect(res.data.code).equals(ERROR_USER_NOT_FOUND);
   });
   it("post create success", async () => {
     // Create a test user for creating a post.
@@ -39,6 +39,7 @@ describe("Post create via http call", () => {
     await User.create(id, {
       firstName: "fn",
     });
+
     const user = await User.get(id);
     if (user === null) expect.fail();
 
@@ -48,7 +49,7 @@ describe("Post create via http call", () => {
       password: User.generatePassword(user),
     });
 
-    expect(res.data).equals(ERROR_EMPTY_CATEGORY);
+    expect(res.data.code).equals(ERROR_EMPTY_CATEGORY);
 
     // test creating a post
     const res2 = await axios.post(endpoint, {
