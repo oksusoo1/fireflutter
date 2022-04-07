@@ -10,6 +10,7 @@ import {
   ERROR_UPDATE_FAILED,
 } from "../defines";
 import { CommentCreateParams, CommentCreateRequirements, CommentDocument } from "../interfaces/forum.interface";
+import { Storage } from "./storage";
 
 export class Comment {
   /**
@@ -91,7 +92,9 @@ export class Comment {
     if (comment!.uid !== data.uid) throw ERROR_NOT_YOUR_COMMENT;
 
     if (comment.files && comment.files.length > 0) {
-      // delete files and thumbnails
+      for (const url of comment.files) {
+       await Storage.deleteFileFromUrl(url);
+      }
     }
 
     await Ref.commentDoc(id).update({ content: "", deleted: true });
