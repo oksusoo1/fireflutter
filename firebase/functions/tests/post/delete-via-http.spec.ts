@@ -9,6 +9,7 @@ import {
   ERROR_EMPTY_ID,
   ERROR_EMPTY_PASSWORD,
   ERROR_EMPTY_UID,
+  ERROR_NOT_YOUR_POST,
   ERROR_POST_NOT_EXIST,
   ERROR_USER_NOT_FOUND,
   ERROR_WRONG_PASSWORD,
@@ -17,14 +18,12 @@ import { Utils } from "../../src/classes/utils";
 import { User } from "../../src/classes/user";
 import { PostDocument } from "../../src/interfaces/forum.interface";
 import { Post } from "../../src/classes/post";
-import { UserDocument } from "../../src/interfaces/user.interface";
 new FirebaseAppInitializer();
 
 const endpoint = "http://localhost:5001/withcenter-test-project/asia-northeast3/postDelete";
 // const endpoint = "https://asia-northeast3-withcenter-test-project.cloudfunctions.net/postDelete";
 
 let post: PostDocument;
-let user: UserDocument | null;
 let password: string;
 const uid = "test-user-" + Utils.getTimestamp();
 
@@ -33,12 +32,12 @@ describe("Post delete via http call", () => {
     await User.create(uid, {
       firstName: "fn",
     });
-    user = await User.get(uid);
+    const user = await User.get(uid);
     if (user === null) expect.fail();
 
     password = User.generatePassword(user!);
     post = await Post.create({
-      uid: user.id,
+      uid: uid,
       category: "cat1",
       title: "title",
       a: "apple",
@@ -51,11 +50,11 @@ describe("Post delete via http call", () => {
     expect(post!.a === "apple").true;
   });
 
-  it("empty uid", async () => {
+  it("fail - empty uid", async () => {
     const res = await axios.post(endpoint);
     expect(res.data.code).equals(ERROR_EMPTY_UID);
   });
-  it("empty password", async () => {
+  it("fail - empty password", async () => {
     const res = await axios.post(endpoint, { uid: uid });
     expect(res.data.code).equals(ERROR_EMPTY_PASSWORD);
   });
@@ -83,6 +82,18 @@ describe("Post delete via http call", () => {
     expect(res.data.code).equals(ERROR_POST_NOT_EXIST);
   });
 
+  it("fail - not your post", async () => {
+    // create other user
+    const otherUserUid = "test-other-user-" + Utils.getTimestamp();
+    await User.create(otherUserUid, { firstName: "Unit tester B" });
+    const otherUser = await User.get(otherUserUid);
+    const otherUserPassword = User.generatePassword(otherUser!);
+
+    // delete post using other user's credentials
+    const res = await axios.post(endpoint, { uid: otherUserUid, password: otherUserPassword, id: post!.id });
+    expect(res.data.code).equals(ERROR_NOT_YOUR_POST);
+  });
+
   /**
    *  - success (completely deleted)
    *  - correct uid (success delete, marked as deleted)
@@ -100,7 +111,7 @@ describe("Post delete via http call", () => {
   it("success - post mark as deleted | fail - already deleted", async () => {
     // create
     const newPost = await Post.create({
-      uid: user!.id,
+      uid: uid,
       category: "cat1",
       title: "title",
       a: "apple",

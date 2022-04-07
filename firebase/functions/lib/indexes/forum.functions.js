@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.sendMessageOnCommentCreate = exports.sendMessageOnPostCreate = exports.postDelete = exports.postUpdate = exports.postCreate = void 0;
+exports.sendMessageOnCommentCreate = exports.sendMessageOnPostCreate = exports.commentDelete = exports.commentUpdate = exports.commentCreate = exports.postDelete = exports.postUpdate = exports.postCreate = void 0;
 /**
  * @file foum.functions.ts
  *
@@ -18,8 +18,9 @@ exports.sendMessageOnCommentCreate = exports.sendMessageOnPostCreate = exports.p
  *
  */
 const functions = require("firebase-functions");
-const post_1 = require("../classes/post");
 const ready_1 = require("../ready");
+const post_1 = require("../classes/post");
+const comment_1 = require("../classes/comment");
 // Start writing Firebase Functions
 // https://firebase.google.com/docs/functions/typescript
 exports.postCreate = functions.region("asia-northeast3").https.onRequest((req, res) => {
@@ -35,6 +36,21 @@ exports.postUpdate = functions.region("asia-northeast3").https.onRequest((req, r
 exports.postDelete = functions.region("asia-northeast3").https.onRequest((req, res) => {
     ready_1.ready({ req, res, auth: true }, async (data) => {
         res.status(200).send(await post_1.Post.delete(data));
+    });
+});
+exports.commentCreate = functions.region("asia-northeast3").https.onRequest((req, res) => {
+    ready_1.ready({ req, res, auth: true }, async (data) => {
+        res.status(200).send(await comment_1.Comment.create(data));
+    });
+});
+exports.commentUpdate = functions.region("asia-northeast3").https.onRequest((req, res) => {
+    ready_1.ready({ req, res, auth: true }, async (data) => {
+        res.status(200).send(await comment_1.Comment.update(data));
+    });
+});
+exports.commentDelete = functions.region("asia-northeast3").https.onRequest((req, res) => {
+    ready_1.ready({ req, res, auth: true }, async (data) => {
+        res.status(200).send(await comment_1.Comment.delete(data));
     });
 });
 exports.sendMessageOnPostCreate = functions

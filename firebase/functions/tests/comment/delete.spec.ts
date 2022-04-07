@@ -12,7 +12,6 @@ import {
 } from "../../src/defines";
 import { Utils } from "../../src/classes/utils";
 import { CommentDocument } from "../../src/interfaces/forum.interface";
-import { Ref } from "../../src/classes/ref";
 import { Storage } from "../../src/classes/storage";
 
 new FirebaseAppInitializer();
@@ -72,9 +71,8 @@ describe("comment delete test", () => {
     const res = await Comment.delete({ id: comment!.id, uid: uid } as any);
     expect(res.id).equals(comment!.id);
 
-    const commentRef = await Ref.commentDoc(comment!.id).get();
-    expect(commentRef.exists).true;
-    expect((commentRef.data() as CommentDocument).deleted).true;
+    const commentDoc = await Comment.get(comment!.id);
+    expect(commentDoc!.deleted).true;
   });
 
   it("fail - already deleted", async () => {

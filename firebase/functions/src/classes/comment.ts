@@ -93,11 +93,14 @@ export class Comment {
 
     if (comment.files && comment.files.length > 0) {
       for (const url of comment.files) {
-       await Storage.deleteFileFromUrl(url);
+        await Storage.deleteFileFromUrl(url);
       }
     }
 
-    await Ref.commentDoc(id).update({ content: "", deleted: true });
+    comment.content = "";
+    comment.deleted = true;
+
+    await Ref.commentDoc(id).update(comment);
     return { id };
   }
 
