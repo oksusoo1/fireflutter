@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Messaging = void 0;
 const admin = require("firebase-admin");
+const defines_1 = require("../defines");
 const ref_1 = require("./ref");
 const utils_1 = require("./utils");
 class Messaging {
@@ -87,7 +88,7 @@ class Messaging {
         if (snapshot.exists() === false)
             return false;
         const val = snapshot.val();
-        return val && val[topic];
+        return val && val[topic] != undefined && val[topic] == true;
     }
     /**
      * Returns true if the user turn off manually the subscription.
@@ -98,10 +99,11 @@ class Messaging {
     static async userHasSusbscriptionOff(uid, topic) {
         // / Get all the topics of the user
         const snapshot = await ref_1.Ref.userSetting(uid, "topic").get();
+        console.log(snapshot.exists());
         if (snapshot.exists() === false)
             return false;
         const val = snapshot.val();
-        return val && !val[topic];
+        return val && val[topic] != undefined && val[topic] == false;
     }
     /**
      * Return uids of the user didnt turn off their subscription
@@ -113,8 +115,9 @@ class Messaging {
     static async removeUserHasSubscriptionOff(uids, topic) {
         const _uids = uids.split(",");
         const promises = [];
+        let results = [];
         _uids.forEach((uid) => promises.push(this.userHasSusbscriptionOff(uid, topic)));
-        const results = await Promise.all(promises);
+        results = await Promise.all(promises);
         const re = [];
         // dont add user who has turn off subscription
         for (const i in results) {
@@ -129,16 +132,18 @@ class Messaging {
         return payload;
     }
     static preMessagePayload(query) {
-        var _a, _b;
+        var _a, _b, _c, _d, _e, _f, _g;
+        if (!query.title && !query.body)
+            throw defines_1.ERROR_TITLE_AND_BODY_CANT_BE_BOTH_EMPTY;
         const res = {
             data: {
                 id: query.postId ? query.postId : query.id ? query.id : "",
-                type: query.type ? query.type : "",
-                senderUid: query.senderUid ? query.senderUid : query.uid ? query.uid : "",
-                badge: query.badge ? query.badge : "",
+                type: (_a = query.type) !== null && _a !== void 0 ? _a : "",
+                senderUid: (_c = (_b = query.senderUid) !== null && _b !== void 0 ? _b : query.uid) !== null && _c !== void 0 ? _c : "",
+                badge: (_d = query.badge) !== null && _d !== void 0 ? _d : "",
             },
             notification: {
-                title: query.title ? query.title : "",
+                title: (_e = query.title) !== null && _e !== void 0 ? _e : "",
                 body: query.body ? query.body : query.content ? query.content : "",
             },
             android: {
@@ -157,8 +162,8 @@ class Messaging {
             },
         };
         if (res.notification.body != "") {
-            res.notification.body = (_a = utils_1.Utils.removeHtmlTags(res.notification.body)) !== null && _a !== void 0 ? _a : "";
-            res.notification.body = (_b = utils_1.Utils.decodeHTMLEntities(res.notification.body)) !== null && _b !== void 0 ? _b : "";
+            res.notification.body = (_f = utils_1.Utils.removeHtmlTags(res.notification.body)) !== null && _f !== void 0 ? _f : "";
+            res.notification.body = (_g = utils_1.Utils.decodeHTMLEntities(res.notification.body)) !== null && _g !== void 0 ? _g : "";
             res.notification.body = res.notification.body.substring(0, 255);
         }
         if (query.badge != null) {
@@ -207,6 +212,8 @@ class Messaging {
         return { success: successCount, error: errorCount };
     }
     static async sendMessageToTopic(query) {
+        if (!query.topic)
+            throw defines_1.ERROR_EMPTY_TOPIC;
         const payload = this.topicPayload(query.topic, query);
         try {
             const res = await admin.messaging().send(payload);
@@ -217,9 +224,9 @@ class Messaging {
         }
     }
     static async sendMessageToTokens(query) {
+        if (!query.tokens)
+            throw defines_1.ERROR_EMPTY_TOKENS;
         const payload = this.preMessagePayload(query);
-        //
-        // check if token is empty throw error
         try {
             const res = await this.sendingMessageToTokens(query.tokens.split(","), payload);
             return res;
@@ -232,6 +239,8 @@ class Messaging {
      * if subscription exist then remove user who turned of the subscription.
      */
     static async sendMessageToUsers(query) {
+        if (!query.uids)
+            throw defines_1.ERROR_EMPTY_UIDS;
         const payload = this.preMessagePayload(query);
         let uids;
         if (query.subscription) {
@@ -240,6 +249,8 @@ class Messaging {
         else {
             uids = query.uids;
         }
+        if (!uids)
+            return { success: 0, error: 0 };
         const tokens = await this.getTokensFromUids(uids);
         try {
             const res = await this.sendingMessageToTokens(tokens, payload);

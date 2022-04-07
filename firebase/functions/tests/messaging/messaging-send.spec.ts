@@ -78,7 +78,7 @@ describe("Send push notification test", () => {
 
   it("invalidToken-this-is-not-validi", async () => {
     try {
-      let re = (await Messaging.sendMessageToTokens({
+      const re = (await Messaging.sendMessageToTokens({
         tokens: "invalidToken-this-is-not-valid",
         title: "push title test via token 1",
         body: "push body test via token 1",
@@ -92,7 +92,7 @@ describe("Send push notification test", () => {
 
   it("validToken1", async () => {
     try {
-      let re = (await Messaging.sendMessageToTokens({
+      const re = (await Messaging.sendMessageToTokens({
         tokens: validToken1,
         title: "push title test via token 1",
         body: "push body test via token 1",
@@ -106,7 +106,7 @@ describe("Send push notification test", () => {
 
   it("validToken1,validToken2,invalidtoken", async () => {
     try {
-      let re = (await Messaging.sendMessageToTokens({
+      const re = (await Messaging.sendMessageToTokens({
         tokens: validToken1 + "," + validToken2 + "," + "invalidtoken",
         title: "push title test via token 1",
         body: "push body test via token 1",
@@ -140,7 +140,7 @@ describe("Send push notification test", () => {
 
   it("fakeuser", async () => {
     try {
-      let re = (await Messaging.sendMessageToUsers({
+      const re = (await Messaging.sendMessageToUsers({
         uids: "fakeuser",
         title: "push title 1",
         body: "push body 1",
@@ -163,7 +163,7 @@ describe("Send push notification test", () => {
     tokenUpdates.push(Ref.messageTokens.child(validToken2).set({ uid: userB }));
     await Promise.all(tokenUpdates);
     try {
-      let re = (await Messaging.sendMessageToUsers({
+      const re = (await Messaging.sendMessageToUsers({
         uids: userA,
         title: "push title 1",
         body: "push body 1",
@@ -175,7 +175,7 @@ describe("Send push notification test", () => {
     }
 
     try {
-      let re = (await Messaging.sendMessageToUsers({
+      const re = (await Messaging.sendMessageToUsers({
         uids: userA + "," + userB,
         title: "push title 1",
         body: "push body 1",
@@ -187,7 +187,7 @@ describe("Send push notification test", () => {
     }
 
     try {
-      let re = (await Messaging.sendMessageToUsers({
+      const re = (await Messaging.sendMessageToUsers({
         uids: userA + "," + userB + "," + "abcd",
         title: "push title 1",
         body: "push body 1",

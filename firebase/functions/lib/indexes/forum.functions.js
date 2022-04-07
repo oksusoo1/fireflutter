@@ -18,8 +18,8 @@ exports.sendMessageOnCommentCreate = exports.sendMessageOnPostCreate = exports.p
  *
  */
 const functions = require("firebase-functions");
-const post_1 = require("../classes/post");
 const ready_1 = require("../ready");
+const post_1 = require("../classes/post");
 // Start writing Firebase Functions
 // https://firebase.google.com/docs/functions/typescript
 exports.postCreate = functions.region("asia-northeast3").https.onRequest((req, res) => {
@@ -37,6 +37,21 @@ exports.postDelete = functions.region("asia-northeast3").https.onRequest((req, r
         res.status(200).send(await post_1.Post.delete(data));
     });
 });
+// export const commentCreate = functions.region("asia-northeast3").https.onRequest((req, res) => {
+//   ready({ req, res, auth: true }, async (data) => {
+//     res.status(200).send(await Comment.create(data));
+//   });
+// });
+// export const commentUpdate = functions.region("asia-northeast3").https.onRequest((req, res) => {
+//   ready({ req, res, auth: true }, async (data) => {
+//     res.status(200).send(await Comment.update(data));
+//   });
+// });
+// export const commentDelete = functions.region("asia-northeast3").https.onRequest((req, res) => {
+//   ready({ req, res, auth: true }, async (data) => {
+//     res.status(200).send(await Comment.delete(data));
+//   });
+// });
 exports.sendMessageOnPostCreate = functions
     .region("asia-northeast3")
     .firestore.document("/posts/{postId}")

@@ -29,7 +29,7 @@ describe("Test Mock data", () => {
 
   it("chat message mock data", async () => {
     try {
-      let re = await Messaging.sendMessageToUsers({
+      const re = await Messaging.sendMessageToUsers({
         title: "Selrahc sent a message",
         content: "sendMessageToUsers",
         uids: "wWyLWVufzYObiZeNIYCOQy4fQw02",

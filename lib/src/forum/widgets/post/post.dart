@@ -101,6 +101,7 @@ class Post extends StatelessWidget {
             shareButton: shareButton,
             onSendPushNotification: () => onSendPushNotification(post),
             onBlockUser: () => UserService.instance.blockUser(post.uid),
+            onUnblockUser: () => UserService.instance.unblockUser(post.uid),
           ),
         ),
       ],

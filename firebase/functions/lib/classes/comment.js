@@ -70,6 +70,30 @@ class Comment {
             throw defines_1.ERROR_UPDATE_FAILED;
         return updated;
     }
+    /**
+     * Deletes a comment
+     *
+     * @param data
+     */
+    static async delete(data) {
+        if (!data.id)
+            throw defines_1.ERROR_EMPTY_ID;
+        if (!data.uid)
+            throw defines_1.ERROR_EMPTY_UID;
+        const id = data.id;
+        const comment = await this.get(id);
+        if (comment === null)
+            throw defines_1.ERROR_COMMENT_NOT_EXISTS;
+        if (comment.deleted)
+            throw defines_1.ERROR_ALREADY_DELETED;
+        if (comment.uid !== data.uid)
+            throw defines_1.ERROR_NOT_YOUR_COMMENT;
+        if (comment.files && comment.files.length > 0) {
+            // delete files and thumbnails
+        }
+        await ref_1.Ref.commentDoc(id).update({ content: "", deleted: true });
+        return { id };
+    }
     static async get(id) {
         const snapshot = await ref_1.Ref.commentDoc(id).get();
         if (snapshot.exists) {

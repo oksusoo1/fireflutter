@@ -2,8 +2,13 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Storage = void 0;
 const admin = require("firebase-admin");
-///
-///
+/**
+ *
+ * @reference
+ * - File object at https://googleapis.dev/nodejs/storage/latest/File.html
+ * - UploadResponse at https://googleapis.dev/nodejs/storage/latest/global.html#UploadResponse
+ * - How to upload with node.js at https://cloud.google.com/storage/docs/uploading-objects#storage-upload-object-code-sample
+ */
 class Storage {
     /**
      * Update post or comment id on the file meta.
@@ -21,7 +26,7 @@ class Storage {
         }
         const bucket = admin.storage().bucket();
         for (const url of data.files) {
-            const f = bucket.file(this.getFilePathFromUrl(url));
+            const f = bucket.file(this.getPathFromUrl(url));
             if (await f.exists()) {
                 await f.setMetadata({
                     metadata: {
@@ -50,7 +55,7 @@ class Storage {
      *  console.log(metadata[0].metadata);
      */
     static getMetadataFromUrl(url) {
-        const file = admin.storage().bucket().file(this.getFilePathFromUrl(url));
+        const file = admin.storage().bucket().file(this.getPathFromUrl(url));
         return file.getMetadata();
     }
     /**
@@ -62,9 +67,9 @@ class Storage {
      * @usage Use this to get file from url.
      *
      * @example
-     * admin.storage().bucket().file( getFilePathFromUrl('https://...'))
+     * admin.storage().bucket().file( getPathFromUrl('https://...'))
      */
-    static getFilePathFromUrl(url) {
+    static getPathFromUrl(url) {
         const token = url.split("?");
         const parts = token[0].split("/");
         return parts[parts.length - 1].replaceAll("%2F", "/");
@@ -75,8 +80,15 @@ class Storage {
      * @param url
      * @returns
      */
-    static getFileRefFromUrl(url) {
-        const path = this.getFilePathFromUrl(url);
+    static getRefFromUrl(url) {
+        const path = this.getPathFromUrl(url);
+        return admin.storage().bucket().file(path);
+    }
+    /**
+     * Returns a file reference
+     * @param path path like '/uploads/abc.jpg'
+     */
+    static getRefFromPath(path) {
         return admin.storage().bucket().file(path);
     }
     /**
@@ -120,19 +132,21 @@ class Storage {
     /**
      * Deletes a file from a url.
      *
-     * It will also delete thumbnail files if existing.
+     * It will also delete thumbnail image if it exists.
      *
-     * @param url url of the file.
-     * @returns void
-     *
+     * @param url url of the file(or image)
+     * @returns
+     *  - true on success,
+     *  - false if there is nothing to delete
+     *  - Exception will be thrown on error.
      */
     static async deleteFileFromUrl(url) {
         // If it's not a file from firebase storage, it does not do anything.
         if (this.isFirebaseStorageUrl(url) === false)
-            return;
+            return false;
         if (url.startsWith("http") === false)
-            return;
-        const file = this.getFileRefFromUrl(url);
+            return false;
+        const file = this.getRefFromUrl(url);
         const isExists = await file.exists();
         if (isExists[0])
             await file.delete();
@@ -140,16 +154,28 @@ class Storage {
         if (this.isImageUrl(url)) {
             // delete associating thumbnail url.
             const thumbnailUrl = this.getThumbnailUrl(url);
-            const thumbFile = this.getFileRefFromUrl(thumbnailUrl);
+            const thumbFile = this.getRefFromUrl(thumbnailUrl);
             const thumbExists = await thumbFile.exists();
             if (thumbExists[0])
                 await thumbFile.delete();
         }
-        return;
+        return true;
     }
-    /// Return true if the message is a URL of uploaded file in Firebase Storage.
+    // / Return true if the message is a URL of uploaded file in Firebase Storage.
     static isFirebaseStorageUrl(url) {
-        return url.includes("firebasestorage.googleapis.com");
+        return url.includes("storage.googleapis.com");
+    }
+    /**
+     *
+     * @param path path of the file to be uploaded. For instance "./tests/storage/test.jpg"
+     * @param filename file name to be saved in firebase storage. it should have folder naem also.
+     *  For instance, "uploads/abc-1234.jpg"
+     * @returns File object as described at https://googleapis.dev/nodejs/storage/latest/File.html
+     */
+    static async upload(path, filename) {
+        const bucket = admin.storage().bucket();
+        const res = await bucket.upload(path, { destination: filename });
+        return res[0];
     }
 }
 exports.Storage = Storage;

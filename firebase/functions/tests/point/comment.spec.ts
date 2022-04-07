@@ -55,8 +55,8 @@ describe("Comment point test", () => {
     // Expect failure.
     // Test with same comment id. it will not change point. since it is going to be an update.
     const updateRef = await Point.commentCreatePoint(
-      { uid: uid },
-      { params: { commentId: commentId } }
+        { uid: uid },
+        { params: { commentId: commentId } }
     );
     expect(updateRef === null).true;
 
@@ -68,8 +68,8 @@ describe("Comment point test", () => {
     const commentId2 = doc2!.id;
 
     const ref2 = await Point.commentCreatePoint(
-      { uid: uid },
-      { params: { commentId: commentId2 } }
+        { uid: uid },
+        { params: { commentId: commentId2 } }
     );
 
     expect(ref2).not.to.be.null;
@@ -88,8 +88,8 @@ describe("Comment point test", () => {
     const doc3 = await Comment.create({ postId: "post-id-2-c", uid: "uid1" });
     const commentId3 = doc3!.id;
     const ref3 = await Point.commentCreatePoint(
-      { uid: uid },
-      { params: { commentId: commentId3 } }
+        { uid: uid },
+        { params: { commentId: commentId3 } }
     );
     // `within` limited time didn't passed, so, there will be no point changes.
     expect(ref3 === null).true;
@@ -101,7 +101,7 @@ describe("Comment point test", () => {
     console.log("point after create 3 ", pointAfterCreate3);
     // console.log(startingPoint + comment!.point + (data2.point ?? 0) + (comment3!.point ?? 0));
     expect(
-      startingPoint + comment!.point + (data2.point ?? 0) + (comment3!.point ?? 0) ===
+        startingPoint + comment!.point + (data2.point ?? 0) + (comment3!.point ?? 0) ===
         pointAfterCreate3
     ).true;
 
