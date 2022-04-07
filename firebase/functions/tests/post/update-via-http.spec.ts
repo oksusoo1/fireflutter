@@ -12,7 +12,7 @@ import {
   ERROR_EMPTY_PASSWORD,
   ERROR_EMPTY_UID,
   ERROR_POST_NOT_EXIST,
-  ERROR_WRONG_PASSWORD,
+  ERROR_USER_NOT_FOUND,
 } from "../../src/defines";
 import { UserDocument } from "../../src/interfaces/user.interface";
 
@@ -60,7 +60,7 @@ describe("Post update via http call", () => {
   });
   it("fail - wrong password", async () => {
     const res = await axios.post(endpoint, { uid: "uid", password: "wrong-password" });
-    expect(res.data).equals(ERROR_WRONG_PASSWORD);
+    expect(res.data).equals(ERROR_USER_NOT_FOUND);
   });
 
   it("fail - wrong post id (post does not exists)", async () => {
