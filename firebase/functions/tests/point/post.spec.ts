@@ -29,7 +29,7 @@ describe("Post point test", () => {
     randomPoint[EventName.postCreate].within = 3;
 
     const doc = await Post.create({ category: "cat1", uid: "uid1" });
-    const postId = doc!.id;
+    const postId = doc.id!;
 
     // 1. Generage random point for post create
     // 2. Check point change
@@ -40,9 +40,15 @@ describe("Post point test", () => {
     // ** Get point fromt the document (not from point history) and compare.
     const post = await Post.get(postId);
 
+    if (post === null) expect.fail();
+
     const pointAfterCreate = await Point.getUserPoint(uid);
 
-    expect(startingPoint + post!.point === pointAfterCreate).true;
+    // console.log("startingPoint;", startingPoint);
+    // console.log("post.point;", post.point);
+    // console.log("pointAfterCreate;", pointAfterCreate);
+
+    expect(startingPoint + (post.point ?? 0) === pointAfterCreate).true;
 
     // After 4 seconds. for the within time limit.
     await Utils.delay(4000);
@@ -63,7 +69,7 @@ describe("Post point test", () => {
     // ** Get point from point event history document and compare.
     const data2 = (await ref2!.get()).val();
     const pointAfterCreate2 = await Point.getUserPoint(uid);
-    expect(startingPoint + post!.point + data2!.point === pointAfterCreate2).true;
+    expect(startingPoint + (post.point ?? 0) + data2!.point === pointAfterCreate2).true;
 
     // Expect failure.
     // After 1.5 seconds later, do it again and expect failure since `within` time has not passed.
@@ -78,7 +84,7 @@ describe("Post point test", () => {
     //   "postId; ",
     //   postId
     // );
-    expect(startingPoint + post!.point + data2!.point === pointAfterCreate3).true;
+    expect(startingPoint + (post.point ?? 0) + data2!.point === pointAfterCreate3).true;
 
     const user = await User.get(uid);
     expect(user!.point).equal(pointAfterCreate3);

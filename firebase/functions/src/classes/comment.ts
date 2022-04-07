@@ -2,6 +2,7 @@ import * as admin from "firebase-admin";
 
 import { Ref } from "./ref";
 import {
+  ERROR_ALREADY_DELETED,
   ERROR_COMMENT_NOT_EXISTS,
   ERROR_EMPTY_ID,
   ERROR_EMPTY_UID,
@@ -43,7 +44,7 @@ export class Comment {
 
   /**
    * Updates a comment
-   * 
+   *
    * @param data comment data to update with.
    * @returns updated comment doc data.
    */
@@ -71,6 +72,30 @@ export class Comment {
     const updated = await this.get(id);
     if (updated === null) throw ERROR_UPDATE_FAILED;
     return updated;
+  }
+
+  /**
+   * Deletes a comment
+   *
+   * @param data
+   */
+  static async delete(data: any): Promise<{ id: string }> {
+    if (!data.id) throw ERROR_EMPTY_ID;
+    if (!data.uid) throw ERROR_EMPTY_UID;
+
+    const id = data.id;
+    const comment = await this.get(id);
+    if (comment === null) throw ERROR_COMMENT_NOT_EXISTS;
+
+    if (comment.deleted) throw ERROR_ALREADY_DELETED;
+    if (comment!.uid !== data.uid) throw ERROR_NOT_YOUR_COMMENT;
+
+    if (comment.files && comment.files.length > 0) {
+      // delete files and thumbnails
+    }
+
+    await Ref.commentDoc(id).update({ content: "", deleted: true });
+    return { id };
   }
 
   static async get(id: string): Promise<null | CommentDocument> {

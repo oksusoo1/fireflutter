@@ -105,7 +105,7 @@ describe("Post update test", () => {
     expect(updateB.updatedAt).to.be.not.equals(updateA.updatedAt);
 
     expect((updateB.updatedAt! as any)["_seconds"]).to.be.greaterThan(
-      (updateA.updatedAt! as any)["_seconds"]
+        (updateA.updatedAt! as any)["_seconds"]
     );
   });
 });
