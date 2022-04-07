@@ -1,12 +1,14 @@
 import * as admin from "firebase-admin";
 
 import { Ref } from "./ref";
-import { ERROR_EMPTY_UID } from "../defines";
 import {
-  CommentCreateParams,
-  CommentCreateRequirements,
-  CommentDocument,
-} from "../interfaces/forum.interface";
+  ERROR_COMMENT_NOT_EXISTS,
+  ERROR_EMPTY_ID,
+  ERROR_EMPTY_UID,
+  ERROR_NOT_YOUR_COMMENT,
+  ERROR_UPDATE_FAILED,
+} from "../defines";
+import { CommentCreateParams, CommentCreateRequirements, CommentDocument } from "../interfaces/forum.interface";
 
 export class Comment {
   /**
@@ -39,6 +41,38 @@ export class Comment {
     }
   }
 
+  /**
+   * Updates a comment
+   * 
+   * @param data comment data to update with.
+   * @returns updated comment doc data.
+   */
+  static async update(data: any): Promise<CommentDocument> {
+    if (!data.id) throw ERROR_EMPTY_ID;
+    if (!data.uid) throw ERROR_EMPTY_UID;
+
+    const id = data.id;
+    const comment = await this.get(id);
+    if (comment === null) throw ERROR_COMMENT_NOT_EXISTS;
+    if (comment!.uid !== data.uid) throw ERROR_NOT_YOUR_COMMENT;
+
+    delete data.id;
+    // updatedAt
+    data.updatedAt = admin.firestore.FieldValue.serverTimestamp();
+
+    // hasPhoto
+    if (data.files && data.files.length) {
+      data.hasPhoto = true;
+    } else {
+      data.hasPhoto = false;
+    }
+
+    await Ref.commentDoc(id).update(data);
+    const updated = await this.get(id);
+    if (updated === null) throw ERROR_UPDATE_FAILED;
+    return updated;
+  }
+
   static async get(id: string): Promise<null | CommentDocument> {
     const snapshot = await Ref.commentDoc(id).get();
     if (snapshot.exists) {
@@ -49,3 +83,4 @@ export class Comment {
     return null;
   }
 }
+
