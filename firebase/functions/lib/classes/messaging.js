@@ -88,7 +88,7 @@ class Messaging {
         if (snapshot.exists() === false)
             return false;
         const val = snapshot.val();
-        return val && val[topic];
+        return val && val[topic] != undefined && val[topic] == true;
     }
     /**
      * Returns true if the user turn off manually the subscription.
@@ -99,10 +99,11 @@ class Messaging {
     static async userHasSusbscriptionOff(uid, topic) {
         // / Get all the topics of the user
         const snapshot = await ref_1.Ref.userSetting(uid, "topic").get();
+        console.log(snapshot.exists());
         if (snapshot.exists() === false)
             return false;
         const val = snapshot.val();
-        return val && !val[topic];
+        return val && val[topic] != undefined && val[topic] == false;
     }
     /**
      * Return uids of the user didnt turn off their subscription
@@ -114,8 +115,9 @@ class Messaging {
     static async removeUserHasSubscriptionOff(uids, topic) {
         const _uids = uids.split(",");
         const promises = [];
+        let results = [];
         _uids.forEach((uid) => promises.push(this.userHasSusbscriptionOff(uid, topic)));
-        const results = await Promise.all(promises);
+        results = await Promise.all(promises);
         const re = [];
         // dont add user who has turn off subscription
         for (const i in results) {
@@ -247,6 +249,8 @@ class Messaging {
         else {
             uids = query.uids;
         }
+        if (!uids)
+            return { success: 0, error: 0 };
         const tokens = await this.getTokensFromUids(uids);
         try {
             const res = await this.sendingMessageToTokens(tokens, payload);

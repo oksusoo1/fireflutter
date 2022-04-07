@@ -38,6 +38,23 @@ exports.postDelete = functions.region("asia-northeast3").https.onRequest((req, r
         res.status(200).send(await post_1.Post.delete(data));
     });
 });
+<<<<<<< HEAD
+// export const commentCreate = functions.region("asia-northeast3").https.onRequest((req, res) => {
+//   ready({ req, res, auth: true }, async (data) => {
+//     res.status(200).send(await Comment.create(data));
+//   });
+// });
+// export const commentUpdate = functions.region("asia-northeast3").https.onRequest((req, res) => {
+//   ready({ req, res, auth: true }, async (data) => {
+//     res.status(200).send(await Comment.update(data));
+//   });
+// });
+// export const commentDelete = functions.region("asia-northeast3").https.onRequest((req, res) => {
+//   ready({ req, res, auth: true }, async (data) => {
+//     res.status(200).send(await Comment.delete(data));
+//   });
+// });
+=======
 exports.commentCreate = functions.region("asia-northeast3").https.onRequest((req, res) => {
     ready_1.ready({ req, res, auth: true }, async (data) => {
         res.status(200).send(await comment_1.Comment.create(data));
@@ -53,6 +70,7 @@ exports.commentDelete = functions.region("asia-northeast3").https.onRequest((req
         res.status(200).send(await comment_1.Comment.delete(data));
     });
 });
+>>>>>>> 271ac902eaaf5641a22c91cdca0112522308c00d
 exports.sendMessageOnPostCreate = functions
     .region("asia-northeast3")
     .firestore.document("/posts/{postId}")

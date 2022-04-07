@@ -207,7 +207,7 @@ export class Messaging {
     for (const c of chunks) {
       // Send notifications to all tokens.
       const newPayload: admin.messaging.MulticastMessage = Object.assign(
-        { tokens: c },
+          { tokens: c },
         payload as any
       );
       sendToDevicePromise.push(admin.messaging().sendMulticast(newPayload));

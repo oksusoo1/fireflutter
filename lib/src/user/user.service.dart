@@ -172,6 +172,11 @@ class UserService with FirestoreMixin, DatabaseMixin {
     user.updateAdminStatus();
   }
 
+  bool isDisabled(String uid) {
+    if (others[uid] == null) return false;
+    return others[uid]!.disabled;
+  }
+
   /// It gets other user's document.
   ///
   /// It return cached data if the user doc is previous fetch. So, it can be
@@ -202,16 +207,29 @@ class UserService with FirestoreMixin, DatabaseMixin {
 
   Future<dynamic> blockUser(String uid) async {
     UserModel user = await getOtherUserDoc(uid);
-    if (user.disabled) return ERROR_USER_ALREADY_BLOCKED;
+    if (user.disabled) throw ERROR_USER_ALREADY_BLOCKED;
     HttpsCallable onCallDisableUser =
         FirebaseFunctions.instanceFor(region: 'asia-northeast3').httpsCallable('disableUser');
     try {
       final res = await onCallDisableUser.call({'uid': uid});
-      print(res);
-      UserModel newUser = UserModel.fromJson(res, uid); // error test
-      // update other user profile
-      // print(newUser);
-      return newUser;
+      UserModel u = UserModel.fromJson(res.data, uid);
+      if (u.disabled) UserService.instance.others[uid] = u;
+      return u;
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  Future<dynamic> unblockUser(String uid) async {
+    UserModel user = await getOtherUserDoc(uid);
+    if (!user.disabled) throw ERROR_USER_ALREADY_UNBLOCKED;
+    HttpsCallable onCallDisableUser =
+        FirebaseFunctions.instanceFor(region: 'asia-northeast3').httpsCallable('enableUser');
+    try {
+      final res = await onCallDisableUser.call({'uid': uid});
+      UserModel u = UserModel.fromJson(res.data, uid);
+      if (u.disabled == false) UserService.instance.others[uid] = u;
+      return u;
     } catch (e) {
       print(e);
     }

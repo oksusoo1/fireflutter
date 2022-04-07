@@ -21,6 +21,7 @@ class ButtonBase extends StatelessWidget {
     this.shareButton,
     this.onSendPushNotification,
     this.onBlockUser,
+    this.onUnblockUser,
     Key? key,
   }) : super(key: key);
 
@@ -39,6 +40,7 @@ class ButtonBase extends StatelessWidget {
   final Widget? shareButton;
   final Function()? onSendPushNotification;
   final Function()? onBlockUser;
+  final Function()? onUnblockUser;
 
   final Widget Function(String, Function())? buttonBuilder;
 
@@ -57,16 +59,11 @@ class ButtonBase extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        _button(
-            isPost
-                ? 'Reply${noOfComments > 0 ? '($noOfComments)' : ''}'
-                : 'Reply',
-            onReply),
+        _button(isPost ? 'Reply${noOfComments > 0 ? '($noOfComments)' : ''}' : 'Reply', onReply),
         // _button('Report', onReport),
         _button('Like ${likeCount > 0 ? likeCount : ""}', onLike),
         if (onDislike != null)
-          _button(
-              'Dislike ${dislikeCount > 0 ? dislikeCount : ""}', onDislike!),
+          _button('Dislike ${dislikeCount > 0 ? dislikeCount : ""}', onDislike!),
         if (!isMine && onChat != null) _button('Chat', onChat!),
         if (shareButton != null) shareButton!,
         Spacer(),
@@ -77,10 +74,8 @@ class ButtonBase extends StatelessWidget {
           ),
           initialValue: '',
           itemBuilder: (BuildContext context) => [
-            if (!isMine)
-              PopupMenuItem<String>(value: 'profile', child: Text('Profile')),
-            if (isMine)
-              PopupMenuItem<String>(value: 'edit', child: Text('Edit')),
+            if (!isMine) PopupMenuItem<String>(value: 'profile', child: Text('Profile')),
+            if (isMine) PopupMenuItem<String>(value: 'edit', child: Text('Edit')),
             if (isMine || isAdmin)
               PopupMenuItem<String>(
                 value: 'delete',
@@ -90,6 +85,14 @@ class ButtonBase extends StatelessWidget {
               PopupMenuItem<String>(
                 value: 'block',
                 child: Text('Block User', style: TextStyle(color: Colors.red)),
+              ),
+            if (isAdmin &&
+                onUnblockUser != null &&
+                UserService.instance.others[uid] != null &&
+                UserService.instance.others[uid]!.disabled == true)
+              PopupMenuItem<String>(
+                value: 'unblock',
+                child: Text('Unblock User', style: TextStyle(color: Colors.green)),
               ),
             // PopupMenuDivider(),
             PopupMenuItem<String>(
@@ -104,8 +107,7 @@ class ButtonBase extends StatelessWidget {
                 ),
               ),
             if (isPost && onHide != null)
-              PopupMenuItem<String>(
-                  value: 'hide_post', child: Text('Hide Post')),
+              PopupMenuItem<String>(value: 'hide_post', child: Text('Hide Post')),
             PopupMenuItem<String>(value: 'close_menu', child: Text('Close')),
           ],
           onSelected: (String value) async {
@@ -138,6 +140,11 @@ class ButtonBase extends StatelessWidget {
 
             if (value == 'block') {
               onBlockUser!();
+              return;
+            }
+
+            if (value == 'unblock') {
+              onUnblockUser!();
               return;
             }
           },
