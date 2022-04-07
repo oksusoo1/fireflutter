@@ -95,7 +95,7 @@ export class Messaging {
     const snapshot = await Ref.userSetting(uid, "topic").get();
     if (snapshot.exists() === false) return false;
     const val = snapshot.val();
-    return val && val[topic];
+    return val && val[topic] != undefined && val[topic] == true;
   }
 
   /**
@@ -107,9 +107,10 @@ export class Messaging {
   static async userHasSusbscriptionOff(uid: string, topic: string): Promise<boolean> {
     // / Get all the topics of the user
     const snapshot = await Ref.userSetting(uid, "topic").get();
+    console.log(snapshot.exists());
     if (snapshot.exists() === false) return false;
     const val = snapshot.val();
-    return val && !val[topic];
+    return val && val[topic] != undefined && val[topic] == false;
   }
 
   /**
@@ -122,9 +123,9 @@ export class Messaging {
   static async removeUserHasSubscriptionOff(uids: string, topic: string) {
     const _uids = uids.split(",");
     const promises: Promise<boolean>[] = [];
-
+    let results: boolean[] = [];
     _uids.forEach((uid) => promises.push(this.userHasSusbscriptionOff(uid, topic)));
-    const results = await Promise.all(promises);
+    results = await Promise.all(promises);
 
     const re = [];
     // dont add user who has turn off subscription
@@ -197,7 +198,10 @@ export class Messaging {
     const sendToDevicePromise = [];
     for (const c of chunks) {
       // Send notifications to all tokens.
-      const newPayload: admin.messaging.MulticastMessage = Object.assign({ tokens: c }, payload as any);
+      const newPayload: admin.messaging.MulticastMessage = Object.assign(
+        { tokens: c },
+        payload as any
+      );
       sendToDevicePromise.push(admin.messaging().sendMulticast(newPayload));
     }
     const sendDevice = await Promise.all(sendToDevicePromise);
@@ -267,6 +271,8 @@ export class Messaging {
     } else {
       uids = query.uids;
     }
+
+    if (!uids) return { success: 0, error: 0 };
     const tokens = await this.getTokensFromUids(uids);
     try {
       const res = await this.sendingMessageToTokens(tokens, payload);
