@@ -3,17 +3,17 @@ import { expect } from "chai";
 
 import { FirebaseAppInitializer } from "../firebase-app-initializer";
 import { Comment } from "../../src/classes/comment";
-import { ERROR_EMPTY_ID } from "../../src/defines";
+import { ERROR_EMPTY_UID } from "../../src/defines";
 
 new FirebaseAppInitializer();
 
 describe("comment create test", () => {
-  it("fail - empty id", async () => {
+  it("fail - empty uid", async () => {
     try {
-      await Comment.delete({} as any);
+      await Comment.create({} as any);
       expect.fail();
     } catch (e) {
-      expect(e).equals(ERROR_EMPTY_ID);
+      expect(e).equals(ERROR_EMPTY_UID);
     }
   });
 

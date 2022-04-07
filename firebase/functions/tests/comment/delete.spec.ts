@@ -95,7 +95,7 @@ describe("comment delete test", () => {
     const comment = await Comment.create({ uid: uid, files: [file.publicUrl()] } as any);
     expect(comment).to.be.an("object").to.have.property("files").lengthOf(1);
     expect((await file.exists())[0]).true;
-    await Utils.delay(2000);
+    await Utils.delay(3000);
     expect((await thumb.exists())[0]).true;
 
     // delete comment
