@@ -15,8 +15,9 @@
  *
  */
 import * as functions from "firebase-functions";
-import { Post } from "../classes/post";
 import { ready } from "../ready";
+import { Post } from "../classes/post";
+// import { Comment } from "../classes/comment";
 import { CommentDocument, PostDocument } from "../interfaces/forum.interface";
 
 // Start writing Firebase Functions
@@ -40,19 +41,35 @@ export const postDelete = functions.region("asia-northeast3").https.onRequest((r
   });
 });
 
+// export const commentCreate = functions.region("asia-northeast3").https.onRequest((req, res) => {
+//   ready({ req, res, auth: true }, async (data) => {
+//     res.status(200).send(await Comment.create(data));
+//   });
+// });
+
+// export const commentUpdate = functions.region("asia-northeast3").https.onRequest((req, res) => {
+//   ready({ req, res, auth: true }, async (data) => {
+//     res.status(200).send(await Comment.update(data));
+//   });
+// });
+
+// export const commentDelete = functions.region("asia-northeast3").https.onRequest((req, res) => {
+//   ready({ req, res, auth: true }, async (data) => {
+//     res.status(200).send(await Comment.delete(data));
+//   });
+// });
+
 export const sendMessageOnPostCreate = functions
-    .region("asia-northeast3")
-    .firestore.document("/posts/{postId}")
-    .onCreate((snapshot, context) => {
-      return Post.sendMessageOnPostCreate(snapshot.data() as PostDocument, context.params.postId);
-    });
+  .region("asia-northeast3")
+  .firestore.document("/posts/{postId}")
+  .onCreate((snapshot, context) => {
+    return Post.sendMessageOnPostCreate(snapshot.data() as PostDocument, context.params.postId);
+  });
 
 export const sendMessageOnCommentCreate = functions
-    .region("asia-northeast3")
-    .firestore.document("/comments/{commentId}")
-    .onCreate((snapshot, context) => {
-      return Post.sendMessageOnCommentCreate(
-      snapshot.data() as CommentDocument,
-      context.params.commentId
-      );
-    });
+  .region("asia-northeast3")
+  .firestore.document("/comments/{commentId}")
+  .onCreate((snapshot, context) => {
+    return Post.sendMessageOnCommentCreate(snapshot.data() as CommentDocument, context.params.commentId);
+  });
+
