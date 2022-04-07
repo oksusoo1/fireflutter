@@ -6,7 +6,13 @@ import { Post } from "../../src/classes/post";
 import { PostDocument } from "../../src/interfaces/forum.interface";
 import { Utils } from "../../src/classes/utils";
 import { User } from "../../src/classes/user";
-import { ERROR_ALREADY_DELETED, ERROR_EMPTY_ID, ERROR_NOT_YOUR_POST, ERROR_POST_NOT_EXIST } from "../../src/defines";
+import {
+  ERROR_ALREADY_DELETED,
+  ERROR_EMPTY_ID,
+  ERROR_NOT_YOUR_POST,
+  ERROR_POST_NOT_EXIST,
+} from "../../src/defines";
+import { Storage } from "../../src/classes/storage";
 
 new FirebaseAppInitializer();
 
@@ -116,5 +122,25 @@ describe("Post delete test", () => {
     const postDoc = await Post.get(post.id!);
     expect(postDoc).to.be.equals(null);
   });
-});
 
+  it("Delete a post with image and thumbnail", async () => {
+    const filename = "uploads/delete-test-" + Utils.getTimestamp();
+    const file = await Storage.upload("./tests/storage/test.jpg", filename + ".jpg");
+    const post = await Post.create({ uid: uid, category: "cat", files: [file.publicUrl()] });
+    expect(post).to.be.an("object").to.have.property("files").lengthOf(1);
+
+    expect((await file.exists())[0]).true;
+
+    // wait for thumbnail image to be generated.
+    await Utils.delay(2000);
+
+    const thumb = Storage.getRefFromPath(filename + "_200x200.webp");
+    expect((await thumb.exists())[0]).true;
+
+    const obj = await Post.delete({ id: post.id!, uid: uid });
+    expect(obj.id).equals(post.id!);
+
+    expect((await file.exists())[0]).false;
+    expect((await thumb.exists())[0]).false;
+  });
+});
