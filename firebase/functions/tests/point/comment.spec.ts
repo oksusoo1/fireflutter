@@ -49,14 +49,14 @@ describe("Comment point test", () => {
     const comment = await Comment.get(commentId);
     expect(data.point === comment!.point);
 
-    // After 4 seconds.
+    // Delay 4 seconds for bonus point event generated
     await Utils.delay(4000);
 
     // Expect failure.
     // Test with same comment id. it will not change point. since it is going to be an update.
     const updateRef = await Point.commentCreatePoint(
-        { uid: uid },
-        { params: { commentId: commentId } }
+      { uid: uid },
+      { params: { commentId: commentId } }
     );
     expect(updateRef === null).true;
 
@@ -68,8 +68,8 @@ describe("Comment point test", () => {
     const commentId2 = doc2!.id;
 
     const ref2 = await Point.commentCreatePoint(
-        { uid: uid },
-        { params: { commentId: commentId2 } }
+      { uid: uid },
+      { params: { commentId: commentId2 } }
     );
 
     expect(ref2).not.to.be.null;
@@ -88,20 +88,24 @@ describe("Comment point test", () => {
     const doc3 = await Comment.create({ postId: "post-id-2-c", uid: "uid1" });
     const commentId3 = doc3!.id;
     const ref3 = await Point.commentCreatePoint(
-        { uid: uid },
-        { params: { commentId: commentId3 } }
+      { uid: uid },
+      { params: { commentId: commentId3 } }
     );
-    // / `within` limited time didn't passed, so, there will be no point changes.
+    // `within` limited time didn't passed, so, there will be no point changes.
     expect(ref3 === null).true;
 
     const comment3 = await Comment.get(commentId3);
     expect(data.point === comment3!.point);
 
     const pointAfterCreate3 = await Point.getUserPoint(uid);
-    expect(startingPoint + comment!.point + data2.point + comment3!.point === pointAfterCreate3)
-        .true;
+    console.log("point after create 3 ", pointAfterCreate3);
+    // console.log(startingPoint + comment!.point + (data2.point ?? 0) + (comment3!.point ?? 0));
+    expect(
+      startingPoint + comment!.point + (data2.point ?? 0) + (comment3!.point ?? 0) ===
+        pointAfterCreate3
+    ).true;
 
-    const user = await User.get(uid);
-    expect(user!.point).equal(pointAfterCreate3);
+    // const user = await User.get(uid);
+    // expect(user!.point).equal(pointAfterCreate3);
   });
 });
