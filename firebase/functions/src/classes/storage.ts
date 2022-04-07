@@ -65,4 +65,92 @@ export class Storage {
     const parts = token[0].split("/");
     return parts[parts.length - 1].replaceAll("%2F", "/");
   }
+
+  /**
+   * Gets file reference from url.
+   *
+   * @param url
+   * @returns
+   */
+  static getFileRefFromUrl(url: string) {
+    if (url.startsWith("http")) {
+      url = this.getFilePathFromUrl(url);
+    }
+    return admin.storage().bucket().file(url);
+  }
+
+  /**
+   * Gets the thumbnail URL of a file.
+   *
+   * @param url is the original url.
+   * @returns thumbnail url.
+   *
+   */
+  static getThumbnailUrl(url: string) {
+    let _tempUrl = url;
+    if (_tempUrl.indexOf("?") > 0) {
+      _tempUrl = _tempUrl.split("?")[0];
+    }
+    const basename = _tempUrl.split("/").pop();
+    const filename = basename!.split(".")[0];
+    return _tempUrl.replace(basename!, `${filename}_200x200.webp`) + "?alt=media";
+  }
+
+  /**
+   * Check where or not a file url is an image url (not thumbnail url).
+   *
+   * @param url
+   * @returns
+   */
+  static isImageUrl(url: string): boolean {
+    const t = url.toLowerCase();
+    if (t.endsWith(".jpg")) return true;
+    if (t.endsWith(".jpeg")) return true;
+    if (t.endsWith(".png")) return true;
+    if (t.endsWith(".gif")) return true;
+
+    if (
+      t.startsWith("http") &&
+      (t.includes(".jpg") || t.includes(".jpeg") || t.includes(".png") || t.includes(".gif"))
+    ) {
+      return true;
+    }
+    return false;
+  }
+
+  /**
+   * Deletes a file from a url.
+   *
+   * It will also delete thumbnail files if existing.
+   *
+   * @param url url path of the file.
+   * @returns void
+   *
+   * TODO: test
+   */
+  static async deleteFileFromUrl(url: string): Promise<void> {
+    // If it's not a file from firebase storage, it does not do anything.
+    if (url.includes("firebasestorage.googleapis.com") == false) {
+      return;
+    }
+
+    if (url.startsWith("http")) {
+      url = this.getFilePathFromUrl(url);
+    }
+    const file = this.getFileRefFromUrl(url);
+    const isExists = await file.exists();
+    if (isExists[0]) await file.delete();
+
+    // if that is the original url.
+    if (this.isImageUrl(url)) {
+      // delete associating thumbnail url.
+      const thumbnailUrl = this.getThumbnailUrl(url);
+      const thumbFile = this.getFileRefFromUrl(thumbnailUrl);
+      const thumbExists = await thumbFile.exists();
+      if (thumbExists[0]) await thumbFile.delete();
+    }
+
+    return;
+  }
 }
+

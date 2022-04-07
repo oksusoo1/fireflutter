@@ -10,6 +10,7 @@ import { CommentDocument, PostDocument } from "../interfaces/forum.interface";
 
 import { Ref } from "./ref";
 import {
+  ERROR_ALREADY_DELETED,
   ERROR_CREATE_FAILED,
   ERROR_EMPTY_CATEGORY,
   ERROR_EMPTY_ID,
@@ -20,6 +21,7 @@ import {
 } from "../defines";
 import { Messaging } from "./messaging";
 import { OnCommentCreateResponse } from "../interfaces/messaging.interface";
+import { Storage } from "./storage";
 
 export class Post {
   /**
@@ -96,14 +98,43 @@ export class Post {
   }
 
   static async delete(data: { id: string; uid: string }): Promise<string> {
-    console.log(data);
-    // 1. get the post and if it's null(not exists), throw ERROR_POST_NOT_EXITS,
-    // 2. check uid and if it's not the same of the document, throw ERROR_NOT_YOUR_POST;
-    // 3. delete files from firebase storage.
-    // 4. if there is no comment, then delete the post.
-    // 4.5 or if there is a comment, then mark it as deleted. (deleted=true)
+    // 1. id must be present. if not throw ERROR_EMPTY_ID;
+    if (!data.id) throw ERROR_EMPTY_ID;
+
+    const id = data.id;
+    // 2. get the post.
+    const post = await this.get(id);
+
+    // 3. if it's null(not exists), throw ERROR_POST_NOT_EXITS,
+    if (post === null) throw ERROR_POST_NOT_EXIST;
+
+    // 4. check uid and if it's not the same of the document, throw ERROR_NOT_YOUR_POST;
+    if (post.uid !== data.uid) throw ERROR_NOT_YOUR_POST;
+
     // 5. if the post had been marked as deleted, then throw ERROR_ALREADY_DELETED.
-    return "";
+    if (post.deleted && post.deleted === true) throw ERROR_ALREADY_DELETED;
+
+    // 6. if post has files, delete files from firebase storage.
+    if (post.files?.length) {
+      for (const url of post.files) {
+        await Storage.deleteFileFromUrl(url);
+      }
+    }
+
+    const postRef = Ref.postDoc(id);
+    if (!post.noOfComments) {
+      // 7.A if there is no comment, then delete the post.
+      await postRef.delete();
+      return id;
+    } else {
+      // 8.B or if there is a comment, then mark it as deleted. (deleted=true)
+      post.title = "";
+      post.content = "";
+      post.deleted = true;
+      await postRef.update(post);
+    }
+
+    return id;
   }
   /**
    * Returns a post as PostDocument or null if the post does not exists.
@@ -199,3 +230,4 @@ export class Post {
     return uids.filter((v, i, a) => a.indexOf(v) === i); // remove duplicate
   }
 }
+
