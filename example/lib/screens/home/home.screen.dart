@@ -470,7 +470,8 @@ class _ServerTimeState extends State<ServerTime> {
   @override
   Widget build(BuildContext context) {
     return Text(
-        "Sserver time: ${DateTime.fromMillisecondsSinceEpoch(data?['timestamp'] * 1000).toString()}");
+      "Sserver time: ${DateTime.fromMillisecondsSinceEpoch((data?['timestamp'] ?? 0) * 1000).toString()}",
+    );
   }
 }
 
