@@ -43,7 +43,7 @@ export class Comment {
 
   /**
    * Updates a comment
-   * 
+   *
    * @param data comment data to update with.
    * @returns updated comment doc data.
    */

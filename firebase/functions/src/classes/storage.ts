@@ -1,7 +1,7 @@
 import * as admin from "firebase-admin";
 
-///
-///
+// /
+// /
 export class Storage {
   /**
    * Update post or comment id on the file meta.
@@ -150,7 +150,7 @@ export class Storage {
     return;
   }
 
-  /// Return true if the message is a URL of uploaded file in Firebase Storage.
+  // / Return true if the message is a URL of uploaded file in Firebase Storage.
   static isFirebaseStorageUrl(url: string): boolean {
     return url.includes("firebasestorage.googleapis.com");
   }

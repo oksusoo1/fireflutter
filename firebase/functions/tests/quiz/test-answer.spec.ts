@@ -39,7 +39,7 @@ describe("Quiz test", () => {
     });
 
     // user answer questionA with a, expect result true.
-    const questionResultA = await Quiz.testAnswer(
+    const questionResultA = await Quiz.userAnswer(
         {
           [questionA.id]: {
             answer: "a",
@@ -50,7 +50,7 @@ describe("Quiz test", () => {
     expect(questionResultA.result).to.be.equal(true);
 
     // user answers questionB with b, expect result false.
-    const questionResultB = await Quiz.testAnswer(
+    const questionResultB = await Quiz.userAnswer(
         {
           [questionB.id]: {
             answer: "b",
@@ -70,7 +70,7 @@ describe("Quiz test", () => {
   it("Tests error on non existent quiz id.", async () => {
     let res: any;
     try {
-      res = await Quiz.testAnswer(
+      res = await Quiz.userAnswer(
           {
             "testQuiz-id": { answer: "b" },
           },
@@ -86,7 +86,7 @@ describe("Quiz test", () => {
   it("Tests error on login first.", async () => {
     let res: any;
     try {
-      res = await Quiz.testAnswer({}, {} as any);
+      res = await Quiz.userAnswer({}, {} as any);
     } catch (e) {
       res = e;
     }
@@ -109,7 +109,7 @@ describe("Quiz test", () => {
     });
 
     // user answer 1 time
-    let answerResult = await Quiz.testAnswer(
+    let answerResult = await Quiz.userAnswer(
         {
           [question.id]: {
             answer: "a",
@@ -122,7 +122,7 @@ describe("Quiz test", () => {
     // user answers second time on same question.
     let re: any;
     try {
-      answerResult = await Quiz.testAnswer(
+      answerResult = await Quiz.userAnswer(
           {
             [question.id]: {
               answer: "b",

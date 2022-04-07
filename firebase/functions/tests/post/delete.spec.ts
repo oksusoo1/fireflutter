@@ -13,7 +13,7 @@ new FirebaseAppInitializer();
 let post: PostDocument;
 const uid = "test-user-" + Utils.getTimestamp();
 
-describe("Post update test", () => {
+describe("Post delete test", () => {
   it("Prepare a post for updating (by creating a user)", async () => {
     await User.create(uid, {
       firstName: "fn",
@@ -84,7 +84,7 @@ describe("Post update test", () => {
 
     // will only be marked as deleted.
     const res = await Post.delete({ id: post.id!, uid: uid });
-    expect(res).to.be.equals(post.id);
+    expect(res.id).to.be.equals(post.id);
 
     // prove that it still exist, only marked as deleted.
     const postDoc = await Post.get(post.id!);
@@ -101,9 +101,8 @@ describe("Post update test", () => {
   });
 
   it("Input success completely deleted", async () => {
-    const user = await User.get(uid);
     const post = await Post.create({
-      uid: user!.id,
+      uid: uid,
       category: "cat1",
       title: "title",
       a: "apple",
@@ -111,7 +110,7 @@ describe("Post update test", () => {
 
     // since no comments, will be completely deleted.
     const res = await Post.delete({ id: post.id!, uid: uid });
-    expect(res).to.be.equals(post.id);
+    expect(res.id).to.be.equals(post.id);
 
     // prove that it does not exists.
     const postDoc = await Post.get(post.id!);

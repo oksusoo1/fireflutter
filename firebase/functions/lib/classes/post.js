@@ -112,7 +112,7 @@ class Post {
         if (!post.noOfComments) {
             // 7.A if there is no comment, then delete the post.
             await postRef.delete();
-            return id;
+            return { id: id };
         }
         else {
             // 8.B or if there is a comment, then mark it as deleted. (deleted=true)
@@ -121,7 +121,7 @@ class Post {
             post.deleted = true;
             await postRef.update(post);
         }
-        return id;
+        return { id: id };
     }
     /**
      * Returns a post as PostDocument or null if the post does not exists.
