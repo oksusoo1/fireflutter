@@ -17,7 +17,7 @@ describe("User admin search", async () => {
 
     await Ref.adminDoc.set({ [userA]: true }, { merge: true });
     try {
-      const result = await User.adminUserSearch({ disabled: true }, { auth: { uid: userA } });
+      const result = await User.adminUserSearch({}, { auth: { uid: userA } });
       console.log(result);
     } catch (e) {
       console.log(e);
