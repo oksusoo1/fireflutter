@@ -25,7 +25,6 @@
     "test:comment:update-via-http": "mocha --timeout 20000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/comment/update-via-http.spec.ts",
     "test:comment:delete": "mocha --timeout 20000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/comment/delete.spec.ts",
     "test:comment:delete-via-http": "mocha --timeout 20000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/comment/delete-via-http.spec.ts",
-    
     "test:point": "mocha --timeout 20000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/point/*.spec.ts",
     "test:point:sign-in": "mocha --timeout 20000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/point/sign-in.spec.ts",
     "test:point:register": "mocha --timeout 20000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/point/register.spec.ts",
@@ -36,7 +35,6 @@
     "test:storage:file-from-url": "mocha --timeout 20000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/storage/file-from-url.spec.ts",
     "test:storage:file-thumbnail-url": "mocha --timeout 20000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/storage/file-thumbnail-url.spec.ts",
     "test:storage:delete": "mocha --timeout 20000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/storage/delete.spec.ts",
-    
     "test:utils:removeHtmlTags": "mocha --timeout 20000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/utils/removeHtmlTags.spec.ts",
     "test:meilisearch:test-indexing": "mocha --timeout 20000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/meilisearch/*.spec.ts",
     "test:meilisearch:forum-indexing": "mocha --timeout 20000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/meilisearch/forum-indexing.spec.ts",
@@ -44,21 +42,15 @@
     "test:meilisearch:comment-indexing": "mocha --timeout 20000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/meilisearch/comment-indexing.spec.ts",
     "test:meilisearch:user-indexing": "mocha --timeout 20000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/meilisearch/user-indexing.spec.ts",
     "test:quiz:test-answer": "mocha --timeout 20000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/quiz/test-answer.spec.ts",
-    
     "test:messaging": "mocha --timeout 70000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/messaging/messaging.spec.ts",
     "test:messaging:token": "mocha --timeout 20000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/messaging/messaging-tokens.spec.ts",
     "test:messaging:send": "mocha --timeout 70000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/messaging/messaging-send.spec.ts",
     "test:messagingSubscriber": "mocha --timeout 20000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/messaging/messaging-subscriber.spec.ts",
-
     "test:messaging:mock:data": "mocha --timeout 70000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/messaging/messaging-mock-data.spec.ts",
-
     "test:post:oncreate:sendmessage": "mocha --timeout 20000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/post/post-send-message-on-create.spec.ts",
     "test:comment:oncreate:sendmessage": "mocha --timeout 20000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/comment/comment-send-message-on-create.spec.ts",
-
     "test:user:management": "mocha --timeout 20000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/user/user-management.spec.ts",
-
     "test:user:adminSearch": "mocha --timeout 20000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/user/user-admin-search.spec.ts"
-
   },
   "engines": {
     "node": "16"
