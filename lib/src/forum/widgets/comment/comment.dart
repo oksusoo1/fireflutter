@@ -21,6 +21,8 @@ class Comment extends StatefulWidget {
     this.buttonBuilder,
     this.headerBuilder,
     this.contentBuilder,
+    this.onBlockUser,
+    this.onUnblockUser,
   }) : super(key: key);
 
   final PostModel post;
@@ -44,6 +46,9 @@ class Comment extends StatefulWidget {
   final Widget Function(String, Function())? buttonBuilder;
   final Widget Function(CommentModel)? headerBuilder;
   final Widget Function(CommentModel)? contentBuilder;
+
+  final Function(String uid)? onBlockUser;
+  final Function(String uid)? onUnblockUser;
 
   @override
   State<Comment> createState() => _CommentState();
@@ -167,6 +172,8 @@ class _CommentState extends State<Comment> with FirestoreMixin {
                   likeCount: comment.like,
                   dislikeCount: comment.dislike,
                   onChat: (widget.onChat != null) ? () => widget.onChat!(comment) : null,
+                  onBlockUser: widget.onBlockUser,
+                  onUnblockUser: widget.onUnblockUser,
                 ),
             ],
           ),

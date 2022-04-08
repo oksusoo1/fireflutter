@@ -39,8 +39,8 @@ class ButtonBase extends StatelessWidget {
   final Function()? onHide;
   final Widget? shareButton;
   final Function()? onSendPushNotification;
-  final Function()? onBlockUser;
-  final Function()? onUnblockUser;
+  final Function(String uid)? onBlockUser;
+  final Function(String uid)? onUnblockUser;
 
   final Widget Function(String, Function())? buttonBuilder;
 
@@ -81,15 +81,12 @@ class ButtonBase extends StatelessWidget {
                 value: 'delete',
                 child: Text('Delete', style: TextStyle(color: Colors.red)),
               ),
-            if (isAdmin && onBlockUser != null)
+            if (isAdmin && onBlockUser != null && UserService.instance.isOtherUserNotDisabled(uid))
               PopupMenuItem<String>(
                 value: 'block',
                 child: Text('Block User', style: TextStyle(color: Colors.red)),
               ),
-            if (isAdmin &&
-                onUnblockUser != null &&
-                UserService.instance.others[uid] != null &&
-                UserService.instance.others[uid]!.disabled == true)
+            if (isAdmin && onUnblockUser != null && UserService.instance.isOtherUserDisabled(uid))
               PopupMenuItem<String>(
                 value: 'unblock',
                 child: Text('Unblock User', style: TextStyle(color: Colors.green)),
@@ -139,12 +136,12 @@ class ButtonBase extends StatelessWidget {
             }
 
             if (value == 'block') {
-              onBlockUser!();
+              onBlockUser!(uid);
               return;
             }
 
             if (value == 'unblock') {
-              onUnblockUser!();
+              onUnblockUser!(uid);
               return;
             }
           },
