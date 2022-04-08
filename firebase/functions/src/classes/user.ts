@@ -87,8 +87,8 @@ export class User {
   }
 
   static async disableUser(
-      data: any,
-      context: any
+    data: any,
+    context: any
   ): Promise<
     | admin.auth.UserRecord
     | {
@@ -108,6 +108,35 @@ export class User {
       return user;
     } catch (e) {
       return { code: "error", message: (e as Error).message };
+    }
+  }
+
+  //https://firebase.google.com/docs/auth/admin/manage-users#bulk_retrieve_user_data
+  static async adminUserSearch(data: any, context: any) {
+    if (!(await this.isAdmin(context))) {
+      return {
+        code: "ERROR_YOU_ARE_NOT_ADMIN",
+        message: "To manage user, you need to sign-in as an admin.",
+      };
+    }
+    let req: Array<any> = [];
+    if (typeof data.disabled != undefined) req.push({ disabled: data.disabled });
+    try {
+      const result = await this.auth.getUsers(req);
+      result.users.forEach((userRecord) => {
+        console.log(userRecord);
+      });
+
+      console.log("Unable to find users corresponding to these identifiers:");
+      result.notFound.forEach((userIdentifier) => {
+        console.log(userIdentifier);
+      });
+      return result;
+    } catch (e) {
+      return {
+        code: "ERROR_USER_SEARCH",
+        message: (e as Error).message,
+      };
     }
   }
 

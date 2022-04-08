@@ -39,10 +39,16 @@ describe("Admin User management test", () => {
       code: string;
       message: string;
     };
-    expect(re["code"]).equal(ERROR_YOU_ARE_NOT_ADMIN, "should be error since user not provided");
+    expect(re["code"]).equal(ERROR_YOU_ARE_NOT_ADMIN, "should be error since user userC not admin");
 
-    const ret = (await User.disableUser({ uid: userB }, { auth: { uid: userA } })) as admin.auth.UserRecord;
-    const c = (await User.disableUser({ uid: userC }, { auth: { uid: userA } })) as admin.auth.UserRecord;
+    const ret = (await User.disableUser(
+      { uid: userB },
+      { auth: { uid: userA } }
+    )) as admin.auth.UserRecord;
+    const c = (await User.disableUser(
+      { uid: userC },
+      { auth: { uid: userA } }
+    )) as admin.auth.UserRecord;
     expect(ret["uid"]).equal(userB, "userB uid");
     expect(ret["disabled"]).equal(true, "userB must be disabled true");
     expect(c["disabled"]).equal(true, "userC must be disabled true");
@@ -58,8 +64,14 @@ describe("Admin User management test", () => {
     expect(res.exists, "user must exist");
     expect(user.disabled == true, "user marked as disabled");
 
-    const b2 = (await User.enableUser({ uid: userB }, { auth: { uid: userA } })) as admin.auth.UserRecord;
-    const c2 = (await User.enableUser({ uid: userC }, { auth: { uid: userA } })) as admin.auth.UserRecord;
+    const b2 = (await User.enableUser(
+      { uid: userB },
+      { auth: { uid: userA } }
+    )) as admin.auth.UserRecord;
+    const c2 = (await User.enableUser(
+      { uid: userC },
+      { auth: { uid: userA } }
+    )) as admin.auth.UserRecord;
     expect(b2["uid"] == userB, "userB uid for enabling user");
     expect(b2["disabled"] == false, "userB must be disabled false");
     expect(c2["disabled"] == false, "userC must be disabled false");

@@ -16,8 +16,7 @@ class PostListScreen extends StatefulWidget {
   State<PostListScreen> createState() => _PostListScreenState();
 }
 
-class _PostListScreenState extends State<PostListScreen>
-    with FirestoreMixin, ForumMixin {
+class _PostListScreenState extends State<PostListScreen> with FirestoreMixin, ForumMixin {
   late final String category;
   String? newPostId;
   @override
@@ -46,8 +45,7 @@ class _PostListScreenState extends State<PostListScreen>
           ),
           IconButton(
             onPressed: () async {
-              newPostId =
-                  await AppService.instance.openPostForm(category: category);
+              newPostId = await AppService.instance.openPostForm(category: category);
               if (mounted) setState(() {});
             },
             icon: Icon(
@@ -114,39 +112,32 @@ class _PostListScreenState extends State<PostListScreen>
                         Post(
                           key: ValueKey(post.id),
                           post: post,
-                          onProfile: (uid) =>
-                              alert('Open other user profile', 'uid: $uid'),
+                          onProfile: (uid) => alert('Open other user profile', 'uid: $uid'),
                           onReply: (post) => onReply(context, post),
                           onReport: onReport,
-                          onImageTap: (i, files) =>
-                              onImageTapped(context, i, files),
-                          onEdit: (post) =>
-                              AppService.instance.openPostForm(post: post),
+                          onImageTap: (i, files) => onImageTapped(context, i, files),
+                          onEdit: (post) => AppService.instance.openPostForm(post: post),
                           onDelete: onDelete,
                           onLike: onLike,
                           onDislike: onDislike,
                           onHide: () {},
-                          onChat: (post) =>
-                              AppService.instance.openChatRoom(post.uid),
-                          onSendPushNotification: (post) => AppService.instance
-                              .open(PushNotificationScreen.routeName,
-                                  arguments: {'postId': post.id}),
+                          onChat: (post) => AppService.instance.openChatRoom(post.uid),
+                          onSendPushNotification: (post) => AppService.instance.open(
+                              PushNotificationScreen.routeName,
+                              arguments: {'postId': post.id}),
                         ),
                         Divider(color: Colors.red),
                         Comment(
                           post: post,
                           parentId: post.id,
-                          onProfile: (uid) =>
-                              alert('Open other user profile', 'uid: $uid'),
-                          onReply: (post, comment) =>
-                              onReply(context, post, comment),
+                          onProfile: (uid) => alert('Open other user profile', 'uid: $uid'),
+                          onReply: (post, comment) => onReply(context, post, comment),
                           onReport: onReport,
                           onEdit: (comment) => onEdit(context, comment),
                           onDelete: onDelete,
                           onLike: onLike,
                           onDislike: onDislike,
-                          onImageTap: (i, files) =>
-                              onImageTapped(context, i, files),
+                          onImageTap: (i, files) => onImageTapped(context, i, files),
                         ),
                       ],
                     ),

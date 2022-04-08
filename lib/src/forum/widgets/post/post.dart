@@ -20,6 +20,8 @@ class Post extends StatelessWidget {
     this.onHide,
     required this.onSendPushNotification,
     this.padding,
+    this.onBlockUser,
+    this.onUnblockUser,
   }) : super(key: key);
 
   // final Function(PostModel)? contentBuilder;
@@ -38,6 +40,9 @@ class Post extends StatelessWidget {
   final Function(PostModel post) onSendPushNotification;
   final Function(int index, List<String> fileList) onImageTap;
   final EdgeInsets? padding;
+
+  final Function(String uid)? onBlockUser;
+  final Function(String uid)? onUnblockUser;
 
   @override
   Widget build(BuildContext context) {
@@ -100,8 +105,8 @@ class Post extends StatelessWidget {
             dislikeCount: post.dislike,
             shareButton: shareButton,
             onSendPushNotification: () => onSendPushNotification(post),
-            onBlockUser: () => UserService.instance.blockUser(post.uid),
-            onUnblockUser: () => UserService.instance.unblockUser(post.uid),
+            onBlockUser: onBlockUser,
+            onUnblockUser: onUnblockUser,
           ),
         ),
       ],

@@ -172,9 +172,13 @@ class UserService with FirestoreMixin, DatabaseMixin {
     user.updateAdminStatus();
   }
 
-  bool isDisabled(String uid) {
+  bool isOtherUserDisabled(String uid) {
     if (others[uid] == null) return false;
     return others[uid]!.disabled;
+  }
+
+  bool isOtherUserNotDisabled(String uid) {
+    return !isOtherUserDisabled(uid);
   }
 
   /// It gets other user's document.
@@ -217,6 +221,7 @@ class UserService with FirestoreMixin, DatabaseMixin {
       return u;
     } catch (e) {
       print(e);
+      rethrow;
     }
   }
 
@@ -232,6 +237,7 @@ class UserService with FirestoreMixin, DatabaseMixin {
       return u;
     } catch (e) {
       print(e);
+      rethrow;
     }
   }
 }
