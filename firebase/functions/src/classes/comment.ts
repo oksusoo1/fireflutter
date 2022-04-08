@@ -9,7 +9,11 @@ import {
   ERROR_NOT_YOUR_COMMENT,
   ERROR_UPDATE_FAILED,
 } from "../defines";
-import { CommentCreateParams, CommentCreateRequirements, CommentDocument } from "../interfaces/forum.interface";
+import {
+  CommentCreateParams,
+  CommentCreateRequirements,
+  CommentDocument,
+} from "../interfaces/forum.interface";
 import { Storage } from "./storage";
 
 export class Comment {
@@ -97,10 +101,19 @@ export class Comment {
       }
     }
 
-    comment.content = "";
-    comment.deleted = true;
+    // Check if child comment (of this comment) exists.
+    // Get only 1 child.
+    const snapshot = await Ref.commentCol.where("parentId", "==", comment.id).limit(1).get();
+    if (snapshot.size > 0) {
+      // If child comment (of this comment) exists, then mark it as deleted.
+      comment.content = "";
+      comment.deleted = true;
+      await Ref.commentDoc(id).update(comment);
+    } else {
+      // If there is no comment (under this comment), then delete it.
+      await Ref.commentDoc(id).delete();
+    }
 
-    await Ref.commentDoc(id).update(comment);
     return { id };
   }
 
@@ -114,4 +127,3 @@ export class Comment {
     return null;
   }
 }
-
