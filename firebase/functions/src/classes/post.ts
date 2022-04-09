@@ -11,6 +11,7 @@ import { CommentDocument, PostDocument } from "../interfaces/forum.interface";
 import { Ref } from "./ref";
 import {
   ERROR_ALREADY_DELETED,
+  ERROR_CATEGORY_NOT_EXISTS,
   ERROR_CREATE_FAILED,
   ERROR_EMPTY_CATEGORY,
   ERROR_EMPTY_ID,
@@ -22,6 +23,7 @@ import {
 import { Messaging } from "./messaging";
 import { OnCommentCreateResponse } from "../interfaces/messaging.interface";
 import { Storage } from "./storage";
+import { Category } from "./category";
 
 export class Post {
   /**
@@ -37,6 +39,10 @@ export class Post {
     // check up
     if (!data.uid) throw ERROR_EMPTY_UID;
     if (!data.category) throw ERROR_EMPTY_CATEGORY;
+
+    Ref.categoryDoc(data.category);
+    const re = await Category.exists(data.category);
+    if (re === false) throw ERROR_CATEGORY_NOT_EXISTS;
 
     // get all the data from client.
     const doc: { [key: string]: any } = data as any;
@@ -167,8 +173,8 @@ export class Post {
   }
 
   static async sendMessageOnCommentCreate(
-      data: CommentDocument,
-      id: string
+    data: CommentDocument,
+    id: string
   ): Promise<OnCommentCreateResponse | null> {
     const post = await this.get(data.postId);
     if (!post) return null;
@@ -197,16 +203,16 @@ export class Post {
 
     // Don't send the same message twice to topic subscribers and comment notifyees.
     const userUids = await Messaging.getCommentNotifyeeWithoutTopicSubscriber(
-        ancestorsUid.join(","),
-        topic
+      ancestorsUid.join(","),
+      topic
     );
 
     // get users tokens
     const tokens = await Messaging.getTokensFromUids(userUids.join(","));
 
     const sendToTokenRes = await Messaging.sendingMessageToTokens(
-        tokens,
-        Messaging.preMessagePayload(messageData)
+      tokens,
+      Messaging.preMessagePayload(messageData)
     );
     return {
       topicResponse: sendToTopicRes,

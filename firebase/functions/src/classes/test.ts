@@ -86,12 +86,17 @@ export class Test {
    * @param {*} data
    * @return reference of the cateogry
    */
-  static async createCategory(data: CategoryDocument) {
-    const id = data.id;
+  static categoryCount = 0;
+  static async createCategory() {
+    this.categoryCount++;
+    const id = "test-cat-" + this.categoryCount + Utils.getTimestamp();
     // delete data.id; // call-by-reference. it will causes error after this method.
-    data.timestamp = Utils.getTimestamp();
-    await Ref.categoryDoc(id!).set(data, { merge: true });
-    return Ref.categoryDoc(id!);
+    const timestamp = Utils.getTimestamp();
+    await Ref.categoryDoc(id).set({ timestamp: timestamp }, { merge: true });
+    const snapshot = await Ref.categoryDoc(id).get();
+    const data = snapshot.data() as CategoryDocument;
+    data.id = id;
+    return data;
   }
 
   /**
@@ -122,12 +127,11 @@ export class Test {
  */
   static async createPost(data: any) {
     // if data.category.id comes in, then it will prepare the category to be exist.
-    if (data.category && data.category.id) {
-      await this.createCategory(data.category);
-      // console.log((await catDoc.get()).data());
-      // console.log('category id; ', catDoc.id);
-    }
-
+    // if (data.category && data.category.id) {
+    //   await this.createCategory(data.category);
+    // console.log((await catDoc.get()).data());
+    // console.log('category id; ', catDoc.id);
+    // }
     // const postData: any = {
     //   category: data.category && data.category.id ? data.category.id : "test",
     //   title: data.post && data.post.title ? data.post.title : "create_post",
@@ -135,14 +139,11 @@ export class Test {
     //   createdAt: Utils.getTimestamp(),
     //   updatedAt: Utils.getTimestamp(),
     // };
-
     // / create post
-
     // if (data.post && data.post.id) {
     //   if (data.post.deleted && data.post.deleted === true) {
     //     postData.deleted = true;
     //   }
-
     //   await Ref.postDoc(data.post.id).set(postData, { merge: true });
     //   return Ref.postDoc(data.post.id);
     // } else {

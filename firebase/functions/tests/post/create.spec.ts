@@ -3,24 +3,15 @@ import { expect } from "chai";
 
 import { FirebaseAppInitializer } from "../firebase-app-initializer";
 import { Post } from "../../src/classes/post";
-import { ERROR_EMPTY_CATEGORY, ERROR_EMPTY_UID } from "../../src/defines";
+import {
+  ERROR_CATEGORY_NOT_EXISTS,
+  ERROR_EMPTY_CATEGORY,
+  ERROR_EMPTY_UID,
+} from "../../src/defines";
 
 new FirebaseAppInitializer();
 
 describe("Post create test", () => {
-  it("Succed to create a post", async () => {
-    const post = await Post.create({
-      uid: "a",
-      password: "abc",
-      category: "cat1",
-      title: "yo",
-      a: "apple",
-    } as any);
-    // console.log(post);
-    expect(post).not.to.be.null;
-    expect(post!.category === "cat1").true;
-    expect(post!.a === "apple").true;
-  });
   it("Fail - ERROR_EMPTY_UID", async () => {
     try {
       await Post.create({ category: "cat1", title: "yo" } as any);
@@ -36,5 +27,28 @@ describe("Post create test", () => {
     } catch (e) {
       expect(e).equals(ERROR_EMPTY_CATEGORY);
     }
+  });
+
+  it("Fail - ERROR_CATEGORY_NOT_EXISTS", async () => {
+    try {
+      await Post.create({ uid: "cat1", title: "yo" } as any);
+      expect.fail();
+    } catch (e) {
+      expect(e).equals(ERROR_CATEGORY_NOT_EXISTS);
+    }
+  });
+
+  it("Succed to create a post", async () => {
+    const post = await Post.create({
+      uid: "a",
+      password: "abc",
+      category: "cat1",
+      title: "yo",
+      a: "apple",
+    } as any);
+    // console.log(post);
+    expect(post).not.to.be.null;
+    expect(post!.category === "cat1").true;
+    expect(post!.a === "apple").true;
   });
 });
