@@ -65,6 +65,9 @@ export class Post {
 
     // return the document object of newly created post.
     const snapshot = await ref.get();
+
+    // TODO: 카테고리 별, 랜덤 포인트와, 마지막 포인트 후, 최소 경과 시간 을 확인해서, 포인트 증가를 여기서 시킨다.
+
     if (snapshot.exists) {
       const postData = snapshot.data() as PostDocument;
       postData.id = ref.id;

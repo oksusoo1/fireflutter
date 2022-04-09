@@ -9,6 +9,8 @@ import {
   ERROR_EMPTY_UID,
 } from "../../src/defines";
 
+import { Test } from "../../src/classes/test";
+
 new FirebaseAppInitializer();
 
 describe("Post create test", () => {
@@ -31,7 +33,7 @@ describe("Post create test", () => {
 
   it("Fail - ERROR_CATEGORY_NOT_EXISTS", async () => {
     try {
-      await Post.create({ uid: "cat1", title: "yo" } as any);
+      await Post.create({ uid: "cat1", category: "not-exists" } as any);
       expect.fail();
     } catch (e) {
       expect(e).equals(ERROR_CATEGORY_NOT_EXISTS);
@@ -39,16 +41,18 @@ describe("Post create test", () => {
   });
 
   it("Succed to create a post", async () => {
+    const category = await Test.createCategory();
+
     const post = await Post.create({
       uid: "a",
       password: "abc",
-      category: "cat1",
+      category: category.id,
       title: "yo",
       a: "apple",
     } as any);
     // console.log(post);
     expect(post).not.to.be.null;
-    expect(post!.category === "cat1").true;
+    expect(post!.category === category.id).true;
     expect(post!.a === "apple").true;
   });
 });
