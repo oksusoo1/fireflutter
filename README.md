@@ -21,15 +21,12 @@ Table of contents
 
 - [Fire Flutter](#fire-flutter)
 - [TODOs](#todos)
-  - [Creating short samples on DartPad and post it as gist code](#creating-short-samples-on-dartpad-and-post-it-as-gist-code)
+  - [Creating short samples for better document.](#creating-short-samples-for-better-document)
   - [Friendly Post ID](#friendly-post-id)
   - [Display uploaded files](#display-uploaded-files)
-  - [Sample code](#sample-code)
-  - [Full functional code](#full-functional-code)
-  - [Bug on security rule](#bug-on-security-rule)
   - [Admin](#admin)
   - [Chat](#chat)
-  - [Post](#post)
+- [Changes](#changes)
 - [Installation](#installation)
   - [Running the example](#running-the-example)
   - [Creating a new project](#creating-a-new-project)
@@ -93,7 +90,7 @@ Table of contents
   - [To test user functionality](#to-test-user-functionality)
   - [Test method](#test-method)
   - [Local test on firestore security rules](#local-test-on-firestore-security-rules)
-- [Sample code](#sample-code-1)
+- [Sample code](#sample-code)
 - [Node.js Utilities](#nodejs-utilities)
   - [User utilities](#user-utilities)
   - [Forum utilities](#forum-utilities)
@@ -114,7 +111,7 @@ Table of contents
 - [Forum](#forum)
   - [Category](#category)
     - [Subcategory](#subcategory)
-  - [Post](#post-1)
+  - [Post](#post)
   - [Comment](#comment)
   - [PostService and PostApi](#postservice-and-postapi)
 - [Push notification](#push-notification)
@@ -154,10 +151,11 @@ Table of contents
 
 # TODOs
 
-## Creating short samples on DartPad and post it as gist code
+## Creating short samples for better document.
 
 
-
+- Provide more sample code and use cases.
+  - Providing as much as possible code based on official document and firebase code sample, and [cloud funtions sample code](https://github.com/firebase/functions-samples)
 
 
 ## Friendly Post ID
@@ -170,35 +168,18 @@ Table of contents
 ## Display uploaded files
 
 - The file upload functionality is focused on uploading and display images. what if the uploaded file is not an image?
-
-## Sample code
-
-- Provide more sample code and use cases.
-  - Providing as much as possible code based on official document and firebase code sample, and [cloud funtions sample code](https://github.com/firebase/functions-samples)
-
-
-## Full functional code
-
-- Provide all the functions of firebase.
-  - For instance, provide all the functions of user management from [Firebase document](https://firebase.google.com/docs/auth/admin/manage-users).
-    - Fireflutter may need to use `callable function` to call the function to provide the full admin functionality of authentication.
-    - By doing this, fireflutter can provide user search, update, block, delete etc.
-
-## Bug on security rule
-
-- User can list all the reports which must be shown to admin only.
-
 ## Admin
 
 - Since email & phone no are saved in firebase auth service, admin needs a special function to know what is the email and phone no of users.
 
 ## Chat
 
-- put many chat messages in one chat message box(balloon) if they are written in 20 minutes.
+- combine many chat messages in one chat message box(balloon) if they are written in 20 minutes.
 
-## Post
+# Changes
 
-- Do not increase view counter on same post. Save data on local storage. It's not a critical feature. It would be okay even if the view counter increases more than once.
+- Before Apr 10, 2022, `PostService` and `CommentService` handled for the `create, update, delete`.
+  - But to support multi client end platform, we decided to move the `Flutter client service model` to `HTTP Cloud functions`.
 
 # Installation
 

@@ -90,13 +90,11 @@ class Point {
      * Returns point document reference
      * @param data post data
      * @param context context
-     * @returns reference of the point history document
+     * @returns reference of the point history document or null if the point event didn't happen.
      * @reference see `tests/point/list.ts` for generating post creation bonus point for test.
      */
-    static async postCreatePoint(data, context) {
+    static async postCreatePoint(uid, postId) {
         // Get data
-        const uid = data.uid;
-        const postId = context.params.postId;
         const postCreateRef = ref_1.Ref.pointPostCreate(uid);
         // Time didn't passed from last bonus point event? then don't do point event.
         if ((await this.timePassed(postCreateRef, EventName.postCreate)) === false)
@@ -127,9 +125,7 @@ class Point {
      * @returns reference of point history of the comment point event.
      * @reference see `tests/point/list.ts` for generating comment creation bonus point for test.
      */
-    static async commentCreatePoint(data, context) {
-        const uid = data.uid;
-        const commentId = context.params.commentId;
+    static async commentCreatePoint(uid, commentId) {
         // console.log("uid; ", uid, ", commentId", commentId);
         const commentCreateRef = ref_1.Ref.pointCommentCreate(uid);
         if ((await this.timePassed(commentCreateRef, EventName.commentCreate)) === false)

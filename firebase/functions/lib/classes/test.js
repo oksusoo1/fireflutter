@@ -44,7 +44,12 @@ class Test {
     static async createTestUserAndGetDoc(uid, data) {
         const ref = await this.createTestUser(uid, data);
         const snapshot = await ref.get();
-        return snapshot.val();
+        const val = snapshot.val();
+        val.id = uid;
+        return val;
+    }
+    static async createUser() {
+        return this.createTestUserAndGetDoc("test-uid-" + ++this.testCount + utils_1.Utils.getTimestamp());
     }
     /**
      * delets a test user from realtime database.
@@ -77,12 +82,16 @@ class Test {
      * @param {*} data
      * @return reference of the cateogry
      */
-    static async createCategory(data) {
-        const id = data.id;
+    static async createCategory() {
+        this.testCount++;
+        const id = "test-cat-" + this.testCount + utils_1.Utils.getTimestamp();
         // delete data.id; // call-by-reference. it will causes error after this method.
-        data.timestamp = utils_1.Utils.getTimestamp();
-        await ref_1.Ref.categoryDoc(id).set(data, { merge: true });
-        return ref_1.Ref.categoryDoc(id);
+        const timestamp = utils_1.Utils.getTimestamp();
+        await ref_1.Ref.categoryDoc(id).set({ timestamp: timestamp }, { merge: true });
+        const snapshot = await ref_1.Ref.categoryDoc(id).get();
+        const data = snapshot.data();
+        data.id = id;
+        return data;
     }
     /**
    * Create a post for test
@@ -95,46 +104,27 @@ class Test {
    * @return reference
    *
    * @example
-      const ref = await test.createPost({
-        category: "test",
-        post: {},
-      });
+      const ref = await test.createPost();
       console.log((await ref.get()).data());
-   * @example
-   * await test.createPost({
-      category: 'test',         // create a category
-      post: {                   // post
-          id: 'post_id_a',      // if post id exists, it sets. or create.
-          title: 'post_title',
-          uid: 'A',
-      },
-  })
    */
-    static async createPost(data) {
-        // if data.category.id comes in, then it will prepare the category to be exist.
-        if (data.category && data.category.id) {
-            await this.createCategory(data.category);
-            // console.log((await catDoc.get()).data());
-            // console.log('category id; ', catDoc.id);
-        }
-        // const postData: any = {
-        //   category: data.category && data.category.id ? data.category.id : "test",
-        //   title: data.post && data.post.title ? data.post.title : "create_post",
-        //   uid: data.post && data.post.uid ? data.post.uid : "uid",
-        //   createdAt: Utils.getTimestamp(),
-        //   updatedAt: Utils.getTimestamp(),
-        // };
+    static async createPost() {
+        const user = await this.createUser();
+        const category = await this.createCategory();
+        const postData = {
+            category: category.id,
+            title: "title-" + category.id,
+            uid: user.id,
+            createdAt: utils_1.Utils.getTimestamp(),
+            updatedAt: utils_1.Utils.getTimestamp(),
+        };
         // / create post
-        // if (data.post && data.post.id) {
-        //   if (data.post.deleted && data.post.deleted === true) {
-        //     postData.deleted = true;
-        //   }
-        //   await Ref.postDoc(data.post.id).set(postData, { merge: true });
-        //   return Ref.postDoc(data.post.id);
-        // } else {
-        //   return Ref.postCol.add(postData);
-        // }
+        const ref = await ref_1.Ref.postCol.add(postData);
+        const snapshot = await ref.get();
+        const data = snapshot.data();
+        data.id = ref.id;
+        return data;
     }
 }
 exports.Test = Test;
+Test.testCount = 0;
 //# sourceMappingURL=test.js.map

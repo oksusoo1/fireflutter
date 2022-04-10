@@ -5,88 +5,58 @@ import { EventName, Point, randomPoint } from "../../src/classes/point";
 import { FirebaseAppInitializer } from "../firebase-app-initializer";
 import { Utils } from "../../src/classes/utils";
 import { Post } from "../../src/classes/post";
-import { User } from "../../src/classes/user";
+// import { User } from "../../src/classes/user";
+import { Test } from "../../src/classes/test";
 
 new FirebaseAppInitializer();
 
-const uid = "user-" + Utils.getTimestamp();
+// const uid = "user-" + Utils.getTimestamp();
 describe("Post point test", () => {
-  it("Post create event test - uid: " + uid, async () => {
-    await User.create(uid, {
-      firstName: "fn",
-    });
-    await User.get(uid);
+  it("Post create point event", async () => {
+    // Create user
+    const user = await Test.createUser();
 
-    // wait sometime for register and get's register bonus.
+    // Wait sometime for register and get's register bonus.
     await Utils.delay(2000);
 
-    // Get my point first,
-    const startingPoint = await Point.getUserPoint(uid);
+    // Get current user point
+    const startingPoint = await Point.getUserPoint(user.id);
 
-    // console.log("startingPoint; ", startingPoint);
-
-    // Make the time check to 3 seconds.
+    // Make the time limit of post create to 3 seconds.
     randomPoint[EventName.postCreate].within = 3;
 
-    const doc = await Post.create({ category: "cat1", uid: "uid1" });
-    const postId = doc.id!;
+    // Create category
+    const category = await Test.createCategory();
 
-    // 1. Generage random point for post create
-    // 2. Check point change
-    // 3. assert point change. data.point is the amount of generated point.
-    const ref = await Point.postCreatePoint({ uid: uid }, { params: { postId: postId } });
-    expect(ref).not.to.be.null;
+    // 1st post create
+    const post = await Post.create({ category: category.id, uid: user.id });
+    expect(post).to.be.an("object");
 
-    // ** Get point fromt the document (not from point history) and compare.
-    const post = await Post.get(postId);
+    const pointAfterCreate = await Point.getUserPoint(user.id);
 
-    if (post === null) expect.fail();
+    // register point + post create point == point after post create
+    expect(startingPoint + post.point! === pointAfterCreate).true;
 
-    const pointAfterCreate = await Point.getUserPoint(uid);
-
-    // console.log("startingPoint;", startingPoint);
-    // console.log("post.point;", post.point);
-    // console.log("pointAfterCreate;", pointAfterCreate);
-
-    expect(startingPoint + (post.point ?? 0) === pointAfterCreate).true;
+    // 2nd post create test
 
     // After 4 seconds. for the within time limit.
     await Utils.delay(4000);
 
+    // create 2nd post and compare point
+    const post2 = await Post.create({ category: category.id, uid: user.id });
+    expect(post2).to.be.an("object");
+
+    const pointAfterCreate2 = await Point.getUserPoint(user.id);
+    expect(startingPoint + post.point! + post2.point! === pointAfterCreate2).true;
+
+    // 3rd post create
     // Expect failure.
-    // Test with same post id. it will not change point. since it is going to be an update.
-    const updateRef = await Point.postCreatePoint({ uid: uid }, { params: { postId: postId } });
-    expect(updateRef).to.be.null;
-
-    // Expect success.
-    // There will be two point event histories.
-    // Do point event for post create with different post id.
-    const doc2 = await Post.create({ category: "cat1", uid: "uid1" });
-    const postId2 = doc2!.id;
-    const ref2 = await Point.postCreatePoint({ uid: uid }, { params: { postId: postId2 } });
-    expect(ref2).not.to.be.null;
-
-    // ** Get point from point event history document and compare.
-    const data2 = (await ref2!.get()).val();
-    const pointAfterCreate2 = await Point.getUserPoint(uid);
-    expect(startingPoint + (post.point ?? 0) + data2!.point === pointAfterCreate2).true;
-
-    // Expect failure.
-    // After 1.5 seconds later, do it again and expect failure since `within` time has not passed.
+    // After 1 seconds later, do it again and expect failure since `within` time has not passed.
     await Utils.delay(1000);
-    const doc3 = await Post.create({ category: "cat1", uid: "uid1" });
-    const postId3 = doc3!.id;
-    const ref3 = await Point.postCreatePoint({ uid: uid }, { params: { postId: postId3 } });
-    expect(ref3 === null).true;
-    const pointAfterCreate3 = await Point.getUserPoint(uid);
-    // console.log(
-    //   startingPoint + post!.point + data2!.point + " === " + pointAfterCreate3,
-    //   "postId; ",
-    //   postId
-    // );
-    expect(startingPoint + (post.point ?? 0) + data2!.point === pointAfterCreate3).true;
-
-    const user = await User.get(uid);
-    expect(user!.point).equal(pointAfterCreate3);
+    const post3 = await Post.create({ category: category.id, uid: user.id });
+    expect(post3).to.be.an("object").not.to.have.property("point");
+    const pointAfterCreate3 = await Point.getUserPoint(user.id);
+    expect(startingPoint + post.point! + post2.point! + (post3.point ?? 0) === pointAfterCreate3)
+      .true;
   });
 });
