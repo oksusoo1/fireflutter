@@ -3,11 +3,14 @@ import {
   ERROR_EMPTY_PASSWORD,
   ERROR_EMPTY_UID,
   ERROR_USER_NOT_FOUND,
+  ERROR_EMTPY_EMAIL_AND_PHONE_NUMBER,
+  ERROR_ONE_OF_EMAIL_AND_PHONE_NUMBER_MUST_BY_EMPTY,
 } from "../defines";
 import { UserCreate, UserDocument } from "../interfaces/user.interface";
 import { Ref } from "./ref";
 import { Utils } from "./utils";
 import * as admin from "firebase-admin";
+import { assert } from "chai";
 
 export class User {
   static get auth() {
@@ -59,12 +62,13 @@ export class User {
   }
 
   static async isAdmin(context: any) {
-    const doc = await Ref.adminDoc.get();
-    const admins = doc.data();
     if (!context) return false;
     if (context.empty) return false;
     if (!context.auth) return false;
     if (!context.auth.uid) return false;
+
+    const doc = await Ref.adminDoc.get();
+    const admins = doc.data();
     if (!admins) return false;
     if (!admins[context.auth.uid]) return false;
     return true;
@@ -87,8 +91,8 @@ export class User {
   }
 
   static async disableUser(
-      data: any,
-      context: any
+    data: any,
+    context: any
   ): Promise<
     | admin.auth.UserRecord
     | {
@@ -108,6 +112,41 @@ export class User {
       return user;
     } catch (e) {
       return { code: "error", message: (e as Error).message };
+    }
+  }
+
+  //https://firebase.google.com/docs/auth/admin/manage-users#bulk_retrieve_user_data
+  static async adminUserSearch(data: { email?: string; phoneNumber?: string }, context: any) {
+    if (!(await this.isAdmin(context))) {
+      return {
+        code: "ERROR_YOU_ARE_NOT_ADMIN",
+        message: "To manage user, you need to sign-in as an admin.",
+      };
+    }
+
+    // if (!data.email && !data.phoneNumber) return ERROR_EMTPY_EMAIL_AND_PHONE_NUMBER;
+    // if (data.email && data.phoneNumber) return ERROR_ONE_OF_EMAIL_AND_PHONE_NUMBER_MUST_BY_EMPTY;
+
+    let req: Array<any> = [];
+
+    req.push(data);
+
+    try {
+      const result = await this.auth.getUsers(req);
+      result.users.forEach((userRecord) => {
+        console.log(userRecord);
+      });
+
+      console.log("Unable to find users corresponding to these identifiers:");
+      result.notFound.forEach((userIdentifier) => {
+        console.log(userIdentifier);
+      });
+      return result;
+    } catch (e) {
+      return {
+        code: "ERROR_USER_SEARCH",
+        message: (e as Error).message,
+      };
     }
   }
 
