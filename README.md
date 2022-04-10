@@ -1363,9 +1363,9 @@ DynamicLinksService.instance.listen((Uri? deepLink) {
 ## PostService and PostApi
 
 
-- `PostService` is a helper class to set and get post document data directly to firestore while `PostApi` is a helper class to call cloud function http (restful api) call.
-`PostApi` does not use `Dio` to communicate to cloud function.
-This is because some features like `job` heavily depends on cloud function, it directly call cloud function to make the work straight foward.
+- `PostService` is a flutter helper class for post crud while `PostApi` is a restful api helper class to call cloud function via http.
+- `PostApi` uses `Dio` to communicate to cloud function.
+- It is recommended to use `PostApi` and `CommentApi` instead of `PostService` and `CommentService` for post & comment crud.
 
 # Push notification
 
