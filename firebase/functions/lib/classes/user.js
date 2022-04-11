@@ -5,6 +5,7 @@ const defines_1 = require("../defines");
 const ref_1 = require("./ref");
 const utils_1 = require("./utils");
 const admin = require("firebase-admin");
+// import { assert } from "chai";
 class User {
     static get auth() {
         return admin.auth();
@@ -53,8 +54,6 @@ class User {
         return null;
     }
     static async isAdmin(context) {
-        const doc = await ref_1.Ref.adminDoc.get();
-        const admins = doc.data();
         if (!context)
             return false;
         if (context.empty)
@@ -63,6 +62,8 @@ class User {
             return false;
         if (!context.auth.uid)
             return false;
+        const doc = await ref_1.Ref.adminDoc.get();
+        const admins = doc.data();
         if (!admins)
             return false;
         if (!admins[context.auth.uid])
@@ -103,9 +104,40 @@ class User {
             return { code: "error", message: e.message };
         }
     }
+    // https://firebase.google.com/docs/auth/admin/manage-users#bulk_retrieve_user_data
+    static async adminUserSearch(data, context) {
+        if (!(await this.isAdmin(context))) {
+            return {
+                code: "ERROR_YOU_ARE_NOT_ADMIN",
+                message: "To manage user, you need to sign-in as an admin.",
+            };
+        }
+        // if (!data.email && !data.phoneNumber) return ERROR_EMTPY_EMAIL_AND_PHONE_NUMBER;
+        // if (data.email && data.phoneNumber) return ERROR_ONE_OF_EMAIL_AND_PHONE_NUMBER_MUST_BY_EMPTY;
+        const req = [];
+        req.push(data);
+        try {
+            const result = await this.auth.getUsers(req);
+            result.users.forEach((userRecord) => {
+                console.log(userRecord);
+            });
+            console.log("Unable to find users corresponding to these identifiers:");
+            result.notFound.forEach((userIdentifier) => {
+                console.log(userIdentifier);
+            });
+            return result;
+        }
+        catch (e) {
+            return {
+                code: "ERROR_USER_SEARCH",
+                message: e.message,
+            };
+        }
+    }
     /**
      *
      * ! warning. this is very week password, but it is difficult to guess.
+     * ! You may add more properties like `phone number`, `email` to make the password more strong.
      *
      * @param doc user model
      * @returns password string

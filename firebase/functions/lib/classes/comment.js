@@ -5,6 +5,7 @@ const admin = require("firebase-admin");
 const ref_1 = require("./ref");
 const defines_1 = require("../defines");
 const storage_1 = require("./storage");
+const point_1 = require("./point");
 class Comment {
     /**
      * Creates a comment
@@ -28,15 +29,11 @@ class Comment {
             updatedAt: admin.firestore.FieldValue.serverTimestamp(),
         };
         const ref = await ref_1.Ref.commentCol.add(doc);
+        await point_1.Point.commentCreatePoint(data.uid, ref.id);
         const snapshot = await ref.get();
-        if (snapshot.exists) {
-            const comment = snapshot.data();
-            comment.id = ref.id;
-            return comment;
-        }
-        else {
-            return null;
-        }
+        const comment = snapshot.data();
+        comment.id = ref.id;
+        return comment;
     }
     /**
      * Updates a comment
@@ -94,9 +91,19 @@ class Comment {
                 await storage_1.Storage.deleteFileFromUrl(url);
             }
         }
-        comment.content = "";
-        comment.deleted = true;
-        await ref_1.Ref.commentDoc(id).update(comment);
+        // Check if child comment (of this comment) exists.
+        // Get only 1 child.
+        const snapshot = await ref_1.Ref.commentCol.where("parentId", "==", comment.id).limit(1).get();
+        if (snapshot.size > 0) {
+            // If child comment (of this comment) exists, then mark it as deleted.
+            comment.content = "";
+            comment.deleted = true;
+            await ref_1.Ref.commentDoc(id).update(comment);
+        }
+        else {
+            // If there is no comment (under this comment), then delete it.
+            await ref_1.Ref.commentDoc(id).delete();
+        }
         return { id };
     }
     static async get(id) {

@@ -43,19 +43,19 @@ export const pointEventRegister = functions
  * % npm run shell
  * % pointEventPostCreate( {uid: 'a'}, {params: {postId: 'post-1'}} )
  */
-export const pointEventPostCreate = functions
-    .region("asia-northeast3")
-    .firestore.document("/posts/{postId}")
-    .onCreate((snapshot, context) => {
-      return Point.postCreatePoint(snapshot.data(), context);
-    });
+// export const pointEventPostCreate = functions
+//     .region("asia-northeast3")
+//     .firestore.document("/posts/{postId}")
+//     .onCreate((snapshot, context) => {
+//       return Point.postCreatePoint(snapshot.data(), context);
+//     });
 
-export const pointEventCommentCreate = functions
-    .region("asia-northeast3")
-    .firestore.document("/comments/{commentId}")
-    .onCreate((snapshot, context) => {
-      return Point.commentCreatePoint(snapshot.data(), context);
-    });
+// export const pointEventCommentCreate = functions
+//     .region("asia-northeast3")
+//     .firestore.document("/comments/{commentId}")
+//     .onCreate((snapshot, context) => {
+//       return Point.commentCreatePoint(snapshot.data(), context);
+//     });
 
 export const pointHistory = functions.region("asia-northeast3").https.onRequest((req, res) => {
   ready({ req, res, auth: true }, async (data) => {

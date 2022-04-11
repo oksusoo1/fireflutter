@@ -101,13 +101,11 @@ export class Point {
    * Returns point document reference
    * @param data post data
    * @param context context
-   * @returns reference of the point history document
+   * @returns reference of the point history document or null if the point event didn't happen.
    * @reference see `tests/point/list.ts` for generating post creation bonus point for test.
    */
-  static async postCreatePoint(data: any, context: any) {
+  static async postCreatePoint(uid: string, postId: string) {
     // Get data
-    const uid = data.uid;
-    const postId = context.params.postId;
     const postCreateRef = Ref.pointPostCreate(uid);
 
     // Time didn't passed from last bonus point event? then don't do point event.
@@ -142,9 +140,7 @@ export class Point {
    * @returns reference of point history of the comment point event.
    * @reference see `tests/point/list.ts` for generating comment creation bonus point for test.
    */
-  static async commentCreatePoint(data: any, context: any) {
-    const uid = data.uid;
-    const commentId = context.params.commentId;
+  static async commentCreatePoint(uid: string, commentId: string) {
     // console.log("uid; ", uid, ", commentId", commentId);
 
     const commentCreateRef = Ref.pointCommentCreate(uid);
@@ -269,15 +265,15 @@ export class Point {
    */
   static async history(data: any): Promise<Array<PointHistory>> {
     const startAt = dayjs()
-        .year(data.year)
-        .month(data.month - 1)
-        .startOf("month")
-        .unix();
+      .year(data.year)
+      .month(data.month - 1)
+      .startOf("month")
+      .unix();
     const endAt = dayjs()
-        .year(data.year)
-        .month(data.month - 1)
-        .endOf("month")
-        .unix();
+      .year(data.year)
+      .month(data.month - 1)
+      .endOf("month")
+      .unix();
 
     const history: Array<PointHistory> = [];
 
@@ -288,18 +284,18 @@ export class Point {
 
     await this._getPointHistoryWithin(Ref.pointSignIn(data.uid), "signIn", history, startAt, endAt);
     await this._getPointHistoryWithin(
-        Ref.pointPostCreate(data.uid),
-        "postCreate",
-        history,
-        startAt,
-        endAt
+      Ref.pointPostCreate(data.uid),
+      "postCreate",
+      history,
+      startAt,
+      endAt
     );
     await this._getPointHistoryWithin(
-        Ref.pointCommentCreate(data.uid),
-        "commentCreate",
-        history,
-        startAt,
-        endAt
+      Ref.pointCommentCreate(data.uid),
+      "commentCreate",
+      history,
+      startAt,
+      endAt
     );
 
     // After getting the point, it orders by timestamp.
@@ -323,11 +319,11 @@ export class Point {
   }
 
   static async _getPointHistoryWithin(
-      ref: admin.database.Reference,
-      eventName: string,
-      history: Array<PointHistory>,
-      startAt: number,
-      endAt: number
+    ref: admin.database.Reference,
+    eventName: string,
+    history: Array<PointHistory>,
+    startAt: number,
+    endAt: number
   ) {
     const snapshot = await ref.orderByChild("timestamp").startAt(startAt).endAt(endAt).get();
     const val = snapshot.val();

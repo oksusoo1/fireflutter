@@ -11,6 +11,8 @@ const ref_1 = require("./ref");
 const defines_1 = require("../defines");
 const messaging_1 = require("./messaging");
 const storage_1 = require("./storage");
+const category_1 = require("./category");
+const point_1 = require("./point");
 class Post {
     /**
      *
@@ -27,6 +29,10 @@ class Post {
             throw defines_1.ERROR_EMPTY_UID;
         if (!data.category)
             throw defines_1.ERROR_EMPTY_CATEGORY;
+        ref_1.Ref.categoryDoc(data.category);
+        const re = await category_1.Category.exists(data.category);
+        if (re === false)
+            throw defines_1.ERROR_CATEGORY_NOT_EXISTS;
         // get all the data from client.
         const doc = data;
         // default data
@@ -40,18 +46,16 @@ class Post {
         doc.week = dayjs().week();
         doc.createdAt = admin.firestore.FieldValue.serverTimestamp();
         doc.updatedAt = admin.firestore.FieldValue.serverTimestamp();
-        // create post
+        // Create post
         const ref = await ref_1.Ref.postCol.add(doc);
+        // Post create event
+        await point_1.Point.postCreatePoint(data.uid, ref.id);
         // return the document object of newly created post.
         const snapshot = await ref.get();
-        if (snapshot.exists) {
-            const postData = snapshot.data();
-            postData.id = ref.id;
-            return postData;
-        }
-        else {
-            throw defines_1.ERROR_CREATE_FAILED;
-        }
+        // Post create success
+        const post = snapshot.data();
+        post.id = ref.id;
+        return post;
     }
     /**
      * Updates a post

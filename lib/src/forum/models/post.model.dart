@@ -230,8 +230,10 @@ class PostModel with FirestoreMixin, ForumBase {
     Json extra = const {},
   }) {
     if (signedIn == false) throw ERROR_SIGN_IN;
-    if (UserService.instance.user.exists == false) throw ERROR_USER_DOCUMENT_NOT_EXISTS;
-    if (UserService.instance.user.ready) throw UserService.instance.user.profileError;
+    if (UserService.instance.user.exists == false)
+      throw ERROR_USER_DOCUMENT_NOT_EXISTS;
+    if (UserService.instance.user.ready)
+      throw UserService.instance.user.profileError;
 
     final j = Jiffy();
     int week = ((j.unix() - 345600) / 604800).floor();
@@ -255,9 +257,8 @@ class PostModel with FirestoreMixin, ForumBase {
       'updatedAt': FieldValue.serverTimestamp(),
     };
     if (documentId != null && documentId != '') {
-      return postCol
-          .doc(documentId)
-          .set({...createData, ...extra}).then((value) => postCol.doc(documentId));
+      return postCol.doc(documentId).set({...createData, ...extra}).then(
+          (value) => postCol.doc(documentId));
     } else {
       return postCol.add({...createData, ...extra});
     }
@@ -336,11 +337,13 @@ class PostModel with FirestoreMixin, ForumBase {
   /// PostModel.increaseNoOfComments(postId);
   /// ```
   static Future<void> increaseNoOfComments(postId) {
-    return FirestoreMixin.postDocument(postId).update({'noOfComments': FieldValue.increment(1)});
+    return FirestoreMixin.postDocument(postId)
+        .update({'noOfComments': FieldValue.increment(1)});
   }
 
   static Future<void> decreaseNoOfComments(postId) {
-    return FirestoreMixin.postDocument(postId).update({'noOfComments': FieldValue.increment(-1)});
+    return FirestoreMixin.postDocument(postId)
+        .update({'noOfComments': FieldValue.increment(-1)});
   }
 
   ///
@@ -357,22 +360,28 @@ class PostModel with FirestoreMixin, ForumBase {
   ///
   /// It returns one of 'MM/DD/YYYY' or 'HH:MM AA' format.
   String get shortDateTime {
-    final date = DateTime.fromMillisecondsSinceEpoch(createdAt.millisecondsSinceEpoch);
+    final date =
+        DateTime.fromMillisecondsSinceEpoch(createdAt.millisecondsSinceEpoch);
     final today = DateTime.now();
     bool re;
-    if (date.year == today.year && date.month == today.month && date.day == today.day) {
+    if (date.year == today.year &&
+        date.month == today.month &&
+        date.day == today.day) {
       re = true;
     } else {
       re = false;
     }
-    return re ? DateFormat.jm().format(date).toLowerCase() : DateFormat.yMd().format(date);
+    return re
+        ? DateFormat.jm().format(date).toLowerCase()
+        : DateFormat.yMd().format(date);
   }
 
   /// If the post was created just now (in 5 minutes), then returns true.
   ///
   /// Use this to check if this post has just been created.
   bool get justNow {
-    final date = DateTime.fromMillisecondsSinceEpoch(createdAt.millisecondsSinceEpoch);
+    final date =
+        DateTime.fromMillisecondsSinceEpoch(createdAt.millisecondsSinceEpoch);
     final today = DateTime.now();
     final diff = today.difference(date);
     return diff.inMinutes < 5;

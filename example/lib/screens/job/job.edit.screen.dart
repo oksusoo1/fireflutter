@@ -14,7 +14,8 @@ class JobEditScreen extends StatefulWidget {
   State<JobEditScreen> createState() => _JobEditScreenState();
 }
 
-class _JobEditScreenState extends State<JobEditScreen> with FirestoreMixin, ForumMixin {
+class _JobEditScreenState extends State<JobEditScreen>
+    with FirestoreMixin, ForumMixin {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
