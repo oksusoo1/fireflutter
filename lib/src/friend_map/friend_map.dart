@@ -94,7 +94,7 @@ class _FriendMapState extends State<FriendMap> with WidgetsBindingObserver, Data
     ///  - if the other user does not have a saved location on the database, it will error with "cannot find user location".
     otherUserPositionStream =
         userDoc(widget.otherUserUid).child('location').onValue.listen((event) async {
-      print('Other user ${widget.otherUserUid}, location update, ${event.snapshot.value}');
+      // print('Other user ${widget.otherUserUid}, location update, ${event.snapshot.value}');
       DataSnapshot snapshot = event.snapshot;
       final loc = snapshot.value as String?;
 
@@ -108,12 +108,12 @@ class _FriendMapState extends State<FriendMap> with WidgetsBindingObserver, Data
           service.adjustCameraViewAndZoom();
           reAdjustCameraView = false;
         }
+        if (mounted) setState(() {});
       } else {
         FriendMapService.instance.removeMarker(MarkerIds.destination);
         widget.error(ERROR_CANNOT_FIND_OTHER_USERS_LOCATION);
       }
-      if (mounted) setState(() {});
-    }, onError: widget.error);
+    });
 
     currentUserPositionStream =
         service.currentUserLocationStream().listen((Position position) async {
@@ -134,7 +134,7 @@ class _FriendMapState extends State<FriendMap> with WidgetsBindingObserver, Data
       }
 
       if (mounted) setState(() {});
-    }, onError: widget.error);
+    });
   }
 
   @override
