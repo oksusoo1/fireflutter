@@ -246,7 +246,7 @@ class PostModel with FirestoreMixin, ForumBase {
   }) {
     if (signedIn == false) throw ERROR_SIGN_IN;
     if (UserService.instance.user.exists == false) throw ERROR_USER_DOCUMENT_NOT_EXISTS;
-    if (!UserService.instance.user.ready) throw UserService.instance.user.profileError;
+    if (UserService.instance.user.notReady) throw UserService.instance.user.profileError;
 
     final j = Jiffy();
     int week = ((j.unix() - 345600) / 604800).floor();

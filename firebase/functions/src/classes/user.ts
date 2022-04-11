@@ -133,7 +133,7 @@ export class User {
 
     req.push(data);
 
-    console.log(req);
+    // console.log(req);
     try {
       const result = await this.auth.getUsers(req);
       // result.users.forEach((userRecord) => {
