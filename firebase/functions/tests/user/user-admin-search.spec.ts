@@ -42,8 +42,8 @@ describe("User admin search", async () => {
     await Ref.adminDoc.set({ [userA]: true }, { merge: true });
     try {
       const result = await User.adminUserSearch(
-        { email: "abc", phoneNumber: "+123" },
-        { auth: { uid: userA } }
+          { email: "abc", phoneNumber: "+123" },
+          { auth: { uid: userA } }
       );
       expect(result).equal(ERROR_ONE_OF_EMAIL_AND_PHONE_NUMBER_MUST_BY_EMPTY);
     } catch (e) {
@@ -56,8 +56,8 @@ describe("User admin search", async () => {
     await Ref.adminDoc.set({ [userA]: true }, { merge: true });
     try {
       const result = (await User.adminUserSearch(
-        { email: "fake@gmail.com" },
-        { auth: { uid: userA } }
+          { email: "fake@gmail.com" },
+          { auth: { uid: userA } }
       )) as GetUsersResult;
       expect(result.users.length).equal(0);
       expect(result.notFound.length).equal(1);
@@ -70,8 +70,8 @@ describe("User admin search", async () => {
     await Ref.adminDoc.set({ [userA]: true }, { merge: true });
     try {
       const result = (await User.adminUserSearch(
-        { phoneNumber: "+123456" },
-        { auth: { uid: userA } }
+          { phoneNumber: "+123456" },
+          { auth: { uid: userA } }
       )) as GetUsersResult;
       expect(result.users.length).equal(0);
       expect(result.notFound.length).equal(1);
@@ -84,10 +84,10 @@ describe("User admin search", async () => {
     await Ref.adminDoc.set({ [userA]: true }, { merge: true });
     try {
       const result = (await User.adminUserSearch(
-        {
-          email: "thruthesky@gmail.com",
-        },
-        { auth: { uid: userA } }
+          {
+            email: "thruthesky@gmail.com",
+          },
+          { auth: { uid: userA } }
       )) as GetUsersResult;
       console.log(result);
       expect(result.users.length).equal(1);
@@ -101,10 +101,10 @@ describe("User admin search", async () => {
     await Ref.adminDoc.set({ [userA]: true }, { merge: true });
     try {
       const result = (await User.adminUserSearch(
-        {
-          phoneNumber: "+639152308483",
-        },
-        { auth: { uid: userA } }
+          {
+            phoneNumber: "+639152308483",
+          },
+          { auth: { uid: userA } }
       )) as GetUsersResult;
       console.log(result);
       expect(result.users.length).equal(1);

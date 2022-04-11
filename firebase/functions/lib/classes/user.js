@@ -5,7 +5,8 @@ const defines_1 = require("../defines");
 const ref_1 = require("./ref");
 const utils_1 = require("./utils");
 const admin = require("firebase-admin");
-// import { assert } from "chai";
+// import { GetUsersResult } from "firebase-admin/lib/auth/base-auth";
+// import { ErrorCodeMessage } from "../interfaces/common.interface";
 class User {
     static get auth() {
         return admin.auth();
@@ -73,7 +74,7 @@ class User {
     static async enableUser(data, context) {
         if (!(await this.isAdmin(context))) {
             return {
-                code: "ERROR_YOU_ARE_NOT_ADMIN",
+                code: defines_1.ERROR_YOU_ARE_NOT_ADMIN,
                 message: "To manage user, you need to sign-in as an admin.",
             };
         }
@@ -90,7 +91,7 @@ class User {
     static async disableUser(data, context) {
         if (!(await this.isAdmin(context))) {
             return {
-                code: "ERROR_YOU_ARE_NOT_ADMIN",
+                code: defines_1.ERROR_YOU_ARE_NOT_ADMIN,
                 message: "To manage user, you need to sign-in as an admin.",
             };
         }
@@ -108,23 +109,26 @@ class User {
     static async adminUserSearch(data, context) {
         if (!(await this.isAdmin(context))) {
             return {
-                code: "ERROR_YOU_ARE_NOT_ADMIN",
+                code: defines_1.ERROR_YOU_ARE_NOT_ADMIN,
                 message: "To manage user, you need to sign-in as an admin.",
             };
         }
-        // if (!data.email && !data.phoneNumber) return ERROR_EMTPY_EMAIL_AND_PHONE_NUMBER;
-        // if (data.email && data.phoneNumber) return ERROR_ONE_OF_EMAIL_AND_PHONE_NUMBER_MUST_BY_EMPTY;
+        if (!data.email && !data.phoneNumber)
+            return defines_1.ERROR_EMTPY_EMAIL_AND_PHONE_NUMBER;
+        if (data.email && data.phoneNumber)
+            return defines_1.ERROR_ONE_OF_EMAIL_AND_PHONE_NUMBER_MUST_BY_EMPTY;
         const req = [];
         req.push(data);
+        console.log(req);
         try {
             const result = await this.auth.getUsers(req);
-            result.users.forEach((userRecord) => {
-                console.log(userRecord);
-            });
-            console.log("Unable to find users corresponding to these identifiers:");
-            result.notFound.forEach((userIdentifier) => {
-                console.log(userIdentifier);
-            });
+            // result.users.forEach((userRecord) => {
+            //   console.log(userRecord);
+            // });
+            // // console.log("Unable to find users corresponding to these identifiers:");
+            // result.notFound.forEach((userIdentifier) => {
+            //   console.log(userIdentifier);
+            // });
             return result;
         }
         catch (e) {
