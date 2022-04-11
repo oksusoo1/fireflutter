@@ -157,7 +157,7 @@ class FriendMapService {
     _mapController.animateCamera(
       CameraUpdate.newLatLngBounds(
         LatLngBounds(northeast: LatLng(maxy, maxx), southwest: LatLng(miny, minx)),
-        150.0,
+        155.0,
       ),
     );
   }

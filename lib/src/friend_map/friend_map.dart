@@ -164,7 +164,7 @@ class _FriendMapState extends State<FriendMap> with WidgetsBindingObserver, Data
               children: <Widget>[
                 ClipOval(
                   child: Material(
-                    color: Colors.blue.shade100, // button color
+                    color: Colors.yellow.shade100, // button color
                     child: InkWell(
                       splashColor: Colors.blue, // inkwell color
                       child: SizedBox(
@@ -179,7 +179,7 @@ class _FriendMapState extends State<FriendMap> with WidgetsBindingObserver, Data
                 SizedBox(height: 20),
                 ClipOval(
                   child: Material(
-                    color: Colors.blue.shade100, // button color
+                    color: Colors.yellow.shade100, // button color
                     child: InkWell(
                       splashColor: Colors.blue, // inkwell color
                       child: SizedBox(
@@ -197,7 +197,7 @@ class _FriendMapState extends State<FriendMap> with WidgetsBindingObserver, Data
                 ClipOval(
                   child: Material(
                     color: FriendMapService.instance.isCameraFocused
-                        ? Colors.green.shade200
+                        ? Colors.yellow.shade100
                         : Colors.grey.shade400, // button color
                     child: InkWell(
                       splashColor: Colors.blue, // inkwell color
@@ -217,7 +217,7 @@ class _FriendMapState extends State<FriendMap> with WidgetsBindingObserver, Data
                 SizedBox(height: 20),
                 ClipOval(
                   child: Material(
-                    color: Colors.blue.shade100, // button color
+                    color: Colors.yellow.shade100, // button color
                     child: InkWell(
                       splashColor: Colors.blue, // inkwell color
                       child: SizedBox(
