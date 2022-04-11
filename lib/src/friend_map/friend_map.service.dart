@@ -20,7 +20,8 @@ class FriendMapService {
     required double longitude,
     LocationAccuracy accuracy = LocationAccuracy.bestForNavigation,
   }) async {
-    Position currentUserPosition = await Geolocator.getCurrentPosition(desiredAccuracy: accuracy);
+    Position currentUserPosition =
+        await Geolocator.getCurrentPosition(desiredAccuracy: accuracy);
 
     this._currentUserLatitude = currentUserPosition.latitude;
     this._currentUserLongitude = currentUserPosition.longitude;
@@ -60,7 +61,8 @@ class FriendMapService {
   ///
   get markers => _markers;
 
-  set mapController(GoogleMapController controller) => _mapController = controller;
+  set mapController(GoogleMapController controller) =>
+      _mapController = controller;
 
   /// If this is enabled, the camera view will follow and focus on the user's location on every changes.
   ///
@@ -84,7 +86,8 @@ class FriendMapService {
       orElse: () => Marker(markerId: MarkerId(MarkerIds.empty.toString())),
     );
 
-    final isExisting = previousMarker.markerId != MarkerId(MarkerIds.empty.toString());
+    final isExisting =
+        previousMarker.markerId != MarkerId(MarkerIds.empty.toString());
 
     Marker newMarker = Marker(
       markerId: MarkerId('$id'),
@@ -211,7 +214,8 @@ class FriendMapService {
       lon ?? _currentUserLongitude,
       title: "My Location",
       snippet: _currentAddress,
-      markerType: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueCyan),
+      markerType:
+          BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueCyan),
     );
   }
 

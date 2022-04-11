@@ -29,7 +29,7 @@ export class Post {
   /**
    *
    * @see README.md for details.
-   * @param data post doc data to be created
+   * @param data post doc data to be created. See README.md for details.
    * @returns
    * - post doc as in PostDocument interface after create. Note that, it will contain post id.
    * - Or it will throw an exception on failing post creation.
@@ -61,7 +61,14 @@ export class Post {
     doc.updatedAt = admin.firestore.FieldValue.serverTimestamp();
 
     // Create post
-    const ref = await Ref.postCol.add(doc);
+    let ref;
+    // Document id to be created of. See README.md for details.
+    if (data.documentId) {
+      ref = await Ref.postDoc(data.documentId).set(doc);
+      ref = Ref.postDoc(data.documentId);
+    } else {
+      ref = await Ref.postCol.add(doc);
+    }
 
     // Post create event
     await Point.postCreatePoint(data.uid, ref.id);

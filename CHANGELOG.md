@@ -1,5 +1,10 @@
 # Change Log
 
+## [0.2.20]
+
+- Refactoring Flutter models. Transfer post and comment CRUD into cloud funtions HTTP call.
+
+
 ## [0.2.19]
 
 - Refactoring `UserService`.

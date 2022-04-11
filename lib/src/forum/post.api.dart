@@ -25,6 +25,7 @@ class PostApi {
       ...extra,
     };
 
-    return FunctionsApi.instance.request('createPost', data: data, addAuth: true);
+    return FunctionsApi.instance
+        .request('createPost', data: data, addAuth: true);
   }
 }

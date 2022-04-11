@@ -3,14 +3,16 @@ import {
   ERROR_EMPTY_PASSWORD,
   ERROR_EMPTY_UID,
   ERROR_USER_NOT_FOUND,
-  // ERROR_EMTPY_EMAIL_AND_PHONE_NUMBER,
-  // ERROR_ONE_OF_EMAIL_AND_PHONE_NUMBER_MUST_BY_EMPTY,
+  ERROR_EMTPY_EMAIL_AND_PHONE_NUMBER,
+  ERROR_ONE_OF_EMAIL_AND_PHONE_NUMBER_MUST_BY_EMPTY,
+  ERROR_YOU_ARE_NOT_ADMIN,
 } from "../defines";
 import { UserCreate, UserDocument } from "../interfaces/user.interface";
 import { Ref } from "./ref";
 import { Utils } from "./utils";
 import * as admin from "firebase-admin";
-// import { assert } from "chai";
+// import { GetUsersResult } from "firebase-admin/lib/auth/base-auth";
+// import { ErrorCodeMessage } from "../interfaces/common.interface";
 
 export class User {
   static get auth() {
@@ -77,7 +79,7 @@ export class User {
   static async enableUser(data: any, context: any) {
     if (!(await this.isAdmin(context))) {
       return {
-        code: "ERROR_YOU_ARE_NOT_ADMIN",
+        code: ERROR_YOU_ARE_NOT_ADMIN,
         message: "To manage user, you need to sign-in as an admin.",
       };
     }
@@ -102,7 +104,7 @@ export class User {
   > {
     if (!(await this.isAdmin(context))) {
       return {
-        code: "ERROR_YOU_ARE_NOT_ADMIN",
+        code: ERROR_YOU_ARE_NOT_ADMIN,
         message: "To manage user, you need to sign-in as an admin.",
       };
     }
@@ -119,28 +121,29 @@ export class User {
   static async adminUserSearch(data: { email?: string; phoneNumber?: string }, context: any) {
     if (!(await this.isAdmin(context))) {
       return {
-        code: "ERROR_YOU_ARE_NOT_ADMIN",
+        code: ERROR_YOU_ARE_NOT_ADMIN,
         message: "To manage user, you need to sign-in as an admin.",
       };
     }
 
-    // if (!data.email && !data.phoneNumber) return ERROR_EMTPY_EMAIL_AND_PHONE_NUMBER;
-    // if (data.email && data.phoneNumber) return ERROR_ONE_OF_EMAIL_AND_PHONE_NUMBER_MUST_BY_EMPTY;
+    if (!data.email && !data.phoneNumber) return ERROR_EMTPY_EMAIL_AND_PHONE_NUMBER;
+    if (data.email && data.phoneNumber) return ERROR_ONE_OF_EMAIL_AND_PHONE_NUMBER_MUST_BY_EMPTY;
 
     const req: Array<any> = [];
 
     req.push(data);
 
+    console.log(req);
     try {
       const result = await this.auth.getUsers(req);
-      result.users.forEach((userRecord) => {
-        console.log(userRecord);
-      });
+      // result.users.forEach((userRecord) => {
+      //   console.log(userRecord);
+      // });
 
-      console.log("Unable to find users corresponding to these identifiers:");
-      result.notFound.forEach((userIdentifier) => {
-        console.log(userIdentifier);
-      });
+      // // console.log("Unable to find users corresponding to these identifiers:");
+      // result.notFound.forEach((userIdentifier) => {
+      //   console.log(userIdentifier);
+      // });
       return result;
     } catch (e) {
       return {

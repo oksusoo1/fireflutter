@@ -27,11 +27,13 @@ class FriendMap extends StatefulWidget {
   _FriendMapState createState() => _FriendMapState();
 }
 
-class _FriendMapState extends State<FriendMap> with WidgetsBindingObserver, DatabaseMixin {
+class _FriendMapState extends State<FriendMap>
+    with WidgetsBindingObserver, DatabaseMixin {
   final FriendMapService service = FriendMapService.instance;
   final searchBoxController = TextEditingController();
 
-  final CameraPosition currentLocation = CameraPosition(target: LatLng(0.0, 0.0));
+  final CameraPosition currentLocation =
+      CameraPosition(target: LatLng(0.0, 0.0));
 
   StreamSubscription<Position>? currentUserPositionStream;
   StreamSubscription<DatabaseEvent>? otherUserPositionStream;
@@ -86,9 +88,11 @@ class _FriendMapState extends State<FriendMap> with WidgetsBindingObserver, Data
     ///
     /// If user click on an older friend map request on chat, it will initially the coordinated on that particular chat message,
     /// and this will get the last saved location of the other user from realtime database.
-    otherUserPositionStream = userDoc(widget.otherUserUid).child('location').onValue.listen(
+    otherUserPositionStream =
+        userDoc(widget.otherUserUid).child('location').onValue.listen(
       (event) async {
-        print('Other user ${widget.otherUserUid}, location update, ${event.snapshot.value}');
+        print(
+            'Other user ${widget.otherUserUid}, location update, ${event.snapshot.value}');
         DataSnapshot snapshot = event.snapshot;
         final loc = snapshot.value as String?;
 
@@ -153,7 +157,8 @@ class _FriendMapState extends State<FriendMap> with WidgetsBindingObserver, Data
           zoomGesturesEnabled: false,
           myLocationButtonEnabled: false,
           initialCameraPosition: currentLocation,
-          onMapCreated: (GoogleMapController controller) => service.mapController = controller,
+          onMapCreated: (GoogleMapController controller) =>
+              service.mapController = controller,
           markers: Set<Marker>.from(service.markers),
         ),
         SafeArea(

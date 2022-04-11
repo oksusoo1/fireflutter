@@ -186,6 +186,8 @@ class _PostFormState extends State<PostForm> {
           files: files,
         );
 
+        // PostApi.instance.create(category: category, documentId: documentId.text);
+
         widget.onCreate(ref.id);
       } else {
         /// update

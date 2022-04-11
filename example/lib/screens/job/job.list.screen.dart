@@ -14,7 +14,8 @@ class JobListScreen extends StatefulWidget {
   State<JobListScreen> createState() => _JobListScreenState();
 }
 
-class _JobListScreenState extends State<JobListScreen> with FirestoreMixin, ForumMixin {
+class _JobListScreenState extends State<JobListScreen>
+    with FirestoreMixin, ForumMixin {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -26,7 +27,8 @@ class _JobListScreenState extends State<JobListScreen> with FirestoreMixin, Foru
           Row(
             children: [
               TextButton(
-                onPressed: () => AppService.instance.open(JobEditScreen.routeName),
+                onPressed: () =>
+                    AppService.instance.open(JobEditScreen.routeName),
                 child: Text('Create a job opening'),
               ),
             ],
