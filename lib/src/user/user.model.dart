@@ -124,7 +124,8 @@ class UserModel with FirestoreMixin, DatabaseMixin {
   bool get signedOut => signedIn == false;
 
   ///
-  DatabaseReference get _userDoc => FirebaseDatabase.instance.ref('users').child(uid);
+  DatabaseReference get _userDoc =>
+      FirebaseDatabase.instance.ref('users').child(uid);
 
   factory UserModel.fromJson(dynamic data, String uid) {
     if (data == null) return UserModel();
@@ -239,7 +240,8 @@ class UserModel with FirestoreMixin, DatabaseMixin {
       /// But the profile is set to false on database, then set it true.
       if (profileReady == 90000000000000) {
         /// It does +1 here to block perpetual running. This may happens somehow when registeredAt is 0.
-        return update(field: 'profileReady', value: 90000000000000 - registeredAt + 1);
+        return update(
+            field: 'profileReady', value: 90000000000000 - registeredAt + 1);
       }
     }
 
