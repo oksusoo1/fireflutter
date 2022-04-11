@@ -7,12 +7,11 @@ import { Ref } from "../../src/classes/ref";
 import {
   ERROR_EMTPY_EMAIL_AND_PHONE_NUMBER,
   ERROR_ONE_OF_EMAIL_AND_PHONE_NUMBER_MUST_BY_EMPTY,
+  ERROR_USER_NOT_FOUND,
   ERROR_YOU_ARE_NOT_ADMIN,
 } from "../../src/defines";
 import { ErrorCodeMessage } from "../../src/interfaces/common.interface";
-import { GetUsersResult } from "firebase-admin/lib/auth/base-auth";
-// import { Utils } from "../../src/classes/utils";
-// import { ERROR_WRONG_PASSWORD, ERROR_EMPTY_PASSWORD, ERROR_EMPTY_UID } from "../../src/defines";
+import { UserRecord } from "firebase-admin/lib/auth/user-record";
 
 new FirebaseAppInitializer();
 
@@ -42,8 +41,8 @@ describe("User admin search", async () => {
     await Ref.adminDoc.set({ [userA]: true }, { merge: true });
     try {
       const result = await User.adminUserSearch(
-          { email: "abc", phoneNumber: "+123" },
-          { auth: { uid: userA } }
+        { email: "abc", phoneNumber: "+123" },
+        { auth: { uid: userA } }
       );
       expect(result).equal(ERROR_ONE_OF_EMAIL_AND_PHONE_NUMBER_MUST_BY_EMPTY);
     } catch (e) {
@@ -55,12 +54,11 @@ describe("User admin search", async () => {
   it("fake email", async () => {
     await Ref.adminDoc.set({ [userA]: true }, { merge: true });
     try {
-      const result = (await User.adminUserSearch(
-          { email: "fake@gmail.com" },
-          { auth: { uid: userA } }
-      )) as GetUsersResult;
-      expect(result.users.length).equal(0);
-      expect(result.notFound.length).equal(1);
+      const result = await User.adminUserSearch(
+        { email: "fake@gmail.com" },
+        { auth: { uid: userA } }
+      );
+      expect(result).equal(ERROR_USER_NOT_FOUND);
     } catch (e) {
       console.log(e);
     }
@@ -69,49 +67,45 @@ describe("User admin search", async () => {
   it("fake phoneNumber", async () => {
     await Ref.adminDoc.set({ [userA]: true }, { merge: true });
     try {
-      const result = (await User.adminUserSearch(
-          { phoneNumber: "+123456" },
-          { auth: { uid: userA } }
-      )) as GetUsersResult;
-      expect(result.users.length).equal(0);
-      expect(result.notFound.length).equal(1);
+      const result = await User.adminUserSearch(
+        { phoneNumber: "+123456" },
+        { auth: { uid: userA } }
+      );
+      expect(result).equal(ERROR_USER_NOT_FOUND);
     } catch (e) {
       console.log(e);
+      expect.fail(e);
     }
   });
 
   it("valid email", async () => {
     await Ref.adminDoc.set({ [userA]: true }, { merge: true });
     try {
-      const result = (await User.adminUserSearch(
-          {
-            email: "thruthesky@gmail.com",
-          },
-          { auth: { uid: userA } }
-      )) as GetUsersResult;
-      console.log(result);
-      expect(result.users.length).equal(1);
-      expect(result.notFound.length).equal(0);
-      expect(result.users[0].email).equal("thruthesky@gmail.com");
+      const user = (await User.adminUserSearch(
+        {
+          email: "thruthesky@gmail.com",
+        },
+        { auth: { uid: userA } }
+      )) as UserRecord;
+      expect(user.email).equal("thruthesky@gmail.com");
     } catch (e) {
       console.log(e);
+      expect.fail(e);
     }
   });
   it("valid number", async () => {
     await Ref.adminDoc.set({ [userA]: true }, { merge: true });
     try {
-      const result = (await User.adminUserSearch(
-          {
-            phoneNumber: "+639152308483",
-          },
-          { auth: { uid: userA } }
-      )) as GetUsersResult;
-      console.log(result);
-      expect(result.users.length).equal(1);
-      expect(result.notFound.length).equal(0);
-      expect(result.users[0].email).equal("thruthesky@gmail.com");
+      const user = (await User.adminUserSearch(
+        {
+          phoneNumber: "+639152308483",
+        },
+        { auth: { uid: userA } }
+      )) as UserRecord;
+      expect(user.email).equal("pinedaclp@gmail.com");
     } catch (e) {
       console.log(e);
+      expect.fail(e);
     }
   });
 });
