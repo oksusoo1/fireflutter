@@ -176,19 +176,26 @@ class _PostFormState extends State<PostForm> {
     try {
       if (widget.category != null && widget.category!.isNotEmpty) {
         /// create
-        final ref = await PostModel().create(
+        // final ref = await PostModel().create(
+        //   documentId: documentId.text,
+        //   category: widget.category!,
+        //   subcategory: widget.subcategory,
+        //   title: title.text,
+        //   content: content.text,
+        //   summary: summary.text,
+        //   files: files,
+        // );
+
+        final post = await PostApi.instance.create(
           documentId: documentId.text,
           category: widget.category!,
           subcategory: widget.subcategory,
           title: title.text,
           content: content.text,
-          summary: summary.text,
           files: files,
         );
 
-        // PostApi.instance.create(category: category, documentId: documentId.text);
-
-        widget.onCreate(ref.id);
+        widget.onCreate(post.id);
       } else {
         /// update
         await widget.post!.update(

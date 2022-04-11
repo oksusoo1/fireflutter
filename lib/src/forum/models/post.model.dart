@@ -94,19 +94,20 @@ class PostModel with FirestoreMixin, ForumBase {
 
   List<CommentModel> comments = [];
 
+  @Deprecated("Create post with PostApi.")
   factory PostModel.fromDoc(DocumentSnapshot doc) {
     return PostModel.fromJson(doc.data() as Json, doc.id);
   }
 
   /// Get document data of map and convert it into post model
-  factory PostModel.fromJson(Json data, String id) {
+  factory PostModel.fromJson(Json data, [String? id]) {
     String content = data['content'] ?? '';
 
     /// Check if the content has any html tag.
     bool html = _isHtml(content);
 
     final post = PostModel(
-      id: id,
+      id: id ?? data['id'],
       category: data['category'] ?? '',
       title: data['title'] ?? '',
       content: content,

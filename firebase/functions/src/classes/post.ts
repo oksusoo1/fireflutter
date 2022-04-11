@@ -47,8 +47,13 @@ export class Post {
     // get all the data from client.
     const doc: { [key: string]: any } = data as any;
 
+    // sanitize
+    if (!doc.files) {
+      doc.files = [];
+    }
+
     // default data
-    doc.hasPhoto = !!doc.files;
+    doc.hasPhoto = doc.files > 0;
     doc.deleted = false;
     doc.noOfComments = 0;
 

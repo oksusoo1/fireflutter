@@ -57,6 +57,6 @@ describe("Post point test", () => {
     expect(post3).to.be.an("object").not.to.have.property("point");
     const pointAfterCreate3 = await Point.getUserPoint(user.id);
     expect(startingPoint + post.point! + post2.point! + (post3.point ?? 0) === pointAfterCreate3)
-      .true;
+        .true;
   });
 });

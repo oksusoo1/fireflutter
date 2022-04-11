@@ -26,11 +26,7 @@ class FunctionsApi {
 
   String get password {
     final u = UserService.instance;
-    return u.uid +
-        "-" +
-        u.user.registeredAt.toString() +
-        "-" +
-        u.user.updatedAt.toString();
+    return u.uid + "-" + u.user.registeredAt.toString() + "-" + u.user.updatedAt.toString();
   }
 
   /// Request and return the data.
@@ -59,15 +55,14 @@ class FunctionsApi {
 
       if (res.data is String && (res.data as String).startsWith('ERROR_')) {
         throw res.data;
-      } else if (res.data is Map &&
-          res.data['code'] != null &&
-          res.data['code'] != '') {
+      } else if (res.data is Map && res.data['code'] != null && res.data['code'] != '') {
         throw res.data['message'];
       } else if (res.data is String &&
           (res.data as String).contains('code') &&
           (res.data as String).contains('ERR_')) {
         throw res.data;
       } else {
+        /// success
         return res.data;
       }
     } catch (e) {
