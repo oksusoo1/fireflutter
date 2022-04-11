@@ -12,7 +12,6 @@ import { Ref } from "./ref";
 import {
   ERROR_ALREADY_DELETED,
   ERROR_CATEGORY_NOT_EXISTS,
-  ERROR_CREATE_FAILED,
   ERROR_EMPTY_CATEGORY,
   ERROR_EMPTY_ID,
   ERROR_EMPTY_UID,
@@ -24,6 +23,7 @@ import { Messaging } from "./messaging";
 import { OnCommentCreateResponse } from "../interfaces/messaging.interface";
 import { Storage } from "./storage";
 import { Category } from "./category";
+import { Point } from "./point";
 
 export class Post {
   /**
@@ -60,21 +60,20 @@ export class Post {
     doc.createdAt = admin.firestore.FieldValue.serverTimestamp();
     doc.updatedAt = admin.firestore.FieldValue.serverTimestamp();
 
-    // create post
+    // Create post
     const ref = await Ref.postCol.add(doc);
+
+    // Post create event
+    await Point.postCreatePoint(data.uid, ref.id);
 
     // return the document object of newly created post.
     const snapshot = await ref.get();
 
-    // TODO: 카테고리 별, 랜덤 포인트와, 마지막 포인트 후, 최소 경과 시간 을 확인해서, 포인트 증가를 여기서 시킨다.
+    // Post create success
+    const post = snapshot.data() as PostDocument;
+    post.id = ref.id;
 
-    if (snapshot.exists) {
-      const postData = snapshot.data() as PostDocument;
-      postData.id = ref.id;
-      return postData;
-    } else {
-      throw ERROR_CREATE_FAILED;
-    }
+    return post;
   }
 
   /**

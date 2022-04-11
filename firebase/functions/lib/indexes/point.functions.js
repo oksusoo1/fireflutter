@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.pointHistory = exports.pointEventCommentCreate = exports.pointEventPostCreate = exports.pointEventRegister = exports.pointEventSignIn = void 0;
+exports.pointHistory = exports.pointEventRegister = exports.pointEventSignIn = void 0;
 const functions = require("firebase-functions");
 const point_1 = require("../classes/point");
 const ready_1 = require("../ready");
@@ -43,18 +43,18 @@ exports.pointEventRegister = functions
  * % npm run shell
  * % pointEventPostCreate( {uid: 'a'}, {params: {postId: 'post-1'}} )
  */
-exports.pointEventPostCreate = functions
-    .region("asia-northeast3")
-    .firestore.document("/posts/{postId}")
-    .onCreate((snapshot, context) => {
-    return point_1.Point.postCreatePoint(snapshot.data(), context);
-});
-exports.pointEventCommentCreate = functions
-    .region("asia-northeast3")
-    .firestore.document("/comments/{commentId}")
-    .onCreate((snapshot, context) => {
-    return point_1.Point.commentCreatePoint(snapshot.data(), context);
-});
+// export const pointEventPostCreate = functions
+//     .region("asia-northeast3")
+//     .firestore.document("/posts/{postId}")
+//     .onCreate((snapshot, context) => {
+//       return Point.postCreatePoint(snapshot.data(), context);
+//     });
+// export const pointEventCommentCreate = functions
+//     .region("asia-northeast3")
+//     .firestore.document("/comments/{commentId}")
+//     .onCreate((snapshot, context) => {
+//       return Point.commentCreatePoint(snapshot.data(), context);
+//     });
 exports.pointHistory = functions.region("asia-northeast3").https.onRequest((req, res) => {
     ready_1.ready({ req, res, auth: true }, async (data) => {
         res.status(200).send(await point_1.Point.history(data));

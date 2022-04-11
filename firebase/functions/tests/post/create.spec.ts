@@ -50,7 +50,6 @@ describe("Post create test", () => {
       title: "yo",
       a: "apple",
     } as any);
-    // console.log(post);
     expect(post).not.to.be.null;
     expect(post!.category === category.id).true;
     expect(post!.a === "apple").true;

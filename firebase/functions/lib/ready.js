@@ -31,10 +31,10 @@ async function ready(options, callback) {
                 res.status(200).send(sanitizeError(re));
                 return;
             }
+            // / Delete password if exists.
+            if (data.password)
+                delete data.password;
         }
-        // / Delete password if exists.
-        if (data.password)
-            delete data.password;
         callback(data).catch((e) => {
             res.status(200).send(sanitizeError(e));
         });

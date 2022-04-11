@@ -3,14 +3,14 @@ import {
   ERROR_EMPTY_PASSWORD,
   ERROR_EMPTY_UID,
   ERROR_USER_NOT_FOUND,
-  ERROR_EMTPY_EMAIL_AND_PHONE_NUMBER,
-  ERROR_ONE_OF_EMAIL_AND_PHONE_NUMBER_MUST_BY_EMPTY,
+  // ERROR_EMTPY_EMAIL_AND_PHONE_NUMBER,
+  // ERROR_ONE_OF_EMAIL_AND_PHONE_NUMBER_MUST_BY_EMPTY,
 } from "../defines";
 import { UserCreate, UserDocument } from "../interfaces/user.interface";
 import { Ref } from "./ref";
 import { Utils } from "./utils";
 import * as admin from "firebase-admin";
-import { assert } from "chai";
+// import { assert } from "chai";
 
 export class User {
   static get auth() {
@@ -115,7 +115,7 @@ export class User {
     }
   }
 
-  //https://firebase.google.com/docs/auth/admin/manage-users#bulk_retrieve_user_data
+  // https://firebase.google.com/docs/auth/admin/manage-users#bulk_retrieve_user_data
   static async adminUserSearch(data: { email?: string; phoneNumber?: string }, context: any) {
     if (!(await this.isAdmin(context))) {
       return {
@@ -127,7 +127,7 @@ export class User {
     // if (!data.email && !data.phoneNumber) return ERROR_EMTPY_EMAIL_AND_PHONE_NUMBER;
     // if (data.email && data.phoneNumber) return ERROR_ONE_OF_EMAIL_AND_PHONE_NUMBER_MUST_BY_EMPTY;
 
-    let req: Array<any> = [];
+    const req: Array<any> = [];
 
     req.push(data);
 
@@ -153,6 +153,7 @@ export class User {
   /**
    *
    * ! warning. this is very week password, but it is difficult to guess.
+   * ! You may add more properties like `phone number`, `email` to make the password more strong.
    *
    * @param doc user model
    * @returns password string

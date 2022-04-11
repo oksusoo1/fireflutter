@@ -15,6 +15,7 @@ import {
   CommentDocument,
 } from "../interfaces/forum.interface";
 import { Storage } from "./storage";
+import { Point } from "./point";
 
 export class Comment {
   /**
@@ -23,7 +24,7 @@ export class Comment {
    * @param data comment doc data to be created
    * @returns comment doc data after create. Note that, it will contain post id.
    */
-  static async create(data: CommentCreateParams): Promise<CommentDocument | null> {
+  static async create(data: CommentCreateParams): Promise<CommentDocument> {
     if (!data.uid) throw ERROR_EMPTY_UID;
     const doc: CommentCreateRequirements = {
       uid: data.uid,
@@ -37,14 +38,13 @@ export class Comment {
       updatedAt: admin.firestore.FieldValue.serverTimestamp(),
     };
     const ref = await Ref.commentCol.add(doc);
+    await Point.commentCreatePoint(data.uid, ref.id);
+
     const snapshot = await ref.get();
-    if (snapshot.exists) {
-      const comment = snapshot.data() as CommentDocument;
-      comment.id = ref.id;
-      return comment;
-    } else {
-      return null;
-    }
+
+    const comment = snapshot.data() as CommentDocument;
+    comment.id = ref.id;
+    return comment;
   }
 
   /**

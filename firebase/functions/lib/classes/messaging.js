@@ -88,7 +88,9 @@ class Messaging {
         if (snapshot.exists() === false)
             return false;
         const val = snapshot.val();
-        return val && val[topic] != undefined && val[topic] == true;
+        if (!val)
+            return false;
+        return !!val[topic];
     }
     /**
      * Returns true if the user turn off manually the subscription.
@@ -103,7 +105,16 @@ class Messaging {
         if (snapshot.exists() === false)
             return false;
         const val = snapshot.val();
-        return val && val[topic] != undefined && val[topic] == false;
+        if (!val)
+            return false;
+        // If it's undefined, then user didn't subscribed ever since.
+        if (typeof val[topic] === undefined)
+            return false;
+        // If it's false, then it is disabled manually by the user.
+        if (val[topic] === false)
+            return true;
+        // If it's true, then the topic is subscribed.
+        return false;
     }
     /**
      * Return uids of the user didnt turn off their subscription
