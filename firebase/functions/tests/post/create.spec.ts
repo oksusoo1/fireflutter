@@ -10,6 +10,7 @@ import {
 } from "../../src/defines";
 
 import { Test } from "../../src/classes/test";
+import { Utils } from "../../src/classes/utils";
 
 new FirebaseAppInitializer();
 
@@ -53,5 +54,25 @@ describe("Post create test", () => {
     expect(post).not.to.be.null;
     expect(post!.category === category.id).true;
     expect(post!.a === "apple").true;
+  });
+
+  it("Giving document id to be created with", async () => {
+    const category = await Test.createCategory();
+    const documentId = "d-id-" + Utils.getTimestamp();
+
+    const post = await Post.create({
+      uid: "a",
+      password: "abc",
+      category: category.id,
+      documentId: documentId,
+      title: "yo",
+      a: "apple",
+    } as any);
+
+    expect(post).not.to.be.null;
+    expect(post.category === category.id).true;
+    expect(post.a === "apple").true;
+
+    expect(post.id).equals(documentId);
   });
 });

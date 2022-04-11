@@ -114,6 +114,7 @@ Table of contents
   - [Post](#post)
   - [Comment](#comment)
   - [PostService and PostApi](#postservice-and-postapi)
+  - [PostApi](#postapi)
 - [Push notification](#push-notification)
   - [terms](#terms)
   - [How push notification wokr.](#how-push-notification-wokr)
@@ -1366,6 +1367,13 @@ DynamicLinksService.instance.listen((Uri? deepLink) {
 - `PostService` is a flutter helper class for post crud while `PostApi` is a restful api helper class to call cloud function via http.
 - `PostApi` uses `Dio` to communicate to cloud function.
 - It is recommended to use `PostApi` and `CommentApi` instead of `PostService` and `CommentService` for post & comment crud.
+
+
+## PostApi
+
+- App can do post CRUD with `PostApi`.
+- `documentId` on create is the document id of the post to be created. By giving document id(as post id), developer can do better coordination. For istance, give `help` as document id and on view screen, get the `help` as post id and display.
+
 
 # Push notification
 
