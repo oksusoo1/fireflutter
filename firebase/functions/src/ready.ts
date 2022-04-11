@@ -2,7 +2,7 @@ import * as functions from "firebase-functions";
 import * as express from "express";
 import { User } from "./classes/user";
 
-function sanitizeError(e: any) {
+export function sanitizeError(e: any) {
   if (typeof e === "string" && e.startsWith("ERROR_")) {
     return { code: e };
   } else {

@@ -32,9 +32,7 @@ class CommentModel with FirestoreMixin, ForumBase {
 
   String content;
   String get displayContent {
-    return deleted
-        ? TranslationService.instance.tr(COMMENT_CONTENT_DELETED)
-        : content;
+    return deleted ? TranslationService.instance.tr(COMMENT_CONTENT_DELETED) : content;
   }
 
   int like;
@@ -161,10 +159,8 @@ class CommentModel with FirestoreMixin, ForumBase {
   }) async {
     bool signedIn = FirebaseAuth.instance.currentUser != null;
     if (signedIn == false) throw ERROR_SIGN_IN;
-    if (UserService.instance.user.exists == false)
-      throw ERROR_USER_DOCUMENT_NOT_EXISTS;
-    if (UserService.instance.user.ready)
-      throw UserService.instance.user.profileError;
+    if (UserService.instance.user.exists == false) throw ERROR_USER_DOCUMENT_NOT_EXISTS;
+    if (!UserService.instance.user.ready) throw UserService.instance.user.profileError;
     final _ = CommentModel.empty();
     final ref = await _.commentCol.add({
       'postId': postId,
@@ -234,8 +230,7 @@ class CommentModel with FirestoreMixin, ForumBase {
   ///
   /// Use this to check if this comment has just been created.
   bool get justNow {
-    final date =
-        DateTime.fromMillisecondsSinceEpoch(createdAt.millisecondsSinceEpoch);
+    final date = DateTime.fromMillisecondsSinceEpoch(createdAt.millisecondsSinceEpoch);
     final today = DateTime.now();
     final diff = date.difference(today);
     return diff.inMinutes < 5;
