@@ -1,5 +1,3 @@
-import 'package:fireflutter/src/functions.defines.dart';
-
 import '../../fireflutter.dart';
 
 /// PostApi

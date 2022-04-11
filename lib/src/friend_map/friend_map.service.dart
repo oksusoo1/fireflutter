@@ -63,7 +63,7 @@ class FriendMapService {
 
   set mapController(GoogleMapController controller) => _mapController = controller;
 
-  /// If this is enabled, the camera view will follow and focus on the user's location on every changes.
+  /// Camera updates will depend on this value.
   ///
   CameraFocus cameraFocus = CameraFocus.none;
 
@@ -121,6 +121,7 @@ class FriendMapService {
   }
 
   /// Get marker using id.
+  /// 
   Marker? _getMarkerById(MarkerIds id) {
     final emptyMarkerId = MarkerId(MarkerIds.empty.toString());
     final m = _markers.firstWhere(
@@ -209,7 +210,7 @@ class FriendMapService {
     moveCameraView(marker.position.latitude, marker.position.longitude);
   }
 
-  /// Marks current location with address as snippet
+  /// Marks current location.
   ///
   Future<bool> drawCurrentLocationMarker({
     double? lat,
@@ -230,7 +231,7 @@ class FriendMapService {
     );
   }
 
-  /// Marks destination location with address as snippet
+  /// Marks destination location.
   ///
   Future<void> drawDestinationLocationMarker({
     double? lat,
@@ -256,13 +257,4 @@ class FriendMapService {
     await drawCurrentLocationMarker();
     adjustCameraViewAndZoom();
   }
-
-  // test() {
-  //   bool result =
-  //       MarkerId(MarkerIds.currentLocation.toString()) == MarkerId(MarkerIds.empty.toString());
-  //   print(result);
-  //   result = MarkerId(MarkerIds.currentLocation.toString()) ==
-  //       MarkerId(MarkerIds.currentLocation.toString());
-  //   print(result);
-  // }
 }

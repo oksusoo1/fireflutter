@@ -99,10 +99,14 @@ class _FriendMapState extends State<FriendMap> with WidgetsBindingObserver, Data
       final loc = snapshot.value as String?;
 
       if (loc != null) {
-        await service.drawDestinationLocationMarker(
-          lat: double.parse(loc.split(":").first), // latitude
-          lon: double.parse(loc.split(":").last), // longitude
-        );
+        final lat = double.parse(loc.split(":").first);
+        final lon = double.parse(loc.split(":").last);
+
+        await service.drawDestinationLocationMarker(lat: lat, lon: lon);
+
+        if (service.cameraFocus == CameraFocus.destination) {
+          service.moveCameraView(lat, lon);
+        }
 
         if (reAdjustCameraView) {
           service.adjustCameraViewAndZoom();
@@ -193,25 +197,6 @@ class _FriendMapState extends State<FriendMap> with WidgetsBindingObserver, Data
                   ),
                 ),
                 SizedBox(height: 20),
-
-                /// Button to enable/disable camera adjustment when moving.
-                ClipOval(
-                  child: Material(
-                    color: service.cameraFocus == CameraFocus.currentLocation
-                        ? Colors.yellow.shade100
-                        : Colors.grey.shade400, // button color
-                    child: InkWell(
-                      splashColor: Colors.blue, // inkwell color
-                      child: SizedBox(
-                        width: 40,
-                        height: 40,
-                        child: Icon(Icons.filter_center_focus),
-                      ),
-                      onTap: () => service.zoomToMarker(MarkerIds.currentLocation),
-                    ),
-                  ),
-                ),
-                SizedBox(height: 20),
                 ClipOval(
                   child: Material(
                     color: Colors.yellow.shade100, // button color
@@ -283,15 +268,7 @@ class NavigationTips extends StatelessWidget {
         Row(
           children: [
             Text(
-              '* Tap the',
-              style: TextStyle(fontSize: 12, fontStyle: FontStyle.italic),
-            ),
-            SizedBox(
-              width: 24,
-              child: Icon(Icons.filter_center_focus, size: 20),
-            ),
-            Text(
-              'icon to focus/unfocus on your current position.',
+              '* Tap an address below to focus on it\'s current position.',
               style: TextStyle(fontSize: 12, fontStyle: FontStyle.italic),
             ),
           ],
