@@ -216,7 +216,6 @@ class FriendMapService {
       lat ?? _currentUserLatitude,
       lon ?? _currentUserLongitude,
       title: "My Location",
-      snippet: _currentAddress,
       markerType: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueCyan),
     );
   }
@@ -237,7 +236,6 @@ class FriendMapService {
       lat ?? _destinationLatitude,
       lon ?? _destinationLongitude,
       title: "Destination",
-      snippet: _otherUsersAddress,
     );
   }
 

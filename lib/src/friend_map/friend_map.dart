@@ -91,7 +91,7 @@ class _FriendMapState extends State<FriendMap> with WidgetsBindingObserver, Data
     ///
     /// If current user clicked on their own friend map request and open friend map:
     ///  - other user's location will initially point to the current user's location then will update from coordinated value saved on the database.
-    ///  - if the other user does not have a saved location on the database, it will error with "cannot find user location".
+    ///  - if the other user does not have a saved location on the database, it will simply ignore.
     otherUserPositionStream =
         userDoc(widget.otherUserUid).child('location').onValue.listen((event) async {
       // print('Other user ${widget.otherUserUid}, location update, ${event.snapshot.value}');
@@ -109,9 +109,6 @@ class _FriendMapState extends State<FriendMap> with WidgetsBindingObserver, Data
           reAdjustCameraView = false;
         }
         if (mounted) setState(() {});
-      } else {
-        FriendMapService.instance.removeMarker(MarkerIds.destination);
-        widget.error(ERROR_CANNOT_FIND_OTHER_USERS_LOCATION);
       }
     });
 
