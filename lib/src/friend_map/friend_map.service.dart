@@ -166,6 +166,7 @@ class FriendMapService {
   /// does not need to call setState() when calling this function.
   ///
   zoomIn() {
+    isCameraFocused = false;
     _mapController.animateCamera(
       CameraUpdate.zoomIn(),
     );
@@ -175,6 +176,7 @@ class FriendMapService {
   /// does not need to call setState() when calling this function.
   ///
   zoomOut() {
+    isCameraFocused = false;
     _mapController.animateCamera(
       CameraUpdate.zoomOut(),
     );
@@ -184,6 +186,7 @@ class FriendMapService {
   /// does not need to call setState() when calling this function.
   ///
   zoomToMe() {
+    isCameraFocused = true;
     Marker myMarker = _markers.firstWhere(
       (m) => m.markerId.value == MarkerIds.currentLocation.toString(),
     );

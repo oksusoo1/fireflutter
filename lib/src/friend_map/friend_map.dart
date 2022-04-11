@@ -53,6 +53,16 @@ class _FriendMapState extends State<FriendMap> with WidgetsBindingObserver, Data
     super.dispose();
   }
 
+  /// It will initialize both user's location.
+  /// Other user's location.
+  ///   - at first it will mark a temporary marker location based on the given latitude and longitude.
+  ///   - then it will update the marker location with the data from firebase realtime database.
+  ///
+  /// By default, both user's location is shown.
+  /// Current user can focus on their current location by tapping on the third icon.
+  /// Current user can also show both user's locations by tapping the fourth icon, disabling focus on their current location.
+  ///
+  /// Zooming in and out will disable focus on current user's location.
   init() async {
     try {
       /// Check permission first.
@@ -140,6 +150,7 @@ class _FriendMapState extends State<FriendMap> with WidgetsBindingObserver, Data
           mapToolbarEnabled: false,
           myLocationEnabled: false,
           zoomControlsEnabled: false,
+          zoomGesturesEnabled: false,
           myLocationButtonEnabled: false,
           initialCameraPosition: currentLocation,
           onMapCreated: (GoogleMapController controller) => service.mapController = controller,
@@ -199,8 +210,24 @@ class _FriendMapState extends State<FriendMap> with WidgetsBindingObserver, Data
                         if (!FriendMapService.instance.isCameraFocused) {
                           service.zoomToMe();
                         }
-                        FriendMapService.instance.isCameraFocused =
-                            !FriendMapService.instance.isCameraFocused;
+                      },
+                    ),
+                  ),
+                ),
+                SizedBox(height: 20),
+                ClipOval(
+                  child: Material(
+                    color: Colors.blue.shade100, // button color
+                    child: InkWell(
+                      splashColor: Colors.blue, // inkwell color
+                      child: SizedBox(
+                        width: 40,
+                        height: 40,
+                        child: Icon(Icons.zoom_out_map_rounded),
+                      ),
+                      onTap: () {
+                        FriendMapService.instance.isCameraFocused = false;
+                        service.adjustCameraViewAndZoom();
                       },
                     ),
                   ),
@@ -219,6 +246,40 @@ class _FriendMapState extends State<FriendMap> with WidgetsBindingObserver, Data
             child: LocationService.instance.locationServiceEnabled
                 ? Column(
                     children: [
+                      Row(
+                        children: [
+                          Text(
+                            '* Tap the',
+                            style: TextStyle(fontSize: 12, fontStyle: FontStyle.italic),
+                          ),
+                          SizedBox(
+                            width: 24,
+                            child: Icon(Icons.filter_center_focus, size: 20),
+                          ),
+                          Text(
+                            'icon to focus/unfocus on your current position.',
+                            style: TextStyle(fontSize: 12, fontStyle: FontStyle.italic),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 5),
+                      Row(
+                        children: [
+                          Text(
+                            '* Tap the',
+                            style: TextStyle(fontSize: 12, fontStyle: FontStyle.italic),
+                          ),
+                          SizedBox(
+                            width: 24,
+                            child: Icon(Icons.zoom_out_map_rounded, size: 20),
+                          ),
+                          Text(
+                            'to show both location.',
+                            style: TextStyle(fontSize: 12, fontStyle: FontStyle.italic),
+                          ),
+                        ],
+                      ),
+                      Divider(),
                       Row(
                         children: [
                           Icon(Icons.location_on, color: Colors.cyanAccent),
