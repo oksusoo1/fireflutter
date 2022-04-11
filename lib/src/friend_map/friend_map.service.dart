@@ -3,6 +3,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 enum MarkerIds { currentLocation, destination, empty }
+enum CameraFocus { currentLocation, destination, none }
 
 class FriendMapService {
   static FriendMapService? _instance;
@@ -62,9 +63,9 @@ class FriendMapService {
 
   set mapController(GoogleMapController controller) => _mapController = controller;
 
-  /// If this is enabled, the camera view will follow and focus on the user's location on every changes.
+  /// Camera updates will depend on this value.
   ///
-  bool isCameraFocused = false;
+  CameraFocus cameraFocus = CameraFocus.none;
 
   /// =========== PRIVATE FUNCTIONS =========== ///
 
@@ -79,29 +80,24 @@ class FriendMapService {
     String? snippet,
     BitmapDescriptor markerType = BitmapDescriptor.defaultMarker,
   }) {
-    Marker previousMarker = _markers.firstWhere(
-      (m) => m.markerId == MarkerId('$id'),
-      orElse: () => Marker(markerId: MarkerId(MarkerIds.empty.toString())),
-    );
-
-    final isExisting = previousMarker.markerId != MarkerId(MarkerIds.empty.toString());
+    Marker? previousMarker = _getMarkerById(id);
 
     Marker newMarker = Marker(
       markerId: MarkerId('$id'),
       position: LatLng(lat, lng),
       infoWindow: InfoWindow(
-        title: previousMarker.infoWindow.title ?? title,
-        snippet: previousMarker.infoWindow.snippet ?? snippet,
+        title: previousMarker?.infoWindow.title ?? title,
+        snippet: previousMarker?.infoWindow.snippet ?? snippet,
       ),
-      icon: isExisting ? previousMarker.icon : markerType,
+      icon: previousMarker?.icon ?? markerType,
     );
 
-    if (isExisting) {
+    if (previousMarker != null) {
       /// prevents multiple marker to show on map.
       _markers.removeWhere((marker) => marker.markerId == newMarker.markerId);
     }
     _markers.add(newMarker);
-    return isExisting;
+    return previousMarker != null;
   }
 
   /// Transforms a position's coordinate to an address.
@@ -122,6 +118,19 @@ class FriendMapService {
       throw e;
     }
     return _address;
+  }
+
+  /// Get marker using id.
+  /// 
+  Marker? _getMarkerById(MarkerIds id) {
+    final emptyMarkerId = MarkerId(MarkerIds.empty.toString());
+    final m = _markers.firstWhere(
+      (m) => m.markerId == MarkerId('$id'),
+      orElse: () => Marker(markerId: emptyMarkerId),
+    );
+
+    if (m.markerId == emptyMarkerId) return null;
+    return m;
   }
 
   /// =========== PUBLIC FUNCTIONS =========== ///
@@ -155,6 +164,7 @@ class FriendMapService {
   /// does not need to call setState() when calling this function.
   ///
   void adjustCameraViewAndZoom() {
+    cameraFocus = CameraFocus.none;
     double miny = (_sLat <= _dLat) ? _sLat : _dLat;
     double minx = (_sLon <= _dLon) ? _sLon : _dLon;
     double maxy = (_sLat <= _dLat) ? _dLat : _sLat;
@@ -172,7 +182,7 @@ class FriendMapService {
   /// does not need to call setState() when calling this function.
   ///
   zoomIn() {
-    isCameraFocused = false;
+    cameraFocus = CameraFocus.none;
     _mapController.animateCamera(
       CameraUpdate.zoomIn(),
     );
@@ -182,24 +192,25 @@ class FriendMapService {
   /// does not need to call setState() when calling this function.
   ///
   zoomOut() {
-    isCameraFocused = false;
+    cameraFocus = CameraFocus.none;
     _mapController.animateCamera(
       CameraUpdate.zoomOut(),
     );
   }
 
-  /// Zoom to current user's marker position.
+  /// Zoom to a marker position.
   /// does not need to call setState() when calling this function.
   ///
-  zoomToMe() {
-    isCameraFocused = true;
-    Marker myMarker = _markers.firstWhere(
-      (m) => m.markerId.value == MarkerIds.currentLocation.toString(),
-    );
-    moveCameraView(myMarker.position.latitude, myMarker.position.longitude);
+  zoomToMarker(MarkerIds id) {
+    Marker? marker = _getMarkerById(id);
+    if (marker == null) return;
+
+    cameraFocus =
+        id == MarkerIds.currentLocation ? CameraFocus.currentLocation : CameraFocus.destination;
+    moveCameraView(marker.position.latitude, marker.position.longitude);
   }
 
-  /// Marks current location with address as snippet
+  /// Marks current location.
   ///
   Future<bool> drawCurrentLocationMarker({
     double? lat,
@@ -216,12 +227,11 @@ class FriendMapService {
       lat ?? _currentUserLatitude,
       lon ?? _currentUserLongitude,
       title: "My Location",
-      snippet: _currentAddress,
       markerType: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueCyan),
     );
   }
 
-  /// Marks destination location with address as snippet
+  /// Marks destination location.
   ///
   Future<void> drawDestinationLocationMarker({
     double? lat,
@@ -237,13 +247,7 @@ class FriendMapService {
       lat ?? _destinationLatitude,
       lon ?? _destinationLongitude,
       title: "Destination",
-      snippet: _otherUsersAddress,
     );
-  }
-
-  void removeMarker(MarkerIds id) {
-    markers.removeWhere((m) => m.markerId.value == id.toString());
-    _otherUsersAddress = "Unknown location";
   }
 
   /// refreshes the map to redraw markers and adjust camera view.
@@ -253,13 +257,4 @@ class FriendMapService {
     await drawCurrentLocationMarker();
     adjustCameraViewAndZoom();
   }
-
-  // test() {
-  //   bool result =
-  //       MarkerId(MarkerIds.currentLocation.toString()) == MarkerId(MarkerIds.empty.toString());
-  //   print(result);
-  //   result = MarkerId(MarkerIds.currentLocation.toString()) ==
-  //       MarkerId(MarkerIds.currentLocation.toString());
-  //   print(result);
-  // }
 }
