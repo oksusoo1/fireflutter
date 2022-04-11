@@ -1,3 +1,5 @@
+import 'package:fireflutter/src/functions.defines.dart';
+
 import '../../fireflutter.dart';
 
 /// PostApi
@@ -12,20 +14,33 @@ class PostApi {
   }
 
   /// Create a post
-  Future create({
+  Future<PostModel> create({
     required String category,
+    String? subcategory,
+    String? documentId,
     String? title,
     String? content,
+    String? summary,
+    List<String> files = const [],
     Map<String, dynamic> extra = const {},
   }) async {
     if (UserService.instance.notSignIn) throw ERROR_NOT_SIGN_IN;
     final data = {
+      'category': category,
+      if (subcategory != null && subcategory != '') 'subcategory': subcategory,
+      if (documentId != null && documentId != '') 'documentId': documentId,
       'title': title ?? '',
       'content': content ?? '',
+      if (summary != null && summary != '') 'summary': summary,
+      'files': files,
       ...extra,
     };
 
-    return FunctionsApi.instance
-        .request('createPost', data: data, addAuth: true);
+    final res = await FunctionsApi.instance.request(
+      FunctionName.postCreate,
+      data: data,
+      addAuth: true,
+    );
+    return PostModel.fromJson(res);
   }
 }

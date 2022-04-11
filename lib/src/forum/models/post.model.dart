@@ -94,19 +94,33 @@ class PostModel with FirestoreMixin, ForumBase {
 
   List<CommentModel> comments = [];
 
+  @Deprecated("Create post with PostApi.")
   factory PostModel.fromDoc(DocumentSnapshot doc) {
     return PostModel.fromJson(doc.data() as Json, doc.id);
   }
 
   /// Get document data of map and convert it into post model
-  factory PostModel.fromJson(Json data, String id) {
+  ///
+  /// If post is created via http, then it will have [id] inside `data`.
+  factory PostModel.fromJson(Json data, [String? id]) {
     String content = data['content'] ?? '';
 
     /// Check if the content has any html tag.
     bool html = _isHtml(content);
 
+    /// If the post is created via http, the [createdAt] and [updatedAt] have different format.
+    Timestamp createdAt;
+    Timestamp updatedAt;
+    if (data['createdAt'] is Map) {
+      createdAt = Timestamp(data['createdAt']['_seconds'], data['createdAt']['_nanoseconds']);
+      updatedAt = Timestamp(data['updatedAt']['_seconds'], data['updatedAt']['_nanoseconds']);
+    } else {
+      createdAt = data['createdAt'];
+      updatedAt = data['updatedAt'];
+    }
+
     final post = PostModel(
-      id: id,
+      id: id ?? data['id'],
       category: data['category'] ?? '',
       title: data['title'] ?? '',
       content: content,
@@ -124,8 +138,8 @@ class PostModel with FirestoreMixin, ForumBase {
       month: data['month'] ?? 0,
       day: data['day'] ?? 0,
       week: data['week'] ?? 0,
-      createdAt: data['createdAt'],
-      updatedAt: data['updatedAt'],
+      createdAt: createdAt,
+      updatedAt: updatedAt,
       data: data,
     );
 

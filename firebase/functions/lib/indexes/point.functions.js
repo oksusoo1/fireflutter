@@ -55,7 +55,7 @@ exports.pointEventRegister = functions
 //     .onCreate((snapshot, context) => {
 //       return Point.commentCreatePoint(snapshot.data(), context);
 //     });
-exports.pointHistory = functions.region("asia-northeast3").https.onRequest((req, res) => {
+exports.pointHistory = functions.region("us-central1").https.onRequest((req, res) => {
     ready_1.ready({ req, res, auth: true }, async (data) => {
         res.status(200).send(await point_1.Point.history(data));
     });

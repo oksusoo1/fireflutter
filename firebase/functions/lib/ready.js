@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ready = void 0;
+exports.ready = exports.sanitizeError = void 0;
 const user_1 = require("./classes/user");
 function sanitizeError(e) {
     if (typeof e === "string" && e.startsWith("ERROR_")) {
@@ -10,6 +10,7 @@ function sanitizeError(e) {
         return e;
     }
 }
+exports.sanitizeError = sanitizeError;
 async function ready(options, callback) {
     const req = options.req;
     const res = options.res;
