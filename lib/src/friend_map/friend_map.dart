@@ -110,7 +110,7 @@ class _FriendMapState extends State<FriendMap> with WidgetsBindingObserver, Data
         }
       } else {
         FriendMapService.instance.removeMarker(MarkerIds.destination);
-        widget.error('ERROR_CANNOT_FIND_LOCATION');
+        widget.error(ERROR_CANNOT_FIND_OTHER_USERS_LOCATION);
       }
       if (mounted) setState(() {});
     }, onError: widget.error);
