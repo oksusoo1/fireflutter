@@ -20,8 +20,7 @@ class FriendMapService {
     required double longitude,
     LocationAccuracy accuracy = LocationAccuracy.bestForNavigation,
   }) async {
-    Position currentUserPosition =
-        await Geolocator.getCurrentPosition(desiredAccuracy: accuracy);
+    Position currentUserPosition = await Geolocator.getCurrentPosition(desiredAccuracy: accuracy);
 
     this._currentUserLatitude = currentUserPosition.latitude;
     this._currentUserLongitude = currentUserPosition.longitude;
@@ -59,10 +58,9 @@ class FriendMapService {
 
   /// Location markers.
   ///
-  get markers => _markers;
+  Set<Marker> get markers => _markers;
 
-  set mapController(GoogleMapController controller) =>
-      _mapController = controller;
+  set mapController(GoogleMapController controller) => _mapController = controller;
 
   /// If this is enabled, the camera view will follow and focus on the user's location on every changes.
   ///
@@ -86,8 +84,7 @@ class FriendMapService {
       orElse: () => Marker(markerId: MarkerId(MarkerIds.empty.toString())),
     );
 
-    final isExisting =
-        previousMarker.markerId != MarkerId(MarkerIds.empty.toString());
+    final isExisting = previousMarker.markerId != MarkerId(MarkerIds.empty.toString());
 
     Marker newMarker = Marker(
       markerId: MarkerId('$id'),
@@ -114,7 +111,13 @@ class FriendMapService {
 
     try {
       List<Placemark> p = await placemarkFromCoordinates(lat, lng);
-      _address = "${p[0].name}, ${p[0].locality}, ${p[0].country}";
+
+      String name = p[0].name != null && p[0].name!.length > 0 ? "${p[0].name!}," : '';
+      String locality =
+          p[0].locality != null && p[0].locality!.length > 0 ? "${p[0].locality!}," : '';
+      String country = p[0].country != null && p[0].country!.length > 0 ? "${p[0].country!}" : '';
+
+      _address = "$name $locality $country";
     } catch (e) {
       throw e;
     }
@@ -214,8 +217,7 @@ class FriendMapService {
       lon ?? _currentUserLongitude,
       title: "My Location",
       snippet: _currentAddress,
-      markerType:
-          BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueCyan),
+      markerType: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueCyan),
     );
   }
 
@@ -237,6 +239,11 @@ class FriendMapService {
       title: "Destination",
       snippet: _otherUsersAddress,
     );
+  }
+
+  void removeMarker(MarkerIds id) {
+    markers.removeWhere((m) => m.markerId.value == id.toString());
+    _otherUsersAddress = "Unknown location";
   }
 
   /// refreshes the map to redraw markers and adjust camera view.

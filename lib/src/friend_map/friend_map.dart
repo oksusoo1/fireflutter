@@ -27,13 +27,11 @@ class FriendMap extends StatefulWidget {
   _FriendMapState createState() => _FriendMapState();
 }
 
-class _FriendMapState extends State<FriendMap>
-    with WidgetsBindingObserver, DatabaseMixin {
+class _FriendMapState extends State<FriendMap> with WidgetsBindingObserver, DatabaseMixin {
   final FriendMapService service = FriendMapService.instance;
   final searchBoxController = TextEditingController();
 
-  final CameraPosition currentLocation =
-      CameraPosition(target: LatLng(0.0, 0.0));
+  final CameraPosition currentLocation = CameraPosition(target: LatLng(0.0, 0.0));
 
   StreamSubscription<Position>? currentUserPositionStream;
   StreamSubscription<DatabaseEvent>? otherUserPositionStream;
@@ -67,6 +65,8 @@ class _FriendMapState extends State<FriendMap>
   /// Zooming in and out will disable focus on current user's location.
   init() async {
     try {
+      FriendMapService.instance.isCameraFocused = false;
+
       /// Check permission first.
       await LocationService.instance.checkPermission();
 
@@ -88,53 +88,53 @@ class _FriendMapState extends State<FriendMap>
     ///
     /// If user click on an older friend map request on chat, it will initially the coordinated on that particular chat message,
     /// and this will get the last saved location of the other user from realtime database.
+    ///
+    /// If current user clicked on their own friend map request and open friend map:
+    ///  - other user's location will initially point to the current user's location then will update from coordinated value saved on the database.
+    ///  - if the other user does not have a saved location on the database, it will error with "cannot find user location".
     otherUserPositionStream =
-        userDoc(widget.otherUserUid).child('location').onValue.listen(
-      (event) async {
-        print(
-            'Other user ${widget.otherUserUid}, location update, ${event.snapshot.value}');
-        DataSnapshot snapshot = event.snapshot;
-        final loc = snapshot.value as String?;
+        userDoc(widget.otherUserUid).child('location').onValue.listen((event) async {
+      print('Other user ${widget.otherUserUid}, location update, ${event.snapshot.value}');
+      DataSnapshot snapshot = event.snapshot;
+      final loc = snapshot.value as String?;
 
-        if (loc != null) {
-          await service.drawDestinationLocationMarker(
-            lat: double.parse(loc.split(":").first), // latitude
-            lon: double.parse(loc.split(":").last), // longitude
-          );
-
-          if (reAdjustCameraView) {
-            service.adjustCameraViewAndZoom();
-            reAdjustCameraView = false;
-          }
-
-          if (mounted) setState(() {});
-        }
-      },
-    );
-
-    currentUserPositionStream = service.currentUserLocationStream().listen(
-      (Position position) async {
-        // print('position changed: lat ${position.latitude} ; lng ${position.longitude}');
-
-        final updated = await service.drawCurrentLocationMarker(
-          lat: position.latitude,
-          lon: position.longitude,
+      if (loc != null) {
+        await service.drawDestinationLocationMarker(
+          lat: double.parse(loc.split(":").first), // latitude
+          lon: double.parse(loc.split(":").last), // longitude
         );
 
-        if (updated) {
-          /// Update current user location on realtime database
-          userDoc(UserService.instance.uid).update(
-            {'location': '${position.latitude}:${position.longitude}'},
-          );
-
-          if (service.isCameraFocused) {
-            service.moveCameraView(position.latitude, position.longitude);
-          }
+        if (reAdjustCameraView) {
+          service.adjustCameraViewAndZoom();
+          reAdjustCameraView = false;
         }
+      } else {
+        FriendMapService.instance.removeMarker(MarkerIds.destination);
+        widget.error('ERROR_CANNOT_FIND_LOCATION');
+      }
+      if (mounted) setState(() {});
+    }, onError: widget.error);
 
-        if (mounted) setState(() {});
-      },
-    );
+    currentUserPositionStream =
+        service.currentUserLocationStream().listen((Position position) async {
+      final updated = await service.drawCurrentLocationMarker(
+        lat: position.latitude,
+        lon: position.longitude,
+      );
+
+      if (updated) {
+        /// Update current user location on realtime database
+        userDoc(UserService.instance.uid).update(
+          {'location': '${position.latitude}:${position.longitude}'},
+        );
+
+        if (service.isCameraFocused) {
+          service.moveCameraView(position.latitude, position.longitude);
+        }
+      }
+
+      if (mounted) setState(() {});
+    }, onError: widget.error);
   }
 
   @override
@@ -157,8 +157,7 @@ class _FriendMapState extends State<FriendMap>
           zoomGesturesEnabled: false,
           myLocationButtonEnabled: false,
           initialCameraPosition: currentLocation,
-          onMapCreated: (GoogleMapController controller) =>
-              service.mapController = controller,
+          onMapCreated: (GoogleMapController controller) => service.mapController = controller,
           markers: Set<Marker>.from(service.markers),
         ),
         SafeArea(
