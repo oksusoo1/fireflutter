@@ -16,15 +16,13 @@ mixin ForumMixin {
           onError: error,
           onSubmit: (Json form) async {
             try {
-              await CommentModel.create(
+              await CommentApi.instance.create(
                 postId: post.id,
                 parentId: comment?.id ?? post.id,
                 content: form['content'],
                 files: form['files'],
               );
-              // form.create(postId: post.id, parentId: comment?.id ?? post.id);
               AppService.instance.back();
-              // alert('Comment created', 'Your comment has created successfully');
             } catch (e) {
               error(e);
             }
@@ -34,6 +32,7 @@ mixin ForumMixin {
     );
   }
 
+  /// Comment edit
   onEdit(BuildContext context, CommentModel comment) async {
     return showDialog(
       context: context,
@@ -44,13 +43,17 @@ mixin ForumMixin {
           onError: error,
           onSubmit: (Json form) async {
             try {
-              await comment.update(
+              await CommentApi.instance.update(
+                id: comment.id,
                 content: form['content'],
                 files: form['files'],
               );
-              // form.create(postId: post.id, parentId: comment?.id ?? post.id);
+
+              // await comment.update(
+              //   content: form['content'],
+              //   files: form['files'],
+              // );
               AppService.instance.back();
-              // alert('Comment updated', 'You have updated the comment successfully');
             } catch (e) {
               error(e);
             }
@@ -60,6 +63,8 @@ mixin ForumMixin {
     );
   }
 
+  /// Deleting comment or post
+  @Deprecated('Use PostApi or CommentApi to delete')
   onDelete(dynamic postOrComment) async {
     try {
       if (postOrComment is PostModel) {
@@ -137,8 +142,7 @@ mixin ForumMixin {
     // return alert('Display original image', 'TODO: display original images with a scaffold.');
     return showDialog(
       context: ctx,
-      builder: (context) =>
-          Dialog(child: ImageViewer(files, initialIndex: initialIndex)),
+      builder: (context) => Dialog(child: ImageViewer(files, initialIndex: initialIndex)),
     );
   }
 }

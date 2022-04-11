@@ -56,7 +56,7 @@ class FunctionsApi {
       if (res.data is String && (res.data as String).startsWith('ERROR_')) {
         throw res.data;
       } else if (res.data is Map && res.data['code'] != null && res.data['code'] != '') {
-        throw res.data['message'];
+        throw res.data['code'];
       } else if (res.data is String &&
           (res.data as String).contains('code') &&
           (res.data as String).contains('ERR_')) {

@@ -116,7 +116,7 @@ class PostModel with FirestoreMixin, ForumBase {
       updatedAt = Timestamp(data['updatedAt']['_seconds'], data['updatedAt']['_nanoseconds']);
     } else {
       createdAt = data['createdAt'];
-      updatedAt = data['updatedAt'];
+      updatedAt = data['updatedAt'] ?? Timestamp.now();
     }
 
     final post = PostModel(
@@ -233,7 +233,7 @@ class PostModel with FirestoreMixin, ForumBase {
   /// ```
   ///
   /// Read readme for [hasPhoto]
-  @Deprecated('User PostApi')
+  @Deprecated('Use PostApi')
   Future<DocumentReference<Object?>> create({
     required String category,
     required String title,
@@ -278,6 +278,7 @@ class PostModel with FirestoreMixin, ForumBase {
     }
   }
 
+  @Deprecated('User PostApi.instance.update()')
   Future<void> update({
     required String title,
     required String content,
@@ -305,6 +306,7 @@ class PostModel with FirestoreMixin, ForumBase {
   }
 
   /// See readme.
+  @Deprecated('Use CommentApi')
   Future<void> delete() async {
     if (files.length > 0) {
       for (final url in files) {

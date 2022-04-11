@@ -101,6 +101,7 @@ export 'src/point/point.builder.dart';
 export 'src/point/my_point.builder.dart';
 
 export 'src/forum/post.api.dart';
+export 'src/forum/comment.api.dart';
 export 'src/point/point.history.dart';
 export 'src/point/point.api.dart';
 

@@ -85,11 +85,21 @@ for (let i = 1; i <= 10; i++) {
     .set({
       firstName: firstName,
       lastName: lastName,
+      nickname: firstName + lastName,
       birthday: birthday,
       gender: gender,
       photoUrl: photoUrls[i - 1],
-      profileReady: true,
+      profileReady: 90000000000000,
       registeredAt: admin.database.ServerValue.TIMESTAMP,
       updatedAt: admin.database.ServerValue.TIMESTAMP,
+    });
+
+  console.log("uid; ", uid);
+  rdb
+    .ref("users")
+    .child(uid)
+    .get()
+    .then((snapshot) => {
+      console.log(snapshot.val());
     });
 }

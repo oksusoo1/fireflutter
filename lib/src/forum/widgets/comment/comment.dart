@@ -67,35 +67,59 @@ class _CommentState extends State<Comment> with FirestoreMixin {
         .orderBy('createdAt')
         .snapshots()
         .listen((QuerySnapshot snapshots) {
+      comments = [];
       snapshots.docs.forEach((QueryDocumentSnapshot snapshot) {
         /// is it immediate child?
-        final CommentModel c =
-            CommentModel.fromJson(snapshot.data() as Json, id: snapshot.id);
-        // print(c);
+        final CommentModel c = CommentModel.fromJson(snapshot.data() as Json, id: snapshot.id);
 
-        // if exists in array, just update it.
-        int i = comments.indexWhere((e) => e.id == snapshot.id);
-        if (i >= 0) {
-          /// maintain the depth computation
-          c.depth = comments[i].depth;
-          comments[i] = c;
+        print("${snapshot.id} => ${c.content}");
+
+        /// if immediate child comment,
+        if (c.postId == c.parentId) {
+          /// add at bottom
+          comments.add(c);
         } else {
-          /// if immediate child comment,
-          if (c.postId == c.parentId) {
-            /// add at bottom
-            comments.add(c);
+          /// It's a comment under another comemnt. Find parent.
+          int i = comments.indexWhere((e) => e.id == c.parentId);
+          if (i >= 0) {
+            c.depth = comments[i].depth + 1;
+            comments.insert(i + 1, c);
           } else {
-            /// It's a comment under another comemnt. Find parent.
-            int i = comments.indexWhere((e) => e.id == c.parentId);
-            if (i >= 0) {
-              c.depth = comments[i].depth + 1;
-              comments.insert(i + 1, c);
-            } else {
-              // error; can't find parent comment.
-              print('---> error?; $c');
-            }
+            // error; can't find parent comment.
+            print('---> error?; $c');
           }
         }
+
+        // /// is it immediate child?
+        // final CommentModel c = CommentModel.fromJson(snapshot.data() as Json, id: snapshot.id);
+
+        // print("${snapshot.id} => ${c.content}");
+        // ids.add(snapshot.id);
+
+        // // if exists in array, just update it.
+        // int i = comments.indexWhere((e) => e.id == snapshot.id);
+
+        // if (i >= 0) {
+        //   /// maintain the depth computation
+        //   c.depth = comments[i].depth;
+        //   comments[i] = c;
+        // } else {
+        //   /// if immediate child comment,
+        //   if (c.postId == c.parentId) {
+        //     /// add at bottom
+        //     comments.add(c);
+        //   } else {
+        //     /// It's a comment under another comemnt. Find parent.
+        //     int i = comments.indexWhere((e) => e.id == c.parentId);
+        //     if (i >= 0) {
+        //       c.depth = comments[i].depth + 1;
+        //       comments.insert(i + 1, c);
+        //     } else {
+        //       // error; can't find parent comment.
+        //       print('---> error?; $c');
+        //     }
+        //   }
+        // }
       });
 
       if (mounted) setState(() {});
@@ -172,9 +196,7 @@ class _CommentState extends State<Comment> with FirestoreMixin {
                   buttonBuilder: widget.buttonBuilder,
                   likeCount: comment.like,
                   dislikeCount: comment.dislike,
-                  onChat: (widget.onChat != null)
-                      ? () => widget.onChat!(comment)
-                      : null,
+                  onChat: (widget.onChat != null) ? () => widget.onChat!(comment) : null,
                   onBlockUser: widget.onBlockUser,
                   onUnblockUser: widget.onUnblockUser,
                 ),
@@ -198,9 +220,7 @@ class _CommentState extends State<Comment> with FirestoreMixin {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(user.displayName.isNotEmpty
-                    ? "${user.displayName}"
-                    : "No name"),
+                Text(user.displayName.isNotEmpty ? "${user.displayName}" : "No name"),
                 SizedBox(height: 8),
                 ShortDate(comment.createdAt.millisecondsSinceEpoch),
               ],

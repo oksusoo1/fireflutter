@@ -114,6 +114,7 @@ export class Post {
     await Ref.postDoc(id).update(data);
     const updated = await this.get(id);
     if (updated === null) throw ERROR_UPDATE_FAILED;
+    updated.id = id;
     return updated;
   }
 
