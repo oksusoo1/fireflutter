@@ -65,7 +65,7 @@ class _FriendMapState extends State<FriendMap> with WidgetsBindingObserver, Data
   /// Zooming in and out will disable focus on current user's location.
   init() async {
     try {
-      FriendMapService.instance.isCameraFocused = false;
+      service.cameraFocus = CameraFocus.none;
 
       /// Check permission first.
       await LocationService.instance.checkPermission();
@@ -125,7 +125,7 @@ class _FriendMapState extends State<FriendMap> with WidgetsBindingObserver, Data
           {'location': '${position.latitude}:${position.longitude}'},
         );
 
-        if (service.isCameraFocused) {
+        if (service.cameraFocus == CameraFocus.currentLocation) {
           service.moveCameraView(position.latitude, position.longitude);
         }
       }
@@ -197,7 +197,7 @@ class _FriendMapState extends State<FriendMap> with WidgetsBindingObserver, Data
                 /// Button to enable/disable camera adjustment when moving.
                 ClipOval(
                   child: Material(
-                    color: FriendMapService.instance.isCameraFocused
+                    color: service.cameraFocus == CameraFocus.currentLocation
                         ? Colors.yellow.shade100
                         : Colors.grey.shade400, // button color
                     child: InkWell(
@@ -207,11 +207,7 @@ class _FriendMapState extends State<FriendMap> with WidgetsBindingObserver, Data
                         height: 40,
                         child: Icon(Icons.filter_center_focus),
                       ),
-                      onTap: () {
-                        if (!FriendMapService.instance.isCameraFocused) {
-                          service.zoomToMe();
-                        }
-                      },
+                      onTap: () => service.zoomToMarker(MarkerIds.currentLocation),
                     ),
                   ),
                 ),
@@ -227,7 +223,6 @@ class _FriendMapState extends State<FriendMap> with WidgetsBindingObserver, Data
                         child: Icon(Icons.zoom_out_map_rounded),
                       ),
                       onTap: () {
-                        FriendMapService.instance.isCameraFocused = false;
                         service.adjustCameraViewAndZoom();
                       },
                     ),
@@ -247,65 +242,17 @@ class _FriendMapState extends State<FriendMap> with WidgetsBindingObserver, Data
             child: LocationService.instance.locationServiceEnabled
                 ? Column(
                     children: [
-                      Row(
-                        children: [
-                          Text(
-                            '* Tap the',
-                            style: TextStyle(fontSize: 12, fontStyle: FontStyle.italic),
-                          ),
-                          SizedBox(
-                            width: 24,
-                            child: Icon(Icons.filter_center_focus, size: 20),
-                          ),
-                          Text(
-                            'icon to focus/unfocus on your current position.',
-                            style: TextStyle(fontSize: 12, fontStyle: FontStyle.italic),
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: 5),
-                      Row(
-                        children: [
-                          Text(
-                            '* Tap the',
-                            style: TextStyle(fontSize: 12, fontStyle: FontStyle.italic),
-                          ),
-                          SizedBox(
-                            width: 24,
-                            child: Icon(Icons.zoom_out_map_rounded, size: 20),
-                          ),
-                          Text(
-                            'to show both location.',
-                            style: TextStyle(fontSize: 12, fontStyle: FontStyle.italic),
-                          ),
-                        ],
-                      ),
+                      NavigationTips(),
                       Divider(),
-                      Row(
-                        children: [
-                          Icon(Icons.location_on, color: Colors.cyanAccent),
-                          SizedBox(width: 10),
-                          Expanded(
-                            child: Text(
-                              'My location: ' + service.currentAddress,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                        ],
-                      ),
+                      LocationAddress(
+                          address: 'My location: ' + service.currentAddress,
+                          iconColor: Colors.cyanAccent,
+                          onTap: () => service.zoomToMarker(MarkerIds.currentLocation)),
                       SizedBox(height: 10),
-                      Row(
-                        children: [
-                          Icon(Icons.location_on, color: Colors.redAccent),
-                          SizedBox(width: 10),
-                          Expanded(
-                            child: Text(
-                              'Destination: ' + service.otherUsersAddress,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                        ],
-                      )
+                      LocationAddress(
+                          address: 'Destination: ' + service.otherUsersAddress,
+                          iconColor: Colors.redAccent,
+                          onTap: () => service.zoomToMarker(MarkerIds.destination)),
                     ],
                   )
                 : GestureDetector(
@@ -322,6 +269,79 @@ class _FriendMapState extends State<FriendMap> with WidgetsBindingObserver, Data
           ),
         ),
       ],
+    );
+  }
+}
+
+class NavigationTips extends StatelessWidget {
+  const NavigationTips({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Row(
+          children: [
+            Text(
+              '* Tap the',
+              style: TextStyle(fontSize: 12, fontStyle: FontStyle.italic),
+            ),
+            SizedBox(
+              width: 24,
+              child: Icon(Icons.filter_center_focus, size: 20),
+            ),
+            Text(
+              'icon to focus/unfocus on your current position.',
+              style: TextStyle(fontSize: 12, fontStyle: FontStyle.italic),
+            ),
+          ],
+        ),
+        SizedBox(height: 5),
+        Row(
+          children: [
+            Text(
+              '* Tap the',
+              style: TextStyle(fontSize: 12, fontStyle: FontStyle.italic),
+            ),
+            SizedBox(
+              width: 24,
+              child: Icon(Icons.zoom_out_map_rounded, size: 20),
+            ),
+            Text(
+              'icon to show both location.',
+              style: TextStyle(fontSize: 12, fontStyle: FontStyle.italic),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+class LocationAddress extends StatelessWidget {
+  const LocationAddress({required this.address, required this.iconColor, this.onTap, Key? key})
+      : super(key: key);
+
+  final String address;
+  final Color iconColor;
+  final void Function()? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Row(
+        children: [
+          Icon(Icons.location_on, color: iconColor),
+          SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              address,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
