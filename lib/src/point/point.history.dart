@@ -28,13 +28,12 @@ class _PointHistoryState extends State<PointHistory> {
   init() async {
     try {
       loading = true;
-      histories = await PointApi.instance
-          .getHistory(year: widget.year, month: widget.month);
+      histories = await PointApi.instance.getHistory(year: widget.year, month: widget.month);
       setState(() {
         loading = false;
       });
     } catch (e) {
-      FunctionsApi.instance.onError(e.toString());
+      debugPrint(e.toString());
     }
   }
 
@@ -52,8 +51,7 @@ class _PointHistoryState extends State<PointHistory> {
                 itemBuilder: (context, index) {
                   PointHistoryModel history = histories[index];
 
-                  final d = DateTime.fromMillisecondsSinceEpoch(
-                      history.timestamp * 1000);
+                  final d = DateTime.fromMillisecondsSinceEpoch(history.timestamp * 1000);
                   return ListTile(
                     title: Text(_text(history.eventName)),
                     subtitle: Text(

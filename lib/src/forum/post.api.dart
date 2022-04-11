@@ -1,3 +1,5 @@
+import 'package:fireflutter/src/functions.defines.dart';
+
 import '../../fireflutter.dart';
 
 /// PostApi
@@ -34,7 +36,11 @@ class PostApi {
       ...extra,
     };
 
-    final res = await FunctionsApi.instance.request('createPost', data: data, addAuth: true);
+    final res = await FunctionsApi.instance.request(
+      FunctionName.postCreate,
+      data: data,
+      addAuth: true,
+    );
     return PostModel.fromJson(res);
   }
 }

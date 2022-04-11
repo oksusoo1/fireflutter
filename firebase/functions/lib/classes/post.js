@@ -35,8 +35,12 @@ class Post {
             throw defines_1.ERROR_CATEGORY_NOT_EXISTS;
         // get all the data from client.
         const doc = data;
+        // sanitize
+        if (!doc.files) {
+            doc.files = [];
+        }
         // default data
-        doc.hasPhoto = !!doc.files;
+        doc.hasPhoto = doc.files > 0;
         doc.deleted = false;
         doc.noOfComments = 0;
         doc.year = dayjs().year();

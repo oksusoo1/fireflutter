@@ -175,17 +175,6 @@ class _PostFormState extends State<PostForm> {
     }
     try {
       if (widget.category != null && widget.category!.isNotEmpty) {
-        /// create
-        // final ref = await PostModel().create(
-        //   documentId: documentId.text,
-        //   category: widget.category!,
-        //   subcategory: widget.subcategory,
-        //   title: title.text,
-        //   content: content.text,
-        //   summary: summary.text,
-        //   files: files,
-        // );
-
         final post = await PostApi.instance.create(
           documentId: documentId.text,
           category: widget.category!,
@@ -206,7 +195,10 @@ class _PostFormState extends State<PostForm> {
         );
         widget.onUpdate(widget.post!.id);
       }
-    } catch (e) {
+    } catch (e, stacks) {
+      debugPrint(e.toString());
+      debugPrintStack(stackTrace: stacks);
+
       widget.onError(e);
     }
   }

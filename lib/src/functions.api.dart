@@ -14,14 +14,14 @@ class FunctionsApi {
   }
 
   String serverUrl = '';
-  Function(String) onError = (s) => print;
+  // Function(String) onError = (s) => print;
 
   init({
     required String serverUrl,
-    required Function(String) onError,
+    // required Function(String) onError,
   }) {
     this.serverUrl = serverUrl;
-    this.onError = onError;
+    // this.onError = onError;
   }
 
   String get password {
