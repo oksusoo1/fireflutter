@@ -23,32 +23,32 @@ const post_1 = require("../classes/post");
 const comment_1 = require("../classes/comment");
 // Start writing Firebase Functions
 // https://firebase.google.com/docs/functions/typescript
-exports.postCreate = functions.region("asia-northeast3").https.onRequest((req, res) => {
+exports.postCreate = functions.region("us-central1").https.onRequest((req, res) => {
     ready_1.ready({ req, res, auth: true }, async (data) => {
         res.status(200).send(await post_1.Post.create(data));
     });
 });
-exports.postUpdate = functions.region("asia-northeast3").https.onRequest((req, res) => {
+exports.postUpdate = functions.region("us-central1").https.onRequest((req, res) => {
     ready_1.ready({ req, res, auth: true }, async (data) => {
         res.status(200).send(await post_1.Post.update(data));
     });
 });
-exports.postDelete = functions.region("asia-northeast3").https.onRequest((req, res) => {
+exports.postDelete = functions.region("us-central1").https.onRequest((req, res) => {
     ready_1.ready({ req, res, auth: true }, async (data) => {
         res.status(200).send(await post_1.Post.delete(data));
     });
 });
-exports.commentCreate = functions.region("asia-northeast3").https.onRequest((req, res) => {
+exports.commentCreate = functions.region("us-central1").https.onRequest((req, res) => {
     ready_1.ready({ req, res, auth: true }, async (data) => {
         res.status(200).send(await comment_1.Comment.create(data));
     });
 });
-exports.commentUpdate = functions.region("asia-northeast3").https.onRequest((req, res) => {
+exports.commentUpdate = functions.region("us-central1").https.onRequest((req, res) => {
     ready_1.ready({ req, res, auth: true }, async (data) => {
         res.status(200).send(await comment_1.Comment.update(data));
     });
 });
-exports.commentDelete = functions.region("asia-northeast3").https.onRequest((req, res) => {
+exports.commentDelete = functions.region("us-central1").https.onRequest((req, res) => {
     ready_1.ready({ req, res, auth: true }, async (data) => {
         res.status(200).send(await comment_1.Comment.delete(data));
     });
