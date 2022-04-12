@@ -13,7 +13,7 @@ import { ready } from "../ready";
  * % pointEventSignIn({after: {lastLogin: 1234}}, {params: {uid: 'a'}})
  */
 export const pointEventSignIn = functions
-    .region("us-central1", "asia-northeast3")
+    .region("asia-northeast3")
     .database.ref("/users/{uid}/lastSignInAt")
     .onUpdate(async (change, context) => {
       await Point.signInPoint(change.after.val(), context);
@@ -29,7 +29,7 @@ export const pointEventSignIn = functions
  * % pointEventRegister({}, {params: {uid: 'a'}})
  */
 export const pointEventRegister = functions
-    .region("us-central1", "asia-northeast3")
+    .region("asia-northeast3")
     .database.ref("/users/{uid}")
     .onCreate((snapshot, context) => {
       return Point.registerPoint(snapshot.val(), context);

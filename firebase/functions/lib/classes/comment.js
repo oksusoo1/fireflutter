@@ -73,6 +73,8 @@ class Comment {
      * Deletes a comment
      *
      * @param data
+     *
+     * @todo add types on `data`.
      */
     static async delete(data) {
         if (!data.id)
