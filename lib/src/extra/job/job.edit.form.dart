@@ -4,11 +4,7 @@ import '../../../fireflutter.dart';
 
 /// 직업 입력 양식
 ///
-/// TODO: 먼저, 글/코멘트 쓰기/수정/삭제 를 HTTP 로 할 수 있도록 해야 한다. 그리고 포인트 증/감을 카테고리 별로 설정 할 수 있도록 해야 한다.
-/// TODO: Working Hourse 를 선택 하여, 1시간, 2시간, ... 14시간 까지 선택 할 수 있도록 한다.
-/// TODO: Working days 를 1 day in a week 와 같이 해서 1 day, 2 day, ... 7 day 까지 선택 할 수 있도록 한다.
-/// TODO: 숙식제공 옵션을 두고 선택 할 수 있도록 한다.
-/// TODO: Salary 를 월 110 만 이하, 120 만, 130 만 .... 400 만, 그리고 400 만 이상으로 선택 하도록 한다.
+///
 ///
 class JobEditForm extends StatefulWidget {
   const JobEditForm({
@@ -54,6 +50,13 @@ class _JobEditFormState extends State<JobEditForm> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        Text('''
+@TODO
+- Let company choose working hours of : 1hour, 2hour, 3hour, ... 14 hours.
+- Let company choose working days in a week: 1 day, 2days, ... 7 days.
+- Let company choose if they provide accommodations: Yes, No.
+- Let comapny choose the salary: 100K Won, 200K Won, ... 4.5M Won.
+/// '''),
         Text('Create a job opening'),
         TextField(
           controller: companyName,

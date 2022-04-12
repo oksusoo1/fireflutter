@@ -3,8 +3,12 @@
 Job functionality using FireFlutter
 
 
+# Administration
 
-# Notification
+- Admin must create `jobOpenings` and `jobSeekers` categories and group them as `job`.
+
+
+# Job Notification
 
 - User can set notification based on the combination of search option.
   - For instance, User A wants to subscribe notification if there is a new job opening on IT in Gyungi-do, dong-hae city.
