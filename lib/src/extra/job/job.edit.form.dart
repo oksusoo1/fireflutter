@@ -40,6 +40,8 @@ class _JobEditFormState extends State<JobEditForm> {
 
   AddressModel? addr;
 
+  String selected = '';
+
   getAddress() async {
     addr = await JobService.instance.inputAddress(context);
     print(addr);
@@ -119,12 +121,34 @@ class _JobEditFormState extends State<JobEditForm> {
               labelText: "Input detail address",
             ),
           ),
-        TextField(
-          controller: jobCategory,
-          decoration: InputDecoration(
-            labelText: "Job category(industry) - @todo select box",
-          ),
-        ),
+        // TextField(
+        //   controller: jobCategory,
+        //   decoration: InputDecoration(
+        //     labelText: "Job category(industry) - @todo select box",
+        //   ),
+        // ),
+
+        DropdownButton<String>(
+            value: selected,
+            items: [
+              DropdownMenuItem(
+                child: Text('Select job category'),
+                value: '',
+              ),
+              ...JobService.instance.categories.entries
+                  .map((e) => DropdownMenuItem(
+                        child: Text(e.value),
+                        value: e.key,
+                      ))
+                  .toList(),
+            ],
+            onChanged: (s) {
+              print('s; $s');
+              setState(() {
+                selected = s ?? '';
+                jobCategory.text = s ?? '';
+              });
+            }),
         // Select(
         //   defaultLabel: "Select job category",
         //   options: JobService.instance.categories,
