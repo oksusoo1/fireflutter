@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:firebase_database/firebase_database.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/gestures.dart';
 
 import '../../fireflutter.dart';
 import 'package:flutter/material.dart';
@@ -151,16 +153,20 @@ class _FriendMapState extends State<FriendMap> with WidgetsBindingObserver, Data
     return Stack(
       children: [
         GoogleMap(
-          mapType: MapType.normal,
-          mapToolbarEnabled: false,
-          myLocationEnabled: false,
-          zoomControlsEnabled: false,
-          zoomGesturesEnabled: false,
-          myLocationButtonEnabled: false,
-          initialCameraPosition: currentLocation,
-          onMapCreated: (GoogleMapController controller) => service.mapController = controller,
-          markers: Set<Marker>.from(service.markers),
-        ),
+            mapType: MapType.normal,
+            mapToolbarEnabled: false,
+            myLocationEnabled: false,
+            zoomControlsEnabled: false,
+            zoomGesturesEnabled: false,
+            myLocationButtonEnabled: false,
+            initialCameraPosition: currentLocation,
+            onMapCreated: (GoogleMapController controller) => service.mapController = controller,
+            markers: Set<Marker>.from(service.markers),
+            gestureRecognizers: [
+              Factory<DragGestureRecognizer>(
+                () => OnGesture(() => service.cameraFocus = CameraFocus.none),
+              ),
+            ].toSet()),
         SafeArea(
           child: Padding(
             padding: const EdgeInsets.only(left: 10.0),
@@ -256,6 +262,26 @@ class _FriendMapState extends State<FriendMap> with WidgetsBindingObserver, Data
       ],
     );
   }
+}
+
+class OnGesture extends DragGestureRecognizer {
+  Function _callback;
+
+  OnGesture(this._callback);
+
+  @override
+  void resolve(GestureDisposition disposition) {
+    super.resolve(disposition);
+    this._callback();
+  }
+
+  @override
+  bool isFlingGesture(VelocityEstimate estimate, PointerDeviceKind kind) {
+    return false;
+  }
+
+  @override
+  String get debugDescription => "OnGesture";
 }
 
 class NavigationTips extends StatelessWidget {
