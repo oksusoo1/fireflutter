@@ -10,7 +10,9 @@ class CategoryService with FirestoreMixin {
 
   List<CategoryModel> categories = [];
 
-  /// Returns cached categories.
+  /// Returns all categories.
+  ///
+  /// It does memory cache.
   ///
   /// Note if categoris are not fetched from firestore, then it will fetch and
   /// return [categories].
@@ -22,26 +24,36 @@ class CategoryService with FirestoreMixin {
   /// Note that, this is async call. So, it should be used with `setState`
   /// ```dart
   /// ```
-  Future<List<CategoryModel>> getCategories(
-      {bool hideHiddenCategory: false}) async {
-    if (categories.length == 0) await loadCategories();
+  Future<List<CategoryModel>> getCategories({bool hideHiddenCategory: false}) async {
+    if (categories.length == 0) {
+      categories = await loadCategories();
+    }
     if (hideHiddenCategory)
       return categories.where((cat) => cat.order != -1).toList();
     else
       return categories;
   }
 
-  /// Loads categories and save it into [categories], and return it.
-  Future<List<CategoryModel>> loadCategories() async {
-    final querySnapshot =
-        await categoryCol.orderBy('order', descending: true).get();
+  /// Loads categories and return them as in List of Category model.
+  ///
+  /// You can filter some categories by [categoryMenu].
+  ///
+  Future<List<CategoryModel>> loadCategories({
+    String? categoryMenu,
+  }) async {
+    Query q = categoryCol;
+    if (categoryMenu != null) {
+      q = q.where('categoryMenu', isEqualTo: categoryMenu);
+    }
+    final querySnapshot = await q.orderBy('order', descending: true).get();
+
     if (querySnapshot.size == 0) return [];
 
-    categories = [];
+    final List<CategoryModel> _categories = [];
 
     for (DocumentSnapshot doc in querySnapshot.docs) {
-      categories.add(CategoryModel.fromJson(doc.data(), doc.id));
+      _categories.add(CategoryModel.fromJson(doc.data(), doc.id));
     }
-    return categories;
+    return _categories;
   }
 }

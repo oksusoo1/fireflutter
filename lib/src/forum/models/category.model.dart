@@ -10,6 +10,8 @@ class CategoryModel with FirestoreMixin {
     required this.backgroundColor,
     required this.foregroundColor,
     required this.order,
+    required this.point,
+    required this.categoryMenu,
   });
 
   String id;
@@ -18,6 +20,8 @@ class CategoryModel with FirestoreMixin {
   String backgroundColor;
   String foregroundColor;
   int order;
+  int point;
+  String categoryMenu;
 
   factory CategoryModel.emtpy() => CategoryModel.fromJson({}, '');
   factory CategoryModel.fromJson(dynamic data, String id) {
@@ -28,6 +32,8 @@ class CategoryModel with FirestoreMixin {
       backgroundColor: data['backgroundColor'] ?? '',
       foregroundColor: data['foregroundColor'] ?? '',
       order: data['order'] ?? 0,
+      point: data['point'] ?? 0,
+      categoryMenu: data['categoryMenu'] ?? '',
     );
   }
 
@@ -41,6 +47,8 @@ class CategoryModel with FirestoreMixin {
       'title': title,
       'description': description,
       'order': 0,
+      'point': 0,
+      'categoryMenu': '',
     };
     final categoryCol = FirebaseFirestore.instance.collection('categories');
     final doc = await categoryCol.doc(category).get();
