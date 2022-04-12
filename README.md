@@ -572,6 +572,10 @@ PhoneService.instance.verifyPhoneNumber(
 
 # Admin
 
+- All the admin functionality must be written in Flutter since Flutter is the main framework for fireflutter.
+
+
+
 ## Admin status check & update
 
 `UserService.instance.updateAdminStatus()` updates wether the user is an admin or not.
@@ -1302,6 +1306,7 @@ DynamicLinksService.instance.listen((Uri? deepLink) {
 - Use case.
   - App can display categories of `community` category menu on the menu of community screen.
   - App can display categories of `community` category on the notifications setting screen. So that, users can only subscribe(or unsubscribe) community categories only.
+  - Use `categoryMenu` to group categories for listing, managing and more.
 
 
 
@@ -1846,7 +1851,7 @@ PointBuilder(
 
 ## Job Functionality for job seekers and job openers
 
-- See https://github.com/thruthesky/fireflutter-job for the source code and details.
+- See `<fireflutter>/lib/src/extra/job` for the source code and details.
 
 
 

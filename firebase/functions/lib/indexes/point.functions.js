@@ -15,7 +15,7 @@ const ready_1 = require("../ready");
  * % pointEventSignIn({after: {lastLogin: 1234}}, {params: {uid: 'a'}})
  */
 exports.pointEventSignIn = functions
-    .region("us-central1", "asia-northeast3")
+    .region("asia-northeast3")
     .database.ref("/users/{uid}/lastSignInAt")
     .onUpdate(async (change, context) => {
     await point_1.Point.signInPoint(change.after.val(), context);
@@ -30,7 +30,7 @@ exports.pointEventSignIn = functions
  * % pointEventRegister({}, {params: {uid: 'a'}})
  */
 exports.pointEventRegister = functions
-    .region("us-central1", "asia-northeast3")
+    .region("asia-northeast3")
     .database.ref("/users/{uid}")
     .onCreate((snapshot, context) => {
     return point_1.Point.registerPoint(snapshot.val(), context);

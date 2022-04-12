@@ -78,6 +78,14 @@
       "deviceId": "emulator-5554"
     },
     {
+      "name": "RMX1911 - Ace phone",
+      "cwd": "example",
+      "program": "lib/main.dart",
+      "request": "launch",
+      "type": "dart",
+      "deviceId": "9c59f12e"
+    },
+    {
       "name": "SM J737S - Wide3",
       "cwd": "example",
       "program": "lib/main.dart",

@@ -18,14 +18,14 @@ import { UserDocument } from "../interfaces/user.interface";
  * > onPostCreateIndex({uid: 'a'}, {params: {postId: 'p-1'}});
  */
 export const onPostCreateIndex = functions
-    .region("us-central1", "asia-northeast3")
+    .region("asia-northeast3")
     .firestore.document("/posts/{id}")
     .onCreate((snapshot, context) => {
       return Meilisearch.indexPostCreate(snapshot.data() as PostDocument, context);
     });
 
 export const onPostUpdateIndex = functions
-    .region("us-central1", "asia-northeast3")
+    .region("asia-northeast3")
     .firestore.document("/posts/{id}")
     .onUpdate((change, context) => {
       const beforeData = change.before.data();
@@ -51,21 +51,21 @@ export const onPostUpdateIndex = functions
  *    - see @onPostUpdateIndex
  */
 export const onPostDeleteIndex = functions
-    .region("us-central1", "asia-northeast3")
+    .region("asia-northeast3")
     .firestore.document("/posts/{id}")
     .onDelete((_snapshot, context) => {
       return Meilisearch.deleteIndexedPostDocument(context);
     });
 
 export const onCommentCreateIndex = functions
-    .region("us-central1", "asia-northeast3")
+    .region("asia-northeast3")
     .firestore.document("/comments/{id}")
     .onCreate((snapshot, context) => {
       return Meilisearch.indexCommentCreate(snapshot.data() as CommentDocument, context);
     });
 
 export const onCommentUpdateIndex = functions
-    .region("us-central1", "asia-northeast3")
+    .region("asia-northeast3")
     .firestore.document("/comments/{id}")
     .onUpdate((change, context) => {
       const beforeData = change.before.data();
@@ -84,7 +84,7 @@ export const onCommentUpdateIndex = functions
     });
 
 // export const onCommentDeleteIndex = functions
-//     .region("us-central1", "asia-northeast3")
+//     .region("asia-northeast3")
 //     .firestore.document("/posts/{id}")
 //     .onDelete((_snapshot, context) => {
 //       return Meilisearch.deleteIndexedCommentDocument(context);
@@ -113,7 +113,7 @@ export const createUserIndex = functions.auth.user().onCreate((user) => {
  * })
  */
 export const updateUserIndex = functions
-    .region("us-central1", "asia-northeast3")
+    .region("asia-northeast3")
     .database.ref("/users/{uid}")
     .onUpdate((change, context) => {
       return Meilisearch.indexUserUpdate(

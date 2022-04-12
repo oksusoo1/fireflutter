@@ -72,14 +72,14 @@ export const commentDelete = functions
     });
 
 export const sendMessageOnPostCreate = functions
-    .region("us-central1", "asia-northeast3")
+    .region("asia-northeast3")
     .firestore.document("/posts/{postId}")
     .onCreate((snapshot, context) => {
       return Post.sendMessageOnPostCreate(snapshot.data() as PostDocument, context.params.postId);
     });
 
 export const sendMessageOnCommentCreate = functions
-    .region("us-central1", "asia-northeast3")
+    .region("asia-northeast3")
     .firestore.document("/comments/{commentId}")
     .onCreate((snapshot, context) => {
       return Post.sendMessageOnCommentCreate(

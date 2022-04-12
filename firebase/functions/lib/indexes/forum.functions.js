@@ -66,13 +66,13 @@ exports.commentDelete = functions
     });
 });
 exports.sendMessageOnPostCreate = functions
-    .region("us-central1", "asia-northeast3")
+    .region("asia-northeast3")
     .firestore.document("/posts/{postId}")
     .onCreate((snapshot, context) => {
     return post_1.Post.sendMessageOnPostCreate(snapshot.data(), context.params.postId);
 });
 exports.sendMessageOnCommentCreate = functions
-    .region("us-central1", "asia-northeast3")
+    .region("asia-northeast3")
     .firestore.document("/comments/{commentId}")
     .onCreate((snapshot, context) => {
     return post_1.Post.sendMessageOnCommentCreate(snapshot.data(), context.params.commentId);

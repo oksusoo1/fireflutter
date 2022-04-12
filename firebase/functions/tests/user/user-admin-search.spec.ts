@@ -41,8 +41,8 @@ describe("User admin search", async () => {
     await Ref.adminDoc.set({ [userA]: true }, { merge: true });
     try {
       const result = await User.adminUserSearch(
-        { email: "abc", phoneNumber: "+123" },
-        { auth: { uid: userA } }
+          { email: "abc", phoneNumber: "+123" },
+          { auth: { uid: userA } }
       );
       expect(result).equal(ERROR_ONE_OF_EMAIL_AND_PHONE_NUMBER_MUST_BY_EMPTY);
     } catch (e) {
@@ -55,8 +55,8 @@ describe("User admin search", async () => {
     await Ref.adminDoc.set({ [userA]: true }, { merge: true });
     try {
       const result = await User.adminUserSearch(
-        { email: "fake@gmail.com" },
-        { auth: { uid: userA } }
+          { email: "fake@gmail.com" },
+          { auth: { uid: userA } }
       );
       expect(result).equal(ERROR_USER_NOT_FOUND);
     } catch (e) {
@@ -68,8 +68,8 @@ describe("User admin search", async () => {
     await Ref.adminDoc.set({ [userA]: true }, { merge: true });
     try {
       const result = await User.adminUserSearch(
-        { phoneNumber: "+123456" },
-        { auth: { uid: userA } }
+          { phoneNumber: "+123456" },
+          { auth: { uid: userA } }
       );
       expect(result).equal(ERROR_USER_NOT_FOUND);
     } catch (e) {
@@ -82,10 +82,10 @@ describe("User admin search", async () => {
     await Ref.adminDoc.set({ [userA]: true }, { merge: true });
     try {
       const user = (await User.adminUserSearch(
-        {
-          email: "thruthesky@gmail.com",
-        },
-        { auth: { uid: userA } }
+          {
+            email: "thruthesky@gmail.com",
+          },
+          { auth: { uid: userA } }
       )) as UserRecord;
       expect(user.email).equal("thruthesky@gmail.com");
     } catch (e) {
@@ -97,10 +97,10 @@ describe("User admin search", async () => {
     await Ref.adminDoc.set({ [userA]: true }, { merge: true });
     try {
       const user = (await User.adminUserSearch(
-        {
-          phoneNumber: "+639152308483",
-        },
-        { auth: { uid: userA } }
+          {
+            phoneNumber: "+639152308483",
+          },
+          { auth: { uid: userA } }
       )) as UserRecord;
       expect(user.email).equal("pinedaclp@gmail.com");
     } catch (e) {
