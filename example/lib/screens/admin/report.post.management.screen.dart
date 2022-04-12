@@ -3,8 +3,7 @@ import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
 
 class ReportPostManagementScreen extends StatelessWidget {
-  const ReportPostManagementScreen({required this.arguments, Key? key})
-      : super(key: key);
+  const ReportPostManagementScreen({required this.arguments, Key? key}) : super(key: key);
 
   static const String routeName = '/reportPostManagement';
 
@@ -22,7 +21,7 @@ class ReportPostManagementScreen extends StatelessWidget {
         id: id,
         onError: error,
         builder: (post) {
-          print(target);
+          // print(target);
           return Column(
             children: [
               Text(post.content),
@@ -42,7 +41,7 @@ class ReportPostManagementScreen extends StatelessWidget {
                   ),
                   ElevatedButton(
                     onPressed: () {
-                      print('mark as resolve');
+                      // print('mark as resolve');
                     },
                     child: const Text('Resolve'),
                   ),

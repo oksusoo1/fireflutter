@@ -23,17 +23,18 @@ class ReminderEditScreen extends StatelessWidget {
             ReminderEdit(
               controller: controller,
               onPreview: (data) async {
-                bool? re = await ReminderService.instance.display(
+                // bool? re =
+                await ReminderService.instance.display(
                   context: context,
                   onLinkPressed: (String page, dynamic arguments) =>
                       AppService.instance.open(page, arguments: arguments),
                   data: data,
                 );
 
-                debugPrint('re; $re');
+                // debugPrint('re; $re');
               },
               onError: (e) {
-                debugPrint(e.toString());
+                // debugPrint(e.toString());
                 error(e);
               },
             ),

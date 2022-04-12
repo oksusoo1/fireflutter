@@ -44,7 +44,7 @@ class _JobEditFormState extends State<JobEditForm> {
 
   getAddress() async {
     addr = await JobService.instance.inputAddress(context);
-    print(addr);
+    // print(addr);
     setState(() {});
   }
 
@@ -143,7 +143,7 @@ class _JobEditFormState extends State<JobEditForm> {
                   .toList(),
             ],
             onChanged: (s) {
-              print('s; $s');
+              // print('s; $s');
               setState(() {
                 selected = s ?? '';
                 jobCategory.text = s ?? '';

@@ -16,14 +16,14 @@ class _AdminScreenState extends State<AdminScreen> {
   @override
   void initState() {
     super.initState();
-    print('initState;');
+    // print('initState;');
     UserService.instance.updateAdminStatus().then((value) => setState(() => {}));
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    print('didChangeDependencies;');
+    // print('didChangeDependencies;');
   }
 
   @override

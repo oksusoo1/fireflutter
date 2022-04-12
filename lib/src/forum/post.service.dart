@@ -61,8 +61,7 @@ class PostService with FirestoreMixin {
     if (within != null) {
       q = q.where(
         'createdAt',
-        isGreaterThanOrEqualTo:
-            Jiffy().subtract(days: within).format("yyyy-MM-dd"),
+        isGreaterThanOrEqualTo: Jiffy().subtract(days: within).format("yyyy-MM-dd"),
       );
     }
     q = q.limit(limit);
@@ -99,8 +98,7 @@ class PostService with FirestoreMixin {
   /// 게시판 바뀔 때, category 별 리스너 해제 및 comments[postId] 삭제
   ///
   loadComments(String category, String postId) {
-    if (commentSubscriptions[category] == null)
-      commentSubscriptions[category] = {};
+    if (commentSubscriptions[category] == null) commentSubscriptions[category] = {};
     // already subscribed?
     if (commentSubscriptions[category]![postId] != null) return;
 
@@ -114,8 +112,7 @@ class PostService with FirestoreMixin {
         if (comments[postId] == null) comments[postId] = [];
 
         /// is it immediate child?
-        final CommentModel c =
-            CommentModel.fromJson(snapshot.data() as Json, id: snapshot.id);
+        final CommentModel c = CommentModel.fromJson(snapshot.data() as Json, id: snapshot.id);
         // print(c);
 
         // if exists in array, just update it.
@@ -137,7 +134,7 @@ class PostService with FirestoreMixin {
               comments[postId]!.insert(i + 1, c);
             } else {
               // error; can't find parent comment.
-              print('---> error?; $c');
+              // print('---> error?; $c');
             }
           }
         }

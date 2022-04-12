@@ -60,7 +60,7 @@ class UserSettingService with DatabaseMixin {
               }
               changes.add(_settings);
             }, onError: (e) {
-              print('====> UserSettingsDoc listening error; $e');
+              // print('====> UserSettingsDoc listening error; $e');
             });
           }
         }

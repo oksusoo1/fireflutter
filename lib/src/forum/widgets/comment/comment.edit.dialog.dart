@@ -11,7 +11,7 @@ class CommentEditDialog extends StatefulWidget {
   }) : super(key: key);
 
   final Function() onCancel;
-  final Function(Json) onSubmit;
+  final Function(Json, Function(bool)) onSubmit;
   final Function(dynamic) onError;
   final CommentModel? comment;
 
@@ -24,6 +24,8 @@ class _CommentEditDialogState extends State<CommentEditDialog> {
   List<String> files = [];
 
   double uploadProgress = 0;
+
+  bool inSubmit = false;
 
   @override
   void initState() {
@@ -80,18 +82,34 @@ class _CommentEditDialogState extends State<CommentEditDialog> {
                 onPressed: widget.onCancel,
               ),
               TextButton(
-                child: const Text('SUBMIT'),
-                onPressed: () {
-                  widget.onSubmit({'content': content.text, 'files': files});
-                },
+                child: inSubmit
+                    ? Container(
+                        width: 18,
+                        height: 18,
+                        margin: const EdgeInsets.only(right: 16),
+                        child: CircularProgressIndicator.adaptive(
+                          strokeWidth: 2,
+                        ),
+                      )
+                    : const Text('SUBMIT'),
+                onPressed: inSubmit
+                    ? null
+                    : () {
+                        widget.onSubmit({'content': content.text, 'files': files}, progress);
+                      },
               ),
             ]),
-            if (uploadProgress > 0)
-              LinearProgressIndicator(value: uploadProgress),
+            if (uploadProgress > 0) LinearProgressIndicator(value: uploadProgress),
             ImageListEdit(files: files, onError: widget.onError),
           ],
         ),
       ),
     );
+  }
+
+  progress(bool f) {
+    setState(() {
+      inSubmit = f;
+    });
   }
 }

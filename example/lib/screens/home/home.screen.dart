@@ -293,7 +293,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         );
                         alert('Success', 'Image uploaded successfully');
                       } catch (e) {
-                        debugPrint('Upload exception; $e');
+                        // debugPrint('Upload exception; $e');
                         error(e);
                       }
                     },
@@ -309,7 +309,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             }));
                         alert('Success', 'Uploaded file updated');
                       } catch (e) {
-                        debugPrint('Update exception; $e');
+                        // debugPrint('Update exception; $e');
                         error(e);
                       }
                     },
@@ -321,7 +321,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         await StorageService.instance.delete(uploadUrl);
                         alert('Success', 'Uploaded file deleted!');
                       } catch (e) {
-                        debugPrint('Delete exception; $e');
+                        // debugPrint('Delete exception; $e');
                         error(e);
                       }
                     },

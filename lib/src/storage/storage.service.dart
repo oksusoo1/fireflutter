@@ -1,8 +1,6 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:flutter/material.dart';
-
 import '../../fireflutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
@@ -60,7 +58,7 @@ class StorageService {
     final String extension = basename.split('.').last;
 
     final filename = "${getRandomString()}.$extension";
-    print('filename; $filename');
+    // print('filename; $filename');
 
     final ref = uploadsFolder.child(filename);
 
@@ -77,8 +75,7 @@ class StorageService {
     StreamSubscription? _sub;
     if (onProgress != null) {
       _sub = uploadTask.snapshotEvents.listen((event) {
-        double progress =
-            event.bytesTransferred.toDouble() / event.totalBytes.toDouble();
+        double progress = event.bytesTransferred.toDouble() / event.totalBytes.toDouble();
         onProgress(progress);
       });
     }
@@ -134,9 +131,9 @@ class StorageService {
         ],
       );
     } on FirebaseException catch (e) {
-      debugPrint('Exception happened on file delete; $e');
+      // debugPrint('Exception happened on file delete; $e');
       if (e.code == 'object-not-found') {
-        debugPrint('object-not-found exception happened with: $url');
+        // debugPrint('object-not-found exception happened with: $url');
       } else {
         rethrow;
       }
@@ -180,7 +177,6 @@ class StorageService {
     }
     final String basename = _tempUrl.split('/').last;
     final String filename = basename.split('.').first;
-    return _tempUrl.replaceFirst(basename, '${filename}_200x200.webp') +
-        '?alt=media';
+    return _tempUrl.replaceFirst(basename, '${filename}_200x200.webp') + '?alt=media';
   }
 }

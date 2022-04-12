@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:rxdart/subjects.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -67,15 +66,14 @@ class UserService with FirestoreMixin, DatabaseMixin {
         userSubscription?.cancel();
         if (_user == null) {
           user = UserModel();
-          debugPrint('User signed-out');
+          // debugPrint('User signed-out');
           changes.add(user);
           onSignedOut();
         } else {
           user = UserModel(uid: uid);
           if (_user.isAnonymous) {
             /// Note, anonymous sigin-in is not supported by fireflutter.
-            debugPrint(
-                'User sign-in as Anonymous; Warning! Fireflutter does not user anonymous account.');
+            // debugPrint(  'User sign-in as Anonymous; Warning! Fireflutter does not user anonymous account.');
             changes.add(user);
           } else {
             resetTopicSubscription();
@@ -106,7 +104,7 @@ class UserService with FirestoreMixin, DatabaseMixin {
                 user.updateProfileReady();
               }
             }, onError: (e) {
-              print('UserDoc listening error; $e');
+              // print('UserDoc listening error; $e');
             });
           }
         }
@@ -213,15 +211,14 @@ class UserService with FirestoreMixin, DatabaseMixin {
     UserModel user = await getOtherUserDoc(uid);
     if (user.disabled) throw ERROR_USER_ALREADY_BLOCKED;
     HttpsCallable onCallDisableUser =
-        FirebaseFunctions.instanceFor(region: 'asia-northeast3')
-            .httpsCallable('disableUser');
+        FirebaseFunctions.instanceFor(region: 'asia-northeast3').httpsCallable('disableUser');
     try {
       final res = await onCallDisableUser.call({'uid': uid});
       UserModel u = UserModel.fromJson(res.data, uid);
       if (u.disabled) UserService.instance.others[uid] = u;
       return u;
     } catch (e) {
-      print(e);
+      // print(e);
       rethrow;
     }
   }
@@ -230,15 +227,14 @@ class UserService with FirestoreMixin, DatabaseMixin {
     UserModel user = await getOtherUserDoc(uid);
     if (!user.disabled) throw ERROR_USER_ALREADY_UNBLOCKED;
     HttpsCallable onCallDisableUser =
-        FirebaseFunctions.instanceFor(region: 'asia-northeast3')
-            .httpsCallable('enableUser');
+        FirebaseFunctions.instanceFor(region: 'asia-northeast3').httpsCallable('enableUser');
     try {
       final res = await onCallDisableUser.call({'uid': uid});
       UserModel u = UserModel.fromJson(res.data, uid);
       if (u.disabled == false) UserService.instance.others[uid] = u;
       return u;
     } catch (e) {
-      print(e);
+      // print(e);
       rethrow;
     }
   }

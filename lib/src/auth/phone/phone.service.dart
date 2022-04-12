@@ -57,10 +57,9 @@ class PhoneService {
 
   /// This method is invoked when user submit sms code, then it will begin
   /// verification process.
-  Future verifySMSCode(
-      {required VoidCallback success, required ErrorCallback error}) {
-    PhoneAuthCredential credential = PhoneAuthProvider.credential(
-        verificationId: verificationId, smsCode: smsCode);
+  Future verifySMSCode({required VoidCallback success, required ErrorCallback error}) {
+    PhoneAuthCredential credential =
+        PhoneAuthProvider.credential(verificationId: verificationId, smsCode: smsCode);
 
     return verifyCredential(credential, success: success, error: error);
   }
@@ -118,11 +117,10 @@ class PhoneService {
         /// automatic sms verification has succeed.
         /// Note that, not all Android phone support automatic sms resolution.
         verificationCompleted: (PhoneAuthCredential c) {
-          verifyCredential(c,
-              success: androidAutomaticVerificationSuccess, error: error);
+          verifyCredential(c, success: androidAutomaticVerificationSuccess, error: error);
         },
         verificationFailed: (FirebaseAuthException e) {
-          print(e);
+          // print(e);
           error(e);
         },
         codeSent: (String verificationId, resendToken) {

@@ -45,6 +45,7 @@ class _PostFormState extends State<PostForm> {
   late List<String> files = [];
 
   double uploadProgress = 0;
+  bool inSubmit = false;
 
   bool get isCreate =>
       (widget.post == null || widget.post?.id == '') ||
@@ -123,7 +124,16 @@ class _PostFormState extends State<PostForm> {
               },
               onError: widget.onError,
             ),
-            submitButton
+            inSubmit
+                ? Container(
+                    width: 18,
+                    height: 18,
+                    margin: const EdgeInsets.only(right: 16),
+                    child: CircularProgressIndicator.adaptive(
+                      strokeWidth: 2,
+                    ),
+                  )
+                : submitButton
           ],
         ),
         SizedBox(height: 16),
@@ -175,6 +185,7 @@ class _PostFormState extends State<PostForm> {
         return;
       }
     }
+    setState(() => inSubmit = true);
     try {
       if (isCreate) {
         final post = await PostApi.instance.create(
@@ -202,8 +213,10 @@ class _PostFormState extends State<PostForm> {
     } catch (e, stacks) {
       debugPrint(e.toString());
       debugPrintStack(stackTrace: stacks);
-
       widget.onError(e);
+      setState(() {
+        inSubmit = false;
+      });
     }
   }
 }

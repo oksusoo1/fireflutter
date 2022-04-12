@@ -108,7 +108,7 @@ class _MainAppState extends State<MainApp> {
 
     /// Instantiate UserService & see debug print message
     if (UserService.instance.user.isAdmin) {
-      print('The user is admin...');
+      // print('The user is admin...');
     }
 
     PresenceService.instance.activate(
@@ -209,7 +209,7 @@ class _MainAppState extends State<MainApp> {
       onForegroundMessage: (message) {
         // this will triggered while the app is opened
         // If the message has data, then do some extra work based on the data.
-        print(message);
+        // print(message);
         onMessageOpenedShowMessage(message);
       },
       onMessageOpenedFromTermiated: (message) {
@@ -221,10 +221,10 @@ class _MainAppState extends State<MainApp> {
         onMessageOpenedShowMessage(message);
       },
       onNotificationPermissionDenied: () {
-        print('onNotificationPermissionDenied()');
+        // print('onNotificationPermissionDenied()');
       },
       onNotificationPermissionNotDetermined: () {
-        print('onNotificationPermissionNotDetermined()');
+        // print('onNotificationPermissionNotDetermined()');
       },
       onTokenUpdated: (token) {
         // print('##########onTokenUpdated###########');
