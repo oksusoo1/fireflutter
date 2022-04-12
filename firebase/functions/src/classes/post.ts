@@ -40,7 +40,7 @@ export class Post {
     if (!data.uid) throw ERROR_EMPTY_UID;
     if (!data.category) throw ERROR_EMPTY_CATEGORY;
 
-    Ref.categoryDoc(data.category);
+    // Ref.categoryDoc(data.category);
     const re = await Category.exists(data.category);
     if (re === false) throw ERROR_CATEGORY_NOT_EXISTS;
 
@@ -53,7 +53,7 @@ export class Post {
     }
 
     // default data
-    doc.hasPhoto = doc.files > 0;
+    doc.hasPhoto = doc.files && doc.files.length > 0;
     doc.deleted = false;
     doc.noOfComments = 0;
 
@@ -105,12 +105,12 @@ export class Post {
 
     const id = data.id;
     delete data.id;
+
+    // updatedAt
     data.updatedAt = admin.firestore.FieldValue.serverTimestamp();
-    if (data.files && data.files.length) {
-      data.hasPhoto = true;
-    } else {
-      data.hasPhoto = false;
-    }
+    // hasPhoto
+    data.hasPhoto = data.files && data.files.length;
+
     await Ref.postDoc(id).update(data);
     const updated = await this.get(id);
     if (updated === null) throw ERROR_UPDATE_FAILED;
@@ -148,7 +148,7 @@ export class Post {
       await postRef.delete();
       return { id: id };
     } else {
-      // 8.B or if there is a comment, then mark it as deleted. (deleted=true)
+      // 7.B or if there is a comment, then mark it as deleted. (deleted=true)
       post.title = "";
       post.content = "";
       post.deleted = true;
