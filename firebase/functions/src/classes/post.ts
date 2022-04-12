@@ -108,8 +108,9 @@ export class Post {
 
     // updatedAt
     data.updatedAt = admin.firestore.FieldValue.serverTimestamp();
+
     // hasPhoto
-    data.hasPhoto = data.files && data.files.length;
+    data.hasPhoto = !!(data.files && data.files.length);
 
     await Ref.postDoc(id).update(data);
     const updated = await this.get(id);
@@ -188,8 +189,8 @@ export class Post {
   }
 
   static async sendMessageOnCommentCreate(
-      data: CommentDocument,
-      id: string
+    data: CommentDocument,
+    id: string
   ): Promise<OnCommentCreateResponse | null> {
     const post = await this.get(data.postId);
     if (!post) return null;
@@ -218,16 +219,16 @@ export class Post {
 
     // Don't send the same message twice to topic subscribers and comment notifyees.
     const userUids = await Messaging.getCommentNotifyeeWithoutTopicSubscriber(
-        ancestorsUid.join(","),
-        topic
+      ancestorsUid.join(","),
+      topic
     );
 
     // get users tokens
     const tokens = await Messaging.getTokensFromUids(userUids.join(","));
 
     const sendToTokenRes = await Messaging.sendingMessageToTokens(
-        tokens,
-        Messaging.preMessagePayload(messageData)
+      tokens,
+      Messaging.preMessagePayload(messageData)
     );
     return {
       topicResponse: sendToTopicRes,
