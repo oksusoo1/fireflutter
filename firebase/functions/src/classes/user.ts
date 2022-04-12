@@ -2,10 +2,12 @@ import {
   ERROR_WRONG_PASSWORD,
   ERROR_EMPTY_PASSWORD,
   ERROR_EMPTY_UID,
-  ERROR_USER_NOT_FOUND,
   ERROR_EMTPY_EMAIL_AND_PHONE_NUMBER,
   ERROR_ONE_OF_EMAIL_AND_PHONE_NUMBER_MUST_BY_EMPTY,
   ERROR_YOU_ARE_NOT_ADMIN,
+  ERROR_USER_NOT_FOUND,
+  ERROR_USER_AUTH_NOT_FOUND,
+  ERROR_USER_DOC_NOT_FOUND,
 } from "../defines";
 import { UserCreate, UserDocument } from "../interfaces/user.interface";
 import { Ref } from "./ref";
@@ -145,8 +147,10 @@ export class User {
       // result.notFound.forEach((userIdentifier) => {
       //   console.log(userIdentifier);
       // });
-      if (result.users.length == 0) return ERROR_USER_NOT_FOUND;
+      if (result.users.length == 0) return ERROR_USER_AUTH_NOT_FOUND;
       const user = result.users[0];
+      const userDoc = await this.get(user.uid);
+      if (!userDoc) return ERROR_USER_DOC_NOT_FOUND;
       return user;
     } catch (e) {
       return {
