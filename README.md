@@ -1540,6 +1540,7 @@ HttpException: Invalid statusCode: 403, uri = https://firebasestorage.googleapis
   - And we think, sending posts and comments into different palce can be done by flutter app, we may remove those cloud functions in the future.
     - One good reason why we do it in `cloud functions` is that, user can create a post or a comemnt not only using flutter app, but also using web site. And we don't have to implement the same code (for sending posts and comments into another place) twice.
 
+- Since `Firebase Hosting` supports only `us-central1` region, the cloud functions are distributed in mutiple region in `index.ts`.
 
 ## Unit test for Cloud Functions
 

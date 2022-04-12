@@ -100,7 +100,7 @@ class _MainAppState extends State<MainApp> {
     super.initState();
 
     FunctionsApi.instance.init(
-      serverUrl: "https://us-central1-withcenter-test-project.cloudfunctions.net/",
+      serverUrl: "https://asia-northeast3-withcenter-test-project.cloudfunctions.net/",
       // onError: error,
     );
 

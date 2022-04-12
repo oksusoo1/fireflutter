@@ -53,22 +53,36 @@ class CommentModel with FirestoreMixin, ForumBase {
   bool get hasPhoto => files.length > 0;
 
   /// Get document data of map and convert it into post model
+  ///
+  /// If the comment is created via https, then the id of comment is inside data.
   factory CommentModel.fromJson(
     Json data, {
-    required String id,
+    String? id,
   }) {
+    /// If the post is created via http, the [createdAt] and [updatedAt] have different format.
+    /// If it's a Map, then the data is coming from HTTP call.
+    Timestamp createdAt;
+    Timestamp updatedAt;
+    if (data['createdAt'] is Map) {
+      createdAt = Timestamp(data['createdAt']['_seconds'], data['createdAt']['_nanoseconds']);
+      updatedAt = Timestamp(data['updatedAt']['_seconds'], data['updatedAt']['_nanoseconds']);
+    } else {
+      createdAt = data['createdAt'];
+      updatedAt = data['updatedAt'] ?? Timestamp.now();
+    }
+
     return CommentModel(
       content: data['content'] ?? '',
       files: new List<String>.from(data['files']),
-      id: id,
+      id: id ?? data['id'],
       postId: data['postId'],
       parentId: data['parentId'],
       uid: data['uid'],
       deleted: data['deleted'] ?? false,
       like: data['like'] ?? 0,
       dislike: data['dislike'] ?? 0,
-      createdAt: data['createdAt'],
-      updatedAt: data['updatedAt'],
+      createdAt: createdAt,
+      updatedAt: updatedAt,
       data: data,
     );
   }
@@ -151,6 +165,7 @@ class CommentModel with FirestoreMixin, ForumBase {
   }
 
   /// Create a comment with extra data
+  @Deprecated('Use CommentApi')
   static Future<DocumentReference<Object?>> create({
     required String postId,
     required String parentId,
@@ -180,6 +195,7 @@ class CommentModel with FirestoreMixin, ForumBase {
     return ref;
   }
 
+  @Deprecated('Use CommentApi')
   Future<void> update({
     required String content,
     List<String>? files,
@@ -192,6 +208,7 @@ class CommentModel with FirestoreMixin, ForumBase {
     });
   }
 
+  @Deprecated('Use CommentApi')
   Future<void> delete() async {
     if (files.length > 0) {
       for (final url in files) {

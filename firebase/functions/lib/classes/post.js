@@ -99,6 +99,7 @@ class Post {
         const updated = await this.get(id);
         if (updated === null)
             throw defines_1.ERROR_UPDATE_FAILED;
+        updated.id = id;
         return updated;
     }
     static async delete(data) {
