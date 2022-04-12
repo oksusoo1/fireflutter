@@ -119,7 +119,7 @@ class User {
             return defines_1.ERROR_ONE_OF_EMAIL_AND_PHONE_NUMBER_MUST_BY_EMPTY;
         const req = [];
         req.push(data);
-        console.log(req);
+        // console.log(req);
         try {
             const result = await this.auth.getUsers(req);
             // result.users.forEach((userRecord) => {
@@ -129,7 +129,10 @@ class User {
             // result.notFound.forEach((userIdentifier) => {
             //   console.log(userIdentifier);
             // });
-            return result;
+            if (result.users.length == 0)
+                return defines_1.ERROR_USER_NOT_FOUND;
+            const user = result.users[0];
+            return user;
         }
         catch (e) {
             return {
