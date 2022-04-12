@@ -7,6 +7,7 @@ import 'package:extended/extended.dart';
 import 'package:fe/screens/admin/admin.screen.dart';
 import 'package:fe/screens/admin/admin.search_settings.screen.dart';
 import 'package:fe/screens/admin/category.screen.dart';
+import 'package:fe/screens/admin/category_group.screen.dart';
 import 'package:fe/screens/admin/report.post.management.screen.dart';
 import 'package:fe/screens/admin/report.screen.dart';
 import 'package:fe/screens/admin/send.push.notification.dart';
@@ -75,6 +76,7 @@ final Map<String, RouteFunction> routes = {
   JobListScreen.routeName: (context, arguments) => JobListScreen(arguments: arguments),
   JobEditScreen.routeName: (context, arguments) => JobEditScreen(arguments: arguments),
   PointHistoryScreen.routeName: (context, arguments) => PointHistoryScreen(),
+  CategoryGroupScreen.routeName: (context, arguments) => CategoryGroupScreen(),
 };
 
 void main() async {

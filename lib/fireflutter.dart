@@ -108,3 +108,5 @@ export 'src/point/point.api.dart';
 
 export 'src/functions.api.dart';
 export 'src/point/point.history.model.dart';
+
+export 'src/forum/widgets/category.group.management.dart';
