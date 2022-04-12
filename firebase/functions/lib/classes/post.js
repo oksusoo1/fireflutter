@@ -29,7 +29,7 @@ class Post {
             throw defines_1.ERROR_EMPTY_UID;
         if (!data.category)
             throw defines_1.ERROR_EMPTY_CATEGORY;
-        ref_1.Ref.categoryDoc(data.category);
+        // Ref.categoryDoc(data.category);
         const re = await category_1.Category.exists(data.category);
         if (re === false)
             throw defines_1.ERROR_CATEGORY_NOT_EXISTS;
@@ -40,7 +40,7 @@ class Post {
             doc.files = [];
         }
         // default data
-        doc.hasPhoto = doc.files > 0;
+        doc.hasPhoto = doc.files && doc.files.length > 0;
         doc.deleted = false;
         doc.noOfComments = 0;
         doc.year = dayjs().year();
@@ -88,13 +88,10 @@ class Post {
             throw defines_1.ERROR_NOT_YOUR_POST;
         const id = data.id;
         delete data.id;
+        // updatedAt
         data.updatedAt = admin.firestore.FieldValue.serverTimestamp();
-        if (data.files && data.files.length) {
-            data.hasPhoto = true;
-        }
-        else {
-            data.hasPhoto = false;
-        }
+        // hasPhoto
+        data.hasPhoto = !!(data.files && data.files.length);
         await ref_1.Ref.postDoc(id).update(data);
         const updated = await this.get(id);
         if (updated === null)
@@ -132,7 +129,7 @@ class Post {
             return { id: id };
         }
         else {
-            // 8.B or if there is a comment, then mark it as deleted. (deleted=true)
+            // 7.B or if there is a comment, then mark it as deleted. (deleted=true)
             post.title = "";
             post.content = "";
             post.deleted = true;

@@ -60,7 +60,7 @@
     "axios": "^0.26.1",
     "dayjs": "^1.11.0",
     "firebase-admin": "^10.0.2",
-    "firebase-functions": "^3.14.1",
+    "firebase-functions": "^3.20.0",
     "meilisearch": "^0.25.0"
   },
   "devDependencies": {

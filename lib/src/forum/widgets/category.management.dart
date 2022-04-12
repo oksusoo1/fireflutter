@@ -106,7 +106,7 @@ class _CategoryManagementState extends State<CategoryManagement> with FirestoreM
                       ),
                       IconButton(
                           onPressed: () {
-                            String selected = cat.categoryMenu;
+                            String selected = cat.categoryGroup;
                             showDialog(
                                 context: context,
                                 builder: (c) {
@@ -169,7 +169,7 @@ class _CategoryManagementState extends State<CategoryManagement> with FirestoreM
                                                 if (snapshot.hasData) {
                                                   Map data =
                                                       snapshot.data?.data() as Map<String, dynamic>;
-                                                  String categoryMenu = data['categoryMenu'];
+                                                  String categoryGroup = data['categoryGroup'];
 
                                                   return DropdownButton<String>(
                                                     value: selected,
@@ -178,7 +178,7 @@ class _CategoryManagementState extends State<CategoryManagement> with FirestoreM
                                                         child: Text('Select category menu'),
                                                         value: '',
                                                       ),
-                                                      ...categoryMenu
+                                                      ...categoryGroup
                                                           .split(',')
                                                           .map((name) => DropdownMenuItem(
                                                               child: Text(name), value: name))
@@ -189,7 +189,7 @@ class _CategoryManagementState extends State<CategoryManagement> with FirestoreM
                                                         selected = v ?? '';
                                                       });
                                                       cat
-                                                          .update('categoryMenu', v ?? '')
+                                                          .update('categoryGroup', v ?? '')
                                                           .catchError(widget.onError);
                                                     },
                                                   );

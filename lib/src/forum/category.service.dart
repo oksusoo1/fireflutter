@@ -36,14 +36,14 @@ class CategoryService with FirestoreMixin {
 
   /// Loads categories and return them as in List of Category model.
   ///
-  /// You can filter some categories by [categoryMenu].
+  /// You can filter some categories by [categoryGroup].
   ///
   Future<List<CategoryModel>> loadCategories({
-    String? categoryMenu,
+    String? categoryGroup,
   }) async {
     Query q = categoryCol;
-    if (categoryMenu != null) {
-      q = q.where('categoryMenu', isEqualTo: categoryMenu);
+    if (categoryGroup != null) {
+      q = q.where('categoryGroup', isEqualTo: categoryGroup);
     }
     final querySnapshot = await q.orderBy('order', descending: true).get();
 

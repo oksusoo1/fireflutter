@@ -9,17 +9,17 @@ class CategoryGroupManagement extends StatelessWidget with FirestoreMixin {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Text('Category menus'),
+        Text('Category Group'),
         FutureBuilder<DocumentSnapshot>(
             future: forumSettingDoc.get(),
             builder: (c, snapshot) {
               if (snapshot.hasData) {
-                Map data = snapshot.data?.data() as Map<String, dynamic>;
-                String categoryMenu = data['categoryMenu'];
+                Map data = (snapshot.data?.data() ?? {}) as Map;
+                String categoryGroup = data['categoryGroup'] ?? '';
                 return TextField(
-                  controller: TextEditingController()..text = categoryMenu,
+                  controller: TextEditingController()..text = categoryGroup,
                   onChanged: (value) =>
-                      forumSettingDoc.set({'categoryMenu': value}, SetOptions(merge: true)),
+                      forumSettingDoc.set({'categoryGroup': value}, SetOptions(merge: true)),
                 );
               } else {
                 return Center(

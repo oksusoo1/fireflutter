@@ -22,7 +22,7 @@ class _NotificationSettingState extends State<NotificationSetting> {
     super.initState();
     // CategoryService.instance.getCategories().then((v) => setState(() {}));
     CategoryService.instance
-        .loadCategories(categoryMenu: 'community')
+        .loadCategories(categoryGroup: 'community')
         .then((value) => setState(() => categories = value));
   }
 
