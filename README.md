@@ -1302,6 +1302,7 @@ DynamicLinksService.instance.listen((Uri? deepLink) {
 - Use case.
   - App can display categories of `community` category menu on the menu of community screen.
   - App can display categories of `community` category on the notifications setting screen. So that, users can only subscribe(or unsubscribe) community categories only.
+  - Use `categoryMenu` to group categories for listing, managing and more.
 
 
 
