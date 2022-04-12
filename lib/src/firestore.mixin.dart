@@ -30,6 +30,9 @@ mixin FirestoreMixin {
 
   DocumentReference get adminsDoc => settingDoc.doc('admins');
 
+  // Forum category menus
+  DocumentReference get forumSettingDoc => settingDoc.doc('forum');
+
   // CollectionReference commentCol(String postId) {
   //   return postDoc(postId).collection('comments');
   // }

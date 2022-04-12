@@ -17,9 +17,7 @@ class _AdminScreenState extends State<AdminScreen> {
   void initState() {
     super.initState();
     print('initState;');
-    UserService.instance
-        .updateAdminStatus()
-        .then((value) => setState(() => {}));
+    UserService.instance.updateAdminStatus().then((value) => setState(() => {}));
   }
 
   @override
@@ -39,14 +37,24 @@ class _AdminScreenState extends State<AdminScreen> {
           UserService.instance.user.isAdmin
               ? const Text('You are an admin')
               : const Text('You are not admin'),
-          ElevatedButton(
-            onPressed: AppService.instance.openCategory,
-            child: const Text('Category Management'),
+          Divider(),
+          Text('Forum Management'),
+          Wrap(
+            children: [
+              ElevatedButton(
+                onPressed: AppService.instance.openCategoryGroup,
+                child: Text('Category Group'),
+              ),
+              spaceXxs,
+              ElevatedButton(
+                onPressed: AppService.instance.openCategory,
+                child: const Text('Category'),
+              ),
+            ],
           ),
           Divider(),
           ElevatedButton(
-              onPressed: AppService.instance.openTranslations,
-              child: Text('Update Translations')),
+              onPressed: AppService.instance.openTranslations, child: Text('Update Translations')),
           Divider(),
           Text('Report Management'),
           Wrap(
@@ -75,8 +83,8 @@ class _AdminScreenState extends State<AdminScreen> {
             child: const Text('Push Notification'),
           ),
           ElevatedButton(
-            onPressed: () => AppService.instance.open('/pushNotification',
-                arguments: {'postId': '0EWGGe64ckjBtiU1LeB1'}),
+            onPressed: () => AppService.instance
+                .open('/pushNotification', arguments: {'postId': '0EWGGe64ckjBtiU1LeB1'}),
             child: const Text('Push Notification with postId'),
           )
         ],

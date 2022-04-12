@@ -111,6 +111,7 @@ Table of contents
 - [Forum](#forum)
   - [Category](#category)
     - [Subcategory](#subcategory)
+    - [Category menu group](#category-menu-group)
   - [Post](#post)
   - [Comment](#comment)
   - [PostService and PostApi](#postservice-and-postapi)
@@ -149,6 +150,8 @@ Table of contents
     - [MyPointBuilder](#mypointbuilder)
   - [Displaying point history](#displaying-point-history)
   - [Senario](#senario)
+- [Extra Features](#extra-features)
+  - [Job Functionality for job seekers and job openers](#job-functionality-for-job-seekers-and-job-openers)
 
 # TODOs
 
@@ -1290,6 +1293,21 @@ DynamicLinksService.instance.listen((Uri? deepLink) {
     - So, the daily log will appear within `discussion` category and the app can display `subcategory=dailylog` on daily log screen. 
 
 
+### Category menu group
+
+- Admin can set category menu at `categoryMenu` field in `settings/forum` of firetore document.
+  - You can input multiple menu name separated by comman. For instance, "community,job".
+- The app can display the category menu on select box in the admin category setting screen.
+- Admin can, then, choose one of `category menu` for the category.
+- Use case.
+  - App can display categories of `community` category menu on the menu of community screen.
+  - App can display categories of `community` category on the notifications setting screen. So that, users can only subscribe(or unsubscribe) community categories only.
+
+
+
+
+
+
 ## Post
 
 - Post model and comment model are a lot similiar, so they use same `PostModel`.
@@ -1820,4 +1838,15 @@ PointBuilder(
 - Point histories are on the `/point/<uid>/...` in realtime database.
   - You can develop point history screen. since the histories are splited into many sub folders,
     It is one way to collect all of the histories on the folders by day, week, month, year.
+
+
+
+
+# Extra Features
+
+## Job Functionality for job seekers and job openers
+
+- See https://github.com/thruthesky/fireflutter-job for the source code and details.
+
+
 

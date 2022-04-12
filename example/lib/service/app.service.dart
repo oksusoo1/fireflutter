@@ -1,5 +1,6 @@
 import 'package:fe/screens/admin/admin.screen.dart';
 import 'package:fe/screens/admin/category.screen.dart';
+import 'package:fe/screens/admin/category_group.screen.dart';
 import 'package:fe/screens/admin/report.post.management.screen.dart';
 import 'package:fe/screens/admin/report.screen.dart';
 import 'package:fe/screens/admin/translatoins.screen.dart';
@@ -84,6 +85,10 @@ class AppService {
 
   Future<void> openCategory() async {
     return open(CategoryScreen.routeName);
+  }
+
+  Future<void> openCategoryGroup() async {
+    return open(CategoryGroupScreen.routeName);
   }
 
   Future<void> openReport([String? target]) async {

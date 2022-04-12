@@ -20,8 +20,7 @@ class CategoryManagement extends StatefulWidget {
   State<CategoryManagement> createState() => _CategoryManagementState();
 }
 
-class _CategoryManagementState extends State<CategoryManagement>
-    with FirestoreMixin {
+class _CategoryManagementState extends State<CategoryManagement> with FirestoreMixin {
   final category = TextEditingController();
   final title = TextEditingController();
   final description = TextEditingController();
@@ -60,17 +59,14 @@ class _CategoryManagementState extends State<CategoryManagement>
         child: const Text('CREATE CATEGORY'),
       ),
       Text('Regulations'),
-      Text(
-          'If order is set to -1, then the category should not be displayed on menu.'),
+      Text('If order is set to -1, then the category should not be displayed on menu.'),
       SizedBox(height: 16),
       FirestoreListView<Map<String, dynamic>>(
         shrinkWrap: true,
         primary: false,
-        query: categoryCol.orderBy('order', descending: true)
-            as Query<Map<String, dynamic>>,
+        query: categoryCol.orderBy('order', descending: true) as Query<Map<String, dynamic>>,
         itemBuilder: (context, snapshot) {
-          CategoryModel cat =
-              CategoryModel.fromJson(snapshot.data(), snapshot.id);
+          CategoryModel cat = CategoryModel.fromJson(snapshot.data(), snapshot.id);
 
           return Column(
             children: [
@@ -82,13 +78,11 @@ class _CategoryManagementState extends State<CategoryManagement>
                       children: [
                         Container(
                           padding: EdgeInsets.all(4.0),
-                          color: getColorFromHex(
-                              cat.backgroundColor, Colors.grey.shade300),
+                          color: getColorFromHex(cat.backgroundColor, Colors.grey.shade300),
                           child: Text(
                             cat.title,
                             style: TextStyle(
-                              color: getColorFromHex(
-                                  cat.foregroundColor, Colors.black),
+                              color: getColorFromHex(cat.foregroundColor, Colors.black),
                             ),
                           ),
                         ),
@@ -112,14 +106,15 @@ class _CategoryManagementState extends State<CategoryManagement>
                       ),
                       IconButton(
                           onPressed: () {
+                            String selected = cat.categoryMenu;
                             showDialog(
                                 context: context,
                                 builder: (c) {
+                                  /// Category update
                                   return AlertDialog(
                                     title: Text('Update [${cat.id}] category'),
                                     content: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
+                                      crossAxisAlignment: CrossAxisAlignment.start,
                                       mainAxisSize: MainAxisSize.min,
                                       children: [
                                         Text(
@@ -129,14 +124,12 @@ class _CategoryManagementState extends State<CategoryManagement>
                                         Divider(),
                                         Text('Title'),
                                         TextField(
-                                          controller: TextEditingController()
-                                            ..text = cat.title,
+                                          controller: TextEditingController()..text = cat.title,
                                           onChanged: (s) => bounce(
                                             't',
                                             500,
-                                            (x) => cat
-                                                .update('title', s)
-                                                .catchError(widget.onError),
+                                            (x) =>
+                                                cat.update('title', s).catchError(widget.onError),
                                           ),
                                         ),
                                         Divider(),
@@ -162,8 +155,65 @@ class _CategoryManagementState extends State<CategoryManagement>
                                             'p',
                                             400,
                                             (x) => cat
-                                                .update('order',
-                                                    s == '' ? 0 : int.parse(s))
+                                                .update('order', s == '' ? 0 : int.parse(s))
+                                                .catchError(widget.onError),
+                                          ),
+                                        ),
+
+                                        /// Category menu select
+                                        StatefulBuilder(
+                                          builder: ((context, setState) {
+                                            return FutureBuilder<DocumentSnapshot>(
+                                              future: forumSettingDoc.get(),
+                                              builder: (context, snapshot) {
+                                                if (snapshot.hasData) {
+                                                  Map data =
+                                                      snapshot.data?.data() as Map<String, dynamic>;
+                                                  String categoryMenu = data['categoryMenu'];
+
+                                                  return DropdownButton<String>(
+                                                    value: selected,
+                                                    items: [
+                                                      DropdownMenuItem(
+                                                        child: Text('Select category menu'),
+                                                        value: '',
+                                                      ),
+                                                      ...categoryMenu
+                                                          .split(',')
+                                                          .map((name) => DropdownMenuItem(
+                                                              child: Text(name), value: name))
+                                                          .toList(),
+                                                    ],
+                                                    onChanged: (v) {
+                                                      setState(() {
+                                                        selected = v ?? '';
+                                                      });
+                                                      cat
+                                                          .update('categoryMenu', v ?? '')
+                                                          .catchError(widget.onError);
+                                                    },
+                                                  );
+                                                } else {
+                                                  return SizedBox.shrink();
+                                                }
+                                              },
+                                            );
+                                          }),
+                                        ),
+
+                                        ///
+                                        ///
+                                        /// Point
+                                        Text('Point on create post. It can be negative value.'),
+                                        TextField(
+                                          controller: TextEditingController()
+                                            ..text = cat.point.toString(),
+                                          // keyboardType: TextInputT,
+                                          onChanged: (s) => bounce(
+                                            'point',
+                                            400,
+                                            (x) => cat
+                                                .update('point', s == '' ? 0 : int.parse(s))
                                                 .catchError(widget.onError),
                                           ),
                                         ),
@@ -191,8 +241,7 @@ class _CategoryManagementState extends State<CategoryManagement>
                                 ),
                                 actions: [
                                   TextButton(
-                                      onPressed: () => Navigator.pop(context),
-                                      child: Text('No')),
+                                      onPressed: () => Navigator.pop(context), child: Text('No')),
                                   TextButton(
                                     onPressed: () {
                                       cat.delete();
@@ -220,17 +269,16 @@ class _CategoryManagementState extends State<CategoryManagement>
   }
 
   updateColor(String field, CategoryModel cat) {
-    Color selectedColor = getColorFromHex(
-        field == 'backgroundColor' ? cat.backgroundColor : cat.foregroundColor);
+    Color selectedColor =
+        getColorFromHex(field == 'backgroundColor' ? cat.backgroundColor : cat.foregroundColor);
     showDialog(
       context: context,
       builder: (c) => AlertDialog(
         title: const Text('Pick a color!'),
         content: SingleChildScrollView(
           child: ColorPicker(
-            pickerColor: getColorFromHex(field == 'backgroundColor'
-                ? cat.backgroundColor
-                : cat.foregroundColor),
+            pickerColor: getColorFromHex(
+                field == 'backgroundColor' ? cat.backgroundColor : cat.foregroundColor),
             onColorChanged: (color) => selectedColor = color,
           ),
         ),
@@ -240,11 +288,9 @@ class _CategoryManagementState extends State<CategoryManagement>
             onPressed: () {
               // update color value into firestore
               if (field == 'backgroundColor') {
-                cat.updateBackgroundColor(
-                    selectedColor.value.toRadixString(16));
+                cat.updateBackgroundColor(selectedColor.value.toRadixString(16));
               } else {
-                cat.updateForegroundColor(
-                    selectedColor.value.toRadixString(16));
+                cat.updateForegroundColor(selectedColor.value.toRadixString(16));
               }
               Navigator.of(context).pop();
             },
