@@ -4,21 +4,22 @@
  */
 import * as functions from "firebase-functions";
 import { User } from "../classes/user";
+import { sanitizeError } from "../ready";
 
 export const enableUser = functions
-    .region("asia-northeast3")
+    .region("us-central1", "asia-northeast3")
     .https.onCall(async (data, context) => {
-      return await User.enableUser(data, context);
+      return sanitizeError(await User.enableUser(data, context));
     });
 
 export const disableUser = functions
-    .region("asia-northeast3")
+    .region("us-central1", "asia-northeast3")
     .https.onCall(async (data, context) => {
-      return await User.disableUser(data, context);
+      return sanitizeError(await User.disableUser(data, context));
     });
 
 export const adminUserSearch = functions
-    .region("asia-northeast3")
+    .region("us-central1", "asia-northeast3")
     .https.onCall(async (data, context) => {
-      return await User.adminUserSearch(data, context);
+      return sanitizeError(await User.adminUserSearch(data, context));
     });

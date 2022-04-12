@@ -2,7 +2,7 @@ import * as functions from "firebase-functions";
 import * as express from "express";
 import { User } from "./classes/user";
 
-function sanitizeError(e: any) {
+export function sanitizeError(e: any) {
   if (typeof e === "string" && e.startsWith("ERROR_")) {
     return { code: e };
   } else {
@@ -11,12 +11,12 @@ function sanitizeError(e: any) {
 }
 
 export async function ready(
-  options: {
+    options: {
     req: functions.https.Request;
     res: express.Response;
     auth?: boolean;
   },
-  callback: (data: any) => Promise<void>
+    callback: (data: any) => Promise<void>
 ) {
   const req = options.req;
   const res = options.res;

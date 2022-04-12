@@ -114,6 +114,7 @@ Table of contents
   - [Post](#post)
   - [Comment](#comment)
   - [PostService and PostApi](#postservice-and-postapi)
+  - [PostApi](#postapi)
 - [Push notification](#push-notification)
   - [terms](#terms)
   - [How push notification wokr.](#how-push-notification-wokr)
@@ -1367,6 +1368,13 @@ DynamicLinksService.instance.listen((Uri? deepLink) {
 - `PostApi` uses `Dio` to communicate to cloud function.
 - It is recommended to use `PostApi` and `CommentApi` instead of `PostService` and `CommentService` for post & comment crud.
 
+
+## PostApi
+
+- App can do post CRUD with `PostApi`.
+- `documentId` on create is the document id of the post to be created. By giving document id(as post id), developer can do better coordination. For istance, give `help` as document id and on view screen, get the `help` as post id and display.
+
+
 # Push notification
 
 - User tokens are saved under `/message-tokens/(tokenId)`
@@ -1532,6 +1540,7 @@ HttpException: Invalid statusCode: 403, uri = https://firebasestorage.googleapis
   - And we think, sending posts and comments into different palce can be done by flutter app, we may remove those cloud functions in the future.
     - One good reason why we do it in `cloud functions` is that, user can create a post or a comemnt not only using flutter app, but also using web site. And we don't have to implement the same code (for sending posts and comments into another place) twice.
 
+- Since `Firebase Hosting` supports only `us-central1` region, the cloud functions are distributed in mutiple region in `index.ts`.
 
 ## Unit test for Cloud Functions
 

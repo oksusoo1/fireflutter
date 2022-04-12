@@ -94,19 +94,33 @@ class PostModel with FirestoreMixin, ForumBase {
 
   List<CommentModel> comments = [];
 
+  @Deprecated("Create post with PostApi.")
   factory PostModel.fromDoc(DocumentSnapshot doc) {
     return PostModel.fromJson(doc.data() as Json, doc.id);
   }
 
   /// Get document data of map and convert it into post model
-  factory PostModel.fromJson(Json data, String id) {
+  ///
+  /// If post is created via http, then it will have [id] inside `data`.
+  factory PostModel.fromJson(Json data, [String? id]) {
     String content = data['content'] ?? '';
 
     /// Check if the content has any html tag.
     bool html = _isHtml(content);
 
+    /// If the post is created via http, the [createdAt] and [updatedAt] have different format.
+    Timestamp createdAt;
+    Timestamp updatedAt;
+    if (data['createdAt'] is Map) {
+      createdAt = Timestamp(data['createdAt']['_seconds'], data['createdAt']['_nanoseconds']);
+      updatedAt = Timestamp(data['updatedAt']['_seconds'], data['updatedAt']['_nanoseconds']);
+    } else {
+      createdAt = data['createdAt'];
+      updatedAt = data['updatedAt'] ?? Timestamp.now();
+    }
+
     final post = PostModel(
-      id: id,
+      id: id ?? data['id'],
       category: data['category'] ?? '',
       title: data['title'] ?? '',
       content: content,
@@ -124,8 +138,8 @@ class PostModel with FirestoreMixin, ForumBase {
       month: data['month'] ?? 0,
       day: data['day'] ?? 0,
       week: data['week'] ?? 0,
-      createdAt: data['createdAt'],
-      updatedAt: data['updatedAt'],
+      createdAt: createdAt,
+      updatedAt: updatedAt,
       data: data,
     );
 
@@ -219,6 +233,7 @@ class PostModel with FirestoreMixin, ForumBase {
   /// ```
   ///
   /// Read readme for [hasPhoto]
+  @Deprecated('Use PostApi')
   Future<DocumentReference<Object?>> create({
     required String category,
     required String title,
@@ -231,7 +246,7 @@ class PostModel with FirestoreMixin, ForumBase {
   }) {
     if (signedIn == false) throw ERROR_SIGN_IN;
     if (UserService.instance.user.exists == false) throw ERROR_USER_DOCUMENT_NOT_EXISTS;
-    if (UserService.instance.user.ready) throw UserService.instance.user.profileError;
+    if (UserService.instance.user.notReady) throw UserService.instance.user.profileError;
 
     final j = Jiffy();
     int week = ((j.unix() - 345600) / 604800).floor();
@@ -263,6 +278,7 @@ class PostModel with FirestoreMixin, ForumBase {
     }
   }
 
+  @Deprecated('User PostApi.instance.update()')
   Future<void> update({
     required String title,
     required String content,
@@ -290,6 +306,7 @@ class PostModel with FirestoreMixin, ForumBase {
   }
 
   /// See readme.
+  @Deprecated('Use CommentApi')
   Future<void> delete() async {
     if (files.length > 0) {
       for (final url in files) {

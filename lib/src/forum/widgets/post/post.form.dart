@@ -46,7 +46,9 @@ class _PostFormState extends State<PostForm> {
 
   double uploadProgress = 0;
 
-  bool get isCreate => widget.post == null || widget.post?.id == '';
+  bool get isCreate =>
+      (widget.post == null || widget.post?.id == '') ||
+      (widget.category != null && widget.category!.isNotEmpty);
   bool get isUpdate => !isCreate;
 
   @override
@@ -174,30 +176,33 @@ class _PostFormState extends State<PostForm> {
       }
     }
     try {
-      if (widget.category != null && widget.category!.isNotEmpty) {
-        /// create
-        final ref = await PostModel().create(
+      if (isCreate) {
+        final post = await PostApi.instance.create(
           documentId: documentId.text,
           category: widget.category!,
           subcategory: widget.subcategory,
           title: title.text,
           content: content.text,
-          summary: summary.text,
           files: files,
         );
 
-        widget.onCreate(ref.id);
+        widget.onCreate(post.id);
       } else {
         /// update
-        await widget.post!.update(
+        await PostApi.instance.update(
+          id: widget.post!.id,
           title: title.text,
           content: content.text,
           files: files,
           summary: summary.text,
         );
+
         widget.onUpdate(widget.post!.id);
       }
-    } catch (e) {
+    } catch (e, stacks) {
+      debugPrint(e.toString());
+      debugPrintStack(stackTrace: stacks);
+
       widget.onError(e);
     }
   }

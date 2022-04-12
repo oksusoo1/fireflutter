@@ -119,6 +119,7 @@ class UserModel with FirestoreMixin, DatabaseMixin {
   /// It becomes int when the user's profile is ready.
   int profileReady;
   bool get ready => profileReady < 90000000000000;
+  bool get notReady => ready == false;
 
   bool get signedIn => FirebaseAuth.instance.currentUser != null;
   bool get signedOut => signedIn == false;

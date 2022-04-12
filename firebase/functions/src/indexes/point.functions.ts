@@ -13,7 +13,7 @@ import { ready } from "../ready";
  * % pointEventSignIn({after: {lastLogin: 1234}}, {params: {uid: 'a'}})
  */
 export const pointEventSignIn = functions
-    .region("asia-northeast3")
+    .region("us-central1", "asia-northeast3")
     .database.ref("/users/{uid}/lastSignInAt")
     .onUpdate(async (change, context) => {
       await Point.signInPoint(change.after.val(), context);
@@ -29,7 +29,7 @@ export const pointEventSignIn = functions
  * % pointEventRegister({}, {params: {uid: 'a'}})
  */
 export const pointEventRegister = functions
-    .region("asia-northeast3")
+    .region("us-central1", "asia-northeast3")
     .database.ref("/users/{uid}")
     .onCreate((snapshot, context) => {
       return Point.registerPoint(snapshot.val(), context);
@@ -44,21 +44,23 @@ export const pointEventRegister = functions
  * % pointEventPostCreate( {uid: 'a'}, {params: {postId: 'post-1'}} )
  */
 // export const pointEventPostCreate = functions
-//     .region("asia-northeast3")
+//     .region("us-central1", "asia-northeast3")
 //     .firestore.document("/posts/{postId}")
 //     .onCreate((snapshot, context) => {
 //       return Point.postCreatePoint(snapshot.data(), context);
 //     });
 
 // export const pointEventCommentCreate = functions
-//     .region("asia-northeast3")
+//     .region("us-central1", "asia-northeast3")
 //     .firestore.document("/comments/{commentId}")
 //     .onCreate((snapshot, context) => {
 //       return Point.commentCreatePoint(snapshot.data(), context);
 //     });
 
-export const pointHistory = functions.region("asia-northeast3").https.onRequest((req, res) => {
-  ready({ req, res, auth: true }, async (data) => {
-    res.status(200).send(await Point.history(data));
-  });
-});
+export const pointHistory = functions
+    .region("us-central1", "asia-northeast3")
+    .https.onRequest((req, res) => {
+      ready({ req, res, auth: true }, async (data) => {
+        res.status(200).send(await Point.history(data));
+      });
+    });

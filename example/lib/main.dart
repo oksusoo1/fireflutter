@@ -101,7 +101,7 @@ class _MainAppState extends State<MainApp> {
 
     FunctionsApi.instance.init(
       serverUrl: "https://asia-northeast3-withcenter-test-project.cloudfunctions.net/",
-      onError: error,
+      // onError: error,
     );
 
     /// Instantiate UserService & see debug print message
@@ -131,8 +131,8 @@ class _MainAppState extends State<MainApp> {
     // );
     // Timer(const Duration(milliseconds: 200),
     //     () => AppService.instance.open(TranslationsScreen.routeName));
-    Timer(
-        const Duration(milliseconds: 200), () => AppService.instance.open(JobEditScreen.routeName));
+    // Timer(
+    //     const Duration(milliseconds: 200), () => AppService.instance.open(JobEditScreen.routeName));
 
     // Open qna & open first post
     // Timer(const Duration(milliseconds: 100), () async {

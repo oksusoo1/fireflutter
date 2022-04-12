@@ -26,13 +26,15 @@ export class Comment {
    */
   static async create(data: CommentCreateParams): Promise<CommentDocument> {
     if (!data.uid) throw ERROR_EMPTY_UID;
+
+    const files = data.files ?? [];
     const doc: CommentCreateRequirements = {
       uid: data.uid,
       postId: data.postId,
       parentId: data.parentId ?? "",
       content: data.content ?? "",
-      files: data.files ?? [],
-      hasPhoto: !!data.files,
+      files: files,
+      hasPhoto: files.length > 0,
       deleted: false,
       createdAt: admin.firestore.FieldValue.serverTimestamp(),
       updatedAt: admin.firestore.FieldValue.serverTimestamp(),
@@ -83,6 +85,8 @@ export class Comment {
    * Deletes a comment
    *
    * @param data
+   *
+   * @todo add types on `data`.
    */
   static async delete(data: any): Promise<{ id: string }> {
     if (!data.id) throw ERROR_EMPTY_ID;

@@ -117,7 +117,9 @@ class _PostListScreenState extends State<PostListScreen> with FirestoreMixin, Fo
                           onReport: onReport,
                           onImageTap: (i, files) => onImageTapped(context, i, files),
                           onEdit: (post) => AppService.instance.openPostForm(post: post),
-                          onDelete: onDelete,
+                          onDelete: (post) => PostApi.instance.delete(post.id).catchError((e) {
+                            error(e);
+                          }),
                           onLike: onLike,
                           onDislike: onDislike,
                           onHide: () {},
@@ -134,7 +136,10 @@ class _PostListScreenState extends State<PostListScreen> with FirestoreMixin, Fo
                           onReply: (post, comment) => onReply(context, post, comment),
                           onReport: onReport,
                           onEdit: (comment) => onEdit(context, comment),
-                          onDelete: onDelete,
+                          onDelete: (comment) =>
+                              CommentApi.instance.delete(comment.id).catchError((e) {
+                            error(e);
+                          }),
                           onLike: onLike,
                           onDislike: onDislike,
                           onImageTap: (i, files) => onImageTapped(context, i, files),
@@ -149,66 +154,6 @@ class _PostListScreenState extends State<PostListScreen> with FirestoreMixin, Fo
             },
           );
         },
-        // itemBuilder: (context, snapshot) {
-        //   final post = PostModel.fromJson(
-        //     snapshot.data() as Json,
-        //     snapshot.id,
-        //   );
-
-        //   print('got new doc id; ${post.id}: ${post.title}');
-
-        //   return ExpansionTile(
-        //     maintainState: true,
-        //     key: ValueKey(post.id),
-        //     initiallyExpanded: false,
-        //     title: Text(post.displayTitle),
-        //     subtitle: Row(
-        //       children: [
-        //         UserDoc(
-        //           uid: post.uid,
-        //           builder: (user) => Text('By: ${user.displayName} '),
-        //         ),
-        //         ShortDate(post.createdAt.millisecondsSinceEpoch),
-        //       ],
-        //     ),
-        //     onExpansionChanged: (value) {
-        //       if (value) {
-        //         // post.increaseViewCounter().catchError((e) => error(e));
-        //       }
-        //     },
-        //     children: [
-        //       // Text('Post Id: ${post.id}'),
-        //       Post(
-        //         key: ValueKey(post.id),
-        //         post: post,
-        //         onReply: (post) => onReply(context, post),
-        //         onReport: onReport,
-        //         onImageTap: (i, files) => onImageTapped(context, i, files),
-        //         onEdit: (post) => AppService.instance.openPostForm(post: post),
-        //         onDelete: onDelete,
-        //         onLike: onLike,
-        //         onDislike: onDislike,
-        //         onHide: () {},
-        //         onChat: (post) => AppService.instance.openChatRoom(post.uid),
-        //         onSendPushNotification: (post) => AppService.instance.open(
-        //             PushNotificationScreen.routeName,
-        //             arguments: {'postId': post.id}),
-        //       ),
-        //       Divider(color: Colors.red),
-        //       Comment(
-        //         post: post,
-        //         parentId: post.id,
-        //         onReply: (post, comment) => onReply(context, post, comment),
-        //         onReport: onReport,
-        //         onEdit: (comment) => onEdit(context, comment),
-        //         onDelete: onDelete,
-        //         onLike: onLike,
-        //         onDislike: onDislike,
-        //         onImageTap: (i, files) => onImageTapped(context, i, files),
-        //       ),
-        //     ],
-        //   );
-        // },
       ),
     );
   }

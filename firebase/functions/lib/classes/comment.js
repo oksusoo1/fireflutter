@@ -17,13 +17,14 @@ class Comment {
         var _a, _b, _c;
         if (!data.uid)
             throw defines_1.ERROR_EMPTY_UID;
+        const files = (_a = data.files) !== null && _a !== void 0 ? _a : [];
         const doc = {
             uid: data.uid,
             postId: data.postId,
-            parentId: (_a = data.parentId) !== null && _a !== void 0 ? _a : "",
-            content: (_b = data.content) !== null && _b !== void 0 ? _b : "",
-            files: (_c = data.files) !== null && _c !== void 0 ? _c : [],
-            hasPhoto: !!data.files,
+            parentId: (_b = data.parentId) !== null && _b !== void 0 ? _b : "",
+            content: (_c = data.content) !== null && _c !== void 0 ? _c : "",
+            files: files,
+            hasPhoto: files.length > 0,
             deleted: false,
             createdAt: admin.firestore.FieldValue.serverTimestamp(),
             updatedAt: admin.firestore.FieldValue.serverTimestamp(),

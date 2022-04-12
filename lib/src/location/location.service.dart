@@ -61,6 +61,7 @@ class LocationService {
   /// When use call this method to get curren position, it will automatically ask permission to users.
   Future<Position> get currentPosition async {
     await checkPermission();
-    return await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+    return await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high);
   }
 }

@@ -28,6 +28,7 @@ describe("comment create test", () => {
     expect(comment).not.to.be.null;
     expect(comment).to.be.an("object").to.have.property("id").to.be.string;
     expect(comment!.uid).equals("a");
+    expect(comment.hasPhoto).to.be.an("boolean");
+    expect(comment.hasPhoto).to.be.false;
   });
 });
-

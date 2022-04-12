@@ -53,8 +53,20 @@ class _FriendMapState extends State<FriendMap> with WidgetsBindingObserver, Data
     super.dispose();
   }
 
+  /// It will initialize both user's location.
+  /// Other user's location.
+  ///   - at first it will mark a temporary marker location based on the given latitude and longitude.
+  ///   - then it will update the marker location with the data from firebase realtime database.
+  ///
+  /// By default, both user's location is shown.
+  /// Current user can focus on their current location by tapping on the third icon.
+  /// Current user can also show both user's locations by tapping the fourth icon, disabling focus on their current location.
+  ///
+  /// Zooming in and out will disable focus on current user's location.
   init() async {
     try {
+      service.cameraFocus = CameraFocus.none;
+
       /// Check permission first.
       await LocationService.instance.checkPermission();
 
@@ -76,51 +88,54 @@ class _FriendMapState extends State<FriendMap> with WidgetsBindingObserver, Data
     ///
     /// If user click on an older friend map request on chat, it will initially the coordinated on that particular chat message,
     /// and this will get the last saved location of the other user from realtime database.
-    otherUserPositionStream = userDoc(widget.otherUserUid).child('location').onValue.listen(
-      (event) async {
-        print('Other user ${widget.otherUserUid}, location update, ${event.snapshot.value}');
-        DataSnapshot snapshot = event.snapshot;
-        final loc = snapshot.value as String?;
+    ///
+    /// If current user clicked on their own friend map request and open friend map:
+    ///  - other user's location will initially point to the current user's location then will update from coordinated value saved on the database.
+    ///  - if the other user does not have a saved location on the database, it will simply ignore.
+    otherUserPositionStream =
+        userDoc(widget.otherUserUid).child('location').onValue.listen((event) async {
+      // print('Other user ${widget.otherUserUid}, location update, ${event.snapshot.value}');
+      DataSnapshot snapshot = event.snapshot;
+      final loc = snapshot.value as String?;
 
-        if (loc != null) {
-          await service.drawDestinationLocationMarker(
-            lat: double.parse(loc.split(":").first), // latitude
-            lon: double.parse(loc.split(":").last), // longitude
-          );
+      if (loc != null) {
+        final lat = double.parse(loc.split(":").first);
+        final lon = double.parse(loc.split(":").last);
 
-          if (reAdjustCameraView) {
-            service.adjustCameraViewAndZoom();
-            reAdjustCameraView = false;
-          }
+        await service.drawDestinationLocationMarker(lat: lat, lon: lon);
 
-          if (mounted) setState(() {});
+        if (service.cameraFocus == CameraFocus.destination) {
+          service.moveCameraView(lat, lon);
         }
-      },
-    );
 
-    currentUserPositionStream = service.currentUserLocationStream().listen(
-      (Position position) async {
-        // print('position changed: lat ${position.latitude} ; lng ${position.longitude}');
+        if (reAdjustCameraView) {
+          service.adjustCameraViewAndZoom();
+          reAdjustCameraView = false;
+        }
+        if (mounted) setState(() {});
+      }
+    });
 
-        final updated = await service.drawCurrentLocationMarker(
-          lat: position.latitude,
-          lon: position.longitude,
+    currentUserPositionStream =
+        service.currentUserLocationStream().listen((Position position) async {
+      final updated = await service.drawCurrentLocationMarker(
+        lat: position.latitude,
+        lon: position.longitude,
+      );
+
+      if (updated) {
+        /// Update current user location on realtime database
+        userDoc(UserService.instance.uid).update(
+          {'location': '${position.latitude}:${position.longitude}'},
         );
 
-        if (updated) {
-          /// Update current user location on realtime database
-          userDoc(UserService.instance.uid).update(
-            {'location': '${position.latitude}:${position.longitude}'},
-          );
-
-          if (service.isCameraFocused) {
-            service.moveCameraView(position.latitude, position.longitude);
-          }
+        if (service.cameraFocus == CameraFocus.currentLocation) {
+          service.moveCameraView(position.latitude, position.longitude);
         }
+      }
 
-        if (mounted) setState(() {});
-      },
-    );
+      if (mounted) setState(() {});
+    });
   }
 
   @override
@@ -140,6 +155,7 @@ class _FriendMapState extends State<FriendMap> with WidgetsBindingObserver, Data
           mapToolbarEnabled: false,
           myLocationEnabled: false,
           zoomControlsEnabled: false,
+          zoomGesturesEnabled: false,
           myLocationButtonEnabled: false,
           initialCameraPosition: currentLocation,
           onMapCreated: (GoogleMapController controller) => service.mapController = controller,
@@ -153,7 +169,7 @@ class _FriendMapState extends State<FriendMap> with WidgetsBindingObserver, Data
               children: <Widget>[
                 ClipOval(
                   child: Material(
-                    color: Colors.blue.shade100, // button color
+                    color: Colors.yellow.shade100, // button color
                     child: InkWell(
                       splashColor: Colors.blue, // inkwell color
                       child: SizedBox(
@@ -168,7 +184,7 @@ class _FriendMapState extends State<FriendMap> with WidgetsBindingObserver, Data
                 SizedBox(height: 20),
                 ClipOval(
                   child: Material(
-                    color: Colors.blue.shade100, // button color
+                    color: Colors.yellow.shade100, // button color
                     child: InkWell(
                       splashColor: Colors.blue, // inkwell color
                       child: SizedBox(
@@ -181,26 +197,18 @@ class _FriendMapState extends State<FriendMap> with WidgetsBindingObserver, Data
                   ),
                 ),
                 SizedBox(height: 20),
-
-                /// Button to enable/disable camera adjustment when moving.
                 ClipOval(
                   child: Material(
-                    color: FriendMapService.instance.isCameraFocused
-                        ? Colors.green.shade200
-                        : Colors.grey.shade400, // button color
+                    color: Colors.yellow.shade100, // button color
                     child: InkWell(
                       splashColor: Colors.blue, // inkwell color
                       child: SizedBox(
                         width: 40,
                         height: 40,
-                        child: Icon(Icons.filter_center_focus),
+                        child: Icon(Icons.zoom_out_map_rounded),
                       ),
                       onTap: () {
-                        if (!FriendMapService.instance.isCameraFocused) {
-                          service.zoomToMe();
-                        }
-                        FriendMapService.instance.isCameraFocused =
-                            !FriendMapService.instance.isCameraFocused;
+                        service.adjustCameraViewAndZoom();
                       },
                     ),
                   ),
@@ -219,31 +227,17 @@ class _FriendMapState extends State<FriendMap> with WidgetsBindingObserver, Data
             child: LocationService.instance.locationServiceEnabled
                 ? Column(
                     children: [
-                      Row(
-                        children: [
-                          Icon(Icons.location_on, color: Colors.cyanAccent),
-                          SizedBox(width: 10),
-                          Expanded(
-                            child: Text(
-                              'My location: ' + service.currentAddress,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                        ],
-                      ),
+                      NavigationTips(),
+                      Divider(),
+                      LocationAddress(
+                          address: 'My location: ' + service.currentAddress,
+                          iconColor: Colors.cyanAccent,
+                          onTap: () => service.zoomToMarker(MarkerIds.currentLocation)),
                       SizedBox(height: 10),
-                      Row(
-                        children: [
-                          Icon(Icons.location_on, color: Colors.redAccent),
-                          SizedBox(width: 10),
-                          Expanded(
-                            child: Text(
-                              'Destination: ' + service.otherUsersAddress,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                        ],
-                      )
+                      LocationAddress(
+                          address: 'Destination: ' + service.otherUsersAddress,
+                          iconColor: Colors.redAccent,
+                          onTap: () => service.zoomToMarker(MarkerIds.destination)),
                     ],
                   )
                 : GestureDetector(
@@ -260,6 +254,71 @@ class _FriendMapState extends State<FriendMap> with WidgetsBindingObserver, Data
           ),
         ),
       ],
+    );
+  }
+}
+
+class NavigationTips extends StatelessWidget {
+  const NavigationTips({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Row(
+          children: [
+            Text(
+              '* Tap an address below to focus on it\'s current position.',
+              style: TextStyle(fontSize: 12, fontStyle: FontStyle.italic),
+            ),
+          ],
+        ),
+        SizedBox(height: 5),
+        Row(
+          children: [
+            Text(
+              '* Tap the',
+              style: TextStyle(fontSize: 12, fontStyle: FontStyle.italic),
+            ),
+            SizedBox(
+              width: 24,
+              child: Icon(Icons.zoom_out_map_rounded, size: 20),
+            ),
+            Text(
+              'icon to show both location.',
+              style: TextStyle(fontSize: 12, fontStyle: FontStyle.italic),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+class LocationAddress extends StatelessWidget {
+  const LocationAddress({required this.address, required this.iconColor, this.onTap, Key? key})
+      : super(key: key);
+
+  final String address;
+  final Color iconColor;
+  final void Function()? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Row(
+        children: [
+          Icon(Icons.location_on, color: iconColor),
+          SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              address,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

@@ -17,7 +17,7 @@ class Post {
     /**
      *
      * @see README.md for details.
-     * @param data post doc data to be created
+     * @param data post doc data to be created. See README.md for details.
      * @returns
      * - post doc as in PostDocument interface after create. Note that, it will contain post id.
      * - Or it will throw an exception on failing post creation.
@@ -35,8 +35,12 @@ class Post {
             throw defines_1.ERROR_CATEGORY_NOT_EXISTS;
         // get all the data from client.
         const doc = data;
+        // sanitize
+        if (!doc.files) {
+            doc.files = [];
+        }
         // default data
-        doc.hasPhoto = !!doc.files;
+        doc.hasPhoto = doc.files > 0;
         doc.deleted = false;
         doc.noOfComments = 0;
         doc.year = dayjs().year();
@@ -47,7 +51,15 @@ class Post {
         doc.createdAt = admin.firestore.FieldValue.serverTimestamp();
         doc.updatedAt = admin.firestore.FieldValue.serverTimestamp();
         // Create post
-        const ref = await ref_1.Ref.postCol.add(doc);
+        let ref;
+        // Document id to be created of. See README.md for details.
+        if (data.documentId) {
+            ref = await ref_1.Ref.postDoc(data.documentId).set(doc);
+            ref = ref_1.Ref.postDoc(data.documentId);
+        }
+        else {
+            ref = await ref_1.Ref.postCol.add(doc);
+        }
         // Post create event
         await point_1.Point.postCreatePoint(data.uid, ref.id);
         // return the document object of newly created post.
@@ -87,6 +99,7 @@ class Post {
         const updated = await this.get(id);
         if (updated === null)
             throw defines_1.ERROR_UPDATE_FAILED;
+        updated.id = id;
         return updated;
     }
     static async delete(data) {

@@ -14,14 +14,14 @@ class FunctionsApi {
   }
 
   String serverUrl = '';
-  Function(String) onError = (s) => print;
+  // Function(String) onError = (s) => print;
 
   init({
     required String serverUrl,
-    required Function(String) onError,
+    // required Function(String) onError,
   }) {
     this.serverUrl = serverUrl;
-    this.onError = onError;
+    // this.onError = onError;
   }
 
   String get password {
@@ -56,12 +56,13 @@ class FunctionsApi {
       if (res.data is String && (res.data as String).startsWith('ERROR_')) {
         throw res.data;
       } else if (res.data is Map && res.data['code'] != null && res.data['code'] != '') {
-        throw res.data['message'];
+        throw res.data['code'];
       } else if (res.data is String &&
           (res.data as String).contains('code') &&
           (res.data as String).contains('ERR_')) {
         throw res.data;
       } else {
+        /// success
         return res.data;
       }
     } catch (e) {

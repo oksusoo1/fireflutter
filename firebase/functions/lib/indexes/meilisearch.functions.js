@@ -18,13 +18,13 @@ const meilisearch_1 = require("../classes/meilisearch");
  * > onPostCreateIndex({uid: 'a'}, {params: {postId: 'p-1'}});
  */
 exports.onPostCreateIndex = functions
-    .region("asia-northeast3")
+    .region("us-central1", "asia-northeast3")
     .firestore.document("/posts/{id}")
     .onCreate((snapshot, context) => {
     return meilisearch_1.Meilisearch.indexPostCreate(snapshot.data(), context);
 });
 exports.onPostUpdateIndex = functions
-    .region("asia-northeast3")
+    .region("us-central1", "asia-northeast3")
     .firestore.document("/posts/{id}")
     .onUpdate((change, context) => {
     const beforeData = change.before.data();
@@ -47,19 +47,19 @@ exports.onPostUpdateIndex = functions
  *    - see @onPostUpdateIndex
  */
 exports.onPostDeleteIndex = functions
-    .region("asia-northeast3")
+    .region("us-central1", "asia-northeast3")
     .firestore.document("/posts/{id}")
     .onDelete((_snapshot, context) => {
     return meilisearch_1.Meilisearch.deleteIndexedPostDocument(context);
 });
 exports.onCommentCreateIndex = functions
-    .region("asia-northeast3")
+    .region("us-central1", "asia-northeast3")
     .firestore.document("/comments/{id}")
     .onCreate((snapshot, context) => {
     return meilisearch_1.Meilisearch.indexCommentCreate(snapshot.data(), context);
 });
 exports.onCommentUpdateIndex = functions
-    .region("asia-northeast3")
+    .region("us-central1", "asia-northeast3")
     .firestore.document("/comments/{id}")
     .onUpdate((change, context) => {
     const beforeData = change.before.data();
@@ -75,7 +75,7 @@ exports.onCommentUpdateIndex = functions
     }
 });
 // export const onCommentDeleteIndex = functions
-//     .region("asia-northeast3")
+//     .region("us-central1", "asia-northeast3")
 //     .firestore.document("/posts/{id}")
 //     .onDelete((_snapshot, context) => {
 //       return Meilisearch.deleteIndexedCommentDocument(context);
@@ -102,7 +102,7 @@ exports.createUserIndex = functions.auth.user().onCreate((user) => {
  * })
  */
 exports.updateUserIndex = functions
-    .region("asia-northeast3")
+    .region("us-central1", "asia-northeast3")
     .database.ref("/users/{uid}")
     .onUpdate((change, context) => {
     return meilisearch_1.Meilisearch.indexUserUpdate({

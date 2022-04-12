@@ -19,7 +19,12 @@ class PointBuilder extends StatelessWidget with DatabaseMixin {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<DatabaseEvent>(
-        stream: pointRef.child(uid).child(type + 'Create').child(id).child('point').onValue,
+        stream: pointRef
+            .child(uid)
+            .child(type + 'Create')
+            .child(id)
+            .child('point')
+            .onValue,
         builder: (c, snapshotPointData) {
           if (snapshotPointData.hasData) {
             final DatabaseEvent event = snapshotPointData.data!;
