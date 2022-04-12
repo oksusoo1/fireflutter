@@ -68,7 +68,7 @@ export class Meilisearch {
       content: Utils.removeHtmlTags(data.content) ?? "",
       files: data.files ? data.files.join(",") : "",
       noOfComments: data.noOfComments ?? 0,
-      deleted: false,
+      // deleted: false,
       createdAt: Utils.getTimestamp(),
       updatedAt: Utils.getTimestamp(),
     };
@@ -121,7 +121,7 @@ export class Meilisearch {
       content: Utils.removeHtmlTags(after.content),
       files: after.files ? after.files.join(",") : "",
       noOfComments: after.noOfComments,
-      deleted: false,
+      // deleted: false,
       updatedAt: Utils.getTimestamp(),
     };
 
