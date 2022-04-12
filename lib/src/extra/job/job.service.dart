@@ -1,7 +1,6 @@
 import 'dart:async';
 
-import 'package:extended/extended.dart';
-import 'package:fe/screens/job/fireflutter-job/address_search.model.dart';
+import '../../../fireflutter.dart';
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 
@@ -373,8 +372,7 @@ class JobService {
                       Expanded(
                         child: TextField(
                           controller: input,
-                          decoration:
-                              InputDecoration(label: Text("Input address.")),
+                          decoration: InputDecoration(label: Text("Input address.")),
                           onSubmitted: getAddresses,
                         ),
                       ),
@@ -384,12 +382,10 @@ class JobService {
                       )
                     ],
                   ),
-                  spaceXs,
                   Text(
                     'i.e) 536-9, Sinsa-dong',
                     style: TextStyle(fontSize: 11),
                   ),
-                  spaceSm,
                   if (search == null) Text('Input address and send'),
                   if (search != null && search!.totalCount == 0)
                     Text("No address found, try again."),
@@ -405,14 +401,12 @@ class JobService {
                                   onTap: () => Navigator.of(context).pop(e),
                                   behavior: HitTestBehavior.opaque,
                                   child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         '${e.roadAddr}',
                                         style: TextStyle(fontSize: 12),
                                       ),
-                                      spaceXxs,
                                       Text(
                                         '${e.korAddr}',
                                         style: TextStyle(fontSize: 12),
@@ -429,7 +423,6 @@ class JobService {
                   if (search != null && search!.totalCount > 100)
                     Column(
                       children: [
-                        spaceXs,
                         Text(
                           '* Warning - there are too much addresses by the search and cannot dispaly all. Please narrow the search.',
                           style: TextStyle(

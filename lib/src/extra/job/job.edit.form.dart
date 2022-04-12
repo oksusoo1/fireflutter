@@ -1,7 +1,6 @@
-import 'package:extended/extended.dart';
-import 'package:fe/screens/job/fireflutter-job/address_search.model.dart';
-import 'package:fe/screens/job/fireflutter-job/job.service.dart';
 import 'package:flutter/material.dart';
+
+import '../../../fireflutter.dart';
 
 /// 직업 입력 양식
 ///
@@ -107,7 +106,6 @@ class _JobEditFormState extends State<JobEditForm> {
                         color: Colors.blue,
                       ),
                     ),
-                    spaceSm,
                   ],
                 )
               ],
@@ -127,13 +125,13 @@ class _JobEditFormState extends State<JobEditForm> {
             labelText: "Job category(industry) - @todo select box",
           ),
         ),
-        Select(
-          defaultLabel: "Select job category",
-          options: JobService.instance.categories,
-          onChanged: (v) {
-            print(v);
-          },
-        ),
+        // Select(
+        //   defaultLabel: "Select job category",
+        //   options: JobService.instance.categories,
+        //   onChanged: (v) {
+        //     print(v);
+        //   },
+        // ),
         TextField(
           controller: aboutUs,
           decoration: InputDecoration(

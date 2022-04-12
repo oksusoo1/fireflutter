@@ -1851,7 +1851,7 @@ PointBuilder(
 
 ## Job Functionality for job seekers and job openers
 
-- See https://github.com/thruthesky/fireflutter-job for the source code and details.
+- See `<fireflutter>/lib/src/extra/job` for the source code and details.
 
 
 

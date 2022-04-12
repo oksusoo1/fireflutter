@@ -1,6 +1,5 @@
 import 'package:extended/extended.dart';
 import 'package:fe/screens/forum/forum.mixin.dart';
-import './fireflutter-job/job.edit.form.dart';
 import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
 
@@ -14,8 +13,7 @@ class JobEditScreen extends StatefulWidget {
   State<JobEditScreen> createState() => _JobEditScreenState();
 }
 
-class _JobEditScreenState extends State<JobEditScreen>
-    with FirestoreMixin, ForumMixin {
+class _JobEditScreenState extends State<JobEditScreen> with FirestoreMixin, ForumMixin {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
