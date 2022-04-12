@@ -572,6 +572,10 @@ PhoneService.instance.verifyPhoneNumber(
 
 # Admin
 
+- All the admin functionality must be written in Flutter since Flutter is the main framework for fireflutter.
+
+
+
 ## Admin status check & update
 
 `UserService.instance.updateAdminStatus()` updates wether the user is an admin or not.
