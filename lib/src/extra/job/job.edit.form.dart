@@ -233,6 +233,7 @@ class _JobEditFormState extends State<JobEditForm> {
           ),
 
           /// Working days
+          SizedBox(height: 8),
           Text(
             'Working days per week',
             style: TextStyle(fontSize: 11, color: Colors.grey.shade700),
