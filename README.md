@@ -148,6 +148,7 @@ Table of contents
     - [Use point property to dispaly point.](#use-point-property-to-dispaly-point)
     - [PointBuilder](#pointbuilder)
     - [MyPointBuilder](#mypointbuilder)
+    - [PostPoint and CommentPoint](#postpoint-and-commentpoint)
   - [Displaying point history](#displaying-point-history)
   - [Senario](#senario)
 - [Extra Features](#extra-features)
@@ -1785,9 +1786,7 @@ https://docs.google.com/document/d/1tSJJt8iJsXNl9vcBqYhKPkiRZR5JFo-SQE2SJ90GItA/
 
 ### PointBuilder
 
-
 - To display point of a user from `/point/<uid>/point/point`, you can use `MyPointBuilder`.
-
 
 - To display point of a post or comment from `/point/<uid>`, you can use `PointBuilder` which displays point earned by post and comment.
 
@@ -1814,6 +1813,16 @@ PointBuilder(
 ### MyPointBuilder
 
 - For display login user's point, use `MyPointBuilder`.
+
+
+### PostPoint and CommentPoint
+
+- Use this widget to dsipaly point of post and comment create.
+- This is not based on `/point/<uid>/postCreate` or `/point/<uid>/commentCreate`.
+  - It is based on the `point` field of post document or comment document.
+
+
+
 
 
 ## Displaying point history
