@@ -103,13 +103,13 @@ describe("Send message on comment create test", () => {
     );
     await Ref.userSetting(b, "topic").set({ ["comments_" + post!.category]: false });
     const res4 = await Post.sendMessageOnCommentCreate(comment2!, comment2!.id);
-    console.log(res4);
+
     if (res4) {
       expect(res4.topicResponse).not.empty.include("/project");
       expect(res4.tokenResponse.success).equal(1);
       expect(res4.tokenResponse.error).equal(1);
     } else {
-      expect.fail("must not be null4,");
+      expect.fail("makesure set real token first");
     }
   });
 });
