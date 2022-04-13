@@ -1,13 +1,15 @@
 import "mocha";
-import { expect } from "chai";
 
 import { FirebaseAppInitializer } from "../firebase-app-initializer";
 import { Post } from "../../src/classes/post";
 import { Utils } from "../../src/classes/utils";
-import { Comment } from "../../src/classes/comment";
 import { User } from "../../src/classes/user";
+import { Test } from "../../src/classes/test";
+import { Comment } from "../../src/classes/comment";
 import { Messaging } from "../../src/classes/messaging";
 import { Ref } from "../../src/classes/ref";
+
+import { expect } from "chai";
 
 new FirebaseAppInitializer();
 
@@ -22,9 +24,10 @@ describe("Send message on comment create test", () => {
     await User.create(b, { firstName: "uc-" + stamp });
     await User.create(c, { firstName: "uc-" + stamp });
 
+    const category = await Test.createCategory();
     const post = await Post.create({
       uid: a,
-      category: "cat1",
+      category: category.id,
       title: "oncreateCommentTest",
     } as any);
 
@@ -85,12 +88,28 @@ describe("Send message on comment create test", () => {
     await Messaging.updateToken(b, "fake-token-2");
     await Ref.userSetting(b, "topic").set({ ["comments_" + post!.category]: true });
     const res3 = await Post.sendMessageOnCommentCreate(comment2!, comment2!.id);
+
     if (res3) {
       expect(res3.topicResponse).not.empty.include("/project");
       expect(res3.tokenResponse.success).equal(0);
       expect(res3.tokenResponse.error).equal(1);
     } else {
       expect.fail("must not be null3,");
+    }
+
+    await Messaging.updateToken(
+      b,
+      "fz-jn81hQoCNcFinQ80_vV:APA91bGZ-6bS4na3cFDo201QW9Kkqha7VeHP8q-mkCwgqjhJv-yteIEnmYEyfdewnsi9eqx85weotQ2ZbDc_yKKV2iMHPEcDIhDbczzmftGCsY69lX6JCCR_a8_T_GGt67X8c2WG0yg0"
+    );
+    await Ref.userSetting(b, "topic").set({ ["comments_" + post!.category]: false });
+    const res4 = await Post.sendMessageOnCommentCreate(comment2!, comment2!.id);
+    console.log(res4);
+    if (res4) {
+      expect(res4.topicResponse).not.empty.include("/project");
+      expect(res4.tokenResponse.success).equal(1);
+      expect(res4.tokenResponse.error).equal(1);
+    } else {
+      expect.fail("must not be null4,");
     }
   });
 });
