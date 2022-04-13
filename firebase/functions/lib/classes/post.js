@@ -171,8 +171,8 @@ class Post {
         if (!post)
             return null;
         const messageData = {
-            title: "New Comment: ",
-            body: post.content,
+            title: post.title,
+            body: data.content,
             postId: data.postId,
             type: "post",
             uid: data.uid,
