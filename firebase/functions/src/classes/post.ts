@@ -53,7 +53,7 @@ export class Post {
     }
 
     // default data
-    doc.hasPhoto = !!(doc.files && doc.files.length > 0);
+    data.hasPhoto = data.files && data.files.length > 0;
     doc.deleted = false;
     doc.noOfComments = 0;
 
@@ -110,7 +110,7 @@ export class Post {
     data.updatedAt = admin.firestore.FieldValue.serverTimestamp();
 
     // hasPhoto
-    data.hasPhoto = !!(data.files && data.files.length);
+    data.hasPhoto = data.files && data.files.length > 0;
 
     await Ref.postDoc(id).update(data);
     const updated = await this.get(id);
