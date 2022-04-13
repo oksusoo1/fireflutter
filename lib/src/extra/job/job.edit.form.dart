@@ -23,17 +23,17 @@ class JobEditForm extends StatefulWidget {
 // - Let company choose if they provide accommodations: Yes, No.
 // - Let comapny choose the salary: 100K Won, 200K Won, ... 4.5M Won.
 class _JobEditFormState extends State<JobEditForm> {
-  final companyName = TextEditingController(text: '');
-  final phoneNumber = TextEditingController(text: '');
-  final mobileNumber = TextEditingController(text: '');
-  final email = TextEditingController(text: '');
+  final companyName = TextEditingController(text: 'Test company name');
+  final phoneNumber = TextEditingController(text: '+1 2345678912');
+  final mobileNumber = TextEditingController(text: '+1 2345678912');
+  final email = TextEditingController(text: 'test@email.com');
   final detailAddress = TextEditingController(text: '');
-  final aboutUs = TextEditingController(text: '');
-  final numberOfHiring = TextEditingController(text: '');
-  final jobDescription = TextEditingController(text: '');
-  final requirement = TextEditingController(text: '');
-  final duty = TextEditingController(text: '');
-  final benefit = TextEditingController(text: '');
+  final aboutUs = TextEditingController(text: 'Sample about us');
+  final numberOfHiring = TextEditingController(text: '3');
+  final jobDescription = TextEditingController(text: 'Job desc');
+  final requirement = TextEditingController(text: 'Job reqs');
+  final duty = TextEditingController(text: 'Job duties');
+  final benefit = TextEditingController(text: 'Job benefits');
 
   AddressModel? addr;
 
@@ -68,6 +68,11 @@ class _JobEditFormState extends State<JobEditForm> {
     FormErrorCodes.benefit.index: "*Please enumerate the benefit given for the job.",
     FormErrorCodes.withAccomodation.index: "*Please select if the job includes an accomodation.",
   };
+
+  List<String> files = [];
+  double uploadProgress = 0;
+
+  bool get uploadLimited => files.length == 5;
 
   getAddress() async {
     addr = await JobService.instance.inputAddress(context);
@@ -393,12 +398,12 @@ class _JobEditFormState extends State<JobEditForm> {
 
           SizedBox(height: 8),
 
-          /// Accomodation
           Container(
             margin: EdgeInsets.symmetric(horizontal: 8),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                /// Accomodation
                 Text(
                   'Includes accomodation?',
                   style: TextStyle(fontSize: 14, color: Colors.grey.shade700),
@@ -438,6 +443,63 @@ class _JobEditFormState extends State<JobEditForm> {
                 ),
                 SizedBox(height: 5),
                 errorMessageWidget(FormErrorCodes.withAccomodation),
+
+                /// Upload button
+                Divider(),
+                if (uploadLimited)
+                  GestureDetector(
+                    onTap: () => widget.onError('Image upload is limited to 5 only.'),
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.camera_alt,
+                          size: 42,
+                          color: Colors.grey,
+                        ),
+                        SizedBox(width: 10),
+                        Text(
+                          '* File upload limit reached.\n* Delete and upload again to replace existing image.',
+                          style: TextStyle(
+                            color: Colors.orangeAccent,
+                            fontStyle: FontStyle.italic,
+                          ),
+                        ),
+                      ],
+                    ),
+                  )
+                else
+                  FileUploadButton(
+                    child: Row(
+                      children: [
+                        Icon(Icons.camera_alt, size: 42),
+                        SizedBox(width: 10),
+                        Text(
+                          '* Tap here to upload an image. \n* You can only upload up to 5 images.',
+                          style: TextStyle(fontStyle: FontStyle.italic),
+                        ),
+                      ],
+                    ),
+                    type: 'post',
+                    onUploaded: (url) {
+                      files = [...files, url];
+                      if (mounted)
+                        setState(() {
+                          uploadProgress = 0;
+                        });
+                    },
+                    onProgress: (progress) {
+                      if (mounted) setState(() => uploadProgress = progress);
+                    },
+                    onError: (e) => widget.onError(e),
+                  ),
+                if (uploadProgress > 0) ...[
+                  SizedBox(height: 8),
+                  LinearProgressIndicator(value: uploadProgress),
+                ],
+                if (files.isNotEmpty) ...[
+                  SizedBox(height: 8),
+                  ImageListEdit(files: files, onError: (e) => widget.onError(e)),
+                ]
               ],
             ),
           ),
@@ -490,6 +552,7 @@ class _JobEditFormState extends State<JobEditForm> {
                   category: JobService.instance.jobOpenings,
                   title: title,
                   content: content,
+                  files: files,
                   extra: extra,
                 );
               } catch (e, stacks) {
