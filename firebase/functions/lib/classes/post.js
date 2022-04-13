@@ -36,11 +36,11 @@ class Post {
         // get all the data from client.
         const doc = data;
         // sanitize
-        if (!doc.files) {
+        if (typeof doc.files === "undefined") {
             doc.files = [];
         }
         // default data
-        doc.hasPhoto = doc.files && doc.files.length > 0;
+        data.hasPhoto = data.files && data.files.length > 0;
         doc.deleted = false;
         doc.noOfComments = 0;
         doc.year = dayjs().year();
@@ -91,7 +91,7 @@ class Post {
         // updatedAt
         data.updatedAt = admin.firestore.FieldValue.serverTimestamp();
         // hasPhoto
-        data.hasPhoto = !!(data.files && data.files.length);
+        data.hasPhoto = data.files && data.files.length > 0;
         await ref_1.Ref.postDoc(id).update(data);
         const updated = await this.get(id);
         if (updated === null)

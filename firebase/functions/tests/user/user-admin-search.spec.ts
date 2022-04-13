@@ -82,10 +82,10 @@ describe("User admin search", async () => {
     await Ref.adminDoc.set({ [userA]: true }, { merge: true });
     try {
       const user = (await User.adminUserSearch(
-        {
-          email: "thruthesky@gmail.com",
-        },
-        { auth: { uid: userA } }
+          {
+            email: "thruthesky@gmail.com",
+          },
+          { auth: { uid: userA } }
       )) as UserRecord;
       console.log(user);
       expect(user.email).equal("thruthesky@gmail.com");

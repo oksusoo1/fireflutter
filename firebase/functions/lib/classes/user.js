@@ -130,8 +130,11 @@ class User {
             //   console.log(userIdentifier);
             // });
             if (result.users.length == 0)
-                return defines_1.ERROR_USER_NOT_FOUND;
+                return defines_1.ERROR_USER_AUTH_NOT_FOUND;
             const user = result.users[0];
+            const userDoc = await this.get(user.uid);
+            if (!userDoc)
+                return defines_1.ERROR_USER_DOC_NOT_FOUND;
             return user;
         }
         catch (e) {
