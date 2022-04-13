@@ -57,9 +57,18 @@ class Post extends StatelessWidget {
           },
           padding: padding,
         ),
-        Text(
-          '* earned ${post.point} points',
-          style: TextStyle(fontSize: 12, color: Colors.grey.shade300),
+        if (post.point > 0)
+          Padding(
+            padding: const EdgeInsets.only(left: 16, bottom: 16),
+            child: Text(
+              '* earned ${post.point} points',
+              style: TextStyle(fontSize: 12, color: Colors.grey.shade300),
+            ),
+          ),
+        PointBuilder(
+          uid: post.uid,
+          id: post.id,
+          type: 'post',
         ),
         if (post.summary != '')
           Container(
@@ -71,8 +80,7 @@ class Post extends StatelessWidget {
               children: [
                 Text(
                   'Summary',
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold, color: Colors.grey),
+                  style: TextStyle(fontWeight: FontWeight.bold, color: Colors.grey),
                 ),
                 Text(
                   post.summary,
