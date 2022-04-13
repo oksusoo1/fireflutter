@@ -72,8 +72,6 @@ class _CommentState extends State<Comment> with FirestoreMixin {
         /// is it immediate child?
         final CommentModel c = CommentModel.fromJson(snapshot.data() as Json, id: snapshot.id);
 
-        // print("${snapshot.id} => ${c.content}");
-
         /// if immediate child comment,
         if (c.postId == c.parentId) {
           /// add at bottom
@@ -84,9 +82,6 @@ class _CommentState extends State<Comment> with FirestoreMixin {
           if (i >= 0) {
             c.depth = comments[i].depth + 1;
             comments.insert(i + 1, c);
-          } else {
-            // error; can't find parent comment.
-            // print('---> error?; $c');
           }
         }
 

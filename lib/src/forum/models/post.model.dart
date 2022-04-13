@@ -306,7 +306,7 @@ class PostModel with FirestoreMixin, ForumBase {
   }
 
   /// See readme.
-  @Deprecated('Use CommentApi')
+  // @Deprecated('Use CommentApi')
   Future<void> delete() async {
     if (files.length > 0) {
       for (final url in files) {
