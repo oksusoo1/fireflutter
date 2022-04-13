@@ -2,8 +2,7 @@ import '../../../fireflutter.dart';
 import 'package:flutter/material.dart';
 
 class SendPushNotification extends StatefulWidget {
-  const SendPushNotification({Key? key, required this.onError, this.arguments})
-      : super(key: key);
+  const SendPushNotification({Key? key, required this.onError, this.arguments}) : super(key: key);
 
   final Function onError;
   final Map? arguments;
@@ -32,7 +31,7 @@ class _SendPushNotificationState extends State<SendPushNotification> {
   void initState() {
     super.initState();
 
-    print(widget.arguments);
+    // print(widget.arguments);
     if (widget.arguments != null) {
       if (widget.arguments!['tokens'] != null) {
         tokens.text = widget.arguments!['tokens'];
@@ -63,8 +62,7 @@ class _SendPushNotificationState extends State<SendPushNotification> {
             title: DropdownButton(
               isExpanded: true,
               value: sendOption,
-              items: dropdownItem.keys
-                  .map<DropdownMenuItem<String>>((String value) {
+              items: dropdownItem.keys.map<DropdownMenuItem<String>>((String value) {
                 return DropdownMenuItem<String>(
                   value: value,
                   child: Text(

@@ -43,9 +43,18 @@ class FunctionsApi {
       data['uid'] = UserService.instance.uid;
       data['password'] = password;
     }
-    final httpsUri = Uri(queryParameters: data);
 
+    /// Debug URL
+    Map<String, dynamic> temp = Map<String, dynamic>.from(data);
+    for (final k in temp.keys) {
+      if (temp[k] != null && !(temp[k] is String) && !(temp[k] is List) && !(temp[k] is Map)) {
+        temp[k] = data[k].toString();
+      }
+    }
+    final httpsUri = Uri(queryParameters: temp);
     log(FunctionsApi.instance.serverUrl + functionName + httpsUri.toString());
+
+    /// EO Debug URL
 
     try {
       final res = await dio.post(

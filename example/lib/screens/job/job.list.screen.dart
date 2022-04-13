@@ -14,8 +14,10 @@ class JobListScreen extends StatefulWidget {
   State<JobListScreen> createState() => _JobListScreenState();
 }
 
-class _JobListScreenState extends State<JobListScreen>
-    with FirestoreMixin, ForumMixin {
+class _JobListScreenState extends State<JobListScreen> with FirestoreMixin, ForumMixin {
+  String siNm = '';
+  String sggNm = '';
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -23,14 +25,69 @@ class _JobListScreenState extends State<JobListScreen>
         title: Text('Job List'),
       ),
       body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
               TextButton(
-                onPressed: () =>
-                    AppService.instance.open(JobEditScreen.routeName),
+                onPressed: () => AppService.instance.open(JobEditScreen.routeName),
                 child: Text('Create a job opening'),
               ),
+            ],
+          ),
+          Text('''
+@TODO:
+Search with the combanation of: Company name, location(province), location(city), job category, working hours, working days of week, accommodations, salary,
+'''),
+          Divider(),
+          Text('Job search options'),
+          Divider(),
+          Text(
+            'Select location',
+            style: TextStyle(fontSize: 11, color: Colors.grey.shade700),
+          ),
+          Wrap(
+            children: [
+              DropdownButton<String>(
+                value: siNm,
+                items: [
+                  DropdownMenuItem(
+                    child: Text('Select location'),
+                    value: '',
+                  ),
+                  for (final name in JobService.instance.areas.keys)
+                    DropdownMenuItem(
+                      child: Text(name),
+                      value: name,
+                    )
+                ],
+                onChanged: (s) {
+                  setState(
+                    () {
+                      siNm = s ?? '';
+                    },
+                  );
+                },
+              ),
+              if (siNm != '')
+                DropdownButton<String>(
+                    value: sggNm,
+                    items: [
+                      DropdownMenuItem(
+                        child: Text('Select city/county/gu'),
+                        value: '',
+                      ),
+                      for (final name in JobService.instance.areas[siNm]!)
+                        DropdownMenuItem(
+                          child: Text(name),
+                          value: name,
+                        )
+                    ],
+                    onChanged: (s) {
+                      setState(() {
+                        sggNm = s ?? '';
+                      });
+                    }),
             ],
           ),
         ],

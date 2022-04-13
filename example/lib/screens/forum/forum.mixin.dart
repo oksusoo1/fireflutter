@@ -14,8 +14,9 @@ mixin ForumMixin {
         return CommentEditDialog(
           onCancel: AppService.instance.back,
           onError: error,
-          onSubmit: (Json form) async {
+          onSubmit: (Json form, progress) async {
             try {
+              progress(true);
               await CommentApi.instance.create(
                 postId: post.id,
                 parentId: comment?.id ?? post.id,
@@ -25,6 +26,7 @@ mixin ForumMixin {
               AppService.instance.back();
             } catch (e) {
               error(e);
+              progress(false);
             }
           },
         );
@@ -41,8 +43,9 @@ mixin ForumMixin {
           comment: comment,
           onCancel: AppService.instance.back,
           onError: error,
-          onSubmit: (Json form) async {
+          onSubmit: (Json form, progress) async {
             try {
+              progress(true);
               await CommentApi.instance.update(
                 id: comment.id,
                 content: form['content'],
@@ -56,6 +59,7 @@ mixin ForumMixin {
               AppService.instance.back();
             } catch (e) {
               error(e);
+              progress(false);
             }
           },
         );

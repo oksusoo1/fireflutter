@@ -33,7 +33,7 @@ class _PointHistoryState extends State<PointHistory> {
         loading = false;
       });
     } catch (e) {
-      debugPrint(e.toString());
+      // debugPrint(e.toString());
     }
   }
 

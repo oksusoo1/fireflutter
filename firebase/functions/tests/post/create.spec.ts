@@ -75,4 +75,37 @@ describe("Post create test", () => {
 
     expect(post.id).equals(documentId);
   });
+
+  it("Files test - undefined", async () => {
+    const category = await Test.createCategory();
+    const post = await Post.create({
+      uid: "a",
+      category: category.id,
+    });
+    expect(post.files).to.be.an("array");
+    expect(post.hasPhoto).to.be.false;
+  });
+  it("Files test - empty array", async () => {
+    const category = await Test.createCategory();
+    const post = await Post.create({
+      uid: "a",
+      category: category.id,
+      files: [],
+    });
+    expect(post.files).to.be.an("array");
+    expect(post.hasPhoto).to.be.false;
+  });
+  it("Files test - two photos", async () => {
+    const category = await Test.createCategory();
+    const post = await Post.create({
+      uid: "a",
+      category: category.id,
+      files: ["a", "b"],
+    });
+    expect(post.files).to.be.an("array");
+    expect(post.hasPhoto).to.be.true;
+    expect(post).to.be.an("object").to.have.property("files").to.be.an("array").lengthOf(2);
+    expect(post.files![0]).equals("a");
+    expect(post.files![1]).equals("b");
+  });
 });

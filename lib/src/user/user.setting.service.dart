@@ -60,7 +60,7 @@ class UserSettingService with DatabaseMixin {
               }
               changes.add(_settings);
             }, onError: (e) {
-              print('====> UserSettingsDoc listening error; $e');
+              // print('====> UserSettingsDoc listening error; $e');
             });
           }
         }
@@ -111,11 +111,10 @@ class UserSettingService with DatabaseMixin {
   }
 
   Future<void> unsubscribeAllTopic() async {
-    await CategoryService.instance.getCategories(categoryMenu: 'community');
+    await CategoryService.instance.loadCategories(categoryGroup: 'community');
     for (CategoryModel cat in CategoryService.instance.categories) {
       await FirebaseMessaging.instance.unsubscribeFromTopic('posts_${cat.id}');
-      await FirebaseMessaging.instance
-          .unsubscribeFromTopic('comments_${cat.id}');
+      await FirebaseMessaging.instance.unsubscribeFromTopic('comments_${cat.id}');
     }
   }
 

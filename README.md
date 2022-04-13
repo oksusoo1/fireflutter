@@ -1299,14 +1299,14 @@ DynamicLinksService.instance.listen((Uri? deepLink) {
 
 ### Category menu group
 
-- Admin can set category menu at `categoryMenu` field in `settings/forum` of firetore document.
+- Admin can set category menu(or category group) at `categoryGroup` field in `settings/forum` of firetore document.
   - You can input multiple menu name separated by comman. For instance, "community,job".
 - The app can display the category menu on select box in the admin category setting screen.
-- Admin can, then, choose one of `category menu` for the category.
+- Admin can, then, choose one of `category group` for the category.
 - Use case.
   - App can display categories of `community` category menu on the menu of community screen.
   - App can display categories of `community` category on the notifications setting screen. So that, users can only subscribe(or unsubscribe) community categories only.
-  - Use `categoryMenu` to group categories for listing, managing and more.
+  - Use `categoryGroup` to group categories for listing, managing and more.
 
 
 
