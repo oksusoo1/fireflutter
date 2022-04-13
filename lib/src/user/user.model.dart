@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import '../../fireflutter.dart';
+import 'package:email_validator/email_validator.dart';
 
 /// UserModel
 ///
@@ -9,6 +10,7 @@ import '../../fireflutter.dart';
 class UserModel with FirestoreMixin, DatabaseMixin {
   UserModel({
     this.uid = '',
+    this.email = '',
     this.firstName = '',
     this.middleName = '',
     this.lastName = '',
@@ -24,7 +26,8 @@ class UserModel with FirestoreMixin, DatabaseMixin {
     this.updatedAt = 0,
   });
 
-  final fields = [
+  final allowedFields = [
+    'email',
     'firstName',
     'middleName',
     'lastName',
@@ -45,8 +48,10 @@ class UserModel with FirestoreMixin, DatabaseMixin {
 
   /// Returns currently signed in user's uid or empty string.
   String get phoneNumber => currentUser?.phoneNumber ?? '';
-  String get email => currentUser?.email ?? '';
-  bool get emailIsVerified => currentUser?.emailVerified ?? false;
+
+  // No more email verification by Apr 13, 2022.
+  // String get email => currentUser?.email ?? '';
+  // bool get emailIsVerified => currentUser?.emailVerified ?? false;
 
   /// This is the user's document id which is the uid.
   /// If it is empty, the user may not be signed-in
@@ -60,6 +65,8 @@ class UserModel with FirestoreMixin, DatabaseMixin {
   bool get docExists => registeredAt > 0;
   bool isAdmin;
   bool disabled;
+
+  String email;
 
   String firstName;
   String middleName;
@@ -132,6 +139,7 @@ class UserModel with FirestoreMixin, DatabaseMixin {
 
     return UserModel(
       uid: uid,
+      email: data['email'] ?? '',
       isAdmin: data['isAdmin'] ?? false,
       disabled: data['disabled'] ?? false,
       firstName: data['firstName'] ?? '',
@@ -151,6 +159,7 @@ class UserModel with FirestoreMixin, DatabaseMixin {
   /// Data for updating firestore user document
   Map<String, dynamic> get data {
     return {
+      'email': email,
       'firstName': firstName,
       'middleName': middleName,
       'lastName': lastName,
@@ -222,7 +231,9 @@ class UserModel with FirestoreMixin, DatabaseMixin {
   /// Return empty string('') if there is no error on profile.
   String get profileError {
     if (photoUrl == '') return ERROR_NO_PROFILE_PHOTO;
-    if (email == '') return ERROR_NO_EMAIL;
+    if (email == '')
+      return ERROR_NO_EMAIL;
+    else if (EmailValidator.validate(email) == false) return ERROR_MALFORMED_EMAIL;
     if (firstName == '') return ERROR_NO_FIRST_NAME;
     if (lastName == '') return ERROR_NO_LAST_NAME;
     if (gender == '') return ERROR_NO_GENER;
@@ -259,7 +270,7 @@ class UserModel with FirestoreMixin, DatabaseMixin {
   /// return update(field: 'nickname', value: name);
   /// ```
   Future<void> update({required String field, required dynamic value}) {
-    if (fields.indexOf(field) == -1) {
+    if (allowedFields.indexOf(field) == -1) {
       // throw Exception(ERROR_NOT_SUPPORTED_FIELD_ON_USER_UPDATE);
       throw ERROR_NOT_SUPPORTED_FIELD_ON_USER_UPDATE;
     }
