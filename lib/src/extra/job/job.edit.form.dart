@@ -39,8 +39,12 @@ class _JobEditFormState extends State<JobEditForm> {
 
   String jobCategory = '';
   String salary = '';
-  int workingDays = 0;
-  int workingHours = 0;
+
+  /// -1 means that the user didn't select working days.
+  int workingDays = -1;
+
+  /// -1 means that the user didn't select working hours.
+  int workingHours = -1;
   String withAccomodation = '';
 
   getAddress() async {
@@ -177,6 +181,10 @@ class _JobEditFormState extends State<JobEditForm> {
               items: [
                 DropdownMenuItem(
                   child: Text('Select working days'),
+                  value: -1,
+                ),
+                DropdownMenuItem(
+                  child: Text('Flexible'),
                   value: 0,
                 ),
                 DropdownMenuItem(
@@ -204,10 +212,14 @@ class _JobEditFormState extends State<JobEditForm> {
               items: [
                 DropdownMenuItem(
                   child: Text('Select working housrs'),
+                  value: -1,
+                ),
+                DropdownMenuItem(
+                  child: Text('Flexible'),
                   value: 0,
                 ),
                 DropdownMenuItem(
-                  child: Text('1 Hour'),
+                  child: Text('1 hour'),
                   value: 1,
                 ),
                 for (int i = 2; i <= 14; i++)
@@ -366,8 +378,8 @@ class _JobEditFormState extends State<JobEditForm> {
     if (phoneNumber.text == '') return 'Input phone number';
     if (jobCategory == '') return 'Select job category';
     if (salary == '') return 'Select job salary';
-    if (workingDays == 0) return 'Select working days';
-    if (workingHours == 0) return 'Select working hours';
+    if (workingDays == -1) return 'Select working days';
+    if (workingHours == -1) return 'Select working hours';
     if (withAccomodation == '') return 'Select accomodation availability';
     return '';
   }
