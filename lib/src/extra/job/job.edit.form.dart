@@ -167,21 +167,12 @@ class _JobEditFormState extends State<JobEditForm> {
                         Text('* Select your address.')
                       else
                         Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text('${addr?.roadAddr}'),
-                              Text('${addr?.korAddr}'),
-                            ],
-                          ),
+                          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                            Text('${addr?.roadAddr}'),
+                            Text('${addr?.korAddr}'),
+                          ]),
                         ),
-                      Text(
-                        'Select',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.blue,
-                        ),
-                      ),
+                      Text('Select', style: TextStyle(fontSize: 14, color: Colors.blue)),
                     ],
                   ),
                   SizedBox(height: 5),
@@ -212,7 +203,7 @@ class _JobEditFormState extends State<JobEditForm> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 /// Job category
-                Text('Job category', style: TextStyle(fontSize: 11, color: Colors.grey.shade700)),
+                Text('Job category', style: TextStyle(fontSize: 14, color: Colors.grey.shade700)),
                 DropdownButton<String>(
                   value: jobCategory,
                   items: [
@@ -244,7 +235,7 @@ class _JobEditFormState extends State<JobEditForm> {
                 SizedBox(height: 8),
                 Text(
                   'Working days per week',
-                  style: TextStyle(fontSize: 11, color: Colors.grey.shade700),
+                  style: TextStyle(fontSize: 14, color: Colors.grey.shade700),
                 ),
                 DropdownButton<int>(
                   value: workingDays,
@@ -282,8 +273,10 @@ class _JobEditFormState extends State<JobEditForm> {
 
                 /// Working hours
                 SizedBox(height: 8),
-                Text('Working hour per day',
-                    style: TextStyle(fontSize: 11, color: Colors.grey.shade700)),
+                Text(
+                  'Working hour per day',
+                  style: TextStyle(fontSize: 14, color: Colors.grey.shade700),
+                ),
                 DropdownButton<int>(
                   value: workingHours,
                   items: [
@@ -320,7 +313,7 @@ class _JobEditFormState extends State<JobEditForm> {
 
                 /// Salary
                 SizedBox(height: 8),
-                Text('Salary', style: TextStyle(fontSize: 11, color: Colors.grey.shade700)),
+                Text('Salary', style: TextStyle(fontSize: 14, color: Colors.grey.shade700)),
                 DropdownButton<String>(
                   value: salary,
                   items: [
@@ -408,7 +401,7 @@ class _JobEditFormState extends State<JobEditForm> {
               children: [
                 Text(
                   'Includes accomodation?',
-                  style: TextStyle(fontSize: 11, color: Colors.grey.shade700),
+                  style: TextStyle(fontSize: 14, color: Colors.grey.shade700),
                 ),
                 SizedBox(height: 5),
                 Row(
