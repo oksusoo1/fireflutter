@@ -172,6 +172,9 @@ class Messaging {
                 },
             },
         };
+        if (res.notification.title != "") {
+            res.notification.title = res.notification.title.substring(0, 64);
+        }
         if (res.notification.body != "") {
             res.notification.body = (_f = utils_1.Utils.removeHtmlTags(res.notification.body)) !== null && _f !== void 0 ? _f : "";
             res.notification.body = (_g = utils_1.Utils.decodeHTMLEntities(res.notification.body)) !== null && _g !== void 0 ? _g : "";

@@ -95,8 +95,8 @@ export class User {
   }
 
   static async disableUser(
-    data: any,
-    context: any
+      data: any,
+      context: any
   ): Promise<
     | admin.auth.UserRecord
     | {

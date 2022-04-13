@@ -16,6 +16,7 @@ const meilisearch_1 = require("../classes/meilisearch");
  * @test how to run in shell
  * % npm run shell
  * > onPostCreateIndex({uid: 'a'}, {params: {postId: 'p-1'}});
+ *
  */
 exports.onPostCreateIndex = functions
     .region("asia-northeast3")

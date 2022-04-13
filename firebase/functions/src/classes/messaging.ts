@@ -178,7 +178,7 @@ export class Messaging {
       },
     };
 
-    if (res.notification.title != '') {
+    if (res.notification.title != "") {
       res.notification.title = res.notification.title.substring(0, 64);
     }
 

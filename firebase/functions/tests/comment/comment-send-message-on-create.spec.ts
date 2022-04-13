@@ -98,8 +98,8 @@ describe("Send message on comment create test", () => {
     }
 
     await Messaging.updateToken(
-      b,
-      "fz-jn81hQoCNcFinQ80_vV:APA91bGZ-6bS4na3cFDo201QW9Kkqha7VeHP8q-mkCwgqjhJv-yteIEnmYEyfdewnsi9eqx85weotQ2ZbDc_yKKV2iMHPEcDIhDbczzmftGCsY69lX6JCCR_a8_T_GGt67X8c2WG0yg0"
+        b,
+        "fz-jn81hQoCNcFinQ80_vV:APA91bGZ-6bS4na3cFDo201QW9Kkqha7VeHP8q-mkCwgqjhJv-yteIEnmYEyfdewnsi9eqx85weotQ2ZbDc_yKKV2iMHPEcDIhDbczzmftGCsY69lX6JCCR_a8_T_GGt67X8c2WG0yg0"
     );
     await Ref.userSetting(b, "topic").set({ ["comments_" + post!.category]: false });
     const res4 = await Post.sendMessageOnCommentCreate(comment2!, comment2!.id);
