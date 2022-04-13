@@ -14,9 +14,11 @@ class JobListScreen extends StatefulWidget {
   State<JobListScreen> createState() => _JobListScreenState();
 }
 
-class _JobListScreenState extends State<JobListScreen> with FirestoreMixin, ForumMixin {
+class _JobListScreenState extends State<JobListScreen>
+    with FirestoreMixin, ForumMixin {
   String siNm = '';
   String sggNm = '';
+  String job = '';
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +32,8 @@ class _JobListScreenState extends State<JobListScreen> with FirestoreMixin, Foru
           Row(
             children: [
               TextButton(
-                onPressed: () => AppService.instance.open(JobEditScreen.routeName),
+                onPressed: () =>
+                    AppService.instance.open(JobEditScreen.routeName),
                 child: Text('Create a job opening'),
               ),
             ],
@@ -64,6 +67,9 @@ Search with the combanation of: Company name, location(province), location(city)
                 onChanged: (s) {
                   setState(
                     () {
+                      if (siNm != s) {
+                        sggNm = '';
+                      }
                       siNm = s ?? '';
                     },
                   );
@@ -71,23 +77,43 @@ Search with the combanation of: Company name, location(province), location(city)
               ),
               if (siNm != '')
                 DropdownButton<String>(
-                    value: sggNm,
-                    items: [
+                  value: sggNm,
+                  items: [
+                    DropdownMenuItem(
+                      child: Text('Select city/county/gu'),
+                      value: '',
+                    ),
+                    for (final name in JobService.instance.areas[siNm]!)
                       DropdownMenuItem(
-                        child: Text('Select city/county/gu'),
-                        value: '',
-                      ),
-                      for (final name in JobService.instance.areas[siNm]!)
-                        DropdownMenuItem(
-                          child: Text(name),
-                          value: name,
-                        )
-                    ],
-                    onChanged: (s) {
-                      setState(() {
-                        sggNm = s ?? '';
-                      });
-                    }),
+                        child: Text(name),
+                        value: name,
+                      )
+                  ],
+                  onChanged: (s) {
+                    setState(() {
+                      sggNm = s ?? '';
+                    });
+                  },
+                ),
+              DropdownButton<String>(
+                  value: job,
+                  items: [
+                    DropdownMenuItem(
+                      child: Text('Select job category'),
+                      value: '',
+                    ),
+                    ...JobService.instance.categories.entries
+                        .map((e) => DropdownMenuItem(
+                              child: Text(e.value),
+                              value: e.key,
+                            ))
+                        .toList(),
+                  ],
+                  onChanged: (s) {
+                    setState(() {
+                      job = s ?? '';
+                    });
+                  }),
             ],
           ),
         ],
