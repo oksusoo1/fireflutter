@@ -19,6 +19,7 @@ class CommentModel with FirestoreMixin, ForumBase {
     updatedAt,
     required this.data,
     this.files = const [],
+    this.point = 0,
   })  : createdAt = createdAt ?? Timestamp.now(),
         updatedAt = updatedAt ?? Timestamp.now();
 
@@ -52,6 +53,8 @@ class CommentModel with FirestoreMixin, ForumBase {
 
   bool get hasPhoto => files.length > 0;
 
+  int point;
+
   /// Get document data of map and convert it into post model
   ///
   /// If the comment is created via https, then the id of comment is inside data.
@@ -78,6 +81,7 @@ class CommentModel with FirestoreMixin, ForumBase {
       postId: data['postId'],
       parentId: data['parentId'],
       uid: data['uid'],
+      point: data['point'] ?? 0,
       deleted: data['deleted'] ?? false,
       like: data['like'] ?? 0,
       dislike: data['dislike'] ?? 0,
@@ -133,6 +137,7 @@ class CommentModel with FirestoreMixin, ForumBase {
       'depth': depth,
       'files': files,
       'uid': uid,
+      'point': point,
       'like': like,
       'dislike': dislike,
       'deleted': deleted,

@@ -148,7 +148,7 @@ Table of contents
     - [Use point property to dispaly point.](#use-point-property-to-dispaly-point)
     - [PointBuilder](#pointbuilder)
     - [MyPointBuilder](#mypointbuilder)
-    - [PostPoint and CommentPoint](#postpoint-and-commentpoint)
+    - [ForumPoint](#forumpoint)
   - [Displaying point history](#displaying-point-history)
   - [Senario](#senario)
 - [Extra Features](#extra-features)
@@ -1815,12 +1815,20 @@ PointBuilder(
 - For display login user's point, use `MyPointBuilder`.
 
 
-### PostPoint and CommentPoint
+### ForumPoint
 
 - Use this widget to dsipaly point of post and comment create.
 - This is not based on `/point/<uid>/postCreate` or `/point/<uid>/commentCreate`.
   - It is based on the `point` field of post document or comment document.
 
+
+```dart
+ForumPoint(
+  uid: comment.uid,
+  point: comment.point,
+  padding: EdgeInsets.only(top: 8.0, left: 8.0),
+),
+```
 
 
 

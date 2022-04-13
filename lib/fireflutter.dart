@@ -105,6 +105,7 @@ export 'src/forum/post.api.dart';
 export 'src/forum/comment.api.dart';
 export 'src/point/point.history.dart';
 export 'src/point/point.api.dart';
+export 'src/point/forum.point.dart';
 
 export 'src/functions.api.dart';
 export 'src/point/point.history.model.dart';
