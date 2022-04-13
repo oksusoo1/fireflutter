@@ -57,19 +57,7 @@ class Post extends StatelessWidget {
           },
           padding: padding,
         ),
-        if (post.point > 0)
-          Padding(
-            padding: const EdgeInsets.only(left: 16, bottom: 16),
-            child: Text(
-              '* earned ${post.point} points',
-              style: TextStyle(fontSize: 12, color: Colors.grey.shade300),
-            ),
-          ),
-        PointBuilder(
-          uid: post.uid,
-          id: post.id,
-          type: 'post',
-        ),
+        ForumPoint(uid: post.uid, point: post.point),
         if (post.summary != '')
           Container(
             padding: EdgeInsets.all(16),
