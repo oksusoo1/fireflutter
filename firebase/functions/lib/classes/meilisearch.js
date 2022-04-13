@@ -51,7 +51,7 @@ class Meilisearch {
             content: (_b = utils_1.Utils.removeHtmlTags(data.content)) !== null && _b !== void 0 ? _b : "",
             files: data.files ? data.files.join(",") : "",
             noOfComments: (_c = data.noOfComments) !== null && _c !== void 0 ? _c : 0,
-            // deleted: false,
+            deleted: false,
             createdAt: utils_1.Utils.getTimestamp(),
             updatedAt: utils_1.Utils.getTimestamp(),
         };
@@ -97,7 +97,7 @@ class Meilisearch {
             content: utils_1.Utils.removeHtmlTags(after.content),
             files: after.files ? after.files.join(",") : "",
             noOfComments: after.noOfComments,
-            // deleted: false,
+            deleted: false,
             updatedAt: utils_1.Utils.getTimestamp(),
         };
         const promises = [];

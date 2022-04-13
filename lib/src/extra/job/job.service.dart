@@ -4,6 +4,26 @@ import '../../../fireflutter.dart';
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 
+enum FormErrorCodes {
+  companyName,
+  mobileNumber,
+  phoneNumber,
+  email,
+  addr,
+  detailAddress,
+  aboutUs,
+  numberOfHiring,
+  jobDescription,
+  requirement,
+  duty,
+  benefit,
+  jobCategory,
+  salary,
+  workingDays,
+  workingHours,
+  withAccomodation
+}
+
 class JobService {
   static JobService? _instance;
   static JobService get instance {

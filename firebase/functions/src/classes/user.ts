@@ -13,7 +13,6 @@ import { UserCreate, UserDocument } from "../interfaces/user.interface";
 import { Ref } from "./ref";
 import { Utils } from "./utils";
 import * as admin from "firebase-admin";
-import { GetUsersResult } from "firebase-admin/lib/auth/base-auth";
 // import { GetUsersResult } from "firebase-admin/lib/auth/base-auth";
 // import { ErrorCodeMessage } from "../interfaces/common.interface";
 
@@ -138,7 +137,7 @@ export class User {
 
     // console.log(req);
     try {
-      const result: GetUsersResult = await this.auth.getUsers(req);
+      const result = await this.auth.getUsers(req);
       // result.users.forEach((userRecord) => {
       //   console.log(userRecord);
       // });

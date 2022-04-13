@@ -178,6 +178,10 @@ export class Messaging {
       },
     };
 
+    if (res.notification.title != "") {
+      res.notification.title = res.notification.title.substring(0, 64);
+    }
+
     if (res.notification.body != "") {
       res.notification.body = Utils.removeHtmlTags(res.notification.body) ?? "";
       res.notification.body = Utils.decodeHTMLEntities(res.notification.body) ?? "";
