@@ -19,24 +19,24 @@ class JobEditForm extends StatefulWidget {
 }
 
 class _JobEditFormState extends State<JobEditForm> {
-  final companyName = TextEditingController();
-  final phoneNumber = TextEditingController();
-  final mobileNumber = TextEditingController();
-  final email = TextEditingController();
+  final companyName = TextEditingController(text: 'test company name');
+  final phoneNumber = TextEditingController(text: 'test phone number');
+  final mobileNumber = TextEditingController(text: 'text mobile number');
+  final email = TextEditingController(text: 'test email');
   final jobCategory = TextEditingController();
-  final workingHours = TextEditingController();
-  final detailAddress = TextEditingController();
-  final aboutUs = TextEditingController();
-  final numberOfHiring = TextEditingController();
-  final jobDescription = TextEditingController();
-  final requirement = TextEditingController();
-  final duty = TextEditingController();
+  final detailAddress = TextEditingController(text: 'test detail address');
+  final aboutUs = TextEditingController(text: 'test about us');
+  final numberOfHiring = TextEditingController(text: '3');
+  final jobDescription = TextEditingController(text: 'test job descriptiom');
+  final requirement = TextEditingController(text: 'test requirement');
+  final duty = TextEditingController(text: 'test duty');
   final salary = TextEditingController();
-  final benefit = TextEditingController();
+  final benefit = TextEditingController(text: 'test benefits');
 
   AddressModel? addr;
 
   String selected = '';
+  int workingHours = 0;
 
   getAddress() async {
     addr = await JobService.instance.inputAddress(context);
@@ -124,13 +124,8 @@ class _JobEditFormState extends State<JobEditForm> {
               labelText: "Input detail address",
             ),
           ),
-        // TextField(
-        //   controller: jobCategory,
-        //   decoration: InputDecoration(
-        //     labelText: "Job category(industry) - @todo select box",
-        //   ),
-        // ),
 
+        Text('Job category', style: TextStyle(fontSize: 11, color: Colors.grey.shade700)),
         DropdownButton<String>(
             value: selected,
             items: [
@@ -152,13 +147,7 @@ class _JobEditFormState extends State<JobEditForm> {
                 jobCategory.text = s ?? '';
               });
             }),
-        // Select(
-        //   defaultLabel: "Select job category",
-        //   options: JobService.instance.categories,
-        //   onChanged: (v) {
-        //     print(v);
-        //   },
-        // ),
+
         TextField(
           controller: aboutUs,
           decoration: InputDecoration(
@@ -171,12 +160,28 @@ class _JobEditFormState extends State<JobEditForm> {
             labelText: "Number of hiring",
           ),
         ),
-        TextField(
-          controller: workingHours,
-          decoration: InputDecoration(
-            labelText: "Working hours",
-          ),
-        ),
+
+        Text('Working hours', style: TextStyle(fontSize: 11, color: Colors.grey.shade700)),
+        DropdownButton<int>(
+            value: workingHours,
+            items: [
+              DropdownMenuItem(
+                child: Text('Select working housrs'),
+                value: 0,
+              ),
+              for (int i = 2; i <= 14; i++)
+                DropdownMenuItem(
+                  child: Text('$i hours'),
+                  value: i,
+                ),
+            ],
+            onChanged: (n) {
+              // print('s; $s');
+              setState(() {
+                workingHours = n ?? 0;
+              });
+            }),
+
         TextField(
           controller: jobDescription,
           decoration: InputDecoration(
@@ -212,6 +217,10 @@ class _JobEditFormState extends State<JobEditForm> {
         /// daesung gimhae
         ElevatedButton(
           onPressed: () async {
+            if (companyName.text == '') return widget.onError('Select company name');
+            if (phoneNumber.text == '') return widget.onError('Select phone number');
+            if (jobCategory.text == '') return widget.onError('Select job category');
+
             try {
               final extra = {
                 'companyName': companyName.text,
@@ -219,7 +228,7 @@ class _JobEditFormState extends State<JobEditForm> {
                 'mobileNumber': mobileNumber.text,
                 'email': email.text,
                 'jobCategory': jobCategory.text,
-                'workingHours': workingHours.text,
+                'workingHours': workingHours,
                 'detailAddress': detailAddress.text,
                 'aboutUs': aboutUs.text,
                 'numberOfHiring': numberOfHiring.text,
@@ -236,8 +245,19 @@ class _JobEditFormState extends State<JobEditForm> {
                 'emdNm': addr?.emdNm ?? '',
               };
               print(extra);
-              // await PostApi.instance.create(category: 'job_openings', extra: extra);
-            } catch (e) {
+
+              /// For indexing and listing in normal forum.
+              String title = "";
+              String content = "";
+
+              await PostApi.instance.create(
+                category: JobService.instance.jobOpenings,
+                title: title,
+                content: content,
+                extra: extra,
+              );
+            } catch (e, stacks) {
+              debugPrintStack(stackTrace: stacks);
               widget.onError(e);
             }
           },
