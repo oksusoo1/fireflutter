@@ -129,4 +129,9 @@ class JobInfoModel {
       };
 
   AddressModel get address => AddressModel.fromMap(toMap);
+
+  @override
+  String toString() {
+    return '''JobInfoModel($toMap)''';
+  }
 }
