@@ -112,17 +112,6 @@ class _JobEditFormState extends State<JobEditForm> {
     setState(() {});
   }
 
-  String? validateTextField(String? value, FormErrorCodes code) {
-    if (value == null || value.isEmpty) return jobFormErrorMessages[code.index];
-    return null;
-  }
-
-  String? validateEmailField(String? value) {
-    if (value == null) return jobFormErrorMessages[FormErrorCodes.email];
-    if (EmailValidator.validate(value) == false) return "*Please provide a valid email";
-    return null;
-  }
-
   @override
   Widget build(BuildContext context) {
     // Timer(Duration(milliseconds: 100), getAddress);
@@ -142,9 +131,9 @@ class _JobEditFormState extends State<JobEditForm> {
             /// Company name
             JobEditFormTextField(
               label: "Company name",
-              controller: companyName,
-              validator: (v) => validateTextField(v, FormErrorCodes.companyName),
-              formKey: _formKey,
+              initialValue: '',
+              onChanged: (v) => '',
+              validator: (v) => validateFieldStringValue(v, FormErrorCodes.companyName),
             ),
 
             /// Company mobile number
@@ -152,8 +141,7 @@ class _JobEditFormState extends State<JobEditForm> {
               controller: mobileNumber,
               keyboardType: TextInputType.phone,
               label: "Mobile phone number",
-              validator: (v) => validateTextField(v, FormErrorCodes.mobileNumber),
-              formKey: _formKey,
+              validator: (v) => validateFieldStringValue(v, FormErrorCodes.mobileNumber),
             ),
 
             /// Company phone number
@@ -161,18 +149,15 @@ class _JobEditFormState extends State<JobEditForm> {
               controller: phoneNumber,
               keyboardType: TextInputType.phone,
               label: "Office phone number",
-              validator: (v) => validateTextField(v, FormErrorCodes.phoneNumber),
-              formKey: _formKey,
+              validator: (v) => validateFieldStringValue(v, FormErrorCodes.phoneNumber),
             ),
 
             /// Company email
-            ///
             JobEditFormTextField(
               controller: email,
               keyboardType: TextInputType.emailAddress,
               label: "Email address",
               validator: (v) => validateEmailField(v),
-              formKey: _formKey,
             ),
 
             /// Company about us
@@ -180,8 +165,7 @@ class _JobEditFormState extends State<JobEditForm> {
               controller: aboutUs,
               label: "About us",
               maxLines: 5,
-              validator: (v) => validateTextField(v, FormErrorCodes.aboutUs),
-              formKey: _formKey,
+              validator: (v) => validateFieldStringValue(v, FormErrorCodes.aboutUs),
             ),
 
             /// Company address
@@ -222,7 +206,6 @@ class _JobEditFormState extends State<JobEditForm> {
                       ],
                     ),
                     SizedBox(height: 5),
-                    errorMessageWidget(FormErrorCodes.addr),
                   ],
                 ),
               ),
@@ -234,8 +217,7 @@ class _JobEditFormState extends State<JobEditForm> {
                 controller: detailAddress,
                 label: "Input detail address",
                 maxLines: 2,
-                validator: (v) => validateTextField(v, FormErrorCodes.detailAddress),
-                formKey: _formKey,
+                validator: (v) => validateFieldStringValue(v, FormErrorCodes.detailAddress),
               ),
             ],
 
@@ -249,14 +231,12 @@ class _JobEditFormState extends State<JobEditForm> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   /// Job category
-                  Text('Job category', style: TextStyle(fontSize: 14, color: Colors.grey.shade700)),
-                  DropdownButton<String>(
+                  JobEditFormDropdownField<String>(
+                    label: 'Job category',
+                    validator: (v) => validateFieldStringValue(v, FormErrorCodes.jobCategory),
                     value: jobCategory,
                     items: [
-                      DropdownMenuItem(
-                        child: Text('Select job category'),
-                        value: '',
-                      ),
+                      DropdownMenuItem(child: Text('Select job category'), value: ''),
                       ...JobService.instance.categories.entries
                           .map((e) => DropdownMenuItem(
                                 child: Text(e.value),
@@ -265,25 +245,13 @@ class _JobEditFormState extends State<JobEditForm> {
                           .toList(),
                     ],
                     onChanged: (s) {
-                      if (s != null && s.isNotEmpty) {
-                        errors.remove(FormErrorCodes.jobCategory);
-                      } else {
-                        errors.add(FormErrorCodes.jobCategory);
-                      }
-                      setState(() {
-                        jobCategory = s ?? '';
-                      });
+                      setState(() => jobCategory = s ?? '');
                     },
                   ),
-                  errorMessageWidget(FormErrorCodes.jobCategory),
 
                   /// Working days
-                  SizedBox(height: 8),
-                  Text(
-                    'Working days per week',
-                    style: TextStyle(fontSize: 14, color: Colors.grey.shade700),
-                  ),
-                  DropdownButton<int>(
+                  JobEditFormDropdownField<int>(
+                    label: 'Working days per week',
                     value: workingDays,
                     items: [
                       DropdownMenuItem(
@@ -304,27 +272,13 @@ class _JobEditFormState extends State<JobEditForm> {
                           value: i,
                         ),
                     ],
-                    onChanged: (n) {
-                      if (n != null && n > -1) {
-                        errors.remove(FormErrorCodes.workingDays);
-                      } else {
-                        errors.add(FormErrorCodes.workingDays);
-                      }
-                      setState(() {
-                        workingDays = n ?? -1;
-                      });
-                    },
+                    onChanged: (n) => setState(() => workingDays = n ?? -1),
+                    validator: (v) => validateFieldIntValue(v, FormErrorCodes.workingDays),
                   ),
-                  errorMessageWidget(FormErrorCodes.workingDays),
 
                   /// Working hours
-                  SizedBox(height: 8),
-                  Text(
-                    'Working hour per day',
-                    style: TextStyle(fontSize: 14, color: Colors.grey.shade700),
-                  ),
-
-                  DropdownButton<int>(
+                  JobEditFormDropdownField<int>(
+                    label: 'Working hour per day',
                     value: workingHours,
                     items: [
                       DropdownMenuItem(
@@ -345,18 +299,13 @@ class _JobEditFormState extends State<JobEditForm> {
                           value: i,
                         ),
                     ],
-                    onChanged: (n) {
-                      setState(() {
-                        workingHours = n ?? -1;
-                      });
-                    },
+                    onChanged: (n) => setState(() => workingHours = n ?? -1),
+                    validator: (v) => validateFieldIntValue(v, FormErrorCodes.workingHours),
                   ),
-                  errorMessageWidget(FormErrorCodes.workingHours),
 
                   /// Salary
-                  SizedBox(height: 8),
-                  Text('Salary', style: TextStyle(fontSize: 14, color: Colors.grey.shade700)),
-                  DropdownButton<String>(
+                  JobEditFormDropdownField<String>(
+                    label: 'Salary',
                     value: salary,
                     items: [
                       DropdownMenuItem(
@@ -370,18 +319,9 @@ class _JobEditFormState extends State<JobEditForm> {
                         ),
                       )
                     ],
-                    onChanged: (s) {
-                      if (s != null && s.isNotEmpty) {
-                        errors.remove(FormErrorCodes.salary);
-                      } else {
-                        errors.add(FormErrorCodes.salary);
-                      }
-                      setState(() {
-                        salary = s ?? "";
-                      });
-                    },
+                    onChanged: (s) => setState(() => salary = s ?? ''),
+                    validator: (v) => validateFieldStringValue(v, FormErrorCodes.salary),
                   ),
-                  errorMessageWidget(FormErrorCodes.salary),
                 ],
               ),
             ),
@@ -391,8 +331,7 @@ class _JobEditFormState extends State<JobEditForm> {
               controller: numberOfHiring,
               keyboardType: TextInputType.number,
               label: "Number of hiring",
-              validator: (v) => validateTextField(v, FormErrorCodes.numberOfHiring),
-              formKey: _formKey,
+              validator: (v) => validateFieldStringValue(v, FormErrorCodes.numberOfHiring),
             ),
 
             /// Job description
@@ -400,8 +339,7 @@ class _JobEditFormState extends State<JobEditForm> {
               controller: jobDescription,
               label: "Job description(details of what workers will do)",
               maxLines: 3,
-              validator: (v) => validateTextField(v, FormErrorCodes.jobDescription),
-              formKey: _formKey,
+              validator: (v) => validateFieldStringValue(v, FormErrorCodes.jobDescription),
             ),
 
             /// requirements
@@ -409,8 +347,7 @@ class _JobEditFormState extends State<JobEditForm> {
               controller: requirement,
               label: "Requirements and qualifications",
               maxLines: 5,
-              validator: (v) => validateTextField(v, FormErrorCodes.requirement),
-              formKey: _formKey,
+              validator: (v) => validateFieldStringValue(v, FormErrorCodes.requirement),
             ),
 
             /// duty
@@ -418,8 +355,7 @@ class _JobEditFormState extends State<JobEditForm> {
               controller: duty,
               label: "Duties and responsibilities",
               maxLines: 5,
-              validator: (v) => validateTextField(v, FormErrorCodes.duty),
-              formKey: _formKey,
+              validator: (v) => validateFieldStringValue(v, FormErrorCodes.duty),
             ),
 
             /// benefit
@@ -427,8 +363,7 @@ class _JobEditFormState extends State<JobEditForm> {
               controller: benefit,
               label: "benefits(free meals, dormitory, transporation, etc)",
               maxLines: 5,
-              validator: (v) => validateTextField(v, FormErrorCodes.benefit),
-              formKey: _formKey,
+              validator: (v) => validateFieldStringValue(v, FormErrorCodes.benefit),
             ),
 
             SizedBox(height: 8),
@@ -477,7 +412,6 @@ class _JobEditFormState extends State<JobEditForm> {
                     ],
                   ),
                   SizedBox(height: 5),
-                  errorMessageWidget(FormErrorCodes.withAccomodation),
 
                   /// Upload button
                   Divider(),
@@ -545,9 +479,7 @@ class _JobEditFormState extends State<JobEditForm> {
 
             Divider(),
 
-            // for (final errCode in errors) Text('${errorMessages[errCode.index]}'),
-
-            /// daesung gimhae
+            /// Submit button
             ElevatedButton(
               onPressed: onSubmit,
               child: Text('Submit'),
@@ -559,37 +491,42 @@ class _JobEditFormState extends State<JobEditForm> {
   }
 
   Future<void> onSubmit() async {
-    if (_formKey.currentState!.validate()) {
-      final jobInfo = JobInfoModel(
-        companyName: companyName.text,
-        phoneNumber: phoneNumber.text,
-        mobileNumber: mobileNumber.text,
-        email: email.text,
-        detailAddress: detailAddress.text,
-        aboutUs: aboutUs.text,
-        numberOfHiring: numberOfHiring.text,
-        jobDescription: jobDescription.text,
-        requirement: requirement.text,
-        duty: duty.text,
-        benefit: benefit.text,
-        roadAddr: addr?.roadAddr ?? '',
-        korAddr: addr?.korAddr ?? '',
-        zipNo: addr?.zipNo ?? '',
-        siNm: addr?.siNm ?? '',
-        sggNm: addr?.sggNm ?? '',
-        emdNm: addr?.emdNm ?? '',
-        jobCategory: jobCategory,
-        salary: salary,
-        workingDays: workingDays,
-        workingHours: workingHours,
-        withAccomodation: withAccomodation,
-      );
+    final isFormValid = _formKey.currentState!.validate();
+    if (!isFormValid) {
+      widget.onError("Please fill out required field!");
+      return;
+    }
 
-      final extra = jobInfo.toMap;
-      print(extra);
+    final jobInfo = JobInfoModel(
+      companyName: companyName.text,
+      phoneNumber: phoneNumber.text,
+      mobileNumber: mobileNumber.text,
+      email: email.text,
+      detailAddress: detailAddress.text,
+      aboutUs: aboutUs.text,
+      numberOfHiring: numberOfHiring.text,
+      jobDescription: jobDescription.text,
+      requirement: requirement.text,
+      duty: duty.text,
+      benefit: benefit.text,
+      roadAddr: addr?.roadAddr ?? '',
+      korAddr: addr?.korAddr ?? '',
+      zipNo: addr?.zipNo ?? '',
+      siNm: addr?.siNm ?? '',
+      sggNm: addr?.sggNm ?? '',
+      emdNm: addr?.emdNm ?? '',
+      jobCategory: jobCategory,
+      salary: salary,
+      workingDays: workingDays,
+      workingHours: workingHours,
+      withAccomodation: withAccomodation,
+    );
 
-      String title = "${companyName.text} $salary - ${jobInfo.siNm} ${jobInfo.sggNm}";
-      String content = """Office No.: ${jobInfo.phoneNumber}
+    final extra = jobInfo.toMap;
+    print(extra);
+
+    String title = "${companyName.text} $salary - ${jobInfo.siNm} ${jobInfo.sggNm}";
+    String content = """Office No.: ${jobInfo.phoneNumber}
 Mobile No.: ${jobInfo.mobileNumber}
 Email address: ${jobInfo.email}
 Address: ${jobInfo.roadAddr}
@@ -598,40 +535,39 @@ Korean Address: ${jobInfo.korAddr}
 Job category: ${jobInfo.jobCategory}
 No. of hiring: ${jobInfo.numberOfHiring}
 About us: ${jobInfo.aboutUs}
-requirement:
-duty:
-Salary:
-Working days: in a week
-Working hours: hours
-Accommodation
-Benefit:
+requirement: ${jobInfo.requirement}
+duty: ${jobInfo.duty}
+Salary: ${jobInfo.salary}
+Working days (in a week): ${jobInfo.workingDays}
+Working hours (in a day): ${jobInfo.workingHours}
+With accommodation: ${jobInfo.withAccomodation == 'Y' ? 'Yes' : 'No'}
+Benefit: ${jobInfo.benefit}
 
 """;
 
-      try {
-        if (isCreate) {
-          final create = await PostApi.instance.create(
-            category: JobService.instance.jobOpenings,
-            title: title,
-            content: content,
-            files: files,
-            extra: extra,
-          );
-          widget.onCreated(create.id);
-        } else {
-          final update = await PostApi.instance.update(
-            id: widget.post!.id,
-            title: title,
-            content: content,
-            files: files,
-            extra: extra,
-          );
-          widget.onUpdated(update.id);
-        }
-      } catch (e, stacks) {
-        debugPrintStack(stackTrace: stacks);
-        widget.onError(e);
+    try {
+      if (isCreate) {
+        final create = await PostApi.instance.create(
+          category: JobService.instance.jobOpenings,
+          title: title,
+          content: content,
+          files: files,
+          extra: extra,
+        );
+        widget.onCreated(create.id);
+      } else {
+        final update = await PostApi.instance.update(
+          id: widget.post!.id,
+          title: title,
+          content: content,
+          files: files,
+          extra: extra,
+        );
+        widget.onUpdated(update.id);
       }
+    } catch (e, stacks) {
+      debugPrintStack(stackTrace: stacks);
+      widget.onError(e);
     }
   }
 
@@ -640,55 +576,22 @@ Benefit:
     setState(() => withAccomodation = yN);
   }
 
-  /// checks if there is an error on the form. Or required data is not complete.
-  bool checkHasError() {
-    setState(errors.clear);
-    if (companyName.text == '') errors.add(FormErrorCodes.companyName);
-    if (mobileNumber.text == '') errors.add(FormErrorCodes.mobileNumber);
-    if (phoneNumber.text == '') errors.add(FormErrorCodes.phoneNumber);
-    if (email.text == '') errors.add(FormErrorCodes.email);
-
-    if (addr == null) errors.add(FormErrorCodes.addr);
-    if (detailAddress.text == '') errors.add(FormErrorCodes.detailAddress);
-    if (aboutUs.text == '') errors.add(FormErrorCodes.aboutUs);
-
-    if (jobDescription.text == '') errors.add(FormErrorCodes.jobDescription);
-    if (requirement.text == '') errors.add(FormErrorCodes.requirement);
-    if (duty.text == '') errors.add(FormErrorCodes.duty);
-    if (benefit.text == '') errors.add(FormErrorCodes.benefit);
-    if (jobCategory == '') errors.add(FormErrorCodes.jobCategory);
-    if (salary == '') errors.add(FormErrorCodes.salary);
-    if (numberOfHiring.text == '') errors.add(FormErrorCodes.numberOfHiring);
-
-    if (workingDays == -1) errors.add(FormErrorCodes.workingDays);
-    if (workingHours == -1) errors.add(FormErrorCodes.workingHours);
-    if (withAccomodation == '') errors.add(FormErrorCodes.withAccomodation);
-    setState(() {});
-    return errors.isNotEmpty;
-  }
-
-  /// Returns a widget if the given code have an error.
-  String? errorMessage(FormErrorCodes code) {
-    if (isSubmitted && errors.contains(code)) {
-      return jobFormErrorMessages[code.index];
-    }
+  /// Validates string value of a field.
+  String? validateFieldStringValue(String? value, FormErrorCodes code) {
+    if (value == null || value.isEmpty) return jobFormErrorMessages[code.index];
     return null;
   }
 
-  /// Returns error text widget
-  Widget errorMessageWidget(FormErrorCodes code) {
-    final String? error = errorMessage(code);
-    if (error != null) {
-      return Text(
-        '$error',
-        style: TextStyle(
-          fontSize: 12,
-          color: Colors.red,
-          fontStyle: FontStyle.italic,
-        ),
-      );
-    } else {
-      return SizedBox.shrink();
-    }
+  /// Validates int value of a field.
+  String? validateFieldIntValue(int? value, FormErrorCodes code) {
+    if (value == null || value < 0) return jobFormErrorMessages[code.index];
+    return null;
+  }
+
+  /// Validates email value of a field.
+  String? validateEmailField(String? value) {
+    if (value == null) return jobFormErrorMessages[FormErrorCodes.email];
+    if (EmailValidator.validate(value) == false) return "*Please provide a valid email";
+    return null;
   }
 }

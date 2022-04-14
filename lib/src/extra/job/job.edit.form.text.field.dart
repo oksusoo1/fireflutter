@@ -1,20 +1,27 @@
 import 'package:flutter/material.dart';
 
+/// sample use
+///    JobEditFormTextField(
+///      label: "Company name",
+///      initialValue: '',
+///      onChanged: (v) => '',
+///      validator: (v) => validateFieldStringValue(v, FormErrorCodes.companyName),
+///    ),
 class JobEditFormTextField extends StatelessWidget {
   JobEditFormTextField({
-    required this.controller,
     required this.label,
     required this.validator,
-    required this.formKey,
+    required this.initialValue,
+    required this.onChanged,
     this.keyboardType,
     this.maxLines,
     Key? key,
   }) : super(key: key);
 
-  final TextEditingController controller;
   final String label;
   final String? Function(String?) validator;
-  final GlobalKey<FormState> formKey;
+  final String initialValue;
+  final Function(String?) onChanged;
   final TextInputType? keyboardType;
   final int? maxLines;
 
@@ -23,12 +30,13 @@ class JobEditFormTextField extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: TextFormField(
-        controller: controller,
+        initialValue: initialValue,
+        autovalidateMode: AutovalidateMode.onUserInteraction,
         keyboardType: keyboardType,
         minLines: maxLines != null ? 1 : null,
         maxLines: maxLines,
         validator: validator,
-        onChanged: (v) => formKey.currentState!.validate(),
+        onChanged: onChanged,
         decoration: InputDecoration(labelText: label, border: OutlineInputBorder()),
       ),
     );
