@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+@Deprecated('Use standard form builder')
 class JobEditFormTextField extends StatelessWidget {
   JobEditFormTextField({
     required this.controller,

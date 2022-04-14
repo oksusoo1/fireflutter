@@ -22,8 +22,7 @@ class JobListView extends StatefulWidget {
 
 ///
 /// TODO - Remove 'category'
-/// TODO - Make one field on location ( siNm + sggNm ).
-/// TODO - Search combinatino: job category, location, working days, accommodation, createdAt.
+/// TODO - Search combinatino: job category, (siNm Or siNm+sggNm), working days, accommodation, createdAt.
 ///
 class _JobListViewState extends State<JobListView> with FirestoreMixin {
   Query get _searchQuery {
@@ -31,44 +30,27 @@ class _JobListViewState extends State<JobListView> with FirestoreMixin {
 
     final options = widget.options;
 
-    Query query = postCol;
-
-    bool added = false;
+    Query query = db.collection('jobs');
 
     if (options.siNm != '') {
       query = query.where('siNm', isEqualTo: options.siNm);
-      added = true;
     }
     if (options.sggNm != '') {
       query = query.where('sggNm', isEqualTo: options.sggNm);
-      added = true;
     }
     if (options.jobCategory != '') {
       query = query.where('jobCategory', isEqualTo: options.jobCategory);
-      added = true;
     }
-    if (options.workingHours != -1) {
-      query = query.where('workingHours', isEqualTo: options.workingHours);
-      added = true;
-    }
+
     if (options.workingDays != -1) {
       query = query.where('workingDays', isEqualTo: options.workingDays);
-      added = true;
     }
     if (options.accomodation != '') {
       query = query.where('withAccomodation', isEqualTo: options.accomodation);
-      added = true;
-    }
-    if (options.salary != '') {
-      query = query.where('salary', isEqualTo: options.salary);
-      added = true;
-    }
-
-    if (added == false) {
-      query = query.where('category', isEqualTo: JobService.instance.jobOpenings);
     }
 
     query = query.orderBy('createdAt', descending: true);
+
     return query;
   }
 

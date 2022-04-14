@@ -84,7 +84,7 @@ class JobModel {
       siNm: json['siNm'] ?? '',
       sggNm: json['sggNm'] ?? '',
       emdNm: json['emdNm'] ?? '',
-      files: json['files'] ?? [],
+      files: List<String>.from(json['files'] ?? []),
     );
   }
 
@@ -111,7 +111,7 @@ class JobModel {
     );
   }
 
-  Map<String, dynamic> get toMap => {
+  Map<String, dynamic> get toCreate => {
         'companyName': companyName,
         'phoneNumber': phoneNumber,
         'mobileNumber': mobileNumber,
@@ -137,10 +137,37 @@ class JobModel {
         'files': files,
       };
 
-  AddressModel get address => AddressModel.fromMap(toMap);
+  Map<String, dynamic> get toUpdate => {
+        'id': id,
+        'companyName': companyName,
+        'phoneNumber': phoneNumber,
+        'mobileNumber': mobileNumber,
+        'email': email,
+        'detailAddress': detailAddress,
+        'aboutUs': aboutUs,
+        'numberOfHiring': numberOfHiring,
+        'description': description,
+        'requirement': requirement,
+        'duty': duty,
+        'benefit': benefit,
+        'jobCategory': jobCategory,
+        'salary': salary,
+        'workingDays': workingDays,
+        'workingHours': workingHours,
+        'withAccomodation': withAccomodation,
+        'roadAddr': roadAddr,
+        'korAddr': korAddr,
+        'zipNo': zipNo,
+        'siNm': siNm,
+        'sggNm': sggNm,
+        'emdNm': emdNm,
+        'files': files,
+      };
+
+  // AddressModel get address => AddressModel.fromMap(toMap);
 
   @override
   String toString() {
-    return '''JobModel($toMap)''';
+    return '''JobModel($toUpdate)''';
   }
 }
