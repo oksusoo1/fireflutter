@@ -217,6 +217,7 @@ class MessagingService with FirestoreMixin, DatabaseMixin {
     }
   }
 
+  /// check if token has changed.
   Future<bool> get tokenChanged async {
     final prefs = await SharedPreferences.getInstance();
     final String? data = prefs.getString('subscription_init_token');
@@ -225,6 +226,7 @@ class MessagingService with FirestoreMixin, DatabaseMixin {
     return true;
   }
 
+  /// check if user has changed.
   Future<bool> get userChanged async {
     final uid = UserService.instance.uid;
     final prefs = await SharedPreferences.getInstance();

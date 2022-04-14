@@ -178,14 +178,16 @@ export class Messaging {
       },
     };
 
-    if (res.notification.title != "") {
+    if (res.notification.title != "" && res.notification.title.length > 64) {
       res.notification.title = res.notification.title.substring(0, 64);
     }
 
     if (res.notification.body != "") {
       res.notification.body = Utils.removeHtmlTags(res.notification.body) ?? "";
       res.notification.body = Utils.decodeHTMLEntities(res.notification.body) ?? "";
-      res.notification.body = res.notification.body.substring(0, 255);
+      if (res.notification.body.length > 255) {
+        res.notification.body = res.notification.body.substring(0, 255);
+      }
     }
 
     if (query.badge != null) {
