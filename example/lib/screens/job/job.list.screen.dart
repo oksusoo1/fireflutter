@@ -1,6 +1,7 @@
 import 'package:extended/extended.dart';
 import 'package:fe/screens/admin/send.push.notification.dart';
 import 'package:fe/screens/forum/forum.mixin.dart';
+import 'package:fe/screens/job/job.edit.screen.dart';
 import 'package:flutterfire_ui/firestore.dart';
 import 'package:fe/service/app.service.dart';
 import 'package:fireflutter/fireflutter.dart';
@@ -17,8 +18,7 @@ class JobListScreen extends StatefulWidget {
   State<JobListScreen> createState() => _JobListScreenState();
 }
 
-class _JobListScreenState extends State<JobListScreen>
-    with FirestoreMixin, ForumMixin {
+class _JobListScreenState extends State<JobListScreen> with FirestoreMixin, ForumMixin {
   TextEditingController companyName = TextEditingController(text: '');
   String siNm = '';
   String sggNm = '';
@@ -33,8 +33,7 @@ class _JobListScreenState extends State<JobListScreen>
   void initState() {
     super.initState();
 
-    searchQuery =
-        postCol.where('category', isEqualTo: JobService.instance.jobOpenings);
+    searchQuery = postCol.where('category', isEqualTo: JobService.instance.jobOpenings);
   }
 
   @override
@@ -44,9 +43,12 @@ class _JobListScreenState extends State<JobListScreen>
           title: Text('Job List'),
           actions: [
             IconButton(
+              onPressed: () => AppService.instance.open(JobEditScreen.routeName),
+              icon: Icon(Icons.add_circle_outline),
+            ),
+            IconButton(
               onPressed: () async {
-                Query ref = postCol.where('category',
-                    isEqualTo: JobService.instance.jobOpenings);
+                Query ref = postCol.where('category', isEqualTo: JobService.instance.jobOpenings);
                 ref = ref.where('companyName', isEqualTo: 'dell');
                 setState(() {
                   searchQuery = ref;
@@ -86,8 +88,7 @@ class _JobListScreenState extends State<JobListScreen>
                     ExtendedListTile(
                       key: ValueKey(snapshot.docs[index].id),
                       margin: EdgeInsets.only(top: index == 0 ? 16 : 0),
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                       leading: post.files.isNotEmpty
                           ? UploadedImage(
                               url: post.files.first,
