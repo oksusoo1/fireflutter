@@ -115,3 +115,4 @@ export 'src/forum/widgets/category.group.management.dart';
 export 'src/extra/job/address_search.model.dart';
 export 'src/extra/job/job.edit.form.dart';
 export 'src/extra/job/job.service.dart';
+export 'src/extra/job/job.list.dart';
