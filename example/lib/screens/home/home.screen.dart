@@ -73,7 +73,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         Text(
                           'You have logged in as ${user.email ?? user.phoneNumber}',
                         ),
-                        Text('User Email: ${user.email}'),
+                        Text('User Email on Auth: ${user.email}'),
+                        Text('User Email on User settings: ${UserService.instance.email}'),
                         MyDoc(
                           builder: (UserModel u) {
                             return Wrap(
