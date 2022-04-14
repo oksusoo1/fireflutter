@@ -12,14 +12,14 @@ class JobEditForm extends StatefulWidget {
     required this.onCreated,
     required this.onUpdated,
     required this.onError,
-    this.post,
+    this.job,
   }) : super(key: key);
 
   final Function(String) onCreated;
   final Function(String) onUpdated;
   final Function(dynamic) onError;
 
-  final PostModel? post;
+  final JobModel? job;
 
   @override
   State<JobEditForm> createState() => _JobEditFormState();
@@ -38,6 +38,7 @@ class _JobEditFormState extends State<JobEditForm> {
   final duty = TextEditingController();
   final benefit = TextEditingController();
 
+  /// TODO - what is this for?
   AddressModel? addr;
 
   String jobCategory = '';
@@ -53,16 +54,16 @@ class _JobEditFormState extends State<JobEditForm> {
   bool isSubmitted = false;
   Set<FormErrorCodes> errors = {};
 
-  List<String> files = [];
   double uploadProgress = 0;
-  bool get uploadLimited => files.length == 5;
+  bool get uploadLimited => job.files.length >= 5;
 
   bool get isCreate {
-    if (widget.post != null) return false;
-    return true;
+    return widget.job == null;
   }
 
   bool get isUpdate => !isCreate;
+
+  JobModel job = JobModel.empty();
 
   @override
   initState() {
@@ -72,30 +73,8 @@ class _JobEditFormState extends State<JobEditForm> {
 
   init() {
     if (isUpdate) {
-      // job informations
-      final jobInfo = widget.post!.jobInfo;
-      // files
-      files = widget.post!.files;
-      // address
-      addr = jobInfo.address;
-
-      companyName.text = jobInfo.companyName;
-      phoneNumber.text = jobInfo.phoneNumber;
-      mobileNumber.text = jobInfo.mobileNumber;
-      email.text = jobInfo.email;
-      detailAddress.text = jobInfo.detailAddress;
-      aboutUs.text = jobInfo.aboutUs;
-      numberOfHiring.text = jobInfo.numberOfHiring;
-      jobDescription.text = jobInfo.jobDescription;
-      requirement.text = jobInfo.requirement;
-      duty.text = jobInfo.duty;
-      benefit.text = jobInfo.benefit;
-
-      jobCategory = jobInfo.jobCategory;
-      workingDays = jobInfo.workingDays;
-      workingHours = jobInfo.workingHours;
-      salary = jobInfo.salary;
-      withAccomodation = jobInfo.withAccomodation;
+      job = widget.job!;
+      addr = job.address;
     }
   }
 
@@ -507,7 +486,7 @@ class _JobEditFormState extends State<JobEditForm> {
                     ),
                     type: 'post',
                     onUploaded: (url) {
-                      files = [...files, url];
+                      job.files = [...job.files, url];
                       if (mounted)
                         setState(() {
                           uploadProgress = 0;
@@ -522,10 +501,10 @@ class _JobEditFormState extends State<JobEditForm> {
                   SizedBox(height: 8),
                   LinearProgressIndicator(value: uploadProgress),
                 ],
-                if (files.isNotEmpty) ...[
+                if (job.files.isNotEmpty) ...[
                   SizedBox(height: 8),
                   ImageListEdit(
-                    files: files,
+                    files: job.files,
                     onDeleted: () => setState(() {}),
                     onError: (e) => widget.onError(e),
                   ),
@@ -547,73 +526,37 @@ class _JobEditFormState extends State<JobEditForm> {
                 return widget.onError("Form data is incomplete, please check for errors.");
               }
 
-              final jobInfo = JobInfoModel(
-                companyName: companyName.text,
-                phoneNumber: phoneNumber.text,
-                mobileNumber: mobileNumber.text,
-                email: email.text,
-                detailAddress: detailAddress.text,
-                aboutUs: aboutUs.text,
-                numberOfHiring: numberOfHiring.text,
-                jobDescription: jobDescription.text,
-                requirement: requirement.text,
-                duty: duty.text,
-                benefit: benefit.text,
-                roadAddr: addr?.roadAddr ?? '',
-                korAddr: addr?.korAddr ?? '',
-                zipNo: addr?.zipNo ?? '',
-                siNm: addr?.siNm ?? '',
-                sggNm: addr?.sggNm ?? '',
-                emdNm: addr?.emdNm ?? '',
-                jobCategory: jobCategory,
-                salary: salary,
-                workingDays: workingDays,
-                workingHours: workingHours,
-                withAccomodation: withAccomodation,
-              );
+//               final extra = job.toMap;
+//               print(extra);
 
-              final extra = jobInfo.toMap;
-              print(extra);
+//               String title = "${companyName.text} $salary - ${job.siNm} ${job.sggNm}";
+//               String content = """Office No.: ${job.phoneNumber}
+// Mobile No.: ${job.mobileNumber}
+// Email address: ${job.email}
+// Address: ${job.roadAddr}
+// Korean Address: ${job.korAddr}
 
-              String title = "${companyName.text} $salary - ${jobInfo.siNm} ${jobInfo.sggNm}";
-              String content = """Office No.: ${jobInfo.phoneNumber}
-Mobile No.: ${jobInfo.mobileNumber}
-Email address: ${jobInfo.email}
-Address: ${jobInfo.roadAddr}
-Korean Address: ${jobInfo.korAddr}
-
-Job category: ${jobInfo.jobCategory}
-No. of hiring: ${jobInfo.numberOfHiring}
-About us: ${jobInfo.aboutUs}
-requirement:
-duty:
-Salary:
-Working days: in a week
-Working hours: hours
-Accommodation
-Benefit:
-
-""";
+// Job category: ${job.jobCategory}
+// No. of hiring: ${job.numberOfHiring}
+// About us: ${job.aboutUs}
+// requirement:
+// duty:
+// Salary:
+// Working days: in a week
+// Working hours: hours
+// Accommodation
+// Benefit:
+// """;
 
               try {
                 if (isCreate) {
-                  final create = await PostApi.instance.create(
-                    category: JobService.instance.jobOpenings,
-                    title: title,
-                    content: content,
-                    files: files,
-                    extra: extra,
-                  );
-                  widget.onCreated(create.id);
+                  final created = await FunctionsApi.instance.request('jobCreate', data: job.toMap);
+                  final newJob = JobModel.fromJson(created);
+                  print(newJob);
                 } else {
-                  final update = await PostApi.instance.update(
-                    id: widget.post!.id,
-                    title: title,
-                    content: content,
-                    files: files,
-                    extra: extra,
-                  );
-                  widget.onUpdated(update.id);
+                  final updated = await FunctionsApi.instance.request('jobUpdate', data: job.toMap);
+                  final updatedJob = JobModel.fromJson(updated);
+                  print(updatedJob);
                 }
               } catch (e, stacks) {
                 debugPrintStack(stackTrace: stacks);

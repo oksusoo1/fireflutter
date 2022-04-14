@@ -16,3 +16,4 @@ export * from "./indexes/messaging.functions";
 export * from "./indexes/admin.functions";
 export * from "./indexes/quiz.functions";
 export * from "./indexes/basic.functions";
+export * from "./indexes/job.functions";

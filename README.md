@@ -1870,5 +1870,7 @@ ForumPoint(
 
 - See `<fireflutter>/lib/src/extra/job` for the source code and details.
 
+- Job feature uses `jobs` collection since it takes a lot more indexes.
+
 
 

@@ -1,7 +1,8 @@
 import 'package:fireflutter/fireflutter.dart';
 
-class JobInfoModel {
-  JobInfoModel({
+class JobModel {
+  JobModel({
+    this.id = '',
     this.companyName = '',
     this.phoneNumber = '',
     this.mobileNumber = '',
@@ -9,7 +10,7 @@ class JobInfoModel {
     this.detailAddress = '',
     this.aboutUs = '',
     this.numberOfHiring = '',
-    this.jobDescription = '',
+    this.description = '',
     this.requirement = '',
     this.duty = '',
     this.benefit = '',
@@ -24,8 +25,10 @@ class JobInfoModel {
     this.workingDays = -1,
     this.workingHours = -1,
     this.withAccomodation = '',
+    this.files = const [],
   });
 
+  String id;
   String companyName;
   String phoneNumber;
   String mobileNumber;
@@ -33,7 +36,7 @@ class JobInfoModel {
   String detailAddress;
   String aboutUs;
   String numberOfHiring;
-  String jobDescription;
+  String description;
   String requirement;
   String duty;
   String benefit;
@@ -48,15 +51,17 @@ class JobInfoModel {
   int workingDays;
   int workingHours;
   String withAccomodation;
+  List<String> files;
 
-  factory JobInfoModel.fromJson(Json json) {
+  factory JobModel.fromJson(Json json, [String id = '']) {
     final int _days =
         json['workingDays'] is int ? json['workingDays'] : int.parse(json['workingDays'] ?? '-1');
     final int _hours = json['workingHours'] is int
         ? json['workingHours']
         : int.parse(json['workingHours'] ?? '-1');
 
-    return JobInfoModel(
+    return JobModel(
+      id: json['id'] ?? id,
       companyName: json['companyName'] ?? '',
       phoneNumber: json['phoneNumber'] ?? '',
       mobileNumber: json['mobileNumber'] ?? '',
@@ -64,7 +69,7 @@ class JobInfoModel {
       detailAddress: json['detailAddress'] ?? '',
       aboutUs: json['aboutUs'] ?? '',
       numberOfHiring: json['numberOfHiring'] ?? '',
-      jobDescription: json['jobDescription'] ?? '',
+      description: json['description'] ?? '',
       requirement: json['requirement'] ?? '',
       duty: json['duty'] ?? '',
       benefit: json['benefit'] ?? '',
@@ -79,11 +84,13 @@ class JobInfoModel {
       siNm: json['siNm'] ?? '',
       sggNm: json['sggNm'] ?? '',
       emdNm: json['emdNm'] ?? '',
+      files: json['files'] ?? [],
     );
   }
 
-  factory JobInfoModel.empty() {
-    return JobInfoModel(
+  factory JobModel.empty() {
+    return JobModel(
+      id: '',
       companyName: '',
       phoneNumber: '',
       mobileNumber: '',
@@ -91,7 +98,7 @@ class JobInfoModel {
       detailAddress: '',
       aboutUs: '',
       numberOfHiring: '',
-      jobDescription: '',
+      description: '',
       requirement: '',
       duty: '',
       benefit: '',
@@ -100,6 +107,7 @@ class JobInfoModel {
       workingDays: -1,
       workingHours: -1,
       withAccomodation: '',
+      files: [],
     );
   }
 
@@ -111,7 +119,7 @@ class JobInfoModel {
         'detailAddress': detailAddress,
         'aboutUs': aboutUs,
         'numberOfHiring': numberOfHiring,
-        'jobDescription': jobDescription,
+        'description': description,
         'requirement': requirement,
         'duty': duty,
         'benefit': benefit,
@@ -126,12 +134,13 @@ class JobInfoModel {
         'siNm': siNm,
         'sggNm': sggNm,
         'emdNm': emdNm,
+        'files': files,
       };
 
   AddressModel get address => AddressModel.fromMap(toMap);
 
   @override
   String toString() {
-    return '''JobInfoModel($toMap)''';
+    return '''JobModel($toMap)''';
   }
 }

@@ -6,7 +6,6 @@ class JobListOptionModel {
   int workingDays = -1;
   String accomodation = '';
   String salary = '';
-  String sort = '';
 
   get toMap {
     return {
@@ -17,7 +16,6 @@ class JobListOptionModel {
       'workingDays': workingDays,
       'accomodation': accomodation,
       'salary': salary,
-      'sort': sort,
     };
   }
 

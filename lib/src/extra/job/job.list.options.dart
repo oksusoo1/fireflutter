@@ -44,27 +44,27 @@ class _JobListOptionsState extends State<JobListOptions> with FirestoreMixin {
                       widget.change(options);
                     },
                   ),
-                  DropdownButton<String>(
-                      value: options.salary,
-                      items: [
-                        DropdownMenuItem(
-                          child: Text('Select salary'),
-                          value: '',
-                        ),
-                        ...JobService.instance.salaries.map(
-                          (s) => DropdownMenuItem(
-                            child: Text("$s Won"),
-                            value: s,
-                          ),
-                        )
-                      ],
-                      onChanged: (s) {
-                        setState(() {
-                          options.salary = s ?? "";
-                        });
+                  // DropdownButton<String>(
+                  //     value: options.salary,
+                  //     items: [
+                  //       DropdownMenuItem(
+                  //         child: Text('Select salary'),
+                  //         value: '',
+                  //       ),
+                  //       ...JobService.instance.salaries.map(
+                  //         (s) => DropdownMenuItem(
+                  //           child: Text("$s Won"),
+                  //           value: s,
+                  //         ),
+                  //       )
+                  //     ],
+                  //     onChanged: (s) {
+                  //       setState(() {
+                  //         options.salary = s ?? "";
+                  //       });
 
-                        widget.change(options);
-                      }),
+                  //       widget.change(options);
+                  //     }),
                 ],
               ),
               Row(
@@ -103,8 +103,7 @@ class _JobListOptionsState extends State<JobListOptions> with FirestoreMixin {
                           child: Text('Select city/county/gu'),
                           value: '',
                         ),
-                        for (final name
-                            in JobService.instance.areas[options.siNm]!)
+                        for (final name in JobService.instance.areas[options.siNm]!)
                           DropdownMenuItem(
                             child: Text(name),
                             value: name,
@@ -122,35 +121,35 @@ class _JobListOptionsState extends State<JobListOptions> with FirestoreMixin {
               ),
               Row(
                 children: [
-                  DropdownButton<int>(
-                      value: options.workingHours,
-                      items: [
-                        DropdownMenuItem(
-                          child: Text('Working hours'),
-                          value: -1,
-                        ),
-                        DropdownMenuItem(
-                          child: Text('Flexible'),
-                          value: 0,
-                        ),
-                        DropdownMenuItem(
-                          child: Text('1 hour'),
-                          value: 1,
-                        ),
-                        for (int i = 2; i <= 14; i++)
-                          DropdownMenuItem(
-                            child: Text('$i hours'),
-                            value: i,
-                          ),
-                      ],
-                      onChanged: (n) {
-                        // print('s; $s');
-                        setState(() {
-                          options.workingHours = n ?? 0;
-                        });
+                  //     DropdownButton<int>(
+                  //         value: options.workingHours,
+                  //         items: [
+                  //           DropdownMenuItem(
+                  //             child: Text('Working hours'),
+                  //             value: -1,
+                  //           ),
+                  //           DropdownMenuItem(
+                  //             child: Text('Flexible'),
+                  //             value: 0,
+                  //           ),
+                  //           DropdownMenuItem(
+                  //             child: Text('1 hour'),
+                  //             value: 1,
+                  //           ),
+                  //           for (int i = 2; i <= 14; i++)
+                  //             DropdownMenuItem(
+                  //               child: Text('$i hours'),
+                  //               value: i,
+                  //             ),
+                  //         ],
+                  //         onChanged: (n) {
+                  //           // print('s; $s');
+                  //           setState(() {
+                  //             options.workingHours = n ?? 0;
+                  //           });
 
-                        widget.change(options);
-                      }),
+                  //           widget.change(options);
+                  //         }),
                   DropdownButton<int>(
                       value: options.workingDays,
                       items: [
@@ -206,38 +205,38 @@ class _JobListOptionsState extends State<JobListOptions> with FirestoreMixin {
                       }),
                 ],
               ),
-              Row(
-                children: [
-                  DropdownButton<String>(
-                      value: options.sort,
-                      items: [
-                        DropdownMenuItem(
-                          child: Text('Sort by'),
-                          value: '',
-                        ),
-                        DropdownMenuItem(
-                          child: Text('Salary'),
-                          value: 'salary',
-                        ),
-                        DropdownMenuItem(
-                          child: Text('Working hours'),
-                          value: "workingHours",
-                        ),
-                        DropdownMenuItem(
-                          child: Text('Working days'),
-                          value: "workingDays",
-                        ),
-                      ],
-                      onChanged: (s) {
-                        // print('s; $s');
-                        setState(() {
-                          options.sort = s ?? '';
-                        });
+              // Row(
+              //   children: [
+              //     DropdownButton<String>(
+              //         value: options.sort,
+              //         items: [
+              //           DropdownMenuItem(
+              //             child: Text('Sort by'),
+              //             value: '',
+              //           ),
+              //           DropdownMenuItem(
+              //             child: Text('Salary'),
+              //             value: 'salary',
+              //           ),
+              //           DropdownMenuItem(
+              //             child: Text('Working hours'),
+              //             value: "workingHours",
+              //           ),
+              //           DropdownMenuItem(
+              //             child: Text('Working days'),
+              //             value: "workingDays",
+              //           ),
+              //         ],
+              //         onChanged: (s) {
+              //           // print('s; $s');
+              //           setState(() {
+              //             options.sort = s ?? '';
+              //           });
 
-                        widget.change(options);
-                      }),
-                ],
-              )
+              //           widget.change(options);
+              //         }),
+              //   ],
+              // )
             ],
           ),
         ],

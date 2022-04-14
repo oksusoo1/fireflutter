@@ -1,6 +1,3 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.jobUpdate = exports.jobCreate = void 0;
 /**
  * @file job.functions.ts
  *
@@ -17,23 +14,25 @@ exports.jobUpdate = exports.jobCreate = void 0;
  *
  *
  */
-const functions = require("firebase-functions");
-const job_1 = require("../classes/job");
-const ready_1 = require("../ready");
+import * as functions from "firebase-functions";
+import { Job } from "../classes/job";
+import { ready } from "../ready";
+
 // Start writing Firebase Functions
 // https://firebase.google.com/docs/functions/typescript
-exports.jobCreate = functions
+
+export const jobCreate = functions
     .region("us-central1", "asia-northeast3")
     .https.onRequest((req, res) => {
-    ready_1.ready({ req, res, auth: true }, async (data) => {
-        res.status(200).send(await job_1.Job.create(data));
+      ready({ req, res, auth: true }, async (data) => {
+        res.status(200).send(await Job.create(data));
+      });
     });
-});
-exports.jobUpdate = functions
+
+export const jobUpdate = functions
     .region("us-central1", "asia-northeast3")
     .https.onRequest((req, res) => {
-    ready_1.ready({ req, res, auth: true }, async (data) => {
-        res.status(200).send(await job_1.Job.update(data));
+      ready({ req, res, auth: true }, async (data) => {
+        res.status(200).send(await Job.update(data));
+      });
     });
-});
-//# sourceMappingURL=job.functions.js.map
