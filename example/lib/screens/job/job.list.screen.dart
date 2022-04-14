@@ -15,7 +15,8 @@ class JobListScreen extends StatefulWidget {
   State<JobListScreen> createState() => _JobListScreenState();
 }
 
-class _JobListScreenState extends State<JobListScreen> with FirestoreMixin, ForumMixin {
+class _JobListScreenState extends State<JobListScreen>
+    with FirestoreMixin, ForumMixin {
   JobListOptionModel options = JobListOptionModel();
 
   @override
@@ -29,7 +30,8 @@ class _JobListScreenState extends State<JobListScreen> with FirestoreMixin, Foru
             icon: Icon(Icons.add_circle_outline),
           ),
         ],
-        bottom: JobListTitleBottom(change: (options) => setState(() => this.options = options)),
+        bottom: JobListTitleBottom(
+            change: (options) => setState(() => this.options = options)),
       ),
       body: JobListView(
         onError: error,
@@ -52,7 +54,7 @@ class JobListTitleBottom extends StatefulWidget with PreferredSizeWidget {
   final Function(JobListOptionModel) change;
 
   @override
-  Size get preferredSize => Size.fromHeight(252);
+  Size get preferredSize => Size.fromHeight(200);
 
   @override
   State<JobListTitleBottom> createState() => _JobListTitleBottomState();
@@ -61,6 +63,7 @@ class JobListTitleBottom extends StatefulWidget with PreferredSizeWidget {
 class _JobListTitleBottomState extends State<JobListTitleBottom> {
   @override
   Widget build(BuildContext context) {
-    return Container(color: Colors.white, child: JobListOptions(change: widget.change));
+    return Container(
+        color: Colors.white, child: JobListOptions(change: widget.change));
   }
 }

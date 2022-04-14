@@ -26,21 +26,35 @@ class _JobListViewState extends State<JobListView> with FirestoreMixin {
 
     final options = widget.options;
 
-    Query q = postCol.where('category', isEqualTo: JobService.instance.jobOpenings);
+    Query query =
+        postCol.where('category', isEqualTo: JobService.instance.jobOpenings);
 
-    if (options.jobCategory != '') {
-      q.where('jobCategory', isEqualTo: options.jobCategory);
-    }
+    if (options.siNm != '')
+      query = query.where('siNm', isEqualTo: options.siNm);
+    if (options.sggNm != '')
+      query = query.where('sggNm', isEqualTo: options.sggNm);
+    if (options.jobCategory != '')
+      query = query.where('jobCategory', isEqualTo: options.jobCategory);
+    if (options.workingHours != -1)
+      query = query.where('workingHours', isEqualTo: options.workingHours);
+    if (options.workingDays != -1)
+      query = query.where('workingDays', isEqualTo: options.workingDays);
+    if (options.accomodation != '')
+      query = query.where('withAccomodation', isEqualTo: options.accomodation);
+    if (options.salary != '')
+      query = query.where('salary', isEqualTo: options.salary);
 
     if (options.sort == 'salary') {
-      q = q.orderBy('salary', descending: true);
-    }
-    if (options.sort == 'workingDays') {
+      query = query.orderBy('salary', descending: true);
+    } else if (options.sort == 'workingDays') {
+      query = query.orderBy('workingDays', descending: true);
+    } else if (options.sort == 'workingHours') {
+      query = query.orderBy('workingHours', descending: true);
     } else {
-      q = q.orderBy('createdAt', descending: true);
+      query = query.orderBy('createdAt', descending: true);
     }
 
-    return q;
+    return query;
   }
 
   @override
@@ -91,14 +105,18 @@ class _JobListViewState extends State<JobListView> with FirestoreMixin {
                     child: Text(post.shortDateTime),
                   ),
                   trailing: Icon(
-                    post.open ? Icons.keyboard_arrow_up_rounded : Icons.keyboard_arrow_down_rounded,
+                    post.open
+                        ? Icons.keyboard_arrow_up_rounded
+                        : Icons.keyboard_arrow_down_rounded,
                     color: Colors.grey,
                   ),
                   onTap: () => setState(() => post.open = !post.open),
                 ),
                 if (post.open) ...[
                   Text('post id; ${post.id}'),
-                  TextButton(onPressed: () => widget.onEdit(post), child: Text('Edit')),
+                  TextButton(
+                      onPressed: () => widget.onEdit(post),
+                      child: Text('Edit')),
                 ],
                 Divider(
                   color: Colors.grey.shade400,
