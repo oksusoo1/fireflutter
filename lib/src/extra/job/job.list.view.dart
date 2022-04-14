@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+
 import '../../../fireflutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterfire_ui/firestore.dart';
@@ -7,24 +8,43 @@ class JobListView extends StatefulWidget {
   const JobListView({
     Key? key,
     required this.onError,
-    this.searchQuery,
+    required this.options,
   }) : super(key: key);
 
   final Function onError;
-  final Query? searchQuery;
+  final JobListOptionModel options;
 
   @override
   State<JobListView> createState() => _JobListViewState();
 }
 
 class _JobListViewState extends State<JobListView> with FirestoreMixin {
+  Query get _searchQuery {
+    print('_serchQuery ${widget.options}');
+
+    final options = widget.options;
+
+    Query q = postCol.where('category', isEqualTo: JobService.instance.jobOpenings);
+
+    if (options.jobCategory != '') {
+      q.where('jobCategory', isEqualTo: options.jobCategory);
+    }
+
+    if (options.sort == 'salary') {
+      q = q.orderBy('salary', descending: true);
+    }
+    if (options.sort == 'workingDays') {
+    } else {
+      q = q.orderBy('createdAt', descending: true);
+    }
+
+    return q;
+  }
+
   @override
   Widget build(BuildContext context) {
     return FirestoreQueryBuilder(
-      query: widget.searchQuery ??
-          postCol
-              .where('category', isEqualTo: JobService.instance.jobOpenings)
-              .orderBy('createdAt', descending: true),
+      query: _searchQuery,
       builder: (context, snapshot, _) {
         if (snapshot.isFetching) {
           return Text('loading...');
@@ -46,8 +66,10 @@ class _JobListViewState extends State<JobListView> with FirestoreMixin {
               snapshot.docs[index].data() as Json,
               snapshot.docs[index].id,
             );
+
             return Column(
               children: [
+                // if (index == 0) JobListOptions(),
                 ListTile(
                   key: ValueKey(snapshot.docs[index].id),
                   // margin: EdgeInsets.only(top: index == 0 ? 16 : 0),
