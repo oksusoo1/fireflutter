@@ -14,9 +14,11 @@ class ProfileScreen extends StatefulWidget {
 class ProfileScreenState extends State<ProfileScreen> {
   bool nicknameLoader = false;
   bool photoUrlLoader = false;
+  bool emailLoader = false;
 
   final nickname = TextEditingController(text: UserService.instance.user.nickname);
   final photoUrl = TextEditingController(text: UserService.instance.user.photoUrl);
+  final email = TextEditingController(text: UserService.instance.email);
 
   double uploadProgress = 0;
 
@@ -60,6 +62,22 @@ class ProfileScreenState extends State<ProfileScreen> {
               ],
             ),
             spaceXl,
+            const Text('Email'),
+            Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                      controller: email,
+                      decoration: const InputDecoration(
+                        hintText: 'Email',
+                        helperText:
+                            'Note: this will update email field on the user settings under realtime database.',
+                      ),
+                      onChanged: updateEmail),
+                ),
+                if (emailLoader) CircularProgressIndicator.adaptive(),
+              ],
+            ),
           ],
         ),
       ),
@@ -71,6 +89,14 @@ class ProfileScreenState extends State<ProfileScreen> {
     bounce('nickname', 500, (s) async {
       await UserService.instance.user.updateNickname(t).catchError((e) => error(e));
       setState(() => nicknameLoader = false);
+    });
+  }
+
+  updateEmail(t) {
+    setState(() => emailLoader = true);
+    bounce('nickname', 500, (s) async {
+      await UserService.instance.user.update(field: 'email', value: t).catchError((e) => error(e));
+      setState(() => emailLoader = false);
     });
   }
 
