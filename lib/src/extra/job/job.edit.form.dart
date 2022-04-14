@@ -5,14 +5,20 @@ import '../../../fireflutter.dart';
 /// 직업 입력 양식
 ///
 ///
-///
 class JobEditForm extends StatefulWidget {
   const JobEditForm({
     Key? key,
+    required this.onCreated,
+    required this.onUpdated,
     required this.onError,
+    this.post,
   }) : super(key: key);
 
-  final Function onError;
+  final Function(String) onCreated;
+  final Function(String) onUpdated;
+  final Function(dynamic) onError;
+
+  final PostModel? post;
 
   @override
   State<JobEditForm> createState() => _JobEditFormState();
@@ -23,17 +29,17 @@ class JobEditForm extends StatefulWidget {
 // - Let company choose if they provide accommodations: Yes, No.
 // - Let comapny choose the salary: 100K Won, 200K Won, ... 4.5M Won.
 class _JobEditFormState extends State<JobEditForm> {
-  final companyName = TextEditingController(text: 'Test company name');
-  final phoneNumber = TextEditingController(text: '+1 2345678912');
-  final mobileNumber = TextEditingController(text: '+1 2345678912');
-  final email = TextEditingController(text: 'test@email.com');
-  final detailAddress = TextEditingController(text: '');
-  final aboutUs = TextEditingController(text: 'Sample about us');
-  final numberOfHiring = TextEditingController(text: '3');
-  final jobDescription = TextEditingController(text: 'Job desc');
-  final requirement = TextEditingController(text: 'Job reqs');
-  final duty = TextEditingController(text: 'Job duties');
-  final benefit = TextEditingController(text: 'Job benefits');
+  final companyName = TextEditingController();
+  final phoneNumber = TextEditingController();
+  final mobileNumber = TextEditingController();
+  final email = TextEditingController();
+  final detailAddress = TextEditingController();
+  final aboutUs = TextEditingController();
+  final numberOfHiring = TextEditingController();
+  final jobDescription = TextEditingController();
+  final requirement = TextEditingController();
+  final duty = TextEditingController();
+  final benefit = TextEditingController();
 
   AddressModel? addr;
 
@@ -49,30 +55,54 @@ class _JobEditFormState extends State<JobEditForm> {
 
   bool isSubmitted = false;
   Set<FormErrorCodes> errors = {};
-  final Map<dynamic, dynamic> errorMessages = {
-    FormErrorCodes.companyName.index: "*Please input company name.",
-    FormErrorCodes.mobileNumber.index: "*Please input company mobile number.",
-    FormErrorCodes.phoneNumber.index: "*Please input company office number.",
-    FormErrorCodes.email.index: "*Please input company email address.",
-    FormErrorCodes.aboutUs.index: "*Please tell something about your company.",
-    FormErrorCodes.addr.index: "*Please select your company address.",
-    FormErrorCodes.detailAddress.index: "*Please input a detailed address.",
-    FormErrorCodes.jobCategory.index: "*Please select job category.",
-    FormErrorCodes.numberOfHiring.index: "*Please input number of available slot for hiring.",
-    FormErrorCodes.workingDays.index: "*Please select the number of days to work per week.",
-    FormErrorCodes.workingHours.index: "*Please select the number of hours to work per day.",
-    FormErrorCodes.salary.index: "*Please select a salary to offer.",
-    FormErrorCodes.jobDescription.index: "*Please describe something about the job.",
-    FormErrorCodes.requirement.index: "*Please enumerate the requirements for the job.",
-    FormErrorCodes.duty.index: "*Please enumerate the duties of the job.",
-    FormErrorCodes.benefit.index: "*Please enumerate the benefit given for the job.",
-    FormErrorCodes.withAccomodation.index: "*Please select if the job includes an accomodation.",
-  };
 
   List<String> files = [];
   double uploadProgress = 0;
 
   bool get uploadLimited => files.length == 5;
+
+  bool get isCreate {
+    if (widget.post != null) return false;
+    return true;
+  }
+
+  bool get isUpdate => !isCreate;
+
+  @override
+  initState() {
+    super.initState();
+    init();
+  }
+
+  init() {
+    print(isUpdate);
+    if (isUpdate) {
+      print('JOB EDIT => ${widget.post!.id}');
+      // addr
+      addr = AddressModel.fromMap(widget.post!.data);
+      final _post = JobModel.fromJson(widget.post!.data, widget.post!.id);
+
+      companyName.text = _post.companyName;
+      phoneNumber.text = _post.phoneNumber;
+      mobileNumber.text = _post.mobileNumber;
+      email.text = _post.email;
+      detailAddress.text = _post.detailAddress;
+      aboutUs.text = _post.aboutUs;
+      numberOfHiring.text = _post.numberOfHiring;
+      jobDescription.text = _post.jobDescription;
+      requirement.text = _post.requirement;
+      duty.text = _post.duty;
+      benefit.text = _post.benefit;
+
+      jobCategory = _post.jobCategory;
+      workingDays = _post.workingDays;
+      workingHours = _post.workingHours;
+      salary = _post.salary;
+      withAccomodation = _post.withAccomodation;
+
+      files = _post.files;
+    }
+  }
 
   getAddress() async {
     addr = await JobService.instance.inputAddress(context);
@@ -126,6 +156,8 @@ class _JobEditFormState extends State<JobEditForm> {
           ),
 
           /// Company email
+          ///
+          ///  TODO: validate email
           JobFormTextField(
             controller: email,
             keyboardType: TextInputType.emailAddress,
@@ -552,15 +584,25 @@ class _JobEditFormState extends State<JobEditForm> {
               String content = "";
 
               try {
-                final post = await PostApi.instance.create(
-                  category: JobService.instance.jobOpenings,
-                  title: title,
-                  content: content,
-                  files: files,
-                  extra: extra,
-                );
-
-                print("post created," + post.toString());
+                if (isCreate) {
+                  final create = await PostApi.instance.create(
+                    category: JobService.instance.jobOpenings,
+                    title: title,
+                    content: content,
+                    files: files,
+                    extra: extra,
+                  );
+                  widget.onCreated(create.id);
+                } else {
+                  final update = await PostApi.instance.update(
+                    id: widget.post!.id,
+                    title: title,
+                    content: content,
+                    files: files,
+                    extra: extra,
+                  );
+                  widget.onUpdated(update.id);
+                }
               } catch (e, stacks) {
                 debugPrintStack(stackTrace: stacks);
                 widget.onError(e);
@@ -608,7 +650,7 @@ class _JobEditFormState extends State<JobEditForm> {
   /// Returns a widget if the given code have an error.
   String? errorMessage(FormErrorCodes code) {
     if (isSubmitted && errors.contains(code)) {
-      return errorMessages[code.index];
+      return jobFormErrorMessages[code.index];
     }
     return null;
   }

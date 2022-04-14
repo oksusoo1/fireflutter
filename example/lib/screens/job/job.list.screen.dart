@@ -113,6 +113,13 @@ class _JobListScreenState extends State<JobListScreen> with FirestoreMixin, Foru
                       PagePadding(
                         children: [
                           Text('post id; ${post.id}'),
+                          TextButton(
+                            onPressed: () => AppService.instance.open(
+                              JobEditScreen.routeName,
+                              arguments: {'post': post},
+                            ),
+                            child: Text('Edit'),
+                          )
                         ],
                       ),
                     Divider(

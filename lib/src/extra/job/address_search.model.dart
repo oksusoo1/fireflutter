@@ -12,9 +12,8 @@ class AddressSearchModel {
     return AddressSearchModel(
       totalCount: int.tryParse(json['results']['common']['totalCount']) ?? 0,
       errorCode: json['results']['common']['errorCode'],
-      addresses: ((json['results']['juso'] ?? []) as List)
-          .map((e) => AddressModel.fromMap(e))
-          .toList(),
+      addresses:
+          ((json['results']['juso'] ?? []) as List).map((e) => AddressModel.fromMap(e)).toList(),
     );
   }
 }
@@ -75,24 +74,24 @@ class AddressModel {
 
   factory AddressModel.fromMap(Map<String, dynamic> json) {
     return AddressModel(
-      zipNo: json['zipNo'],
-      emdNm: json['emdNm'],
-      rn: json['rn'],
-      jibunAddr: json['jibunAddr'],
-      siNm: json['siNm'],
+      zipNo: json['zipNo'] ?? '',
+      emdNm: json['emdNm'] ?? '',
+      rn: json['rn'] ?? '',
+      jibunAddr: json['jibunAddr'] ?? '',
+      siNm: json['siNm'] ?? '',
       sggNm: ((json['sggNm'] ?? '') as String).split(' ').last,
-      admCd: json['admCd'],
-      udrtYn: json['udrtYn'],
-      lnbrMnnm: json['lnbrMnnm'],
-      roadAddr: json['roadAddr'],
-      korAddr: json['korAddr'],
-      lnbrSlno: json['lnbrSlno'],
-      buldMnnm: json['buldMnnm'],
-      bdKdcd: json['bdKdcd'],
-      rnMgtSn: json['rnMgtSn'],
-      liNm: json['liNm'],
-      mtYn: json['mtYn'],
-      buldSlno: json['buldSlno'],
+      admCd: json['admCd'] ?? '',
+      udrtYn: json['udrtYn'] ?? '',
+      lnbrMnnm: json['lnbrMnnm'] ?? '',
+      roadAddr: json['roadAddr'] ?? '',
+      korAddr: json['korAddr'] ?? '',
+      lnbrSlno: json['lnbrSlno'] ?? '',
+      buldMnnm: json['buldMnnm'] ?? '',
+      bdKdcd: json['bdKdcd'] ?? '',
+      rnMgtSn: json['rnMgtSn'] ?? '',
+      liNm: json['liNm'] ?? '',
+      mtYn: json['mtYn'] ?? '',
+      buldSlno: json['buldSlno'] ?? '',
     );
   }
   @override
