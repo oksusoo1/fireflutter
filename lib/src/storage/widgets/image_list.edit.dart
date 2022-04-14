@@ -5,11 +5,13 @@ class ImageListEdit extends StatefulWidget {
   const ImageListEdit({
     required this.files,
     required this.onError,
+    this.onDeleted,
     Key? key,
   }) : super(key: key);
 
   final List<String> files;
   final Function(dynamic) onError;
+  final Function()? onDeleted;
 
   @override
   State<ImageListEdit> createState() => _ImageListEditState();
@@ -29,8 +31,7 @@ class _ImageListEditState extends State<ImageListEdit> {
         for (String fileUrl in widget.files)
           Stack(
             children: [
-              Container(
-                  width: double.infinity, child: UploadedImage(url: fileUrl)),
+              Container(width: double.infinity, child: UploadedImage(url: fileUrl)),
               Positioned(
                 top: 8,
                 left: 8,
@@ -61,8 +62,7 @@ class _ImageListEditState extends State<ImageListEdit> {
                         title: Text('Delete file?'),
                         actions: [
                           TextButton(
-                              onPressed: () => Navigator.pop(context),
-                              child: Text('Cancel')),
+                              onPressed: () => Navigator.pop(context), child: Text('Cancel')),
                           TextButton(
                             onPressed: () => Navigator.pop(context, true),
                             child: Text('Yes'),
@@ -74,7 +74,7 @@ class _ImageListEditState extends State<ImageListEdit> {
                     try {
                       await StorageService.instance.delete(fileUrl);
                       widget.files.remove(fileUrl);
-                      // print('file deleted $fileUrl');
+                      if (widget.onDeleted != null) widget.onDeleted!();
                       if (mounted) setState(() {});
                     } catch (e) {
                       widget.onError(e);

@@ -1,5 +1,8 @@
 import 'package:extended/extended.dart';
 import 'package:fe/screens/forum/forum.mixin.dart';
+import 'package:fe/screens/job/job.edit.screen.dart';
+import 'package:flutterfire_ui/firestore.dart';
+import 'package:fe/service/app.service.dart';
 import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -40,6 +43,11 @@ class _JobListScreenState extends State<JobListScreen>
         appBar: AppBar(
           title: Text('Job List'),
           actions: [
+            IconButton(
+              onPressed: () =>
+                  AppService.instance.open(JobEditScreen.routeName),
+              icon: Icon(Icons.add_circle_outline),
+            ),
             IconButton(
               onPressed: () async {
                 Query ref = postCol.where('category',
