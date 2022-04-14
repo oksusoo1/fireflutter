@@ -1,4 +1,4 @@
-import 'package:fireflutter/fireflutter.dart';
+import '../../../fireflutter.dart';
 
 class JobInfoModel {
   JobInfoModel({

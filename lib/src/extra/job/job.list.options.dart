@@ -1,4 +1,4 @@
-import 'package:fireflutter/fireflutter.dart';
+import '../../../fireflutter.dart';
 import 'package:flutter/material.dart';
 
 class JobListOptions extends StatefulWidget {
@@ -103,8 +103,7 @@ class _JobListOptionsState extends State<JobListOptions> with FirestoreMixin {
                           child: Text('Select city/county/gu'),
                           value: '',
                         ),
-                        for (final name
-                            in JobService.instance.areas[options.siNm]!)
+                        for (final name in JobService.instance.areas[options.siNm]!)
                           DropdownMenuItem(
                             child: Text(name),
                             value: name,
