@@ -116,4 +116,6 @@ export 'src/extra/job/address_search.model.dart';
 export 'src/extra/job/job.edit.form.dart';
 export 'src/extra/job/job.service.dart';
 export 'src/extra/job/job.model.dart';
-export 'src/extra/job/job.list.dart';
+export 'src/extra/job/job.list.view.dart';
+export 'src/extra/job/job.list.options.dart';
+export 'src/extra/job/job.list.option.model.dart';

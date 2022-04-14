@@ -58,7 +58,6 @@ class _JobEditFormState extends State<JobEditForm> {
 
   List<String> files = [];
   double uploadProgress = 0;
-
   bool get uploadLimited => files.length == 5;
 
   bool get isCreate {
@@ -75,9 +74,7 @@ class _JobEditFormState extends State<JobEditForm> {
   }
 
   init() {
-    print(isUpdate);
     if (isUpdate) {
-      print('JOB EDIT => ${widget.post!.id}');
       // addr
       addr = AddressModel.fromMap(widget.post!.data);
       final _post = JobModel.fromJson(widget.post!.data, widget.post!.id);
