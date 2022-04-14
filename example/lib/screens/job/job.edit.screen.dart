@@ -21,16 +21,19 @@ class _JobEditScreenState extends State<JobEditScreen> with FirestoreMixin, Foru
         title: Text('Job Edit'),
       ),
       body: SingleChildScrollView(
-          child: Column(
-        children: [
-          JobEditForm(
-            onError: error,
-            onCreated: (id) => alert('Job opening created!', '$id'),
-            onUpdated: (id) => alert('Job opening updated!', '$id'),
-            post: widget.arguments['post'],
-          ),
-          space2xl,
-        ],
+          child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          children: [
+            JobEditForm(
+              onError: error,
+              onCreated: (id) => alert('Job opening created!', '$id'),
+              onUpdated: (id) => alert('Job opening updated!', '$id'),
+              job: widget.arguments['job'],
+            ),
+            space2xl,
+          ],
+        ),
       )),
     );
   }
