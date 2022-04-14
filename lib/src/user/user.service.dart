@@ -45,6 +45,7 @@ class UserService with FirestoreMixin, DatabaseMixin {
   // DatabaseReference get _myDoc => FirebaseDatabase.instance.ref('users').child(uid);
 
   StreamSubscription? userSubscription;
+  StreamSubscription? messagingPermissionSubscription;
 
   /// This event will be posted whenever user document changes.
   // ignore: close_sinks
@@ -72,7 +73,6 @@ class UserService with FirestoreMixin, DatabaseMixin {
           user = UserModel();
           // debugPrint('User signed-out');
           changes.add(user);
-          onSignedOut();
         } else {
           user = UserModel(uid: uid);
           if (_user.isAnonymous) {
@@ -80,7 +80,14 @@ class UserService with FirestoreMixin, DatabaseMixin {
             // debugPrint(  'User sign-in as Anonymous; Warning! Fireflutter does not user anonymous account.');
             changes.add(user);
           } else {
-            resetTopicSubscription();
+            messagingPermissionSubscription?.cancel();
+            messagingPermissionSubscription =
+                MessagingService.instance.permissionGranted.listen((x) {
+              if (x) {
+                MessagingService.instance.initializeSubscriptions();
+              }
+            });
+
             final doc = userDoc(_user.uid);
 
             /// Put user uid first, and use the model.
@@ -114,33 +121,6 @@ class UserService with FirestoreMixin, DatabaseMixin {
         }
       },
     );
-  }
-
-  /// Subscribe topics for newly sign-in user.
-  ///
-  /// This method will run the code only one time even if the user signed-in multiple times.
-  ///
-  /// when a user Sign-in, the app need to unsubscribe previous subscription
-  /// then app needs to subscribe the sign-in user topics.
-  /// `isUserLoggedIn` is set true when the user signed-in.
-  /// this can be use to check if the user is already loggedIn even the app was closed and reopen.
-  /// so it will not reset every time the app is relaunch.
-  ///
-  resetTopicSubscription() async {
-    final prefs = await SharedPreferences.getInstance();
-    if (prefs.getBool('isUserLoggedIn') != null) return;
-    prefs.setBool('isUserLoggedIn', true);
-    await UserSettingService.instance.unsubscribeAllTopic();
-    await UserSettingService.instance.subscribeToUserTopics();
-    await MessagingService.instance.updateSaveToken();
-  }
-
-  /// when user state change to null this will called and remove the isUserLoggedIn from the SharedPreferences instance.
-  /// remove `isUserLoggedIn` on logout. this is use to check if user has sign-in in the device.
-  ///
-  onSignedOut() async {
-    await SharedPreferences.getInstance()
-      ..remove('isUserLoggedIn');
   }
 
   signOut() async {

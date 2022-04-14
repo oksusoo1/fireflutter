@@ -1,4 +1,6 @@
 import 'dart:io';
+import 'package:flutter/material.dart';
+import 'package:rxdart/subjects.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../fireflutter.dart';
 // import 'package:flutter/material.dart';
@@ -10,6 +12,8 @@ class MessagingService with FirestoreMixin, DatabaseMixin {
     _instance ??= MessagingService();
     return _instance!;
   }
+
+  final BehaviorSubject<bool> permissionGranted = BehaviorSubject.seeded(false);
 
   MessagingService() {
     // debugPrint('MessagingService::constructor');
@@ -76,6 +80,14 @@ class MessagingService with FirestoreMixin, DatabaseMixin {
       }
     }
 
+    // Get the token each time the application loads and save it to database.
+    try {
+      token = (await FirebaseMessaging.instance.getToken())!;
+    } catch (e) {}
+
+    /// Permission is granted hereby.
+    permissionGranted.add(true);
+
     // Handler, when app is on Foreground.
     if (onForegroundMessage != null) FirebaseMessaging.onMessage.listen(onForegroundMessage!);
 
@@ -90,28 +102,13 @@ class MessagingService with FirestoreMixin, DatabaseMixin {
       if (onMessageOpenedFromBackground != null) onMessageOpenedFromBackground!(message);
     });
 
-    // Get the token each time the application loads and save it to database.
-
-    try {
-      token = (await FirebaseMessaging.instance.getToken())!;
-      // print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-      // print(token);
-    } catch (e) {
-      // print('------> getToken() error $e');
-    }
-
     // Any time the token refreshes, store this in the database too.
-    FirebaseMessaging.instance.onTokenRefresh.listen(_updateToken);
+    FirebaseMessaging.instance.onTokenRefresh.listen(((token) {
+      _updateToken(token);
+      initializeSubscriptions();
+    }));
 
-    // @TODO  updateToken
-
-    // AppController.of.authComplete.stream.listen((bool? re) {
-    //   if (re == null) {
-    //     return;
-    //   } else {
     _updateToken(token);
-    //   }
-    // });
   }
 
   updateSaveToken() {
@@ -179,5 +176,63 @@ class MessagingService with FirestoreMixin, DatabaseMixin {
       messageId: messageId,
       messageType: messageType,
     );
+  }
+
+  /// Subscribe topics for newly sign-in user.
+  ///
+  /// This method will run the code only one time even if the user signed-in multiple times.
+  ///
+  /// when a user Sign-in, the app need to unsubscribe previous subscription
+  /// then app needs to subscribe the sign-in user topics.
+  /// `isUserLoggedIn` is set true when the user signed-in.
+  /// this can be use to check if the user is already loggedIn even the app was closed and reopen.
+  /// so it will not reset every time the app is relaunch.
+  ///
+  /// Conditions of runing this code(unsubscribing).
+  ///
+  /// 1. Run this code only after the app gets push notification permission.
+  ///   (weather it subsribe or not, this code must run after app gets permission.)
+  /// 2. Run this code whenever app boots after user sign-in. Or
+  ///
+  ///   2.2 You may want to reduce the code running by segregating into two different code snipet like below.
+  ///   ; - Run this code on token change
+  ///   ; - Run this code on user change(sign-out and sign-in)
+  ///
+  ///   But doing this needs extra work and often leads mistakes.
+  ///   So, run this code on every app boots.
+  ///
+  /// * Note, improvement may be needed here. App may only run this code `if (tokenChanged || userChanged) { ... }`.
+  /// * Note, if, in case, the token changes while the app is running, this code will run again.
+  ///   - This code is being called on token refresh also.
+  ///   - Or when the app restarts, this code run again.
+  ///   - And the token is not supposed to be change while the app is running.
+  initializeSubscriptions() async {
+    final _tokenChanged = await tokenChanged;
+    final _userChanged = await userChanged;
+    if (_tokenChanged || _userChanged) {
+      await UserSettingService.instance.unsubscribeAllTopic();
+      await UserSettingService.instance.subscribeToUserTopics();
+      await MessagingService.instance.updateSaveToken();
+      debugPrint("MessagngService::initializeSubscriptions();");
+    }
+  }
+
+  /// check if token has changed.
+  Future<bool> get tokenChanged async {
+    final prefs = await SharedPreferences.getInstance();
+    final String? data = prefs.getString('subscription_init_token');
+    if (data == token) return false;
+    await prefs.setString('subscription_init_token', token);
+    return true;
+  }
+
+  /// check if user has changed.
+  Future<bool> get userChanged async {
+    final uid = UserService.instance.uid;
+    final prefs = await SharedPreferences.getInstance();
+    final String? data = prefs.getString('subscription_init_uid');
+    if (data == uid) return false;
+    await prefs.setString('subscription_init_uid', uid);
+    return true;
   }
 }
