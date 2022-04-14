@@ -1,8 +1,9 @@
+import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 
 import '../../../fireflutter.dart';
 
-/// 직업 입력 양식
+/// Job posting form
 ///
 ///
 class JobEditForm extends StatefulWidget {
@@ -24,10 +25,6 @@ class JobEditForm extends StatefulWidget {
   State<JobEditForm> createState() => _JobEditFormState();
 }
 
-// - Let company choose working hours of : 1hour, 2hour, 3hour, ... 14 hours.
-// - Let company choose working days in a week: 1 day, 2days, ... 7 days.
-// - Let company choose if they provide accommodations: Yes, No.
-// - Let comapny choose the salary: 100K Won, 200K Won, ... 4.5M Won.
 class _JobEditFormState extends State<JobEditForm> {
   final companyName = TextEditingController();
   final phoneNumber = TextEditingController();
@@ -128,7 +125,7 @@ class _JobEditFormState extends State<JobEditForm> {
           SizedBox(height: 15),
 
           /// Company name
-          JobFormTextField(
+          JobEditFormTextField(
             controller: companyName,
             label: "Company name",
             onUnfocus: () => validateTextField(companyName, FormErrorCodes.companyName),
@@ -136,7 +133,7 @@ class _JobEditFormState extends State<JobEditForm> {
           ),
 
           /// Company mobile number
-          JobFormTextField(
+          JobEditFormTextField(
             controller: mobileNumber,
             keyboardType: TextInputType.phone,
             label: "Mobile phone number",
@@ -145,7 +142,7 @@ class _JobEditFormState extends State<JobEditForm> {
           ),
 
           /// Company phone number
-          JobFormTextField(
+          JobEditFormTextField(
             controller: phoneNumber,
             keyboardType: TextInputType.phone,
             label: "Office phone number",
@@ -155,17 +152,16 @@ class _JobEditFormState extends State<JobEditForm> {
 
           /// Company email
           ///
-          ///  TODO: validate email
-          JobFormTextField(
+          JobEditFormTextField(
             controller: email,
             keyboardType: TextInputType.emailAddress,
             label: "Email address",
-            onUnfocus: () => validateTextField(email, FormErrorCodes.email),
+            onUnfocus: () => validateTextFieldForEmail(email, FormErrorCodes.email),
             errorMessage: errorMessage(FormErrorCodes.email),
           ),
 
           /// Company about us
-          JobFormTextField(
+          JobEditFormTextField(
             controller: aboutUs,
             label: "About us",
             maxLines: 5,
@@ -219,7 +215,7 @@ class _JobEditFormState extends State<JobEditForm> {
 
           /// Company detailed address
           if (addr != null) ...[
-            JobFormTextField(
+            JobEditFormTextField(
               controller: detailAddress,
               label: "Input detail address",
               maxLines: 2,
@@ -380,7 +376,7 @@ class _JobEditFormState extends State<JobEditForm> {
           ),
 
           /// Job number of hiring
-          JobFormTextField(
+          JobEditFormTextField(
             controller: numberOfHiring,
             keyboardType: TextInputType.number,
             label: "Number of hiring",
@@ -389,7 +385,7 @@ class _JobEditFormState extends State<JobEditForm> {
           ),
 
           /// Job description
-          JobFormTextField(
+          JobEditFormTextField(
             controller: jobDescription,
             label: "Job description(details of what workers will do)",
             maxLines: 3,
@@ -398,7 +394,7 @@ class _JobEditFormState extends State<JobEditForm> {
           ),
 
           /// requirements
-          JobFormTextField(
+          JobEditFormTextField(
             controller: requirement,
             label: "Requirements and qualifications",
             maxLines: 5,
@@ -409,7 +405,7 @@ class _JobEditFormState extends State<JobEditForm> {
           ),
 
           /// duty
-          JobFormTextField(
+          JobEditFormTextField(
             controller: duty,
             label: "Duties and responsibilities",
             maxLines: 5,
@@ -418,7 +414,7 @@ class _JobEditFormState extends State<JobEditForm> {
           ),
 
           /// benefit
-          JobFormTextField(
+          JobEditFormTextField(
             controller: benefit,
             label: "benefits(free meals, dormitory, transporation, etc)",
             maxLines: 5,
@@ -579,9 +575,25 @@ class _JobEditFormState extends State<JobEditForm> {
               final extra = jobInfo.toMap;
               print(extra);
 
-              /// TODO: For indexing and listing in normal forum.
-              String title = "";
-              String content = "";
+              String title = "${companyName.text} $salary - ${jobInfo.siNm} ${jobInfo.sggNm}";
+              String content = """Office No.: ${jobInfo.phoneNumber}
+Mobile No.: ${jobInfo.mobileNumber}
+Email address: ${jobInfo.email}
+Address: ${jobInfo.roadAddr}
+Korean Address: ${jobInfo.korAddr}
+
+Job category: ${jobInfo.jobCategory}
+No. of hiring: ${jobInfo.numberOfHiring}
+About us: ${jobInfo.aboutUs}
+requirement:
+duty:
+Salary:
+Working days: in a week
+Working hours: hours
+Accommodation
+Benefit:
+
+""";
 
               try {
                 if (isCreate) {
@@ -682,46 +694,13 @@ class _JobEditFormState extends State<JobEditForm> {
     }
     setState(() {});
   }
-}
 
-class JobFormTextField extends StatelessWidget {
-  JobFormTextField({
-    required this.controller,
-    required this.label,
-    required this.onUnfocus,
-    required this.errorMessage,
-    this.keyboardType,
-    this.maxLines,
-    Key? key,
-  }) : super(key: key);
-
-  final TextEditingController controller;
-  final String label;
-  final Function() onUnfocus;
-  final TextInputType? keyboardType;
-  final String? errorMessage;
-  final int? maxLines;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Focus(
-        onFocusChange: (b) {
-          if (!b) onUnfocus();
-        },
-        child: TextField(
-          controller: controller,
-          keyboardType: keyboardType,
-          minLines: maxLines != null ? 1 : null,
-          maxLines: maxLines,
-          decoration: InputDecoration(
-              labelText: label,
-              border: OutlineInputBorder(),
-              errorText: errorMessage,
-              errorStyle: TextStyle(fontStyle: FontStyle.italic)),
-        ),
-      ),
-    );
+  validateTextFieldForEmail(TextEditingController controller, FormErrorCodes code) {
+    if (EmailValidator.validate(controller.text) == false) {
+      errors.add(code);
+    } else {
+      errors.remove(code);
+    }
+    setState(() {});
   }
 }

@@ -87,6 +87,12 @@ dependencies:
   # file upload
   file_picker: ^4.5.1
 
+
+  # email validation on user email in profile screen.
+  email_validator: ^2.0.1
+  
+
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
