@@ -75,29 +75,30 @@ class _JobEditFormState extends State<JobEditForm> {
 
   init() {
     if (isUpdate) {
-      // addr
-      addr = AddressModel.fromMap(widget.post!.data);
-      final _post = JobModel.fromJson(widget.post!.data, widget.post!.id);
+      // job informations
+      final jobInfo = widget.post!.jobInfo;
+      // files
+      files = widget.post!.files;
+      // address
+      addr = jobInfo.address;
 
-      companyName.text = _post.companyName;
-      phoneNumber.text = _post.phoneNumber;
-      mobileNumber.text = _post.mobileNumber;
-      email.text = _post.email;
-      detailAddress.text = _post.detailAddress;
-      aboutUs.text = _post.aboutUs;
-      numberOfHiring.text = _post.numberOfHiring;
-      jobDescription.text = _post.jobDescription;
-      requirement.text = _post.requirement;
-      duty.text = _post.duty;
-      benefit.text = _post.benefit;
+      companyName.text = jobInfo.companyName;
+      phoneNumber.text = jobInfo.phoneNumber;
+      mobileNumber.text = jobInfo.mobileNumber;
+      email.text = jobInfo.email;
+      detailAddress.text = jobInfo.detailAddress;
+      aboutUs.text = jobInfo.aboutUs;
+      numberOfHiring.text = jobInfo.numberOfHiring;
+      jobDescription.text = jobInfo.jobDescription;
+      requirement.text = jobInfo.requirement;
+      duty.text = jobInfo.duty;
+      benefit.text = jobInfo.benefit;
 
-      jobCategory = _post.jobCategory;
-      workingDays = _post.workingDays;
-      workingHours = _post.workingHours;
-      salary = _post.salary;
-      withAccomodation = _post.withAccomodation;
-
-      files = _post.files;
+      jobCategory = jobInfo.jobCategory;
+      workingDays = jobInfo.workingDays;
+      workingHours = jobInfo.workingHours;
+      salary = jobInfo.salary;
+      withAccomodation = jobInfo.withAccomodation;
     }
   }
 
@@ -550,30 +551,32 @@ class _JobEditFormState extends State<JobEditForm> {
                 return widget.onError("Form data is incomplete, please check for errors.");
               }
 
-              final extra = {
-                'companyName': companyName.text,
-                'phoneNumber': phoneNumber.text,
-                'mobileNumber': mobileNumber.text,
-                'email': email.text,
-                'detailAddress': detailAddress.text,
-                'aboutUs': aboutUs.text,
-                'numberOfHiring': numberOfHiring.text,
-                'jobDescription': jobDescription.text,
-                'requirement': requirement.text,
-                'duty': duty.text,
-                'benefit': benefit.text,
-                'roadAddr': addr?.roadAddr ?? '',
-                'korAddr': addr?.korAddr ?? '',
-                'zipNo': addr?.zipNo ?? '',
-                'siNm': addr?.siNm ?? '',
-                'sggNm': addr?.sggNm ?? '',
-                'emdNm': addr?.emdNm ?? '',
-                'jobCategory': jobCategory,
-                'salary': salary,
-                'workingDays': workingDays,
-                'workingHours': workingHours,
-                'withAccomodation': withAccomodation,
-              };
+              final jobInfo = JobInfoModel(
+                companyName: companyName.text,
+                phoneNumber: phoneNumber.text,
+                mobileNumber: mobileNumber.text,
+                email: email.text,
+                detailAddress: detailAddress.text,
+                aboutUs: aboutUs.text,
+                numberOfHiring: numberOfHiring.text,
+                jobDescription: jobDescription.text,
+                requirement: requirement.text,
+                duty: duty.text,
+                benefit: benefit.text,
+                roadAddr: addr?.roadAddr ?? '',
+                korAddr: addr?.korAddr ?? '',
+                zipNo: addr?.zipNo ?? '',
+                siNm: addr?.siNm ?? '',
+                sggNm: addr?.sggNm ?? '',
+                emdNm: addr?.emdNm ?? '',
+                jobCategory: jobCategory,
+                salary: salary,
+                workingDays: workingDays,
+                workingHours: workingHours,
+                withAccomodation: withAccomodation,
+              );
+
+              final extra = jobInfo.toMap;
               print(extra);
 
               /// TODO: For indexing and listing in normal forum.

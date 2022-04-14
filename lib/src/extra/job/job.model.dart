@@ -1,26 +1,7 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import "../../../fireflutter.dart";
+import 'package:fireflutter/fireflutter.dart';
 
-/// JobModel
-///
-class JobModel {
-  JobModel({
-    this.id = '',
-    this.category = '',
-    this.title = '',
-    this.content = '',
-    this.uid = '',
-    this.hasPhoto = false,
-    this.files = const [],
-    this.deleted = false,
-    this.year = 0,
-    this.month = 0,
-    this.day = 0,
-    this.week = 0,
-    createdAt,
-    updatedAt,
-
-    //
+class JobInfoModel {
+  JobInfoModel({
     this.companyName = '',
     this.phoneNumber = '',
     this.mobileNumber = '',
@@ -43,10 +24,7 @@ class JobModel {
     this.workingDays = -1,
     this.workingHours = -1,
     this.withAccomodation = '',
-    data,
-  })  : data = data ?? {},
-        createdAt = createdAt ?? Timestamp.now(),
-        updatedAt = updatedAt ?? Timestamp.now();
+  });
 
   String companyName;
   String phoneNumber;
@@ -71,94 +49,84 @@ class JobModel {
   int workingHours;
   String withAccomodation;
 
-  /// data is the document data object.
-  Json data;
+  factory JobInfoModel.fromJson(Json json) {
+    final int _days =
+        json['workingDays'] is int ? json['workingDays'] : int.parse(json['workingDays'] ?? '-1');
+    final int _hours = json['workingHours'] is int
+        ? json['workingHours']
+        : int.parse(json['workingHours'] ?? '-1');
 
-  String id;
-  String uid;
-  String category;
-  String title;
-  String content;
-
-  bool deleted;
-  bool get isMine => UserService.instance.uid == uid;
-
-  bool hasPhoto;
-  List<String> files;
-
-  int year;
-  int month;
-  int day;
-  int week;
-
-  Timestamp createdAt;
-  Timestamp updatedAt;
-
-  /// Get document data of map and convert it into post model
-  ///
-  /// If post is created via http, then it will have [id] inside `data`.
-  factory JobModel.fromJson(Json data, [String? id]) {
-    String content = data['content'] ?? '';
-
-    /// If the post is created via http, the [createdAt] and [updatedAt] have different format.
-    Timestamp createdAt;
-    Timestamp updatedAt;
-    if (data['createdAt'] is Map) {
-      createdAt = Timestamp(
-        data['createdAt']['_seconds'],
-        data['createdAt']['_nanoseconds'],
-      );
-      updatedAt = Timestamp(
-        data['updatedAt']['_seconds'],
-        data['updatedAt']['_nanoseconds'],
-      );
-    } else {
-      createdAt = data['createdAt'] ?? Timestamp.now();
-      updatedAt = data['updatedAt'] ?? Timestamp.now();
-    }
-
-    final post = JobModel(
-      id: id ?? data['id'],
-      uid: data['uid'] ?? '',
-      category: data['category'] ?? '',
-      title: data['title'] ?? '',
-      content: content,
-      hasPhoto: data['hasPhoto'] ?? false,
-      files: new List<String>.from(data['files'] ?? []),
-      deleted: data['deleted'] ?? false,
-      year: data['year'] ?? 0,
-      month: data['month'] ?? 0,
-      day: data['day'] ?? 0,
-      week: data['week'] ?? 0,
-      createdAt: createdAt,
-      updatedAt: updatedAt,
-      data: data,
-
-      //
-      companyName: data['companyName'] ?? '',
-      phoneNumber: data['phoneNumber'] ?? '',
-      mobileNumber: data['mobileNumber'] ?? '',
-      email: data['email'] ?? '',
-      detailAddress: data['detailAddress'] ?? '',
-      aboutUs: data['aboutUs'] ?? '',
-      numberOfHiring: data['numberOfHiring'] ?? '',
-      jobDescription: data['jobDescription'] ?? '',
-      requirement: data['requirement'] ?? '',
-      duty: data['duty'] ?? '',
-      benefit: data['benefit'] ?? '',
-      roadAddr: data['roadAddr'] ?? '',
-      korAddr: data['korAddr'] ?? '',
-      zipNo: data['zipNo'] ?? '',
-      siNm: data['siNm'] ?? '',
-      sggNm: data['sggNm'] ?? '',
-      emdNm: data['emdNm'] ?? '',
-      jobCategory: data['jobCategory'] ?? '',
-      salary: data['salary'] ?? '',
-      workingDays: data['workingDays'] ?? -1,
-      workingHours: data['workingHours'] ?? -1,
-      withAccomodation: data['withAccomodation'] ?? '',
+    return JobInfoModel(
+      companyName: json['companyName'] ?? '',
+      phoneNumber: json['phoneNumber'] ?? '',
+      mobileNumber: json['mobileNumber'] ?? '',
+      email: json['email'] ?? '',
+      detailAddress: json['detailAddress'] ?? '',
+      aboutUs: json['aboutUs'] ?? '',
+      numberOfHiring: json['numberOfHiring'] ?? '',
+      jobDescription: json['jobDescription'] ?? '',
+      requirement: json['requirement'] ?? '',
+      duty: json['duty'] ?? '',
+      benefit: json['benefit'] ?? '',
+      jobCategory: json['jobCategory'] ?? '',
+      salary: json['salary'] ?? '',
+      workingDays: _days,
+      workingHours: _hours,
+      withAccomodation: json['withAccomodation'] ?? '',
+      roadAddr: json['roadAddr'] ?? '',
+      korAddr: json['korAddr'] ?? '',
+      zipNo: json['zipNo'] ?? '',
+      siNm: json['siNm'] ?? '',
+      sggNm: json['sggNm'] ?? '',
+      emdNm: json['emdNm'] ?? '',
     );
-
-    return post;
   }
+
+  factory JobInfoModel.empty() {
+    return JobInfoModel(
+      companyName: '',
+      phoneNumber: '',
+      mobileNumber: '',
+      email: '',
+      detailAddress: '',
+      aboutUs: '',
+      numberOfHiring: '',
+      jobDescription: '',
+      requirement: '',
+      duty: '',
+      benefit: '',
+      jobCategory: '',
+      salary: '',
+      workingDays: -1,
+      workingHours: -1,
+      withAccomodation: '',
+    );
+  }
+
+  Map<String, dynamic> get toMap => {
+        'companyName': companyName,
+        'phoneNumber': phoneNumber,
+        'mobileNumber': mobileNumber,
+        'email': email,
+        'detailAddress': detailAddress,
+        'aboutUs': aboutUs,
+        'numberOfHiring': numberOfHiring,
+        'jobDescription': jobDescription,
+        'requirement': requirement,
+        'duty': duty,
+        'benefit': benefit,
+        'jobCategory': jobCategory,
+        'salary': salary,
+        'workingDays': workingDays,
+        'workingHours': workingHours,
+        'withAccomodation': withAccomodation,
+        'roadAddr': roadAddr,
+        'korAddr': korAddr,
+        'zipNo': zipNo,
+        'siNm': siNm,
+        'sggNm': sggNm,
+        'emdNm': emdNm,
+      };
+
+  AddressModel get address => AddressModel.fromMap(toMap);
 }

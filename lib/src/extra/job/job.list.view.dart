@@ -9,9 +9,11 @@ class JobListView extends StatefulWidget {
     Key? key,
     required this.onError,
     required this.options,
+    required this.onEdit,
   }) : super(key: key);
 
   final Function onError;
+  final Function(PostModel) onEdit;
   final JobListOptionModel options;
 
   @override
@@ -60,7 +62,7 @@ class _JobListViewState extends State<JobListView> with FirestoreMixin {
               snapshot.fetchMore();
             }
 
-            Json data = snapshot.docs[index].data() as Json;
+            // Json data = snapshot.docs[index].data() as Json;
 
             final post = PostModel.fromJson(
               snapshot.docs[index].data() as Json,
@@ -82,7 +84,8 @@ class _JobListViewState extends State<JobListView> with FirestoreMixin {
                           height: 62,
                         )
                       : null,
-                  title: Text(data['jobDescription']),
+                  // title: Text(data['jobDescription']),
+                  title: Text(post.jobInfo.jobDescription),
                   subtitle: Padding(
                     padding: const EdgeInsets.only(top: 8.0),
                     child: Text(post.shortDateTime),
@@ -93,12 +96,10 @@ class _JobListViewState extends State<JobListView> with FirestoreMixin {
                   ),
                   onTap: () => setState(() => post.open = !post.open),
                 ),
-                if (post.open)
-                  // PagePadding(
-                  //   children: [
+                if (post.open) ...[
                   Text('post id; ${post.id}'),
-                //   ],
-                // ),
+                  TextButton(onPressed: () => widget.onEdit(post), child: Text('Edit')),
+                ],
                 Divider(
                   color: Colors.grey.shade400,
                 ),

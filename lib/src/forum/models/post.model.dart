@@ -423,4 +423,8 @@ class PostModel with FirestoreMixin, ForumBase {
 
     return false;
   }
+
+  /// Get job related informations
+  ///
+  JobInfoModel get jobInfo => JobInfoModel.fromJson(data);
 }
