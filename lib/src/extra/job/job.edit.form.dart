@@ -498,7 +498,11 @@ class _JobEditFormState extends State<JobEditForm> {
                 ],
                 if (files.isNotEmpty) ...[
                   SizedBox(height: 8),
-                  ImageListEdit(files: files, onError: (e) => widget.onError(e)),
+                  ImageListEdit(
+                    files: files,
+                    onDeleted: () => setState(() {}),
+                    onError: (e) => widget.onError(e),
+                  ),
                 ]
               ],
             ),
@@ -517,44 +521,46 @@ class _JobEditFormState extends State<JobEditForm> {
                 return widget.onError("Form data is incomplete, please check for errors.");
               }
 
+              final extra = {
+                'companyName': companyName.text,
+                'phoneNumber': phoneNumber.text,
+                'mobileNumber': mobileNumber.text,
+                'email': email.text,
+                'detailAddress': detailAddress.text,
+                'aboutUs': aboutUs.text,
+                'numberOfHiring': numberOfHiring.text,
+                'jobDescription': jobDescription.text,
+                'requirement': requirement.text,
+                'duty': duty.text,
+                'benefit': benefit.text,
+                'roadAddr': addr?.roadAddr ?? '',
+                'korAddr': addr?.korAddr ?? '',
+                'zipNo': addr?.zipNo ?? '',
+                'siNm': addr?.siNm ?? '',
+                'sggNm': addr?.sggNm ?? '',
+                'emdNm': addr?.emdNm ?? '',
+                'jobCategory': jobCategory,
+                'salary': salary,
+                'workingDays': workingDays,
+                'workingHours': workingHours,
+                'withAccomodation': withAccomodation,
+              };
+              print(extra);
+
+              /// TODO: For indexing and listing in normal forum.
+              String title = "";
+              String content = "";
+
               try {
-                final extra = {
-                  'companyName': companyName.text,
-                  'phoneNumber': phoneNumber.text,
-                  'mobileNumber': mobileNumber.text,
-                  'email': email.text,
-                  'detailAddress': detailAddress.text,
-                  'aboutUs': aboutUs.text,
-                  'numberOfHiring': numberOfHiring.text,
-                  'jobDescription': jobDescription.text,
-                  'requirement': requirement.text,
-                  'duty': duty.text,
-                  'benefit': benefit.text,
-                  'roadAddr': addr?.roadAddr ?? '',
-                  'korAddr': addr?.korAddr ?? '',
-                  'zipNo': addr?.zipNo ?? '',
-                  'siNm': addr?.siNm ?? '',
-                  'sggNm': addr?.sggNm ?? '',
-                  'emdNm': addr?.emdNm ?? '',
-                  'jobCategory': jobCategory,
-                  'salary': salary,
-                  'workingDays': workingDays,
-                  'workingHours': workingHours,
-                  'withAccomodation': withAccomodation,
-                };
-                print(extra);
-
-                /// TODO: For indexing and listing in normal forum.
-                String title = "";
-                String content = "";
-
-                await PostApi.instance.create(
+                final post = await PostApi.instance.create(
                   category: JobService.instance.jobOpenings,
                   title: title,
                   content: content,
                   files: files,
                   extra: extra,
                 );
+
+                print("post created," + post.toString());
               } catch (e, stacks) {
                 debugPrintStack(stackTrace: stacks);
                 widget.onError(e);
