@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:fireflutter/fireflutter.dart';
+import '../../../fireflutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterfire_ui/firestore.dart';
 
@@ -7,21 +7,24 @@ class JobListView extends StatefulWidget {
   const JobListView({
     Key? key,
     required this.onError,
-    required this.searchQuery,
+    this.searchQuery,
   }) : super(key: key);
 
   final Function onError;
-  final Query searchQuery;
+  final Query? searchQuery;
 
   @override
   State<JobListView> createState() => _JobListViewState();
 }
 
-class _JobListViewState extends State<JobListView> {
+class _JobListViewState extends State<JobListView> with FirestoreMixin {
   @override
   Widget build(BuildContext context) {
     return FirestoreQueryBuilder(
-      query: widget.searchQuery,
+      query: widget.searchQuery ??
+          postCol
+              .where('category', isEqualTo: JobService.instance.jobOpenings)
+              .orderBy('createdAt', descending: true),
       builder: (context, snapshot, _) {
         if (snapshot.isFetching) {
           return Text('loading...');
@@ -63,9 +66,7 @@ class _JobListViewState extends State<JobListView> {
                     child: Text(post.shortDateTime),
                   ),
                   trailing: Icon(
-                    post.open
-                        ? Icons.keyboard_arrow_up_rounded
-                        : Icons.keyboard_arrow_down_rounded,
+                    post.open ? Icons.keyboard_arrow_up_rounded : Icons.keyboard_arrow_down_rounded,
                     color: Colors.grey,
                   ),
                   onTap: () => setState(() => post.open = !post.open),
