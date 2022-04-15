@@ -24,6 +24,7 @@ class UserModel with FirestoreMixin, DatabaseMixin {
     this.disabled = false,
     this.registeredAt = 0,
     this.updatedAt = 0,
+    this.level = 0,
   });
 
   final allowedFields = [
@@ -74,6 +75,7 @@ class UserModel with FirestoreMixin, DatabaseMixin {
   String nickname;
 
   int point;
+  int level;
 
   int registeredAt;
   int updatedAt;
@@ -147,9 +149,11 @@ class UserModel with FirestoreMixin, DatabaseMixin {
       lastName: data['lastName'] ?? '',
       nickname: data['nickname'] ?? '',
       photoUrl: data['photoUrl'] ?? '',
-      birthday: data['birthday'] ?? 0,
+      birthday:
+          (data['birthday'] is int) ? data['birthday'] : (int.tryParse(data['birthday']) ?? 0),
       gender: data['gender'] ?? '',
       point: data['point'] ?? 0,
+      level: data['level'] ?? 0,
       profileReady: data['profileReady'] ?? 0,
       registeredAt: data['registeredAt'] ?? 0,
       updatedAt: data['updatedAt'] ?? 0,
@@ -223,6 +227,7 @@ class UserModel with FirestoreMixin, DatabaseMixin {
     birthday = u.birthday;
     gender = u.gender;
     point = u.point;
+    level = u.level;
     profileReady = u.profileReady;
     registeredAt = u.registeredAt;
     updatedAt = u.updatedAt;

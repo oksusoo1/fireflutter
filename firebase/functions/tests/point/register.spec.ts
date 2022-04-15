@@ -26,8 +26,15 @@ describe("Register point test", () => {
     // Do random point again and see if it fails.
     const re = await Point.registerPoint({}, { params: { uid: uid } });
     expect(re).to.be.null;
+
+    const user = await User.get(uid);
+    if (user!.point < 1000) expect(user!.level).equals(1);
+    else if (user!.point < 3000) expect(user!.level).equals(2);
+    else if (user!.point < 6000) expect(user!.level).equals(3);
+
+    // ...
   });
-  it("Register test via database", async () => {
+  it("Register test via remote database", async () => {
     const uid = "user-" + Utils.getTimestamp();
     await User.create(uid, {
       firstName: "fn",
@@ -40,5 +47,9 @@ describe("Register point test", () => {
     const user = await User.get(uid);
     // console.log(user);
     expect(user!.point).equal(point);
+    // console.log(user);
+    if (user!.point < 1000) expect(user!.level).equals(1);
+    else if (user!.point < 3000) expect(user!.level).equals(2);
+    else if (user!.point < 6000) expect(user!.level).equals(3);
   });
 });

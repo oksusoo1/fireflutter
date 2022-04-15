@@ -203,7 +203,7 @@ class Point {
         return true;
     }
     /**
-     * Updates user point.
+     * Updates user point and level.
      *
      * `point` can be increase or decrease.
      * `history` is the total amount of point that the user earned in life time.
@@ -224,8 +224,19 @@ class Point {
         if (snapshot.exists()) {
             await ref_1.Ref.userDoc(uid).update({
                 point: snapshot.val().point,
+                level: this.getLevel(snapshot.val().history),
             });
         }
+    }
+    static getLevel(point) {
+        const seed = 1000;
+        let acc = 0;
+        for (let i = 1; i < 150; i++) {
+            acc = seed * i + acc;
+            if (point < acc)
+                return i;
+        }
+        return 0;
     }
     /**
      * Returns the list of point history. see README.md for details.

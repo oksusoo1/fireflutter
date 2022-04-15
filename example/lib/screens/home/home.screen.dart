@@ -86,7 +86,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           },
                         ),
                         Text('UID: ${FirebaseAuth.instance.currentUser?.uid}'),
-                        MyDoc(builder: (u) => Text('Point: ${u.point}')),
+                        MyDoc(builder: (u) => Text('Point: ${u.point}, Lv: ${u.level}')),
                         MyDoc(builder: (_user) {
                           if (_user.isAdmin)
                             return TextButton(

@@ -7,6 +7,7 @@ import { Utils } from "../../src/classes/utils";
 import { Comment } from "../../src/classes/comment";
 // import { User } from "../../src/classes/user";
 import { Test } from "../../src/classes/test";
+import { User } from "../../src/classes/user";
 
 new FirebaseAppInitializer();
 
@@ -49,7 +50,12 @@ describe("Comment point test", () => {
     const comment3 = await Comment.create({ postId: "post-id-2-c", uid: user.id });
     const pointAfterCreate3 = await Point.getUserPoint(user.id);
     expect(
-        startingPoint + comment.point! + comment2.point! + (comment3.point ?? 0) === pointAfterCreate3
+      startingPoint + comment.point! + comment2.point! + (comment3.point ?? 0) === pointAfterCreate3
     ).true;
+
+    const u = await User.get(user.id);
+    if (u!.point < 1000) expect(u!.level).equals(1);
+    else if (u!.point < 3000) expect(u!.level).equals(2);
+    else if (u!.point < 6000) expect(u!.level).equals(3);
   });
 });

@@ -11,6 +11,7 @@ export interface UserDocument {
   registeredAt: number;
   updatedAt: number;
   point: number;
+  level: number;
 
   photoUrl: string;
   gender: string;

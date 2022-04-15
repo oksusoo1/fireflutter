@@ -7,6 +7,7 @@ import { Utils } from "../../src/classes/utils";
 import { Post } from "../../src/classes/post";
 // import { User } from "../../src/classes/user";
 import { Test } from "../../src/classes/test";
+import { User } from "../../src/classes/user";
 
 new FirebaseAppInitializer();
 
@@ -57,6 +58,11 @@ describe("Post point test", () => {
     expect(post3).to.be.an("object").not.to.have.property("point");
     const pointAfterCreate3 = await Point.getUserPoint(user.id);
     expect(startingPoint + post.point! + post2.point! + (post3.point ?? 0) === pointAfterCreate3)
-        .true;
+      .true;
+
+    const u = await User.get(user.id);
+    if (u!.point < 1000) expect(u!.level).equals(1);
+    else if (u!.point < 3000) expect(u!.level).equals(2);
+    else if (u!.point < 6000) expect(u!.level).equals(3);
   });
 });

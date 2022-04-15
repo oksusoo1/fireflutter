@@ -78,6 +78,47 @@ class ProfileScreenState extends State<ProfileScreen> {
                 if (emailLoader) CircularProgressIndicator.adaptive(),
               ],
             ),
+            TextField(
+              controller: TextEditingController()..text = UserService.instance.user.firstName,
+              decoration: const InputDecoration(
+                hintText: 'First name',
+                helperText: 'Input first name',
+              ),
+              onChanged: (s) => UserService.instance.user
+                  .update(field: 'firstName', value: s)
+                  .catchError((e) => error(e)),
+            ),
+            TextField(
+              controller: TextEditingController()..text = UserService.instance.user.lastName,
+              decoration: const InputDecoration(
+                hintText: 'Last name',
+                helperText: 'Input last name',
+              ),
+              onChanged: (s) => UserService.instance.user
+                  .update(field: 'lastName', value: s)
+                  .catchError((e) => error(e)),
+            ),
+            TextField(
+              controller: TextEditingController()..text = UserService.instance.user.gender,
+              decoration: const InputDecoration(
+                hintText: 'Gender',
+                helperText: 'Input gender as in M or F',
+              ),
+              onChanged: (s) => UserService.instance.user
+                  .update(field: 'gender', value: s)
+                  .catchError((e) => error(e)),
+            ),
+            TextField(
+              controller: TextEditingController()
+                ..text = UserService.instance.user.birthday.toString(),
+              decoration: const InputDecoration(
+                hintText: 'Birthday',
+                helperText: 'Input birthday as in the format of YYYYMMDD',
+              ),
+              onChanged: (s) => UserService.instance.user
+                  .update(field: 'birthday', value: s)
+                  .catchError((e) => error(e)),
+            ),
           ],
         ),
       ),
