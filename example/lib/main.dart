@@ -232,7 +232,10 @@ class _MainAppState extends State<MainApp> {
       },
       onMessageOpenedFromTermiated: (message) {
         // this will triggered when the notification on tray was tap while the app is closed
-        onMessageOpenedShowMessage(message);
+
+        WidgetsBinding.instance?.addPostFrameCallback((duration) {
+          onMessageOpenedShowMessage(message);
+        });
       },
       onMessageOpenedFromBackground: (message) {
         // this will triggered when the notification on tray was tap while the app is open but in background state.

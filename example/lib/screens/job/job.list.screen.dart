@@ -29,7 +29,9 @@ class _JobListScreenState extends State<JobListScreen> with FirestoreMixin, Foru
             icon: Icon(Icons.add_circle_outline),
           ),
         ],
-        bottom: JobListTitleBottom(change: (options) => setState(() => this.options = options)),
+        bottom: JobListTitleBottom(
+          change: (options) => setState(() => this.options = options),
+        ),
       ),
       body: JobListView(
         onError: error,
@@ -52,7 +54,7 @@ class JobListTitleBottom extends StatefulWidget with PreferredSizeWidget {
   final Function(JobListOptionModel) change;
 
   @override
-  Size get preferredSize => Size.fromHeight(252);
+  Size get preferredSize => Size.fromHeight(200);
 
   @override
   State<JobListTitleBottom> createState() => _JobListTitleBottomState();

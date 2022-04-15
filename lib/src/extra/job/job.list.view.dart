@@ -20,27 +20,38 @@ class JobListView extends StatefulWidget {
   State<JobListView> createState() => _JobListViewState();
 }
 
+///
+/// TODO - Remove 'category'
+/// TODO - Search combinatino: job category, (siNm Or siNm+sggNm), working days, accommodation, createdAt.
+///
 class _JobListViewState extends State<JobListView> with FirestoreMixin {
   Query get _searchQuery {
     print('_serchQuery ${widget.options}');
 
     final options = widget.options;
 
-    Query q = postCol.where('category', isEqualTo: JobService.instance.jobOpenings);
+    Query query = db.collection('jobs');
 
+    if (options.siNm != '') {
+      query = query.where('siNm', isEqualTo: options.siNm);
+    }
+    if (options.sggNm != '') {
+      query = query.where('sggNm', isEqualTo: options.sggNm);
+    }
     if (options.jobCategory != '') {
-      q.where('jobCategory', isEqualTo: options.jobCategory);
+      query = query.where('jobCategory', isEqualTo: options.jobCategory);
     }
 
-    if (options.sort == 'salary') {
-      q = q.orderBy('salary', descending: true);
+    if (options.workingDays != -1) {
+      query = query.where('workingDays', isEqualTo: options.workingDays);
     }
-    if (options.sort == 'workingDays') {
-    } else {
-      q = q.orderBy('createdAt', descending: true);
+    if (options.accomodation != '') {
+      query = query.where('withAccomodation', isEqualTo: options.accomodation);
     }
 
-    return q;
+    query = query.orderBy('createdAt', descending: true);
+
+    return query;
   }
 
   @override
@@ -53,6 +64,7 @@ class _JobListViewState extends State<JobListView> with FirestoreMixin {
         }
 
         if (snapshot.hasError) {
+          debugPrint("${snapshot.error}");
           return Text('Something went wrong! ${snapshot.error}');
         }
         return ListView.builder(
@@ -64,7 +76,7 @@ class _JobListViewState extends State<JobListView> with FirestoreMixin {
 
             // Json data = snapshot.docs[index].data() as Json;
 
-            final post = PostModel.fromJson(
+            final job = JobModel.fromJson(
               snapshot.docs[index].data() as Json,
               snapshot.docs[index].id,
             );
@@ -77,29 +89,20 @@ class _JobListViewState extends State<JobListView> with FirestoreMixin {
                   // margin: EdgeInsets.only(top: index == 0 ? 16 : 0),
                   // padding:
                   //     EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  leading: post.files.isNotEmpty
+                  leading: job.files.isNotEmpty
                       ? UploadedImage(
-                          url: post.files.first,
+                          url: job.files.first,
                           width: 62,
                           height: 62,
                         )
                       : null,
                   // title: Text(data['jobDescription']),
-                  title: Text(post.jobInfo.jobDescription),
+                  title: Text(job.description),
                   subtitle: Padding(
                     padding: const EdgeInsets.only(top: 8.0),
-                    child: Text(post.shortDateTime),
+                    child: Text('TODO: display job created at time'),
                   ),
-                  trailing: Icon(
-                    post.open ? Icons.keyboard_arrow_up_rounded : Icons.keyboard_arrow_down_rounded,
-                    color: Colors.grey,
-                  ),
-                  onTap: () => setState(() => post.open = !post.open),
                 ),
-                if (post.open) ...[
-                  Text('post id; ${post.id}'),
-                  TextButton(onPressed: () => widget.onEdit(post), child: Text('Edit')),
-                ],
                 Divider(
                   color: Colors.grey.shade400,
                 ),
