@@ -13,7 +13,7 @@ class JobListView extends StatefulWidget {
   }) : super(key: key);
 
   final Function onError;
-  final Function(PostModel) onEdit;
+  final Function(JobModel) onEdit;
   final JobListOptionModel options;
 
   @override
@@ -99,6 +99,7 @@ class _JobListViewState extends State<JobListView> with FirestoreMixin {
                     padding: const EdgeInsets.only(top: 8.0),
                     child: Text('TODO: display job created at time'),
                   ),
+                  trailing: TextButton(child: Text('edit'), onPressed: () => widget.onEdit(job)),
                 ),
                 Divider(
                   color: Colors.grey.shade400,
