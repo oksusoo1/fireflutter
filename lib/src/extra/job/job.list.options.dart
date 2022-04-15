@@ -32,6 +32,7 @@ class _JobListOptionsState extends State<JobListOptions> with FirestoreMixin {
                         isDense: true,
                         contentPadding: EdgeInsets.all(6),
                         hintText: 'Company',
+                        hintStyle: optionStyle,
                       ),
                       onChanged: (v) {
                         bounce('companyName', 500, (_) async {
@@ -50,7 +51,7 @@ class _JobListOptionsState extends State<JobListOptions> with FirestoreMixin {
                       value: options.jobCategory,
                       items: [
                         DropdownMenuItem(
-                          child: Text('Industry'),
+                          child: Text('Industry', style: optionStyle),
                           value: '',
                         ),
                         ...JobService.instance.categories.entries
@@ -76,7 +77,7 @@ class _JobListOptionsState extends State<JobListOptions> with FirestoreMixin {
                         value: options.salary,
                         items: [
                           DropdownMenuItem(
-                            child: Text('Salary'),
+                            child: Text('Salary', style: optionStyle),
                             value: '',
                           ),
                           ...JobService.instance.salaries.map(
@@ -105,12 +106,12 @@ class _JobListOptionsState extends State<JobListOptions> with FirestoreMixin {
                       value: options.siNm,
                       items: [
                         DropdownMenuItem(
-                          child: Text('Select location'),
+                          child: Text('Select location', style: optionStyle),
                           value: '',
                         ),
                         for (final name in JobService.instance.areas.keys)
                           DropdownMenuItem(
-                            child: Text(name),
+                            child: Text(name, style: optionStyle),
                             value: name,
                           )
                       ],
@@ -137,14 +138,14 @@ class _JobListOptionsState extends State<JobListOptions> with FirestoreMixin {
                         value: options.sggNm,
                         items: [
                           DropdownMenuItem(
-                            child: Text('Select city/county/gu'),
+                            child: Text('Select city/county/gu', style: optionStyle),
                             value: '',
                           ),
                           for (final name
                               in JobService.instance.areas[options.siNm]!
                                 ..sort((a, b) => a.compareTo(b)))
                             DropdownMenuItem(
-                              child: Text(name),
+                              child: Text(name, style: optionStyle),
                               value: name,
                             )
                         ],

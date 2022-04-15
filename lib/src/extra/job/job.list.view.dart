@@ -61,6 +61,9 @@ class _JobListViewState extends State<JobListView> with FirestoreMixin {
 
   @override
   Widget build(BuildContext context) {
+    final style = TextStyle(
+      fontSize: 13,
+    );
     return FirestoreQueryBuilder(
       query: _searchQuery,
       builder: (context, snapshot, _) {
@@ -107,18 +110,36 @@ class _JobListViewState extends State<JobListView> with FirestoreMixin {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(JobService.instance.categories[job.jobCategory] ?? ''),
-                        Text(job.description),
+                        Row(
+                          children: [
+                            Text(job.companyName + '.', style: style),
+                            SizedBox(width: 8),
+                            Text(job.siNm + ',', style: style),
+                            SizedBox(width: 4),
+                            Text(job.sggNm, style: style),
+                          ],
+                        ),
+                        Row(
+                          children: [
+                            Text('Salary: ${job.salary}, ', style: style),
+                            if (job.workingDays == 0)
+                              Text('Working days: flexible', style: style)
+                            else
+                              Text('Working days: ${job.workingDays} days in a week', style: style),
+                          ],
+                        ),
+                        // Text(job.description, style: style),
                       ],
                     ),
                     subtitle: Padding(
                       padding: const EdgeInsets.only(top: 8.0),
-                      child: Text(shortDateTime(job.createdAt)),
+                      child: Text(shortDateTime(job.createdAt), style: style),
                     ),
-                    trailing: job.uid == UserService.instance.uid
-                        ? TextButton(child: Text('edit'), onPressed: () => widget.onEdit(job))
-                        : null,
+                    trailing: Icon(Icons.arrow_right),
                   ),
                 ),
+                if (job.uid == UserService.instance.uid)
+                  TextButton(child: Text('edit'), onPressed: () => widget.onEdit(job)),
                 Divider(
                   color: Colors.grey.shade400,
                 ),

@@ -61,141 +61,134 @@ class _JobViewState extends State<JobView> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text('Company details',
-              style: TextStyle(fontSize: 16, color: Colors.black)),
+          RichText(
+              text: TextSpan(children: [
+            TextSpan(
+                text: "Job recruitment from ",
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.black,
+                )),
+            TextSpan(
+                text: job.companyName,
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                )),
+          ])),
           SizedBox(height: 15),
-          TextFormField(
-            readOnly: true,
-            initialValue: job.companyName,
-            decoration: InputDecoration(
-              labelText: "Company Name",
-            ),
+          JobViewItem(
+            value: job.companyName,
+            label: "Company Name",
           ),
-          TextFormField(
-            readOnly: true,
-            initialValue: job.mobileNumber,
-            decoration: InputDecoration(
-              labelText: "Mobile number",
-            ),
+          JobViewItem(
+            value: job.mobileNumber,
+            label: "Mobile number",
           ),
-          TextFormField(
-            readOnly: true,
-            initialValue: job.phoneNumber,
-            decoration: InputDecoration(
-              labelText: "Phone number",
-            ),
+          JobViewItem(
+            value: job.phoneNumber,
+            label: "Phone number",
           ),
-          TextFormField(
-            readOnly: true,
-            initialValue: job.email,
-            decoration: InputDecoration(
-              labelText: "Email",
-            ),
+          JobViewItem(
+            value: job.email,
+            label: "Email",
           ),
-          TextFormField(
-            readOnly: true,
-            initialValue: job.aboutUs,
-            decoration: InputDecoration(
-              labelText: "About Use",
-            ),
+          JobViewItem(
+            value: job.aboutUs,
+            label: "About Use",
           ),
           SizedBox(height: 15),
-          Text('Job details',
-              style: TextStyle(fontSize: 16, color: Colors.black)),
+          Text('Job details', style: TextStyle(fontSize: 16, color: Colors.black)),
           SizedBox(height: 10),
-          TextFormField(
-            readOnly: true,
-            initialValue: JobService.instance.categories[job.jobCategory] ?? '',
-            decoration: InputDecoration(
-              labelText: "Job Category",
-            ),
+          JobViewItem(
+            value: JobService.instance.categories[job.jobCategory] ?? '',
+            label: "Job Category",
           ),
-          TextFormField(
-            readOnly: true,
-            initialValue: job.workingDays == 0
+          JobViewItem(
+            value: job.workingDays == 0
                 ? "Flexible"
                 : job.workingDays > 0
                     ? '${job.workingDays} days'
                     : '',
-            decoration: InputDecoration(
-              labelText: "Working Days",
-            ),
+            label: "Working Days",
           ),
-          TextFormField(
-            readOnly: true,
-            initialValue: job.workingHours == 0
+          JobViewItem(
+            value: job.workingHours == 0
                 ? "Flexible"
                 : job.workingHours > 0
                     ? '${job.workingHours} hour'
                     : '',
-            decoration: InputDecoration(
-              labelText: "Working Hours",
-            ),
+            label: "Working Hours",
           ),
-          TextFormField(
-            readOnly: true,
-            initialValue: "${job.salary} Won",
-            decoration: InputDecoration(
-              labelText: "Salary",
-            ),
+          JobViewItem(
+            value: "${job.salary} Won",
+            label: "Salary",
           ),
-          TextFormField(
-            readOnly: true,
-            initialValue: "${job.numberOfHiring} available slot",
-            decoration: InputDecoration(
-              labelText: "Vacant",
-            ),
+          JobViewItem(
+            value: "${job.numberOfHiring} available slot",
+            label: "Vacant",
           ),
-          TextFormField(
-            readOnly: true,
-            initialValue: job.description,
-            decoration: InputDecoration(
-              labelText: "Descriptions",
-            ),
+          JobViewItem(
+            value: job.description,
+            label: "Descriptions",
           ),
-          TextFormField(
-            readOnly: true,
-            initialValue: job.requirement,
-            decoration: InputDecoration(
-              labelText: "Requirements",
-            ),
+          JobViewItem(
+            value: job.requirement,
+            label: "Requirements",
           ),
-          TextFormField(
+          JobViewItem(
             key: UniqueKey(),
-            initialValue: job.requirement,
-            autovalidateMode: AutovalidateMode.always,
-            decoration: InputDecoration(
-              labelText: "Requirements and qualifications",
-            ),
-            readOnly: true,
+            value: job.requirement,
+            label: "Requirements and qualifications",
           ),
-          TextFormField(
+          JobViewItem(
             key: UniqueKey(),
-            initialValue: job.duty,
-            autovalidateMode: AutovalidateMode.always,
-            decoration: InputDecoration(
-              labelText: "Duties and responsibilities",
-            ),
-            readOnly: true,
+            value: job.duty,
+            label: "Duties and responsibilities",
           ),
-          TextFormField(
+          JobViewItem(
             key: UniqueKey(),
-            initialValue: job.benefit,
-            autovalidateMode: AutovalidateMode.always,
-            decoration: InputDecoration(
-              labelText: "benefits(free meals, dormitory, transporation, etc)",
-            ),
-            readOnly: true,
+            value: job.benefit,
+            label: "benefits(free meals, dormitory, transporation, etc)",
           ),
-          TextFormField(
-            readOnly: true,
-            initialValue: job.withAccomodation == 'Y' ? "Yes" : 'No',
-            decoration: InputDecoration(
-              labelText: "Accomodation",
-            ),
+          JobViewItem(
+            value: job.withAccomodation == 'Y' ? "Yes" : 'No',
+            label: "Accomodation",
           ),
         ],
       ),
+    );
+  }
+}
+
+class JobViewItem extends StatelessWidget {
+  const JobViewItem({
+    Key? key,
+    required this.value,
+    required this.label,
+  }) : super(key: key);
+
+  final String value;
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Divider(height: 24),
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 11,
+            color: Colors.grey.shade700,
+            fontStyle: FontStyle.italic,
+          ),
+        ),
+        SizedBox(height: 8),
+        Text(value),
+      ],
     );
   }
 }
