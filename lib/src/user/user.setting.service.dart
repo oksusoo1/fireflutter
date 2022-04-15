@@ -111,8 +111,9 @@ class UserSettingService with DatabaseMixin {
   }
 
   Future<void> unsubscribeAllTopic() async {
-    await CategoryService.instance.loadCategories(categoryGroup: 'community');
-    for (CategoryModel cat in CategoryService.instance.categories) {
+    List<CategoryModel> categories =
+        await CategoryService.instance.loadCategories(categoryGroup: 'community');
+    for (CategoryModel cat in categories) {
       await FirebaseMessaging.instance.unsubscribeFromTopic('posts_${cat.id}');
       await FirebaseMessaging.instance.unsubscribeFromTopic('comments_${cat.id}');
     }

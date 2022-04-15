@@ -21,9 +21,6 @@ class JobListView extends StatefulWidget {
 }
 
 ///
-/// TODO - Remove 'category'
-/// TODO - Search combinatino: job category, (siNm Or siNm+sggNm), working days, accommodation, createdAt.
-///
 class _JobListViewState extends State<JobListView> with FirestoreMixin {
   Query get _searchQuery {
     print('_serchQuery ${widget.options}');

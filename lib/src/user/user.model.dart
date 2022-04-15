@@ -150,7 +150,7 @@ class UserModel with FirestoreMixin, DatabaseMixin {
       nickname: data['nickname'] ?? '',
       photoUrl: data['photoUrl'] ?? '',
       birthday:
-          (data['birthday'] is int) ? data['birthday'] : (int.tryParse(data['birthday']) ?? 0),
+          (data['birthday'] is int) ? data['birthday'] : (int.tryParse(data['birthday'] ?? '0')),
       gender: data['gender'] ?? '',
       point: data['point'] ?? 0,
       level: data['level'] ?? 0,
