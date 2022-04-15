@@ -167,10 +167,14 @@ class _JobEditFormState extends State<JobEditForm> {
                     'Address',
                     style: TextStyle(fontSize: 11, color: Colors.grey.shade700),
                   ),
-                  SizedBox(height: 5),
+                  SizedBox(height: 6),
                   if (address != null) ...[
                     Text('${address?.roadAddr}'),
-                    Text('${address?.korAddr}'),
+                    SizedBox(height: 4),
+                    Text(
+                      '${address?.korAddr}',
+                      style: TextStyle(fontSize: 13),
+                    ),
                   ],
                   Row(
                     mainAxisSize: MainAxisSize.max,
