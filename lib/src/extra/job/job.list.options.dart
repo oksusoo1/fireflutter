@@ -44,6 +44,27 @@ class _JobListOptionsState extends State<JobListOptions> with FirestoreMixin {
                       widget.change(options);
                     },
                   ),
+                  DropdownButton<String>(
+                      value: options.salary,
+                      items: [
+                        DropdownMenuItem(
+                          child: Text('Select salary'),
+                          value: '',
+                        ),
+                        ...JobService.instance.salaries.map(
+                          (s) => DropdownMenuItem(
+                            child: Text("$s Won"),
+                            value: s,
+                          ),
+                        )
+                      ],
+                      onChanged: (s) {
+                        setState(() {
+                          options.salary = s ?? "";
+                        });
+
+                        widget.change(options);
+                      }),
                 ],
               ),
               Row(
@@ -101,6 +122,35 @@ class _JobListOptionsState extends State<JobListOptions> with FirestoreMixin {
               ),
               Row(
                 children: [
+                  DropdownButton<int>(
+                      value: options.workingHours,
+                      items: [
+                        DropdownMenuItem(
+                          child: Text('Working hours'),
+                          value: -1,
+                        ),
+                        DropdownMenuItem(
+                          child: Text('Flexible'),
+                          value: 0,
+                        ),
+                        DropdownMenuItem(
+                          child: Text('1 hour'),
+                          value: 1,
+                        ),
+                        for (int i = 2; i <= 14; i++)
+                          DropdownMenuItem(
+                            child: Text('$i hours'),
+                            value: i,
+                          ),
+                      ],
+                      onChanged: (n) {
+                        // print('s; $s');
+                        setState(() {
+                          options.workingHours = n ?? 0;
+                        });
+
+                        widget.change(options);
+                      }),
                   DropdownButton<int>(
                       value: options.workingDays,
                       items: [
