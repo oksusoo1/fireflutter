@@ -15,6 +15,8 @@ export class Job {
       throw ERROR_EMPTY_PROVINCE;
     }
 
+    if (typeof data.files === void 0) data.files = [];
+
     data.createdAt = admin.firestore.FieldValue.serverTimestamp();
     data.updatedAt = admin.firestore.FieldValue.serverTimestamp();
     const ref = await admin.firestore().collection("jobs").add(data);

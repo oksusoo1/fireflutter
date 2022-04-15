@@ -101,10 +101,9 @@ class _JobEditFormState extends State<JobEditForm> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text('Create a job opening'),
-
-          Divider(height: 30, thickness: 2),
-          Text('Company details', style: TextStyle(fontSize: 14, color: Colors.blueGrey)),
+          Text(
+              'To open(or update) a job recuriting post, input short and clear description about your company and the job.',
+              style: TextStyle(fontSize: 14, color: Colors.blueGrey)),
           SizedBox(height: 15),
 
           JobEditFormTextField(
@@ -216,9 +215,9 @@ class _JobEditFormState extends State<JobEditForm> {
             ),
           ],
 
-          Divider(height: 30, thickness: 2),
-          Text('Job details', style: TextStyle(fontSize: 14, color: Colors.blueGrey)),
-          SizedBox(height: 15),
+          SizedBox(height: 32),
+          // Text('Job details', style: TextStyle(fontSize: 14, color: Colors.blueGrey)),
+          Divider(height: 32),
 
           JobEditFormDropdownField<String>(
             label: "Job category",
@@ -401,7 +400,7 @@ class _JobEditFormState extends State<JobEditForm> {
                   SizedBox(width: 10),
                   Text(
                     '* Tap here to upload an image. \n* You can only upload up to 5 images.',
-                    style: TextStyle(fontStyle: FontStyle.italic),
+                    style: TextStyle(fontStyle: FontStyle.italic, fontSize: 12),
                   ),
                 ],
               ),

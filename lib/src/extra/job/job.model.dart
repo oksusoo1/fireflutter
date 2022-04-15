@@ -72,18 +72,6 @@ class JobModel {
         ? json['workingHours']
         : int.parse(json['workingHours'] ?? '-1');
 
-    Timestamp createdAt;
-    Timestamp updatedAt;
-    if (json['createdAt'] is Map) {
-      createdAt = Timestamp(json['createdAt']['_seconds'], json['createdAt']['_nanoseconds']);
-      updatedAt = Timestamp(json['updatedAt']['_seconds'], json['updatedAt']['_nanoseconds']);
-    } else {
-      createdAt = json['createdAt'];
-      updatedAt = json['updatedAt'] ?? Timestamp.now();
-    }
-
-    final _files = List<String>.from(json['files'] ?? []);
-
     return JobModel(
       id: json['id'] ?? id,
       uid: json['uid'] ?? '',
@@ -109,10 +97,9 @@ class JobModel {
       siNm: json['siNm'] ?? '',
       sggNm: json['sggNm'] ?? '',
       emdNm: json['emdNm'] ?? '',
-      files: _files,
-      hasPhoto: _files.isNotEmpty,
-      createdAt: createdAt,
-      updatedAt: updatedAt,
+      files: List<String>.from(json['files']),
+      createdAt: json['createdAt'],
+      updatedAt: json['updateAt'],
     );
   }
 
@@ -165,9 +152,6 @@ class JobModel {
         'sggNm': sggNm,
         'emdNm': emdNm,
         'files': files,
-        'hasPhoto': files.isNotEmpty,
-        'createdAt': FieldValue.serverTimestamp(),
-        'updatedAt': FieldValue.serverTimestamp(),
       };
 
   Map<String, dynamic> get toUpdate => {
@@ -195,8 +179,6 @@ class JobModel {
         'sggNm': sggNm,
         'emdNm': emdNm,
         'files': files,
-        'hasPhoto': files.isNotEmpty,
-        'updatedAt': FieldValue.serverTimestamp(),
       };
 
   // AddressModel get address => AddressModel.fromMap(toMap);
