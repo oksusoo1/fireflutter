@@ -1,8 +1,11 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 import '../../../fireflutter.dart';
 
 class JobModel {
   JobModel({
     this.id = '',
+    this.uid = '',
     this.companyName = '',
     this.phoneNumber = '',
     this.mobileNumber = '',
@@ -26,9 +29,14 @@ class JobModel {
     this.workingHours = -1,
     this.withAccomodation = '',
     this.files = const [],
-  });
+    this.hasPhoto = false,
+    createdAt,
+    updatedAt,
+  })  : createdAt = createdAt ?? Timestamp.now(),
+        updatedAt = updatedAt ?? Timestamp.now();
 
   String id;
+  String uid;
   String companyName;
   String phoneNumber;
   String mobileNumber;
@@ -52,6 +60,10 @@ class JobModel {
   int workingHours;
   String withAccomodation;
   List<String> files;
+  bool hasPhoto;
+
+  Timestamp createdAt;
+  Timestamp updatedAt;
 
   factory JobModel.fromJson(Json json, [String id = '']) {
     final int _days = json['workingDays'] is int
@@ -61,8 +73,21 @@ class JobModel {
         ? json['workingHours']
         : int.parse(json['workingHours'] ?? '-1');
 
+    Timestamp createdAt;
+    Timestamp updatedAt;
+    if (json['createdAt'] is Map) {
+      createdAt = Timestamp(json['createdAt']['_seconds'], json['createdAt']['_nanoseconds']);
+      updatedAt = Timestamp(json['updatedAt']['_seconds'], json['updatedAt']['_nanoseconds']);
+    } else {
+      createdAt = json['createdAt'];
+      updatedAt = json['updatedAt'] ?? Timestamp.now();
+    }
+
+    final _files = List<String>.from(json['files'] ?? []);
+
     return JobModel(
       id: json['id'] ?? id,
+      uid: json['uid'] ?? '',
       companyName: json['companyName'] ?? '',
       phoneNumber: json['phoneNumber'] ?? '',
       mobileNumber: json['mobileNumber'] ?? '',
@@ -85,13 +110,17 @@ class JobModel {
       siNm: json['siNm'] ?? '',
       sggNm: json['sggNm'] ?? '',
       emdNm: json['emdNm'] ?? '',
-      files: List<String>.from(json['files'] ?? []),
+      files: _files,
+      hasPhoto: _files.isNotEmpty,
+      createdAt: createdAt,
+      updatedAt: updatedAt,
     );
   }
 
   factory JobModel.empty() {
     return JobModel(
       id: '',
+      uid: '',
       companyName: '',
       phoneNumber: '',
       mobileNumber: '',
@@ -109,6 +138,7 @@ class JobModel {
       workingHours: -1,
       withAccomodation: '',
       files: [],
+      hasPhoto: false,
     );
   }
 
@@ -136,6 +166,9 @@ class JobModel {
         'sggNm': sggNm,
         'emdNm': emdNm,
         'files': files,
+        'hasPhoto': files.isNotEmpty,
+        'createdAt': FieldValue.serverTimestamp(),
+        'updatedAt': FieldValue.serverTimestamp(),
       };
 
   Map<String, dynamic> get toUpdate => {
@@ -163,6 +196,8 @@ class JobModel {
         'sggNm': sggNm,
         'emdNm': emdNm,
         'files': files,
+        'hasPhoto': files.isNotEmpty,
+        'updatedAt': FieldValue.serverTimestamp(),
       };
 
   // AddressModel get address => AddressModel.fromMap(toMap);
