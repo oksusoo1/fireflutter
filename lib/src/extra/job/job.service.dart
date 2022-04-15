@@ -387,7 +387,8 @@ class JobService {
     '4.5M',
   ];
 
-  Future<AddressModel?> inputAddress(context) async {
+  /// Display popup and let user choose address
+  Future<AddressModel?> showAddressPopupWindow(context) async {
     return showDialog<AddressModel?>(
       context: context,
       builder: (context) {
@@ -409,7 +410,7 @@ class JobService {
             //   getAddresses(input.text);
             // });
 
-// Yeoksam Miryang-si
+            // Yeoksam Miryang-si
             return AlertDialog(
               title: Text(
                 'Search address',
@@ -422,62 +423,72 @@ class JobService {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Row(
-                    children: [
-                      Expanded(
-                        child: TextField(
-                          controller: input,
-                          decoration: InputDecoration(label: Text("Input address.")),
-                          onSubmitted: getAddresses,
-                        ),
-                      ),
-                      IconButton(
-                        onPressed: getAddresses,
-                        icon: Icon(Icons.send),
-                      )
-                    ],
-                  ),
+                  TextField(
+                      controller: input,
+                      decoration: InputDecoration(label: Text("Input address.")),
+                      onChanged: (addr) {
+                        bounce('addr', 500, (s) async {
+                          getAddresses(addr);
+                        });
+                      }),
+                  SizedBox(height: 8),
                   Text(
                     'i.e) 536-9, Sinsa-dong',
                     style: TextStyle(fontSize: 11),
                   ),
-                  if (search == null) Text('Input address and send'),
-                  if (search != null && search!.totalCount == 0)
-                    Text("No address found, try again."),
-                  if (search != null && search!.totalCount > 0)
-                    Container(
-                      height: 200,
-                      child: SingleChildScrollView(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: search!.addresses
-                              .map(
-                                (e) => GestureDetector(
-                                  onTap: () => Navigator.of(context).pop(e),
-                                  behavior: HitTestBehavior.opaque,
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        '${e.roadAddr}',
-                                        style: TextStyle(fontSize: 12),
-                                      ),
-                                      Text(
-                                        '${e.korAddr}',
-                                        style: TextStyle(fontSize: 12),
-                                      ),
-                                      Divider(),
-                                    ],
-                                  ),
+                  // if (search == null)
+                  //   Padding(
+                  //     padding: const EdgeInsets.only(top: 16),
+                  //     child: Text(
+                  //       'Input address and send',
+                  //       style: TextStyle(
+                  //         fontSize: 12,
+                  //         fontStyle: FontStyle.italic,
+                  //         color: Colors.grey.shade700,
+                  //       ),
+                  //     ),
+                  //   ),
+                  // if (search != null && search!.totalCount == 0)
+                  //   Text("No address found, try again."),
+
+                  Container(
+                    height: 200,
+                    child: search == null
+                        ? _inputAddress()
+                        : search!.totalCount == 0
+                            ? _noAddressFound()
+                            : SingleChildScrollView(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: search!.addresses
+                                      .map(
+                                        (addr) => GestureDetector(
+                                          onTap: () => Navigator.of(context).pop(addr),
+                                          behavior: HitTestBehavior.opaque,
+                                          child: Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                '${addr.roadAddr}',
+                                                style: TextStyle(fontSize: 12),
+                                              ),
+                                              Text(
+                                                '${addr.korAddr}',
+                                                style: TextStyle(fontSize: 12),
+                                              ),
+                                              Divider(),
+                                            ],
+                                          ),
+                                        ),
+                                      )
+                                      .toList(),
                                 ),
-                              )
-                              .toList(),
-                        ),
-                      ),
-                    ),
+                              ),
+                  ),
                   if (search != null && search!.totalCount > 100)
                     Column(
                       children: [
+                        SizedBox(height: 16),
                         Text(
                           '* Warning - there are too much addresses by the search and cannot dispaly all. Please narrow the search.',
                           style: TextStyle(
@@ -490,7 +501,7 @@ class JobService {
                 ],
               ),
               actions: [
-                ElevatedButton(
+                TextButton(
                   onPressed: () => Navigator.of(context).pop(),
                   child: Text('Close'),
                 ),
@@ -499,6 +510,34 @@ class JobService {
           }),
         );
       },
+    );
+  }
+
+  _inputAddress() {
+    return Padding(
+      padding: const EdgeInsets.only(top: 32),
+      child: Text(
+        'Input address and choose.',
+        style: TextStyle(
+          fontSize: 12,
+          fontStyle: FontStyle.italic,
+          color: Colors.grey.shade700,
+        ),
+      ),
+    );
+  }
+
+  _noAddressFound() {
+    return Padding(
+      padding: const EdgeInsets.only(top: 32),
+      child: Text(
+        'No address found. Try again.',
+        style: TextStyle(
+          fontSize: 12,
+          fontStyle: FontStyle.italic,
+          color: Colors.grey.shade700,
+        ),
+      ),
     );
   }
 }

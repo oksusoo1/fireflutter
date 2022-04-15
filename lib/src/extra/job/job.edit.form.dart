@@ -30,7 +30,7 @@ class _JobEditFormState extends State<JobEditForm> {
   final _formKey = GlobalKey<FormState>();
 
   /// TODO - what is this for?
-  AddressModel? addr;
+  AddressModel? address;
 
   JobModel job = JobModel.empty();
   bool get isCreate {
@@ -54,8 +54,12 @@ class _JobEditFormState extends State<JobEditForm> {
     }
   }
 
+  /// Display popup and let user choose address
   getAddress() async {
-    addr = await JobService.instance.inputAddress(context);
+    final _address = await JobService.instance.showAddressPopupWindow(context);
+    if (_address == null) return;
+    address = _address;
+    job.detailAddress = '';
     setState(() {});
   }
 
@@ -130,13 +134,11 @@ class _JobEditFormState extends State<JobEditForm> {
           ),
           SizedBox(height: 10),
 
-          /// TODO: make it simple
           GestureDetector(
             onTap: getAddress,
             behavior: HitTestBehavior.opaque,
             child: Container(
               width: double.infinity,
-              margin: EdgeInsets.all(8),
               padding: EdgeInsets.all(8),
               decoration: BoxDecoration(
                 border: Border.all(color: Colors.grey),
@@ -150,37 +152,38 @@ class _JobEditFormState extends State<JobEditForm> {
                     style: TextStyle(fontSize: 11, color: Colors.grey.shade700),
                   ),
                   SizedBox(height: 5),
+                  if (address != null) ...[
+                    Text('${address?.roadAddr}'),
+                    Text('${address?.korAddr}'),
+                  ],
                   Row(
                     mainAxisSize: MainAxisSize.max,
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      if (addr == null)
-                        Text('* Select your address.')
-                      else
-                        Expanded(
-                          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                            Text('${addr?.roadAddr}'),
-                            Text('${addr?.korAddr}'),
-                          ]),
-                        ),
-                      Text('Select', style: TextStyle(fontSize: 14, color: Colors.blue)),
+                      if (address == null) Text('* Select your address.'),
+                      Spacer(),
+                      Padding(
+                        padding: const EdgeInsets.only(right: 8.0),
+                        child: Text('Select', style: TextStyle(fontSize: 14, color: Colors.blue)),
+                      ),
                     ],
                   ),
-                  SizedBox(height: 5),
                 ],
               ),
             ),
           ),
 
           /// Company detailed address
-          if (addr != null)
+          if (address != null) ...[
+            SizedBox(height: 9),
             JobEditFormTextField(
               label: "Input detail address",
               initialValue: job.detailAddress,
               onChanged: (s) => job.detailAddress = s,
-              validator: (v) => validateFieldValue(v, "*Please input a detailed address."),
+              validator: (v) => validateFieldValue(v, "* Please input a detailed address."),
               maxLines: 2,
             ),
+          ],
 
           Divider(height: 30, thickness: 2),
           Text('Job details', style: TextStyle(fontSize: 14, color: Colors.blueGrey)),
