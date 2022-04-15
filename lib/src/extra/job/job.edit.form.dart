@@ -14,8 +14,8 @@ class JobEditForm extends StatefulWidget {
     this.job,
   }) : super(key: key);
 
-  final Function(String) onCreated;
-  final Function(String) onUpdated;
+  final Function() onCreated;
+  final Function() onUpdated;
   final Function(dynamic) onError;
 
   final JobModel? job;
@@ -448,21 +448,19 @@ class _JobEditFormState extends State<JobEditForm> {
                 addJobAddress(address!);
                 try {
                   if (isCreate) {
-                    final created = await FunctionsApi.instance.request(
+                    await FunctionsApi.instance.request(
                       'jobCreate',
                       data: job.toCreate,
                       addAuth: true,
                     );
-                    final newJob = JobModel.fromJson(created);
-                    widget.onCreated(newJob.id);
+                    widget.onCreated();
                   } else {
-                    final updated = await FunctionsApi.instance.request(
+                    await FunctionsApi.instance.request(
                       'jobUpdate',
                       data: job.toUpdate,
                       addAuth: true,
                     );
-                    final updatedJob = JobModel.fromJson(updated);
-                    widget.onUpdated(updatedJob.id);
+                    widget.onUpdated();
                   }
                 } catch (e, stacks) {
                   debugPrintStack(stackTrace: stacks);

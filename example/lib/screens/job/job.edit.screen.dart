@@ -27,8 +27,8 @@ class _JobEditScreenState extends State<JobEditScreen> with FirestoreMixin, Foru
           children: [
             JobEditForm(
               onError: error,
-              onCreated: (id) => alert('Job opening created!', '$id'),
-              onUpdated: (id) => alert('Job opening updated!', '$id'),
+              onCreated: () => alert('Job create', 'Job opening created!'),
+              onUpdated: () => alert('Job update', 'Job opening updated!'),
               job: widget.arguments['job'],
             ),
             space2xl,

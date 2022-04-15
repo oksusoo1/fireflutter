@@ -403,8 +403,6 @@ class JobService {
               search = AddressSearchModel.fromJson(res.data);
 
               setState(() => {});
-
-              /// TODO: it errors once the dialog is closed before searched data arrives.
             }
 
             // Yeoksam Miryang-si
