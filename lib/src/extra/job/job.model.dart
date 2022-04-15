@@ -29,11 +29,10 @@ class JobModel {
     this.workingHours = -1,
     this.withAccomodation = '',
     this.files = const [],
-    this.hasPhoto = false,
     createdAt,
     updatedAt,
-  })  : createdAt = createdAt ?? Timestamp.now(),
-        updatedAt = updatedAt ?? Timestamp.now();
+  })  : createdAt = createdAt,
+        updatedAt = updatedAt;
 
   String id;
   String uid;
@@ -60,15 +59,13 @@ class JobModel {
   int workingHours;
   String withAccomodation;
   List<String> files;
-  bool hasPhoto;
 
   Timestamp createdAt;
   Timestamp updatedAt;
 
   factory JobModel.fromJson(Json json, [String id = '']) {
-    final int _days = json['workingDays'] is int
-        ? json['workingDays']
-        : int.parse(json['workingDays'] ?? '-1');
+    final int _days =
+        json['workingDays'] is int ? json['workingDays'] : int.parse(json['workingDays'] ?? '-1');
     final int _hours = json['workingHours'] is int
         ? json['workingHours']
         : int.parse(json['workingHours'] ?? '-1');
@@ -125,7 +122,6 @@ class JobModel {
       workingHours: -1,
       withAccomodation: '',
       files: [],
-      hasPhoto: false,
     );
   }
 
