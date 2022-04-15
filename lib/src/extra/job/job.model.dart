@@ -70,17 +70,6 @@ class JobModel {
         ? json['workingHours']
         : int.parse(json['workingHours'] ?? '-1');
 
-    /// If the data is created via http, the [createdAt] and [updatedAt] have different format.
-    Timestamp createdAt;
-    Timestamp updatedAt;
-    if (json['createdAt'] is Map) {
-      createdAt = Timestamp(json['createdAt']['_seconds'], json['createdAt']['_nanoseconds']);
-      updatedAt = Timestamp(json['updatedAt']['_seconds'], json['updatedAt']['_nanoseconds']);
-    } else {
-      createdAt = json['createdAt'];
-      updatedAt = json['updatedAt'] ?? Timestamp.now();
-    }
-
     return JobModel(
       id: json['id'] ?? id,
       uid: json['uid'] ?? '',
@@ -107,8 +96,8 @@ class JobModel {
       sggNm: json['sggNm'] ?? '',
       emdNm: json['emdNm'] ?? '',
       files: List<String>.from(json['files']),
-      createdAt: createdAt,
-      updatedAt: updatedAt,
+      createdAt: json['createdAt'],
+      updatedAt: json['updatedAt'],
     );
   }
 
