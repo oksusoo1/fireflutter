@@ -4,46 +4,6 @@ import '../../../fireflutter.dart';
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 
-enum FormErrorCodes {
-  companyName,
-  mobileNumber,
-  phoneNumber,
-  email,
-  addr,
-  detailAddress,
-  aboutUs,
-  numberOfHiring,
-  jobDescription,
-  requirement,
-  duty,
-  benefit,
-  jobCategory,
-  salary,
-  workingDays,
-  workingHours,
-  withAccomodation
-}
-
-final Map<dynamic, dynamic> jobFormErrorMessages = {
-  FormErrorCodes.companyName.index: "*Please input company name.",
-  FormErrorCodes.mobileNumber.index: "*Please input company mobile number.",
-  FormErrorCodes.phoneNumber.index: "*Please input company office number.",
-  FormErrorCodes.email.index: "*Please input company email address.",
-  FormErrorCodes.aboutUs.index: "*Please tell something about your company.",
-  FormErrorCodes.addr.index: "*Please select your company address.",
-  FormErrorCodes.detailAddress.index: "*Please input a detailed address.",
-  FormErrorCodes.jobCategory.index: "*Please select job category.",
-  FormErrorCodes.numberOfHiring.index: "*Please input number of available slot for hiring.",
-  FormErrorCodes.workingDays.index: "*Please select the number of days to work per week.",
-  FormErrorCodes.workingHours.index: "*Please select the number of hours to work per day.",
-  FormErrorCodes.salary.index: "*Please select a salary to offer.",
-  FormErrorCodes.jobDescription.index: "*Please describe something about the job.",
-  FormErrorCodes.requirement.index: "*Please enumerate the requirements for the job.",
-  FormErrorCodes.duty.index: "*Please enumerate the duties of the job.",
-  FormErrorCodes.benefit.index: "*Please enumerate the benefit given for the job.",
-  FormErrorCodes.withAccomodation.index: "*Please select if the job includes an accomodation.",
-};
-
 class JobService {
   static JobService? _instance;
   static JobService get instance {
