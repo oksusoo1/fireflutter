@@ -52,8 +52,7 @@ class _JobListViewState extends State<JobListView> with FirestoreMixin {
     if (options.accomodation != '') {
       query = query.where('withAccomodation', isEqualTo: options.accomodation);
     }
-    if (options.salary != '')
-      query = query.where('salary', isEqualTo: options.salary);
+    if (options.salary != '') query = query.where('salary', isEqualTo: options.salary);
 
     query = query.orderBy('createdAt', descending: true);
 
@@ -107,8 +106,7 @@ class _JobListViewState extends State<JobListView> with FirestoreMixin {
                     title: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(JobService.instance.categories[job.jobCategory] ??
-                            ''),
+                        Text(JobService.instance.categories[job.jobCategory] ?? ''),
                         Text(job.description),
                       ],
                     ),
@@ -116,9 +114,9 @@ class _JobListViewState extends State<JobListView> with FirestoreMixin {
                       padding: const EdgeInsets.only(top: 8.0),
                       child: Text(shortDateTime(job.createdAt)),
                     ),
-                    trailing: TextButton(
-                        child: Text('edit'),
-                        onPressed: () => widget.onEdit(job)),
+                    trailing: job.uid == UserService.instance.uid
+                        ? TextButton(child: Text('edit'), onPressed: () => widget.onEdit(job))
+                        : null,
                   ),
                 ),
                 Divider(
