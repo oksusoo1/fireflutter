@@ -401,7 +401,10 @@ class JobService {
               final dio = Dio();
               final res = await dio.get(url);
               search = AddressSearchModel.fromJson(res.data);
+
               setState(() => {});
+
+              /// TODO: it errors once the dialog is closed before searched data arrives.
             }
 
             // Timer(Duration(milliseconds: 500), () {
@@ -436,21 +439,6 @@ class JobService {
                     'i.e) 536-9, Sinsa-dong',
                     style: TextStyle(fontSize: 11),
                   ),
-                  // if (search == null)
-                  //   Padding(
-                  //     padding: const EdgeInsets.only(top: 16),
-                  //     child: Text(
-                  //       'Input address and send',
-                  //       style: TextStyle(
-                  //         fontSize: 12,
-                  //         fontStyle: FontStyle.italic,
-                  //         color: Colors.grey.shade700,
-                  //       ),
-                  //     ),
-                  //   ),
-                  // if (search != null && search!.totalCount == 0)
-                  //   Text("No address found, try again."),
-
                   Container(
                     height: 200,
                     child: search == null

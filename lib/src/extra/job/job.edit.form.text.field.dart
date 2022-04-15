@@ -9,7 +9,6 @@ class JobEditFormTextField extends StatelessWidget {
     required this.onChanged,
     this.keyboardType,
     this.maxLines,
-    this.autoValidateMode = AutovalidateMode.onUserInteraction,
     Key? key,
   }) : super(key: key);
 
@@ -20,7 +19,6 @@ class JobEditFormTextField extends StatelessWidget {
   final Function(String) onChanged;
   final TextInputType? keyboardType;
   final int? maxLines;
-  final AutovalidateMode autoValidateMode;
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +33,7 @@ class JobEditFormTextField extends StatelessWidget {
       key: UniqueKey(),
       initialValue: initialValue,
       controller: controller,
-      autovalidateMode: autoValidateMode,
+      autovalidateMode: AutovalidateMode.always,
       keyboardType: keyboardType,
       minLines: maxLines != null ? 1 : null,
       maxLines: maxLines,
