@@ -38,13 +38,16 @@ class _JobListViewState extends State<JobListView> with FirestoreMixin {
     if (options.jobCategory != '') {
       query = query.where('jobCategory', isEqualTo: options.jobCategory);
     }
-
+    if (options.workingHours != -1)
+      query = query.where('workingHours', isEqualTo: options.workingHours);
     if (options.workingDays != -1) {
       query = query.where('workingDays', isEqualTo: options.workingDays);
     }
     if (options.accomodation != '') {
       query = query.where('withAccomodation', isEqualTo: options.accomodation);
     }
+    if (options.salary != '')
+      query = query.where('salary', isEqualTo: options.salary);
 
     query = query.orderBy('createdAt', descending: true);
 
