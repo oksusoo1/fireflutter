@@ -87,11 +87,10 @@ class _JobEditFormState extends State<JobEditForm> {
   }
 
   String? validateEmailFieldStringValue(String? value) {
-    if (isSubmitted)
-      return EmailValidator.validate(value ?? '')
-          ? null
-          : "* Please input correct company email address.";
-    return null;
+    if (isSubmitted == false) return null;
+    return EmailValidator.validate(value ?? '')
+        ? null
+        : "* Please input correct company email address.";
   }
 
   @override
@@ -102,8 +101,9 @@ class _JobEditFormState extends State<JobEditForm> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(
-              'To open(or update) a job recuriting post, input short and clear description about your company and the job.',
-              style: TextStyle(fontSize: 14, color: Colors.blueGrey)),
+            'To open(or update) a job recuriting post, input short and clear description about your company and the job.',
+            style: TextStyle(fontSize: 14, color: Colors.blueGrey),
+          ),
           SizedBox(height: 15),
 
           JobEditFormTextField(
@@ -215,9 +215,7 @@ class _JobEditFormState extends State<JobEditForm> {
             ),
           ],
 
-          SizedBox(height: 32),
-          // Text('Job details', style: TextStyle(fontSize: 14, color: Colors.blueGrey)),
-          Divider(height: 32),
+          Divider(height: 64),
 
           JobEditFormDropdownField<String>(
             label: "Job category",
@@ -261,8 +259,10 @@ class _JobEditFormState extends State<JobEditForm> {
                 ),
             ],
             onChanged: (n) => setState(() => job.workingDays = n ?? -1),
-            validator: (n) =>
-                validateFieldValue(n, "* Please select the number of days to work per week."),
+            validator: (n) => validateFieldValue(
+              n,
+              "* Please select the number of days to work per week.",
+            ),
           ),
 
           JobEditFormDropdownField<int>(
@@ -288,8 +288,10 @@ class _JobEditFormState extends State<JobEditForm> {
                 ),
             ],
             onChanged: (n) => setState(() => job.workingHours = n ?? -1),
-            validator: (n) =>
-                validateFieldValue(n, "* Please select the number of hours to work per day."),
+            validator: (n) => validateFieldValue(
+              n,
+              "* Please select the number of hours to work per day.",
+            ),
           ),
 
           JobEditFormDropdownField<String>(
@@ -316,8 +318,10 @@ class _JobEditFormState extends State<JobEditForm> {
             label: "Number of hiring",
             initialValue: job.numberOfHiring,
             onChanged: (s) => job.numberOfHiring = s,
-            validator: (v) =>
-                validateFieldValue(v, "* Please input number of available slot for hiring."),
+            validator: (v) => validateFieldValue(
+              v,
+              "* Please input number of available slot for hiring.",
+            ),
             keyboardType: TextInputType.number,
           ),
           SizedBox(height: 10),
@@ -335,8 +339,10 @@ class _JobEditFormState extends State<JobEditForm> {
             label: "Requirements and qualifications",
             initialValue: job.requirement,
             onChanged: (s) => job.requirement = s,
-            validator: (v) =>
-                validateFieldValue(v, "* Please enumerate the requirements for the job."),
+            validator: (v) => validateFieldValue(
+              v,
+              "* Please enumerate the requirements for the job.",
+            ),
             maxLines: 5,
           ),
           SizedBox(height: 10),
@@ -354,8 +360,10 @@ class _JobEditFormState extends State<JobEditForm> {
             label: "benefits(free meals, dormitory, transporation, etc)",
             initialValue: job.benefit,
             onChanged: (s) => job.benefit = s,
-            validator: (v) =>
-                validateFieldValue(v, "* Please enumerate the benefit given for the job."),
+            validator: (v) => validateFieldValue(
+              v,
+              "* Please enumerate the benefit given for the job.",
+            ),
             maxLines: 5,
           ),
           SizedBox(height: 10),
@@ -435,22 +443,25 @@ class _JobEditFormState extends State<JobEditForm> {
           ElevatedButton(
             onPressed: () async {
               setState(() => isSubmitted = true);
-              print("JOB: ${job.toUpdate}");
               // Validate returns true if the form is valid, or false otherwise.
               if (_formKey.currentState!.validate() && address != null) {
                 addJobAddress(address!);
                 try {
                   if (isCreate) {
-                    final created = await FunctionsApi.instance
-                        .request('jobCreate', data: job.toCreate, addAuth: true);
+                    final created = await FunctionsApi.instance.request(
+                      'jobCreate',
+                      data: job.toCreate,
+                      addAuth: true,
+                    );
                     final newJob = JobModel.fromJson(created);
-                    print('created: $newJob');
                     widget.onCreated(newJob.id);
                   } else {
-                    final updated = await FunctionsApi.instance
-                        .request('jobUpdate', data: job.toUpdate, addAuth: true);
+                    final updated = await FunctionsApi.instance.request(
+                      'jobUpdate',
+                      data: job.toUpdate,
+                      addAuth: true,
+                    );
                     final updatedJob = JobModel.fromJson(updated);
-                    print("updated: $updatedJob");
                     widget.onUpdated(updatedJob.id);
                   }
                 } catch (e, stacks) {
@@ -458,7 +469,12 @@ class _JobEditFormState extends State<JobEditForm> {
                   widget.onError(e);
                 }
               } else {
-                return widget.onError('Validation failed.');
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                      content: Text(
+                    'Form incomplete, please check for missing information.',
+                  )),
+                );
               }
             },
             child: Text('Submit'),
