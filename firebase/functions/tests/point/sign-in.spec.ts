@@ -39,6 +39,11 @@ describe("Sign-in point test", () => {
     );
     const user = await User.get(uid);
     expect(user!.point).equal(updatedPoint);
+
+    if (updatedPoint < 1000) expect(user!.level).equals(1);
+    else if (updatedPoint < 3000) expect(user!.level).equals(2);
+    else if (updatedPoint < 6000) expect(user!.level).equals(3);
+    // ...
   });
 
   it("sign-in point fail test", async () => {

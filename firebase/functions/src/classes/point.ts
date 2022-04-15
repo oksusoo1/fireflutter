@@ -228,7 +228,7 @@ export class Point {
   }
 
   /**
-   * Updates user point.
+   * Updates user point and level.
    *
    * `point` can be increase or decrease.
    * `history` is the total amount of point that the user earned in life time.
@@ -245,12 +245,25 @@ export class Point {
       point: admin.database.ServerValue.increment(point),
       history: admin.database.ServerValue.increment(point),
     });
+
     const snapshot = await Ref.userPoint(uid).get();
+
     if (snapshot.exists()) {
       await Ref.userDoc(uid).update({
         point: snapshot.val().point,
+        level: this.getLevel(snapshot.val().history),
       });
     }
+  }
+
+  static getLevel(point: number): number {
+    const seed = 1000;
+    let acc = 0;
+    for (let i = 1; i < 150; i++) {
+      acc = seed * i + acc;
+      if (point < acc) return i;
+    }
+    return 0;
   }
 
   /**
