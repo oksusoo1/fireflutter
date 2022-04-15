@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:intl/intl.dart';
 import '../../fireflutter.dart';
 import 'package:email_validator/email_validator.dart';
 
@@ -78,6 +79,8 @@ class UserModel with FirestoreMixin, DatabaseMixin {
   int level;
 
   int registeredAt;
+  String get registeredDate =>
+      DateFormat("MMMM dd, yyyy").format(DateTime.fromMillisecondsSinceEpoch(registeredAt));
   int updatedAt;
 
   /// Use display name to display user name.
@@ -134,8 +137,7 @@ class UserModel with FirestoreMixin, DatabaseMixin {
   bool get signedOut => signedIn == false;
 
   ///
-  DatabaseReference get _userDoc =>
-      FirebaseDatabase.instance.ref('users').child(uid);
+  DatabaseReference get _userDoc => FirebaseDatabase.instance.ref('users').child(uid);
 
   factory UserModel.fromJson(dynamic data, String uid) {
     if (data == null) return UserModel();
@@ -150,9 +152,8 @@ class UserModel with FirestoreMixin, DatabaseMixin {
       lastName: data['lastName'] ?? '',
       nickname: data['nickname'] ?? '',
       photoUrl: data['photoUrl'] ?? '',
-      birthday: (data['birthday'] is int)
-          ? data['birthday']
-          : (int.tryParse(data['birthday'] ?? '0')),
+      birthday:
+          (data['birthday'] is int) ? data['birthday'] : (int.tryParse(data['birthday'] ?? '0')),
       gender: data['gender'] ?? '',
       point: data['point'] ?? 0,
       level: data['level'] ?? 0,
@@ -240,8 +241,7 @@ class UserModel with FirestoreMixin, DatabaseMixin {
     if (photoUrl == '') return ERROR_NO_PROFILE_PHOTO;
     if (email == '')
       return ERROR_NO_EMAIL;
-    else if (EmailValidator.validate(email) == false)
-      return ERROR_MALFORMED_EMAIL;
+    else if (EmailValidator.validate(email) == false) return ERROR_MALFORMED_EMAIL;
     if (firstName == '') return ERROR_NO_FIRST_NAME;
     if (lastName == '') return ERROR_NO_LAST_NAME;
     if (gender == '') return ERROR_NO_GENER;
@@ -259,8 +259,7 @@ class UserModel with FirestoreMixin, DatabaseMixin {
       /// But the profile is set to false on database, then set it true.
       if (profileReady == 90000000000000) {
         /// It does +1 here to block perpetual running. This may happens somehow when registeredAt is 0.
-        return update(
-            field: 'profileReady', value: 90000000000000 - registeredAt + 1);
+        return update(field: 'profileReady', value: 90000000000000 - registeredAt + 1);
       }
     }
 
