@@ -147,7 +147,6 @@ class _JobEditFormState extends State<JobEditForm> {
           ),
           SizedBox(height: 10),
 
-          /// Todo: show error if not valid
           GestureDetector(
             onTap: getAddress,
             behavior: HitTestBehavior.opaque,
@@ -198,7 +197,6 @@ class _JobEditFormState extends State<JobEditForm> {
           ],
 
           /// Company detailed address
-          /// Todo: clear if address is changed.
           if (address != null) ...[
             SizedBox(height: 9),
             JobEditFormTextField(
