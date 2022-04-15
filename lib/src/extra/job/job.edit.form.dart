@@ -28,8 +28,8 @@ class _JobEditFormState extends State<JobEditForm> {
   // Note: This is a `GlobalKey<FormState>`,
   // not a GlobalKey<MyCustomFormState>.
   final _formKey = GlobalKey<FormState>();
+  final detailedAddress = TextEditingController();
 
-  /// TODO - what is this for?
   AddressModel? address;
 
   JobModel job = JobModel.empty();
@@ -54,6 +54,8 @@ class _JobEditFormState extends State<JobEditForm> {
     if (isUpdate) {
       job = widget.job!;
       address = AddressModel.fromMap(job.toUpdate);
+      detailedAddress.text = job.detailAddress;
+      addJobAddress(address!);
     }
   }
 
@@ -62,13 +64,16 @@ class _JobEditFormState extends State<JobEditForm> {
     final _address = await JobService.instance.showAddressPopupWindow(context);
     if (_address == null) return;
     address = _address;
-    job.roadAddr = _address.roadAddr;
-    job.korAddr = _address.korAddr;
-    job.zipNo = _address.zipNo;
-    job.siNm = _address.siNm;
-    job.sggNm = _address.sggNm;
-    job.detailAddress = '';
+    detailedAddress.clear();
     setState(() {});
+  }
+
+  addJobAddress(AddressModel addr) {
+    job.roadAddr = addr.roadAddr;
+    job.korAddr = addr.korAddr;
+    job.zipNo = addr.zipNo;
+    job.siNm = addr.siNm;
+    job.sggNm = addr.sggNm;
   }
 
   /// Validates string value of a field.
@@ -82,7 +87,7 @@ class _JobEditFormState extends State<JobEditForm> {
   String? validateEmailFieldStringValue(String? value) {
     return EmailValidator.validate(value ?? '')
         ? null
-        : "*Please input correct company email address.";
+        : "* Please input correct company email address.";
   }
 
   @override
@@ -102,7 +107,7 @@ class _JobEditFormState extends State<JobEditForm> {
             label: "Company name",
             initialValue: job.companyName,
             onChanged: (s) => job.companyName = s,
-            validator: (v) => validateFieldValue(v, "*Please input company name."),
+            validator: (v) => validateFieldValue(v, "* Please input company name."),
           ),
           SizedBox(height: 10),
 
@@ -110,7 +115,7 @@ class _JobEditFormState extends State<JobEditForm> {
             label: "Mobile number",
             initialValue: job.mobileNumber,
             onChanged: (s) => job.mobileNumber = s,
-            validator: (v) => validateFieldValue(v, "*Please input company mobile number."),
+            validator: (v) => validateFieldValue(v, "* Please input company mobile number."),
             keyboardType: TextInputType.phone,
           ),
           SizedBox(height: 10),
@@ -119,7 +124,7 @@ class _JobEditFormState extends State<JobEditForm> {
             label: 'Office phone number number',
             initialValue: job.phoneNumber,
             onChanged: (s) => job.phoneNumber = s,
-            validator: (v) => validateFieldValue(v, "*Please input company office phone number."),
+            validator: (v) => validateFieldValue(v, "* Please input company office phone number."),
             keyboardType: TextInputType.phone,
           ),
           SizedBox(height: 10),
@@ -137,7 +142,7 @@ class _JobEditFormState extends State<JobEditForm> {
             label: "About us",
             initialValue: job.aboutUs,
             onChanged: (s) => job.aboutUs = s,
-            validator: (v) => validateFieldValue(v, "*Please tell something about your company."),
+            validator: (v) => validateFieldValue(v, "* Please tell something about your company."),
             maxLines: 5,
           ),
           SizedBox(height: 10),
@@ -181,6 +186,16 @@ class _JobEditFormState extends State<JobEditForm> {
               ),
             ),
           ),
+          if (isSubmitted && address == null) ...[
+            SizedBox(height: 5),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 11),
+              child: Text(
+                '* Please select an address.',
+                style: TextStyle(fontSize: 12, color: Colors.red.shade700),
+              ),
+            ),
+          ],
 
           /// Company detailed address
           /// Todo: clear if address is changed.
@@ -188,9 +203,14 @@ class _JobEditFormState extends State<JobEditForm> {
             SizedBox(height: 9),
             JobEditFormTextField(
               label: "Input detail address",
-              initialValue: job.detailAddress,
+              // initialValue: job.detailAddress,
+              controller: detailedAddress,
               onChanged: (s) => job.detailAddress = s,
-              validator: (v) => validateFieldValue(v, "* Please input a detailed address."),
+              autoValidateMode: AutovalidateMode.always,
+              validator: (v) => validateFieldValue(
+                detailedAddress.text,
+                "* Please input a detailed address.",
+              ),
               maxLines: 2,
             ),
           ],
@@ -215,7 +235,7 @@ class _JobEditFormState extends State<JobEditForm> {
                   .toList(),
             ],
             onChanged: (s) => setState(() => job.jobCategory = s ?? ''),
-            validator: (s) => validateFieldValue(s, "*Please select job category."),
+            validator: (s) => validateFieldValue(s, "* Please select job category."),
           ),
 
           JobEditFormDropdownField<int>(
@@ -242,7 +262,7 @@ class _JobEditFormState extends State<JobEditForm> {
             ],
             onChanged: (n) => setState(() => job.workingDays = n ?? -1),
             validator: (n) =>
-                validateFieldValue(n, "*Please select the number of days to work per week."),
+                validateFieldValue(n, "* Please select the number of days to work per week."),
           ),
 
           JobEditFormDropdownField<int>(
@@ -269,7 +289,7 @@ class _JobEditFormState extends State<JobEditForm> {
             ],
             onChanged: (n) => setState(() => job.workingHours = n ?? -1),
             validator: (n) =>
-                validateFieldValue(n, "*Please select the number of hours to work per day."),
+                validateFieldValue(n, "* Please select the number of hours to work per day."),
           ),
 
           JobEditFormDropdownField<String>(
@@ -288,7 +308,7 @@ class _JobEditFormState extends State<JobEditForm> {
               )
             ],
             onChanged: (s) => setState(() => job.salary = s ?? ""),
-            validator: (n) => validateFieldValue(n, "*Please select a salary to offer."),
+            validator: (n) => validateFieldValue(n, "* Please select a salary to offer."),
           ),
           SizedBox(height: 10),
 
@@ -297,7 +317,7 @@ class _JobEditFormState extends State<JobEditForm> {
             initialValue: job.numberOfHiring,
             onChanged: (s) => job.numberOfHiring = s,
             validator: (v) =>
-                validateFieldValue(v, "*Please input number of available slot for hiring."),
+                validateFieldValue(v, "* Please input number of available slot for hiring."),
             keyboardType: TextInputType.number,
           ),
           SizedBox(height: 10),
@@ -306,7 +326,7 @@ class _JobEditFormState extends State<JobEditForm> {
             label: "Job description(details of what workers will do)",
             initialValue: job.description,
             onChanged: (s) => job.description = s,
-            validator: (v) => validateFieldValue(v, "*Please describe something about the job."),
+            validator: (v) => validateFieldValue(v, "* Please describe something about the job."),
             maxLines: 3,
           ),
           SizedBox(height: 10),
@@ -316,7 +336,7 @@ class _JobEditFormState extends State<JobEditForm> {
             initialValue: job.requirement,
             onChanged: (s) => job.requirement = s,
             validator: (v) =>
-                validateFieldValue(v, "*Please enumerate the requirements for the job."),
+                validateFieldValue(v, "* Please enumerate the requirements for the job."),
             maxLines: 5,
           ),
           SizedBox(height: 10),
@@ -325,7 +345,7 @@ class _JobEditFormState extends State<JobEditForm> {
             label: "Duties and responsibilities",
             initialValue: job.duty,
             onChanged: (s) => job.duty = s,
-            validator: (v) => validateFieldValue(v, "*Please enumerate the duties of the job."),
+            validator: (v) => validateFieldValue(v, "* Please enumerate the duties of the job."),
             maxLines: 5,
           ),
           SizedBox(height: 10),
@@ -335,7 +355,7 @@ class _JobEditFormState extends State<JobEditForm> {
             initialValue: job.benefit,
             onChanged: (s) => job.benefit = s,
             validator: (v) =>
-                validateFieldValue(v, "*Please enumerate the benefit given for the job."),
+                validateFieldValue(v, "* Please enumerate the benefit given for the job."),
             maxLines: 5,
           ),
           SizedBox(height: 10),
@@ -345,7 +365,7 @@ class _JobEditFormState extends State<JobEditForm> {
             onChanged: (v) => job.withAccomodation = v ?? '',
             validator: (v) => validateFieldValue(
               v,
-              "*Please select if the job includes an accomodation.",
+              "* Please select if the job includes an accomodation.",
             ),
           ),
 
@@ -414,6 +434,7 @@ class _JobEditFormState extends State<JobEditForm> {
 
           ElevatedButton(
             onPressed: () async {
+              setState(() => isSubmitted = true);
               print("JOB: ${job.toUpdate}");
               // Validate returns true if the form is valid, or false otherwise.
               if (_formKey.currentState!.validate() && address != null) {
@@ -421,6 +442,7 @@ class _JobEditFormState extends State<JobEditForm> {
                   const SnackBar(content: Text('Validation success !!')),
                 );
 
+                addJobAddress(address!);
                 try {
                   if (isCreate) {
                     final created = await FunctionsApi.instance

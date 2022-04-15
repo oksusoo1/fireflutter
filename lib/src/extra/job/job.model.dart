@@ -3,6 +3,7 @@ import '../../../fireflutter.dart';
 class JobModel {
   JobModel({
     this.id = '',
+    this.uid = '',
     this.companyName = '',
     this.phoneNumber = '',
     this.mobileNumber = '',
@@ -29,6 +30,7 @@ class JobModel {
   });
 
   String id;
+  String uid;
   String companyName;
   String phoneNumber;
   String mobileNumber;
@@ -62,6 +64,7 @@ class JobModel {
 
     return JobModel(
       id: json['id'] ?? id,
+      uid: json['uid'] ?? '',
       companyName: json['companyName'] ?? '',
       phoneNumber: json['phoneNumber'] ?? '',
       mobileNumber: json['mobileNumber'] ?? '',
@@ -91,6 +94,7 @@ class JobModel {
   factory JobModel.empty() {
     return JobModel(
       id: '',
+      uid: '',
       companyName: '',
       phoneNumber: '',
       mobileNumber: '',
