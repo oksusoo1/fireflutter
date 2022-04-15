@@ -439,10 +439,6 @@ class _JobEditFormState extends State<JobEditForm> {
               print("JOB: ${job.toUpdate}");
               // Validate returns true if the form is valid, or false otherwise.
               if (_formKey.currentState!.validate() && address != null) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Validation success !!')),
-                );
-
                 addJobAddress(address!);
                 try {
                   if (isCreate) {
