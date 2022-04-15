@@ -110,20 +110,27 @@ class UserSettingService with DatabaseMixin {
     return _settings.create();
   }
 
-  Future<void> unsubscribeAllTopic() async {
-    await CategoryService.instance.loadCategories(categoryGroup: 'community');
-    for (CategoryModel cat in CategoryService.instance.categories) {
-      await FirebaseMessaging.instance.unsubscribeFromTopic('posts_${cat.id}');
-      await FirebaseMessaging.instance.unsubscribeFromTopic('comments_${cat.id}');
+  Future<List> unsubscribeAllTopic() async {
+    List<CategoryModel> categories =
+        await CategoryService.instance.loadCategories(categoryGroup: 'community');
+
+    List<Future> futures = [];
+    for (CategoryModel cat in categories) {
+      futures.add(FirebaseMessaging.instance.unsubscribeFromTopic('posts_${cat.id}'));
+      futures.add(FirebaseMessaging.instance.unsubscribeFromTopic('comments_${cat.id}'));
     }
+    return Future.wait(futures);
   }
 
-  Future<void> subscribeToUserTopics() async {
+  Future<List> subscribeToUserTopics() async {
+    List<Future> futures = [];
     for (String topic in _settings.topics.keys) {
       if (topicsDontNeedSubscription.contains(topic)) continue;
       if (_settings.topics[topic] == true) {
-        await FirebaseMessaging.instance.subscribeToTopic(topic);
+        // print('topic; $topic');
+        futures.add(FirebaseMessaging.instance.subscribeToTopic(topic));
       }
     }
+    return Future.wait(futures);
   }
 }
