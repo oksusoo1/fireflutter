@@ -78,16 +78,20 @@ class _JobEditFormState extends State<JobEditForm> {
 
   /// Validates string value of a field.
   String? validateFieldValue(dynamic value, String error) {
-    if (value == null) return error;
-    if (value is String && value.isEmpty) return error;
-    if (value is int && value < 0) return error;
+    if (isSubmitted) {
+      if (value == null) return error;
+      if (value is String && value.isEmpty) return error;
+      if (value is int && value < 0) return error;
+    }
     return null;
   }
 
   String? validateEmailFieldStringValue(String? value) {
-    return EmailValidator.validate(value ?? '')
-        ? null
-        : "* Please input correct company email address.";
+    if (isSubmitted)
+      return EmailValidator.validate(value ?? '')
+          ? null
+          : "* Please input correct company email address.";
+    return null;
   }
 
   @override
@@ -204,7 +208,6 @@ class _JobEditFormState extends State<JobEditForm> {
               // initialValue: job.detailAddress,
               controller: detailedAddress,
               onChanged: (s) => job.detailAddress = s,
-              autoValidateMode: AutovalidateMode.always,
               validator: (v) => validateFieldValue(
                 detailedAddress.text,
                 "* Please input a detailed address.",
