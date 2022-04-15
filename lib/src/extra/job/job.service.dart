@@ -407,12 +407,6 @@ class JobService {
               /// TODO: it errors once the dialog is closed before searched data arrives.
             }
 
-            // Timer(Duration(milliseconds: 500), () {
-            //   input.text = "Yeoksam";
-            //   if (search != null) return;
-            //   getAddresses(input.text);
-            // });
-
             // Yeoksam Miryang-si
             return AlertDialog(
               title: Text(
