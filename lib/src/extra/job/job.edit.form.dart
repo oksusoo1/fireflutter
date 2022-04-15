@@ -5,7 +5,6 @@ import '../../../fireflutter.dart';
 
 /// Job posting form
 ///
-///
 class JobEditForm extends StatefulWidget {
   const JobEditForm({
     Key? key,
@@ -183,6 +182,10 @@ class _JobEditFormState extends State<JobEditForm> {
               maxLines: 2,
             ),
 
+          Divider(height: 30, thickness: 2),
+          Text('Job details', style: TextStyle(fontSize: 14, color: Colors.blueGrey)),
+          SizedBox(height: 15),
+
           JobEditFormDropdownField<String>(
             label: "Job category",
             value: job.jobCategory,
@@ -326,6 +329,7 @@ class _JobEditFormState extends State<JobEditForm> {
 
           JobEditAccomodationRadioField(
             initialValue: job.withAccomodation,
+            onChanged: (v) => job.withAccomodation = v ?? '',
             validator: (v) => validateFieldValue(
               v,
               "*Please select if the job includes an accomodation.",
@@ -397,6 +401,8 @@ class _JobEditFormState extends State<JobEditForm> {
 
           ElevatedButton(
             onPressed: () async {
+              print("${job.toCreate}");
+
               // Validate returns true if the form is valid, or false otherwise.
               if (_formKey.currentState!.validate()) {
                 ScaffoldMessenger.of(context).showSnackBar(
@@ -422,28 +428,6 @@ class _JobEditFormState extends State<JobEditForm> {
               } else {
                 return widget.onError('Validation failed.');
               }
-
-//               final extra = job.toMap;
-//               print(extra);
-
-//               String title = "${companyName.text} $salary - ${job.siNm} ${job.sggNm}";
-//               String content = """Office No.: ${job.phoneNumber}
-// Mobile No.: ${job.mobileNumber}
-// Email address: ${job.email}
-// Address: ${job.roadAddr}
-// Korean Address: ${job.korAddr}
-
-// Job category: ${job.jobCategory}
-// No. of hiring: ${job.numberOfHiring}
-// About us: ${job.aboutUs}
-// requirement:
-// duty:
-// Salary:
-// Working days: in a week
-// Working hours: hours
-// Accommodation
-// Benefit:
-// """;
             },
             child: Text('Submit'),
           )

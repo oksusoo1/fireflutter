@@ -1,79 +1,61 @@
 import 'package:flutter/material.dart';
 
-class JobEditAccomodationRadioField extends StatefulWidget {
-  const JobEditAccomodationRadioField(
-      {required this.initialValue, required this.validator, Key? key})
-      : super(key: key);
+class JobEditAccomodationRadioField extends FormField<String> {
+  JobEditAccomodationRadioField({
+    String label = "Includes accomodation?",
+    required FormFieldValidator<String> validator,
+    required Function(String?) onChanged,
+    String initialValue = '',
+  }) : super(
+          validator: validator,
+          autovalidateMode: AutovalidateMode.onUserInteraction,
+          initialValue: initialValue,
+          onSaved: onChanged,
+          builder: (state) {
+            updateValue(String v) {
+              state.didChange(v);
+              state.save();
+            }
 
-  final String initialValue;
-  final String? Function(dynamic) validator;
-
-  @override
-  State<JobEditAccomodationRadioField> createState() => _JobEditAccomodationRadioFieldState();
-}
-
-class _JobEditAccomodationRadioFieldState extends State<JobEditAccomodationRadioField> {
-  String currentValue = '';
-
-  @override
-  void initState() {
-    super.initState();
-    currentValue = widget.initialValue;
-  }
-
-  changeValue(String? v) {
-    setState(() => currentValue = v ?? '');
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return FormField(
-      initialValue: widget.initialValue,
-      validator: widget.validator,
-      autovalidateMode: AutovalidateMode.onUserInteraction,
-      builder: (state) {
-        return Column(
-          children: [
-            Row(
-              children: <Widget>[
-                Expanded(
-                  child: ListTile(
-                    dense: true,
-                    title: const Text('Yes'),
-                    leading: Radio<String>(
-                      value: "Y",
-                      groupValue: currentValue,
-                      onChanged: changeValue,
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(label, style: TextStyle(fontSize: 14, color: Colors.grey.shade700)),
+                Row(
+                  children: <Widget>[
+                    Expanded(
+                      child: ListTile(
+                        dense: true,
+                        title: const Text('Yes'),
+                        leading: Radio<String>(
+                          value: "Y",
+                          groupValue: state.value,
+                          onChanged: (v) => updateValue("Y"),
+                        ),
+                        onTap: () => updateValue("Y"),
+                        selected: state.value == "Y",
+                        selectedTileColor: Colors.yellow.shade100,
+                      ),
                     ),
-                    onTap: () => changeValue("Y"),
-                    selected: currentValue == "Y",
-                    selectedTileColor: Colors.yellow.shade100,
-                  ),
-                ),
-                Expanded(
-                  child: ListTile(
-                    dense: true,
-                    title: const Text('No'),
-                    leading: Radio<String>(
-                      value: 'N',
-                      groupValue: currentValue,
-                      onChanged: changeValue,
+                    Expanded(
+                      child: ListTile(
+                        dense: true,
+                        title: const Text('No'),
+                        leading: Radio<String>(
+                          value: 'N',
+                          groupValue: state.value,
+                          onChanged: (v) => updateValue("N"),
+                        ),
+                        onTap: () => updateValue("N"),
+                        selected: state.value == "N",
+                        selectedTileColor: Colors.yellow.shade100,
+                      ),
                     ),
-                    onTap: () => changeValue("N"),
-                    selected: currentValue == "N",
-                    selectedTileColor: Colors.yellow.shade100,
-                  ),
+                  ],
                 ),
+                if (state.hasError) Text("${state.errorText}", style: TextStyle(color: Colors.red)),
               ],
-            ),
-            if (state.hasError)
-              Text(
-                "${state.errorText}",
-                style: TextStyle(color: Theme.of(context).errorColor),
-              ),
-          ],
+            );
+          },
         );
-      },
-    );
-  }
 }
