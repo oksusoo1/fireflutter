@@ -88,8 +88,7 @@ bounce(
 
 /// Wait until
 Future<int> waitUntil(bool test(),
-    {final int maxIterations: 100,
-    final Duration step: const Duration(milliseconds: 50)}) async {
+    {final int maxIterations: 100, final Duration step: const Duration(milliseconds: 50)}) async {
   int iterations = 0;
   for (; iterations < maxIterations; iterations++) {
     await Future.delayed(step);
@@ -98,8 +97,7 @@ Future<int> waitUntil(bool test(),
     }
   }
   if (iterations >= maxIterations) {
-    throw TimeoutException(
-        "Condition not reached within ${iterations * step.inMilliseconds}ms");
+    throw TimeoutException("Condition not reached within ${iterations * step.inMilliseconds}ms");
   }
   return iterations;
 }
@@ -164,10 +162,8 @@ bool isImageUrl(String url) {
   if (t.endsWith('.gif')) return true;
 
   if (t.startsWith('http') &&
-      (t.contains('.jpg') ||
-          t.contains('.jpeg') ||
-          t.contains('.png') ||
-          t.contains('.gif'))) return true;
+      (t.contains('.jpg') || t.contains('.jpeg') || t.contains('.png') || t.contains('.gif')))
+    return true;
   return false;
 }
 
@@ -176,22 +172,22 @@ bool isFirebaseStorageUrl(String url) {
   return url.contains('firebasestorage.googleapis.com');
 }
 
-/// Returns short date time string.
+/// Returns short date time string from Firestore Timestamp
 ///
 /// It returns one of 'MM/DD/YYYY' or 'HH:MM AA' format.
 String shortDateTime(createdAt) {
-  final date =
-      DateTime.fromMillisecondsSinceEpoch(createdAt.millisecondsSinceEpoch);
+  final date = DateTime.fromMillisecondsSinceEpoch(createdAt.millisecondsSinceEpoch);
   final today = DateTime.now();
   bool re;
-  if (date.year == today.year &&
-      date.month == today.month &&
-      date.day == today.day) {
+  if (date.year == today.year && date.month == today.month && date.day == today.day) {
     re = true;
   } else {
     re = false;
   }
-  return re
-      ? DateFormat.jm().format(date).toLowerCase()
-      : DateFormat.yMd().format(date);
+  return re ? DateFormat.jm().format(date).toLowerCase() : DateFormat.yMd().format(date);
+}
+
+/// Alias of `shortDateTime()`.
+String shortDateTimeFromFirestoreTimestamp(timestamp) {
+  return shortDateTime(timestamp);
 }

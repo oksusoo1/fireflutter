@@ -374,15 +374,16 @@ class PostModel with FirestoreMixin, ForumBase {
   ///
   /// It returns one of 'MM/DD/YYYY' or 'HH:MM AA' format.
   String get shortDateTime {
-    final date = DateTime.fromMillisecondsSinceEpoch(createdAt.millisecondsSinceEpoch);
-    final today = DateTime.now();
-    bool re;
-    if (date.year == today.year && date.month == today.month && date.day == today.day) {
-      re = true;
-    } else {
-      re = false;
-    }
-    return re ? DateFormat.jm().format(date).toLowerCase() : DateFormat.yMd().format(date);
+    return shortDateTimeFromFirestoreTimestamp(createdAt);
+    // final date = DateTime.fromMillisecondsSinceEpoch(createdAt.millisecondsSinceEpoch);
+    // final today = DateTime.now();
+    // bool re;
+    // if (date.year == today.year && date.month == today.month && date.day == today.day) {
+    //   re = true;
+    // } else {
+    //   re = false;
+    // }
+    // return re ? DateFormat.jm().format(date).toLowerCase() : DateFormat.yMd().format(date);
   }
 
   /// If the post was created just now (in 5 minutes), then returns true.
