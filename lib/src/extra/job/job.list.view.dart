@@ -10,10 +10,12 @@ class JobListView extends StatefulWidget {
     required this.onError,
     required this.options,
     required this.onEdit,
+    required this.onTap,
   }) : super(key: key);
 
   final Function onError;
   final Function(JobModel) onEdit;
+  final Function(JobModel) onTap;
   final JobListOptionModel options;
 
   @override
@@ -28,6 +30,10 @@ class _JobListViewState extends State<JobListView> with FirestoreMixin {
     final options = widget.options;
 
     Query query = db.collection('jobs');
+
+    if (options.companyName != '') {
+      query = query.where('companyName', isEqualTo: options.companyName);
+    }
 
     if (options.siNm != '') {
       query = query.where('siNm', isEqualTo: options.siNm);
@@ -84,25 +90,29 @@ class _JobListViewState extends State<JobListView> with FirestoreMixin {
             return Column(
               children: [
                 // if (index == 0) JobListOptions(),
-                ListTile(
-                  key: ValueKey(snapshot.docs[index].id),
-                  // margin: EdgeInsets.only(top: index == 0 ? 16 : 0),
-                  // padding:
-                  //     EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  leading: job.files.isNotEmpty
-                      ? UploadedImage(
-                          url: job.files.first,
-                          width: 62,
-                          height: 62,
-                        )
-                      : null,
-                  // title: Text(data['jobDescription']),
-                  title: Text(job.description),
-                  subtitle: Padding(
-                    padding: const EdgeInsets.only(top: 8.0),
-                    child: Text('TODO: display job created at time'),
+                GestureDetector(
+                  onTap: () => widget.onTap(job),
+                  child: ListTile(
+                    key: ValueKey(snapshot.docs[index].id),
+                    // margin: EdgeInsets.only(top: index == 0 ? 16 : 0),
+                    // padding:
+                    //     EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    leading: job.files.isNotEmpty
+                        ? UploadedImage(
+                            url: job.files.first,
+                            width: 62,
+                            height: 62,
+                          )
+                        : null,
+                    title: Text(job.description),
+                    subtitle: Padding(
+                      padding: const EdgeInsets.only(top: 8.0),
+                      child: Text('shortDateTime(job.createdAt)'),
+                    ),
+                    trailing: TextButton(
+                        child: Text('edit'),
+                        onPressed: () => widget.onEdit(job)),
                   ),
-                  trailing: TextButton(child: Text('edit'), onPressed: () => widget.onEdit(job)),
                 ),
                 Divider(
                   color: Colors.grey.shade400,

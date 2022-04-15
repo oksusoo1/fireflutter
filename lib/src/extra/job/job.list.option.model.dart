@@ -1,4 +1,5 @@
 class JobListOptionModel {
+  String companyName = '';
   String siNm = '';
   String sggNm = '';
   String jobCategory = '';
@@ -9,6 +10,7 @@ class JobListOptionModel {
 
   get toMap {
     return {
+      'companyName': companyName,
       'siNm': siNm,
       'sggNm': sggNm,
       'jobCategory': jobCategory,

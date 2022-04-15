@@ -1,6 +1,7 @@
 import 'package:extended/extended.dart';
 import 'package:fe/screens/forum/forum.mixin.dart';
 import 'package:fe/screens/job/job.edit.screen.dart';
+import 'package:fe/screens/job/job.view.dart';
 import 'package:fe/service/app.service.dart';
 import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
@@ -15,7 +16,8 @@ class JobListScreen extends StatefulWidget {
   State<JobListScreen> createState() => _JobListScreenState();
 }
 
-class _JobListScreenState extends State<JobListScreen> with FirestoreMixin, ForumMixin {
+class _JobListScreenState extends State<JobListScreen>
+    with FirestoreMixin, ForumMixin {
   JobListOptionModel options = JobListOptionModel();
 
   @override
@@ -38,6 +40,10 @@ class _JobListScreenState extends State<JobListScreen> with FirestoreMixin, Foru
         options: options,
         onEdit: (job) => AppService.instance.open(
           JobEditScreen.routeName,
+          arguments: {'job': job},
+        ),
+        onTap: (job) => AppService.instance.open(
+          JobViewScreen.routeName,
           arguments: {'job': job},
         ),
       ),
@@ -63,6 +69,7 @@ class JobListTitleBottom extends StatefulWidget with PreferredSizeWidget {
 class _JobListTitleBottomState extends State<JobListTitleBottom> {
   @override
   Widget build(BuildContext context) {
-    return Container(color: Colors.white, child: JobListOptions(change: widget.change));
+    return Container(
+        color: Colors.white, child: JobListOptions(change: widget.change));
   }
 }

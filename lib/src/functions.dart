@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:uuid/uuid.dart';
@@ -173,4 +174,24 @@ bool isImageUrl(String url) {
 /// Return true if the message is a URL of uploaded file in Firebase Storage.
 bool isFirebaseStorageUrl(String url) {
   return url.contains('firebasestorage.googleapis.com');
+}
+
+/// Returns short date time string.
+///
+/// It returns one of 'MM/DD/YYYY' or 'HH:MM AA' format.
+String shortDateTime(createdAt) {
+  final date =
+      DateTime.fromMillisecondsSinceEpoch(createdAt.millisecondsSinceEpoch);
+  final today = DateTime.now();
+  bool re;
+  if (date.year == today.year &&
+      date.month == today.month &&
+      date.day == today.day) {
+    re = true;
+  } else {
+    re = false;
+  }
+  return re
+      ? DateFormat.jm().format(date).toLowerCase()
+      : DateFormat.yMd().format(date);
 }

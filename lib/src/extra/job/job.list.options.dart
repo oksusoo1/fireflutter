@@ -21,6 +21,24 @@ class _JobListOptionsState extends State<JobListOptions> with FirestoreMixin {
         children: [
           Column(
             children: [
+              Row(children: [
+                Expanded(
+                  child: TextField(
+                    controller:
+                        TextEditingController(text: options.companyName),
+                    decoration: InputDecoration(
+                      labelText: "Company name",
+                    ),
+                    onChanged: (v) {
+                      bounce('companyName', 500, (_) async {
+                        print('search via company name');
+                        options.companyName = v;
+                        widget.change(options);
+                      });
+                    },
+                  ),
+                ),
+              ]),
               Row(
                 children: [
                   DropdownButton<String>(
