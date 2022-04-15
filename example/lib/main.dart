@@ -17,7 +17,7 @@ import 'package:fe/screens/forum/post.form.screen.dart';
 import 'package:fe/screens/forum/post.view.screen.dart';
 import 'package:fe/screens/job/job.edit.screen.dart';
 import 'package:fe/screens/job/job.list.screen.dart';
-import 'package:fe/screens/job/job.view.dart';
+import 'package:fe/screens/job/job.view.screen.dart';
 import 'package:fe/screens/point_history/point_history.screen.dart';
 import 'package:fe/screens/search/search.screen.dart';
 import 'package:fe/screens/setting/notification.setting.dart';

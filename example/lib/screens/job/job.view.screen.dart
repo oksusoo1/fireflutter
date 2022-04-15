@@ -26,10 +26,7 @@ class _JobViewScreenState extends State<JobViewScreen>
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            JobEditForm(
-              onError: error,
-              onCreated: (id) => alert('Job opening created!', '$id'),
-              onUpdated: (id) => alert('Job opening updated!', '$id'),
+            JobView(
               job: widget.arguments['job'],
             ),
             space2xl,

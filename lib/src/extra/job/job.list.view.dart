@@ -104,10 +104,17 @@ class _JobListViewState extends State<JobListView> with FirestoreMixin {
                             height: 62,
                           )
                         : null,
-                    title: Text(job.description),
+                    title: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(JobService.instance.categories[job.jobCategory] ??
+                            ''),
+                        Text(job.description),
+                      ],
+                    ),
                     subtitle: Padding(
                       padding: const EdgeInsets.only(top: 8.0),
-                      child: Text('shortDateTime(job.createdAt)'),
+                      child: Text(shortDateTime(job.createdAt)),
                     ),
                     trailing: TextButton(
                         child: Text('edit'),

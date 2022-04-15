@@ -117,6 +117,7 @@ export 'src/extra/job/job.edit.form.dart';
 export 'src/extra/job/job.service.dart';
 export 'src/extra/job/job.model.dart';
 export 'src/extra/job/job.list.view.dart';
+export 'src/extra/job/job.view.dart';
 export 'src/extra/job/job.list.options.dart';
 export 'src/extra/job/job.list.option.model.dart';
 export 'src/extra/job/job.edit.form.text.field.dart';
