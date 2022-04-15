@@ -42,6 +42,8 @@ class _JobEditFormState extends State<JobEditForm> {
   double uploadProgress = 0;
   bool get uploadLimited => job.files.length >= 5;
 
+  bool isSubmitted = false;
+
   @override
   initState() {
     super.initState();
@@ -51,6 +53,7 @@ class _JobEditFormState extends State<JobEditForm> {
   init() {
     if (isUpdate) {
       job = widget.job!;
+      address = AddressModel.fromMap(job.toUpdate);
     }
   }
 
@@ -59,6 +62,11 @@ class _JobEditFormState extends State<JobEditForm> {
     final _address = await JobService.instance.showAddressPopupWindow(context);
     if (_address == null) return;
     address = _address;
+    job.roadAddr = _address.roadAddr;
+    job.korAddr = _address.korAddr;
+    job.zipNo = _address.zipNo;
+    job.siNm = _address.siNm;
+    job.sggNm = _address.sggNm;
     job.detailAddress = '';
     setState(() {});
   }
@@ -134,6 +142,7 @@ class _JobEditFormState extends State<JobEditForm> {
           ),
           SizedBox(height: 10),
 
+          /// Todo: show error if not valid
           GestureDetector(
             onTap: getAddress,
             behavior: HitTestBehavior.opaque,
@@ -174,6 +183,7 @@ class _JobEditFormState extends State<JobEditForm> {
           ),
 
           /// Company detailed address
+          /// Todo: clear if address is changed.
           if (address != null) ...[
             SizedBox(height: 9),
             JobEditFormTextField(
@@ -404,10 +414,9 @@ class _JobEditFormState extends State<JobEditForm> {
 
           ElevatedButton(
             onPressed: () async {
-              print("${job.toCreate}");
-
+              print("JOB: ${job.toUpdate}");
               // Validate returns true if the form is valid, or false otherwise.
-              if (_formKey.currentState!.validate()) {
+              if (_formKey.currentState!.validate() && address != null) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text('Validation success !!')),
                 );
@@ -417,12 +426,14 @@ class _JobEditFormState extends State<JobEditForm> {
                     final created = await FunctionsApi.instance
                         .request('jobCreate', data: job.toCreate, addAuth: true);
                     final newJob = JobModel.fromJson(created);
-                    print(newJob);
+                    print('created: $newJob');
+                    widget.onCreated(newJob.id);
                   } else {
                     final updated = await FunctionsApi.instance
                         .request('jobUpdate', data: job.toUpdate, addAuth: true);
                     final updatedJob = JobModel.fromJson(updated);
-                    print(updatedJob);
+                    print("updated: $updatedJob");
+                    widget.onUpdated(updatedJob.id);
                   }
                 } catch (e, stacks) {
                   debugPrintStack(stackTrace: stacks);
