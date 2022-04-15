@@ -30,7 +30,7 @@ class _JobEditFormState extends State<JobEditForm> {
   final _formKey = GlobalKey<FormState>();
 
   /// TODO - what is this for?
-  AddressModel? addr;
+  AddressModel? address;
 
   JobModel job = JobModel.empty();
   bool get isCreate {
@@ -55,7 +55,7 @@ class _JobEditFormState extends State<JobEditForm> {
   }
 
   getAddress() async {
-    addr = await JobService.instance.inputAddress(context);
+    address = await JobService.instance.inputAddress(context);
     setState(() {});
   }
 
@@ -154,13 +154,13 @@ class _JobEditFormState extends State<JobEditForm> {
                     mainAxisSize: MainAxisSize.max,
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      if (addr == null)
+                      if (address == null)
                         Text('* Select your address.')
                       else
                         Expanded(
                           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                            Text('${addr?.roadAddr}'),
-                            Text('${addr?.korAddr}'),
+                            Text('${address?.roadAddr}'),
+                            Text('${address?.korAddr}'),
                           ]),
                         ),
                       Text('Select', style: TextStyle(fontSize: 14, color: Colors.blue)),
@@ -173,7 +173,7 @@ class _JobEditFormState extends State<JobEditForm> {
           ),
 
           /// Company detailed address
-          if (addr != null)
+          if (address != null)
             JobEditFormTextField(
               label: "Input detail address",
               initialValue: job.detailAddress,
