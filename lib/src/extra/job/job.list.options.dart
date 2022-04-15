@@ -82,7 +82,8 @@ class _JobListOptionsState extends State<JobListOptions> with FirestoreMixin {
                           child: Text('Select city/county/gu'),
                           value: '',
                         ),
-                        for (final name in JobService.instance.areas[options.siNm]!)
+                        for (final name
+                            in JobService.instance.areas[options.siNm]!)
                           DropdownMenuItem(
                             child: Text(name),
                             value: name,
