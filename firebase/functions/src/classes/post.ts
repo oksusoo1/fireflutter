@@ -41,8 +41,9 @@ export class Post {
     if (!data.category) throw ERROR_EMPTY_CATEGORY;
 
     // Ref.categoryDoc(data.category);
-    const re = await Category.exists(data.category);
-    if (re === false) throw ERROR_CATEGORY_NOT_EXISTS;
+    // const re = await Category.exists(data.category);
+    const category = await Category.get(data.category);
+    if (category === null) throw ERROR_CATEGORY_NOT_EXISTS;
 
     // get all the data from client.
     const doc: { [key: string]: any } = data as any;
@@ -76,7 +77,7 @@ export class Post {
     }
 
     // Post create event
-    await Point.postCreatePoint(data.uid, ref.id);
+    await Point.postCreatePoint(category, data.uid, ref.id);
 
     // return the document object of newly created post.
     const snapshot = await ref.get();
@@ -189,8 +190,8 @@ export class Post {
   }
 
   static async sendMessageOnCommentCreate(
-      data: CommentDocument,
-      id: string
+    data: CommentDocument,
+    id: string
   ): Promise<OnCommentCreateResponse | null> {
     const post = await this.get(data.postId);
     if (!post) return null;
@@ -219,16 +220,16 @@ export class Post {
 
     // Don't send the same message twice to topic subscribers and comment notifyees.
     const userUids = await Messaging.getCommentNotifyeeWithoutTopicSubscriber(
-        ancestorsUid.join(","),
-        topic
+      ancestorsUid.join(","),
+      topic
     );
 
     // get users tokens
     const tokens = await Messaging.getTokensFromUids(userUids.join(","));
 
     const sendToTokenRes = await Messaging.sendingMessageToTokens(
-        tokens,
-        Messaging.preMessagePayload(messageData)
+      tokens,
+      Messaging.preMessagePayload(messageData)
     );
     return {
       topicResponse: sendToTopicRes,

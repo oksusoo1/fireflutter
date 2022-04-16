@@ -2,6 +2,7 @@ import * as admin from "firebase-admin";
 import { Ref } from "./ref";
 import { Utils } from "./utils";
 import * as dayjs from "dayjs";
+import { CategoryDocument } from "../interfaces/forum.interface";
 
 interface PointHistory {
   key?: string;
@@ -99,21 +100,29 @@ export class Point {
 
   /**
    * Returns point document reference
-   * @param data post data
-   * @param context context
+   * @param category the category of the post
+   * @param uid the uid of the post
+   * @param postId the post id that had just been created.
    * @returns reference of the point history document or null if the point event didn't happen.
    * @reference see `tests/point/list.ts` for generating post creation bonus point for test.
    */
-  static async postCreatePoint(uid: string, postId: string) {
-    // Get data
+  static async postCreatePoint(category: CategoryDocument, uid: string, postId: string) {
+    // Get ref of point folder.
     const postCreateRef = Ref.pointPostCreate(uid);
 
-    // Time didn't passed from last bonus point event? then don't do point event.
-    if ((await this.timePassed(postCreateRef, EventName.postCreate)) === false) return null;
-    const point = this.getRandomPoint(EventName.postCreate);
-    const docData = { timestamp: Utils.getTimestamp(), point: point };
+    // Point document to add into point folder.
+    const data: any = { timestamp: Utils.getTimestamp() };
 
-    // New reference to create a history with postId.
+    // If category has point value, then use category point value.
+    if (category.point) {
+      data.point = category.point;
+    } else {
+      // Time didn't passed from last bonus point event? then don't do point event.
+      if ((await this.timePassed(postCreateRef, EventName.postCreate)) === false) return null;
+      data.point = this.getRandomPoint(EventName.postCreate);
+    }
+
+    // New reference (of point folder) to add(create) a history with postId.
     const ref = postCreateRef.child(postId);
 
     // Check if the post has already point event.
@@ -123,11 +132,11 @@ export class Point {
     if (snapshot.exists() && snapshot.val()) return null;
 
     // Set(add) history of post document. so, it will not do it again within the limited time.
-    await ref.set(docData);
+    await ref.set(data);
     // Update user point.
-    await this.updateUserPoint(uid, point);
+    await this.updateUserPoint(uid, data.point);
     // Update the post with point. So, it can display on screen.
-    await Ref.postDoc(postId).update({ point: point });
+    await Ref.postDoc(postId).update({ point: data.point });
 
     return ref;
   }
@@ -278,15 +287,15 @@ export class Point {
    */
   static async history(data: any): Promise<Array<PointHistory>> {
     const startAt = dayjs()
-        .year(data.year)
-        .month(data.month - 1)
-        .startOf("month")
-        .unix();
+      .year(data.year)
+      .month(data.month - 1)
+      .startOf("month")
+      .unix();
     const endAt = dayjs()
-        .year(data.year)
-        .month(data.month - 1)
-        .endOf("month")
-        .unix();
+      .year(data.year)
+      .month(data.month - 1)
+      .endOf("month")
+      .unix();
 
     const history: Array<PointHistory> = [];
 
@@ -297,18 +306,18 @@ export class Point {
 
     await this._getPointHistoryWithin(Ref.pointSignIn(data.uid), "signIn", history, startAt, endAt);
     await this._getPointHistoryWithin(
-        Ref.pointPostCreate(data.uid),
-        "postCreate",
-        history,
-        startAt,
-        endAt
+      Ref.pointPostCreate(data.uid),
+      "postCreate",
+      history,
+      startAt,
+      endAt
     );
     await this._getPointHistoryWithin(
-        Ref.pointCommentCreate(data.uid),
-        "commentCreate",
-        history,
-        startAt,
-        endAt
+      Ref.pointCommentCreate(data.uid),
+      "commentCreate",
+      history,
+      startAt,
+      endAt
     );
 
     // After getting the point, it orders by timestamp.
@@ -332,11 +341,11 @@ export class Point {
   }
 
   static async _getPointHistoryWithin(
-      ref: admin.database.Reference,
-      eventName: string,
-      history: Array<PointHistory>,
-      startAt: number,
-      endAt: number
+    ref: admin.database.Reference,
+    eventName: string,
+    history: Array<PointHistory>,
+    startAt: number,
+    endAt: number
   ) {
     const snapshot = await ref.orderByChild("timestamp").startAt(startAt).endAt(endAt).get();
     const val = snapshot.val();

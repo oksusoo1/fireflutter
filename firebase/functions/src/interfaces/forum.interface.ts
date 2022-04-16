@@ -2,12 +2,15 @@ import * as admin from "firebase-admin";
 
 export interface CategoryDocument {
   id?: string;
-  timestamp?: number;
-  order: number;
-  title: string;
-  description: string;
+  createdAt?: number;
+  updatedAt?: number;
+  order?: number;
+  title?: string;
+  description?: string;
   backgroundColor?: string;
   foregroundColor?: string;
+  categoryGroup?: string;
+  point?: number;
 }
 
 /**

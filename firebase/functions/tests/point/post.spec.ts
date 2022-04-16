@@ -8,6 +8,7 @@ import { Post } from "../../src/classes/post";
 // import { User } from "../../src/classes/user";
 import { Test } from "../../src/classes/test";
 import { User } from "../../src/classes/user";
+import { Category } from "../../src/classes/category";
 
 new FirebaseAppInitializer();
 
@@ -48,6 +49,10 @@ describe("Post point test", () => {
     expect(post2).to.be.an("object");
 
     const pointAfterCreate2 = await Point.getUserPoint(user.id);
+    console.log(
+      `expect(${startingPoint} + ${post.point!} + ${post2.point!} === ${pointAfterCreate2}).true;`
+    );
+
     expect(startingPoint + post.point! + post2.point! === pointAfterCreate2).true;
 
     // 3rd post create
@@ -58,11 +63,53 @@ describe("Post point test", () => {
     expect(post3).to.be.an("object").not.to.have.property("point");
     const pointAfterCreate3 = await Point.getUserPoint(user.id);
     expect(startingPoint + post.point! + post2.point! + (post3.point ?? 0) === pointAfterCreate3)
-        .true;
+      .true;
 
     const u = await User.get(user.id);
     if (u!.point < 1000) expect(u!.level).equals(1);
     else if (u!.point < 3000) expect(u!.level).equals(2);
     else if (u!.point < 6000) expect(u!.level).equals(3);
+  });
+  it("Post create - with category point setting", async () => {
+    // Create user
+    const user = await Test.createUser();
+
+    // Wait sometime for register and get's register bonus.
+    await Utils.delay(2000);
+
+    // Get current user point
+    const startingPoint = await Point.getUserPoint(user.id);
+
+    // Create category with point 12345
+    const category = await Category.create({
+      id: "cat-point-id" + Utils.getTimestamp(),
+      point: 12345,
+    });
+    expect(category).not.to.be.null;
+
+    // create post
+    const post = await Post.create({ category: category!.id, uid: user.id });
+    expect(post).to.be.an("object").to.have.property("point").equals(12345);
+    const pointAfterCreate = await Point.getUserPoint(user.id);
+    expect(startingPoint + post.point!).equals(pointAfterCreate);
+
+    // Create category with -345
+    const category2 = await Category.create({
+      id: "cat-point-id" + Utils.getTimestamp(),
+      point: -345,
+    });
+    expect(category2).not.to.be.null;
+
+    console.log(category2);
+
+    // create post
+    const post2 = await Post.create({ category: category2!.id, uid: user.id });
+    expect(post2).to.be.an("object").to.have.property("point").equals(-345);
+    const pointAfterCreate2 = await Point.getUserPoint(user.id);
+
+    console.log(
+      `expect(${startingPoint} + ${post.point!} + ${post2.point!}).equals(${pointAfterCreate2});`
+    );
+    expect(startingPoint + post.point! + post2.point!).equals(pointAfterCreate2);
   });
 });
