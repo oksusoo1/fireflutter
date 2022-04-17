@@ -7,6 +7,12 @@ import {
   ERROR_NOT_YOUR_JOB,
 } from "../defines";
 export class Job {
+  static pointDeductionForCreation = 1200;
+  /**
+   * Creates a job
+   * @param data data to create a job opening
+   * @returns document data
+   */
   static async create(data: any): Promise<any> {
     if (typeof data.companyName === "undefined") {
       throw ERROR_EMPTY_COMPANY_NAME;
@@ -22,6 +28,7 @@ export class Job {
     const ref = await admin.firestore().collection("jobs").add(data);
     return this.get(ref.id);
   }
+
   static async update(data: any): Promise<any> {
     if (!data.id) throw ERROR_EMPTY_ID;
     const job = await this.get(data.id);
@@ -49,5 +56,16 @@ export class Job {
     job.id = ref.id;
 
     return job;
+  }
+
+  /**
+   * Returns a job from the user.
+   *
+   * @param uid user uid
+   * @usage Use this to get the user's previous job or to check if the user has already posted a job openning.
+   * @note User can only create one job. See readme for details.
+   */
+  static async getJobFromUid(uid: string) {
+    admin.firestore().collection("jobs").where("uid", "==", uid).limit(1);
   }
 }

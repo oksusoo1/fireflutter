@@ -156,7 +156,7 @@ Table of contents
   - [Senario](#senario)
   - [User point and level](#user-point-and-level)
 - [Extra Features](#extra-features)
-  - [Job Functionality for job seekers and job openers](#job-functionality-for-job-seekers-and-job-openers)
+  - [Job](#job)
 
 # TODOs
 
@@ -1982,11 +1982,10 @@ lv. 499: 124750000
 
 # Extra Features
 
-## Job Functionality for job seekers and job openers
+## Job
 
+- See `<fireflutter>/lib/src/extra/job/README.md` for details.
 - See `<fireflutter>/lib/src/extra/job` for the source code and details.
-
-- Job feature uses `jobs` collection since it takes a lot more indexes.
 
 
 
