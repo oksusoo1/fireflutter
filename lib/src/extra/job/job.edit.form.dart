@@ -478,6 +478,7 @@ class _JobEditFormState extends State<JobEditForm> {
                 addJobAddress(address!);
                 try {
                   if (isCreate) {
+                    print(job.toCreate);
                     await FunctionsApi.instance.request(
                       'jobCreate',
                       data: job.toCreate,
@@ -485,6 +486,7 @@ class _JobEditFormState extends State<JobEditForm> {
                     );
                     widget.onCreated();
                   } else {
+                    print(job.toUpdate);
                     await FunctionsApi.instance.request(
                       'jobUpdate',
                       data: job.toUpdate,
