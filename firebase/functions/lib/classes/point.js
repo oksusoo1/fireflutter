@@ -247,7 +247,7 @@ class Point {
     static getLevel(point) {
         const seed = 1000;
         let acc = 0;
-        for (let i = 1; i < 150; i++) {
+        for (let i = 1; i < 500; i++) {
             acc = seed * i + acc;
             if (point < acc)
                 return i;

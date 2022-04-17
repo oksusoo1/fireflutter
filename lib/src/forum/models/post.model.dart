@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:jiffy/jiffy.dart';
-import 'package:intl/intl.dart';
 import '../../../fireflutter.dart';
 
 /// PostModel

@@ -1,5 +1,6 @@
 import * as functions from "firebase-functions";
 import { Utils } from "../classes/utils";
+import { ERROR_TEST } from "../defines";
 import { ready } from "../ready";
 
 export const inputTest = functions
@@ -23,5 +24,13 @@ export const serverTime = functions
     .https.onRequest((req, res) => {
       ready({ req, res, auth: false }, async () => {
         res.status(200).send({ timestamp: Utils.getTimestamp() });
+      });
+    });
+
+export const produceError = functions
+    .region("us-central1", "asia-northeast3")
+    .https.onRequest((req, res) => {
+      ready({ req, res, auth: false }, async () => {
+        res.status(200).send(ERROR_TEST);
       });
     });

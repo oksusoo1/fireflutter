@@ -130,6 +130,7 @@ Table of contents
 - [Location Service](#location-service)
 - [Cloud Functions](#cloud-functions)
   - [Unit test for Cloud Functions](#unit-test-for-cloud-functions)
+  - [How to send error back to client](#how-to-send-error-back-to-client)
   - [Cloud functions - http trigger, restful api.](#cloud-functions---http-trigger-restful-api)
     - [Ready](#ready)
     - [Request and data handling](#request-and-data-handling)
@@ -1573,6 +1574,22 @@ HttpException: Invalid statusCode: 403, uri = https://firebasestorage.googleapis
 - `<root>/firebase/functions/tests` folder has all the tests.
 
 
+## How to send error back to client
+
+
+
+```ts
+export const produceError = functions
+  .region("us-central1", "asia-northeast3")
+  .https.onRequest((req, res) => {
+    ready({ req, res, auth: false }, async () => {
+      res.status(200).send(ERROR_TEST);
+    });
+  });
+```
+
+
+
 ## Cloud functions - http trigger, restful api.
 
 - There are helper classes for cloud functions http call that ends with `Api`. Most (or all) of Firebase client helper classes ends with `Service`.
@@ -1883,157 +1900,53 @@ ForumPoint(
 ## User point and level
 
 - Level will be set on user's document by cloud function.
+- The formula in dart of computing level from point is like below.
+
+```dart
+final seed = 1000;
+int acc = 0;
+for (int i = 1; i < 500; i++) {
+  acc = seed * i + acc;
+  print('lv. $i: $acc');
+}
+```
+
+- The level is saved in user document every time point changes by cloud function.
+
+- The level list is like below.
 
 ```text
-lv 1 = 1000
-lv 2 = 3000
-lv 3 = 6000
-lv 4 = 10000
-lv 5 = 15000
-lv 6 = 21000
-lv 7 = 28000
-lv 8 = 36000
-lv 9 = 45000
-lv 10 = 55000
-lv 11 = 66000
-lv 12 = 78000
-lv 13 = 91000
-lv 14 = 105000
-lv 15 = 120000
-lv 16 = 136000
-lv 17 = 153000
-lv 18 = 171000
-lv 19 = 190000
-lv 20 = 210000
-lv 21 = 231000
-lv 22 = 253000
-lv 23 = 276000
-lv 24 = 300000
-lv 25 = 325000
-lv 26 = 351000
-lv 27 = 378000
-lv 28 = 406000
-lv 29 = 435000
-lv 30 = 465000
-lv 31 = 496000
-lv 32 = 528000
-lv 33 = 561000
-lv 34 = 595000
-lv 35 = 630000
-lv 36 = 666000
-lv 37 = 703000
-lv 38 = 741000
-lv 39 = 780000
-lv 40 = 820000
-lv 41 = 861000
-lv 42 = 903000
-lv 43 = 946000
-lv 44 = 990000
-lv 45 = 1035000
-lv 46 = 1081000
-lv 47 = 1128000
-lv 48 = 1176000
-lv 49 = 1225000
-lv 50 = 1275000
-lv 51 = 1326000
-lv 52 = 1378000
-lv 53 = 1431000
-lv 54 = 1485000
-lv 55 = 1540000
-lv 56 = 1596000
-lv 57 = 1653000
-lv 58 = 1711000
-lv 59 = 1770000
-lv 60 = 1830000
-lv 61 = 1891000
-lv 62 = 1953000
-lv 63 = 2016000
-lv 64 = 2080000
-lv 65 = 2145000
-lv 66 = 2211000
-lv 67 = 2278000
-lv 68 = 2346000
-lv 69 = 2415000
-lv 70 = 2485000
-lv 71 = 2556000
-lv 72 = 2628000
-lv 73 = 2701000
-lv 74 = 2775000
-lv 75 = 2850000
-lv 76 = 2926000
-lv 77 = 3003000
-lv 78 = 3081000
-lv 79 = 3160000
-lv 80 = 3240000
-lv 81 = 3321000
-lv 82 = 3403000
-lv 83 = 3486000
-lv 84 = 3570000
-lv 85 = 3655000
-lv 86 = 3741000
-lv 87 = 3828000
-lv 88 = 3916000
-lv 89 = 4005000
-lv 90 = 4095000
-lv 91 = 4186000
-lv 92 = 4278000
-lv 93 = 4371000
-lv 94 = 4465000
-lv 95 = 4560000
-lv 96 = 4656000
-lv 97 = 4753000
-lv 98 = 4851000
-lv 99 = 4950000
-lv 100 = 5050000
-lv 101 = 5151000
-lv 102 = 5253000
-lv 103 = 5356000
-lv 104 = 5460000
-lv 105 = 5565000
-lv 106 = 5671000
-lv 107 = 5778000
-lv 108 = 5886000
-lv 109 = 5995000
-lv 110 = 6105000
-lv 111 = 6216000
-lv 112 = 6328000
-lv 113 = 6441000
-lv 114 = 6555000
-lv 115 = 6670000
-lv 116 = 6786000
-lv 117 = 6903000
-lv 118 = 7021000
-lv 119 = 7140000
-lv 120 = 7260000
-lv 121 = 7381000
-lv 122 = 7503000
-lv 123 = 7626000
-lv 124 = 7750000
-lv 125 = 7875000
-lv 126 = 8001000
-lv 127 = 8128000
-lv 128 = 8256000
-lv 129 = 8385000
-lv 130 = 8515000
-lv 131 = 8646000
-lv 132 = 8778000
-lv 133 = 8911000
-lv 134 = 9045000
-lv 135 = 9180000
-lv 136 = 9316000
-lv 137 = 9453000
-lv 138 = 9591000
-lv 139 = 9730000
-lv 140 = 9870000
-lv 141 = 10011000
-lv 142 = 10153000
-lv 143 = 10296000
-lv 144 = 10440000
-lv 145 = 10585000
-lv 146 = 10731000
-lv 147 = 10878000
-lv 148 = 11026000
-lv 149 = 11175000
+lv. 1: 1000
+lv. 2: 3000
+lv. 3: 6000
+lv. 4: 10000
+lv. 5: 15000
+lv. 6: 21000
+lv. 7: 28000
+lv. 8: 36000
+lv. 9: 45000
+lv. 10: 55000
+lv. 11: 66000
+lv. 12: 78000
+lv. 13: 91000
+lv. 14: 105000
+lv. 15: 120000
+...
+lv. 99: 4950000
+lv. 100: 5050000
+...
+lv. 139: 9730000
+lv. 140: 9870000
+lv. 141: 10011000
+lv. 142: 10153000
+...
+lv. 445: 99235000
+lv. 446: 99681000
+lv. 447: 100128000
+lv. 448: 100576000
+...
+lv. 498: 124251000
+lv. 499: 124750000
 ```
 
 # Extra Features

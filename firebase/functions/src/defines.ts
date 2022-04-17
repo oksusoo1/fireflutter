@@ -1,3 +1,4 @@
+export const ERROR_TEST = "ERROR_TEST";
 export const ERROR_USER_EXISTS = "ERROR_USER_EXISTS";
 export const ERROR_EMPTY_UID = "ERROR_EMPTY_UID";
 export const ERROR_EMPTY_ID = "ERROR_EMPTY_ID";
