@@ -142,7 +142,8 @@ Table of contents
   - [Firestore backup](#firestore-backup)
 - [Point](#point)
   - [Point settings](#point-settings)
-  - [Logic](#logic)
+  - [Poitn Event Logic](#poitn-event-logic)
+  - [Category point setting](#category-point-setting)
   - [Point document](#point-document)
   - [Displaying Point](#displaying-point)
     - [Use point property to dispaly point.](#use-point-property-to-dispaly-point)
@@ -1749,7 +1750,7 @@ https://docs.google.com/document/d/1tSJJt8iJsXNl9vcBqYhKPkiRZR5JFo-SQE2SJ90GItA/
 - On each event, the cloud funtion will randomly generate point between `min` and `max`. `min` is the minimum point and `max` is the maximum point.
 - Some event has `within` property. `within` property has seconds that if the action happens again within that seconds, there will be no point event.
 
-## Logic
+## Poitn Event Logic
 
 - A point event document will be created under `/point/<uid>` with properties of `timestamp`, and `point` when user action happens.
   - When event happens (document create or update), random point will be generated acoording to `lib.js::pointEventRule`.
@@ -1766,6 +1767,19 @@ https://docs.google.com/document/d/1tSJJt8iJsXNl9vcBqYhKPkiRZR5JFo-SQE2SJ90GItA/
 
 - Note that, `signIn`, `postCreate` and `commentCreate` has a time limit that it cannot have new point event within x-number of minutes.
   - For instance, if the limit of `postCreate` within 15, then, even if the create many posts within 15 hours, only one will get point event. When the user creates another post after 15 hours, it will take point event again.
+
+
+
+## Category point setting
+
+- When a category has point value in its setting, then the point event will not work. Instead, the point of the category will be applied.
+- The point of the category will be applied on every post create.
+  - So, you can use this kind of cases;
+    - If you want a user's point deducted by 500 points, when the user creates a post on buy and sell, then set -500 on the buy and sell category setting.
+    - If you want a category (like new category) not to be affected by the point event, then you may set the point value in category setting to 1 or -1. So it will take minimal affects on that category.
+
+
+
 
 
 ## Point document

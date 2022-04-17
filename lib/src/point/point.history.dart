@@ -6,10 +6,12 @@ class PointHistory extends StatefulWidget {
     Key? key,
     required this.year,
     required this.month,
+    required this.onError,
   }) : super(key: key);
 
   final int year;
   final int month;
+  final Function(String) onError;
   @override
   State<PointHistory> createState() => _PointHistoryState();
 }
@@ -29,11 +31,11 @@ class _PointHistoryState extends State<PointHistory> {
     try {
       loading = true;
       histories = await PointApi.instance.getHistory(year: widget.year, month: widget.month);
-      setState(() {
-        loading = false;
-      });
+      setState(() => loading = false);
     } catch (e) {
-      // debugPrint(e.toString());
+      debugPrint(e.toString());
+      widget.onError(e.toString());
+      setState(() => loading = false);
     }
   }
 

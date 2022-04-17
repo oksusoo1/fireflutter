@@ -1,3 +1,4 @@
+import 'package:extended/extended.dart';
 import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
 
@@ -15,6 +16,7 @@ class PointHistoryScreen extends StatelessWidget {
         child: PointHistory(
           year: d.year,
           month: d.month,
+          onError: error,
         ),
       ),
     );

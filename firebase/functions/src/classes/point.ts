@@ -265,6 +265,14 @@ export class Point {
     }
   }
 
+  /**
+   * Returns the level of the point.
+   *
+   * Point can be any number. and it returns the level based on the fomula in the function.
+   *
+   * @param point point to get level of
+   * @returns level
+   */
   static getLevel(point: number): number {
     const seed = 1000;
     let acc = 0;
@@ -287,15 +295,15 @@ export class Point {
    */
   static async history(data: any): Promise<Array<PointHistory>> {
     const startAt = dayjs()
-      .year(data.year)
-      .month(data.month - 1)
-      .startOf("month")
-      .unix();
+        .year(data.year)
+        .month(data.month - 1)
+        .startOf("month")
+        .unix();
     const endAt = dayjs()
-      .year(data.year)
-      .month(data.month - 1)
-      .endOf("month")
-      .unix();
+        .year(data.year)
+        .month(data.month - 1)
+        .endOf("month")
+        .unix();
 
     const history: Array<PointHistory> = [];
 
@@ -306,18 +314,18 @@ export class Point {
 
     await this._getPointHistoryWithin(Ref.pointSignIn(data.uid), "signIn", history, startAt, endAt);
     await this._getPointHistoryWithin(
-      Ref.pointPostCreate(data.uid),
-      "postCreate",
-      history,
-      startAt,
-      endAt
+        Ref.pointPostCreate(data.uid),
+        "postCreate",
+        history,
+        startAt,
+        endAt
     );
     await this._getPointHistoryWithin(
-      Ref.pointCommentCreate(data.uid),
-      "commentCreate",
-      history,
-      startAt,
-      endAt
+        Ref.pointCommentCreate(data.uid),
+        "commentCreate",
+        history,
+        startAt,
+        endAt
     );
 
     // After getting the point, it orders by timestamp.
@@ -341,11 +349,11 @@ export class Point {
   }
 
   static async _getPointHistoryWithin(
-    ref: admin.database.Reference,
-    eventName: string,
-    history: Array<PointHistory>,
-    startAt: number,
-    endAt: number
+      ref: admin.database.Reference,
+      eventName: string,
+      history: Array<PointHistory>,
+      startAt: number,
+      endAt: number
   ) {
     const snapshot = await ref.orderByChild("timestamp").startAt(startAt).endAt(endAt).get();
     const val = snapshot.val();
