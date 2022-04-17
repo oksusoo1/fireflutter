@@ -1,35 +1,29 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Point = exports.randomPoint = exports.EventName = void 0;
+exports.Point = exports.randomPoint = void 0;
 const admin = require("firebase-admin");
 const ref_1 = require("./ref");
 const utils_1 = require("./utils");
 const dayjs = require("dayjs");
-class EventName {
-}
-exports.EventName = EventName;
-EventName.register = "register";
-EventName.signIn = "signIn";
-EventName.postCreate = "postCreate";
-EventName.commentCreate = "commentCreate";
+const point_interface_1 = require("../interfaces/point.interface");
 // / Within is seconds.
 exports.randomPoint = {
     // / When user registers, he gets random points between 1000 and 2000.
-    [EventName.register]: {
+    [point_interface_1.EventName.register]: {
         min: 1000,
         max: 2000,
     },
-    [EventName.signIn]: {
+    [point_interface_1.EventName.signIn]: {
         min: 50,
         max: 200,
         within: 60 * 60 * 24,
     },
-    [EventName.postCreate]: {
+    [point_interface_1.EventName.postCreate]: {
         min: 55,
         max: 155,
         within: 60 * 60,
     },
-    [EventName.commentCreate]: {
+    [point_interface_1.EventName.commentCreate]: {
         min: 33,
         max: 88,
         within: 10 * 60,
@@ -47,10 +41,10 @@ class Point {
     static async signInPoint(after, context) {
         // console.log("data; ", after);
         const uid = context.params.uid;
-        const signInRef = ref_1.Ref.pointSignIn(uid);
-        if ((await this.timePassed(signInRef, EventName.signIn)) === false)
+        const signInRef = ref_1.Ref.signInPoint(uid);
+        if ((await this.timePassed(signInRef, point_interface_1.EventName.signIn)) === false)
             return null;
-        const point = this.getRandomPoint(EventName.signIn);
+        const point = this.getRandomPoint(point_interface_1.EventName.signIn);
         const docData = { timestamp: utils_1.Utils.getTimestamp(), point: point };
         const ref = signInRef.push();
         await ref.set(docData);
@@ -74,13 +68,13 @@ class Point {
      */
     static async registerPoint(data, context) {
         const uid = context.params.uid;
-        const ref = ref_1.Ref.pointRegister(uid);
+        const ref = ref_1.Ref.registerPoint(uid);
         const snapshot = await ref.get();
         if (snapshot.exists()) {
             // Registration point has already given.
             return null;
         }
-        const point = this.getRandomPoint(EventName.register);
+        const point = this.getRandomPoint(point_interface_1.EventName.register);
         const docData = { timestamp: utils_1.Utils.getTimestamp(), point: point };
         await ref.set(docData);
         await this.updateUserPoint(uid, point);
@@ -96,7 +90,7 @@ class Point {
      */
     static async postCreatePoint(category, uid, postId) {
         // Get ref of point folder.
-        const postCreateRef = ref_1.Ref.pointPostCreate(uid);
+        const postCreateRef = ref_1.Ref.postCreatePointHistory(uid);
         // Point document to add into point folder.
         const data = { timestamp: utils_1.Utils.getTimestamp() };
         // If category has point value, then use category point value.
@@ -105,9 +99,9 @@ class Point {
         }
         else {
             // Time didn't passed from last bonus point event? then don't do point event.
-            if ((await this.timePassed(postCreateRef, EventName.postCreate)) === false)
+            if ((await this.timePassed(postCreateRef, point_interface_1.EventName.postCreate)) === false)
                 return null;
-            data.point = this.getRandomPoint(EventName.postCreate);
+            data.point = this.getRandomPoint(point_interface_1.EventName.postCreate);
         }
         // New reference (of point folder) to add(create) a history with postId.
         const ref = postCreateRef.child(postId);
@@ -135,10 +129,10 @@ class Point {
      */
     static async commentCreatePoint(uid, commentId) {
         // console.log("uid; ", uid, ", commentId", commentId);
-        const commentCreateRef = ref_1.Ref.pointCommentCreate(uid);
-        if ((await this.timePassed(commentCreateRef, EventName.commentCreate)) === false)
+        const commentCreateRef = ref_1.Ref.commentCreatePointHistory(uid);
+        if ((await this.timePassed(commentCreateRef, point_interface_1.EventName.commentCreate)) === false)
             return null;
-        const point = this.getRandomPoint(EventName.commentCreate);
+        const point = this.getRandomPoint(point_interface_1.EventName.commentCreate);
         const docData = { timestamp: utils_1.Utils.getTimestamp(), point: point };
         // Reference to create a history.
         const ref = commentCreateRef.child(commentId);
@@ -175,6 +169,14 @@ class Point {
         else {
             return 0;
         }
+    }
+    /**
+     * Alias of getUserPoint
+     * @param uid the user's uid
+     * @returns 0 or point
+     */
+    static async current(uid) {
+        return this.getUserPoint(uid);
     }
     /**
      * Returns random point of the point event
@@ -237,6 +239,61 @@ class Point {
         }
     }
     /**
+     * Update user point with reason and history in extra folder.
+     *
+     * See readme for details.
+     *
+     * @param uid the user uid
+     * @param point the point
+     * @param reason Why this point should be added?
+     *
+     * @usage
+     *  - Use this to add point for payment.
+     *  - Use this for job opening point deduction.
+     *  - Use this for any kinds of point addition or deduction.
+     *  - Use this for tests
+     *
+     * @example
+     * ```ts
+     *  await Point.extraPoint(user.id, 12000, "test");
+     *  const currentPoint = await Point.current(user.id);
+     *  console.log("current point; ", currentPoint);
+     * ```
+     */
+    static async extraPoint(uid, point, reason) {
+        // Add point history in `/point/<uid>/extra` folder why this point has been added.
+        await ref_1.Ref.extraPointHistory(uid)
+            .push()
+            .set({ point: point, reason: reason, timestamp: utils_1.Utils.getTimestamp() });
+        return this.updateUserPoint(uid, point);
+    }
+    /**
+     * Returns the registration bonus point.
+     * @param uid the user's uid
+     * @returns point if exists or 0
+     */
+    static async getRegistrationPoint(uid) {
+        var _a;
+        const snapshot = await ref_1.Ref.registerPoint(uid).once("value");
+        if (snapshot.exists()) {
+            return (_a = snapshot.val().point) !== null && _a !== void 0 ? _a : 0;
+        }
+        return 0;
+    }
+    /**
+     * Returns the last point event from `extra` folder.
+     * @param uid the user's uid
+     * @returns Document of point history of extra point folder.
+     */
+    static async getLastExtraPointEvent(uid) {
+        const lastEventSnapshot = await ref_1.Ref.extraPointHistory(uid).limitToLast(1).once("value");
+        if (lastEventSnapshot.exists()) {
+            const docs = lastEventSnapshot.val();
+            return docs[Object.keys(docs)[0]];
+        }
+        return null;
+    }
+    /**
      * Returns the level of the point.
      *
      * Point can be any number. and it returns the level based on the fomula in the function.
@@ -276,19 +333,32 @@ class Point {
             .endOf("month")
             .unix();
         const history = [];
+        // Get history of registration
         const register = await this._getReistrationEventWithin(data.uid, startAt, endAt);
         if (register) {
             history.push(register);
         }
-        await this._getPointHistoryWithin(ref_1.Ref.pointSignIn(data.uid), "signIn", history, startAt, endAt);
-        await this._getPointHistoryWithin(ref_1.Ref.pointPostCreate(data.uid), "postCreate", history, startAt, endAt);
-        await this._getPointHistoryWithin(ref_1.Ref.pointCommentCreate(data.uid), "commentCreate", history, startAt, endAt);
+        // Get history of sign-in
+        await this._getPointHistoryWithin(ref_1.Ref.signInPoint(data.uid), "signIn", history, startAt, endAt);
+        // Get history of post create
+        await this._getPointHistoryWithin(ref_1.Ref.postCreatePointHistory(data.uid), "postCreate", history, startAt, endAt);
+        // Get history of comemnt create
+        await this._getPointHistoryWithin(ref_1.Ref.commentCreatePointHistory(data.uid), "commentCreate", history, startAt, endAt);
+        // Get history of extra point event like jobCreate, payment, test
+        await this._getPointHistoryWithin(ref_1.Ref.extraPointHistory(data.uid), "extra", history, startAt, endAt);
         // After getting the point, it orders by timestamp.
         history.sort((a, b) => a.timestamp - b.timestamp);
         return history;
     }
+    /**
+     * Returns the document of registration point event.
+     * @param uid uid of the user
+     * @param startAt starting timestamp
+     * @param endAt end timestamp
+     * @returns document of registration point event.
+     */
     static async _getReistrationEventWithin(uid, startAt, endAt) {
-        const snapshot = await ref_1.Ref.pointRegister(uid).get();
+        const snapshot = await ref_1.Ref.registerPoint(uid).get();
         if (snapshot.exists()) {
             const val = snapshot.val();
             if (val.timestamp > startAt && val.timestamp < endAt) {
@@ -300,6 +370,16 @@ class Point {
             }
         }
     }
+    /**
+     * Returns histories of point event.
+     *
+     * @param ref Reference of point history folder.
+     * @param eventName Event name. it can be 'extra' for extra event. and it can be postCreate, commentCreate, signIn.
+     * @param history Array to hold the history
+     * @param startAt starting timestamp
+     * @param endAt end timestamp
+     * @returns None. It adds histories into history param.
+     */
     static async _getPointHistoryWithin(ref, eventName, history, startAt, endAt) {
         const snapshot = await ref.orderByChild("timestamp").startAt(startAt).endAt(endAt).get();
         const val = snapshot.val();

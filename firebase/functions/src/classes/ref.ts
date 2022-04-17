@@ -41,7 +41,7 @@ export class Ref {
   static point(uid: string): admin.database.Reference {
     return this.rdb.ref("point").child(uid);
   }
-  static pointSignIn(uid: string) {
+  static signInPoint(uid: string) {
     return this.point(uid).child("signIn");
   }
   static userPoint(uid: string) {
@@ -56,7 +56,7 @@ export class Ref {
    *
    * @param {*} uid uid
    */
-  static pointRegister(uid: string) {
+  static registerPoint(uid: string) {
     return this.point(uid).child("register");
   }
 
@@ -74,15 +74,19 @@ export class Ref {
   static userSettingTopic(uid: string) {
     return this.userSetting(uid, "topic");
   }
-
-  // post create point folder of the user
-  static pointPostCreate(uid: string) {
+  // Point history folder for post point events.
+  static postCreatePointHistory(uid: string) {
     return this.point(uid).child("postCreate");
   }
 
-  // comment create point folder of the user
-  static pointCommentCreate(uid: string) {
+  // Point history folder for comment point events.
+  static commentCreatePointHistory(uid: string) {
     return this.point(uid).child("commentCreate");
+  }
+
+  // Point history folder for extra point events.
+  static extraPointHistory(uid: string) {
+    return this.point(uid).child("extra");
   }
 
   static get postCol() {

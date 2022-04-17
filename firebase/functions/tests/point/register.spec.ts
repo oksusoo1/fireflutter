@@ -18,7 +18,7 @@ describe("Register point test", () => {
     const data = (await ref!.get()).val();
 
     // Check if success by getting the real doc data.
-    const pointDoc = await Ref.pointRegister(uid).get();
+    const pointDoc = await Ref.registerPoint(uid).get();
     const registerPointDocData = pointDoc.val();
 
     expect(data.timestamp).equals(registerPointDocData.timestamp);

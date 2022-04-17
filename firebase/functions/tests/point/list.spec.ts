@@ -16,6 +16,7 @@ import { FirebaseAppInitializer } from "../firebase-app-initializer";
 import { Ref } from "../../src/classes/ref";
 import { Utils } from "../../src/classes/utils";
 import { Point } from "../../src/classes/point";
+import { ExtraReason } from "../../src/interfaces/point.interface";
 
 new FirebaseAppInitializer();
 
@@ -27,7 +28,7 @@ const uid = "point-list-test-a" + Utils.getTimestamp();
  * @param point set point
  */
 async function setRegisterPoint(timestamp: number, point: number) {
-  const ref = Ref.pointRegister(uid);
+  const ref = Ref.registerPoint(uid);
   const docData = { timestamp: timestamp, point: point };
   await ref.set(docData);
 }
@@ -38,7 +39,7 @@ async function setRegisterPoint(timestamp: number, point: number) {
  * @param point set point
  */
 async function setSignInPoint(timestamp: number, point: number) {
-  const ref = Ref.pointSignIn(uid).push();
+  const ref = Ref.signInPoint(uid).push();
   const docData = { timestamp: timestamp, point: point };
   await ref.set(docData);
 }
@@ -48,7 +49,7 @@ async function setSignInPoint(timestamp: number, point: number) {
  * @param point set point
  */
 async function setPostCreatePoint(timestamp: number, point: number) {
-  const ref = Ref.pointPostCreate(uid).push();
+  const ref = Ref.postCreatePointHistory(uid).push();
   const docData = { timestamp: timestamp, point: point };
   await ref.set(docData);
 }
@@ -58,8 +59,19 @@ async function setPostCreatePoint(timestamp: number, point: number) {
  * @param point set point
  */
 async function setCommentCreatePoint(timestamp: number, point: number) {
-  const ref = Ref.pointCommentCreate(uid).push();
+  const ref = Ref.commentCreatePointHistory(uid).push();
   const docData = { timestamp: timestamp, point: point };
+  await ref.set(docData);
+}
+
+/**
+ * Generate test sign-in bonus point.
+ * @param timestamp timestamp
+ * @param point set point
+ */
+async function setExtraPoint(timestamp: number, point: number, reason: string) {
+  const ref = Ref.extraPointHistory(uid).push();
+  const docData = { timestamp: timestamp, point: point, reason: reason };
   await ref.set(docData);
 }
 
@@ -114,7 +126,7 @@ describe("Point history test with: " + uid, () => {
     expect(feb2022).to.be.an("array").lengthOf(0);
   });
 
-  it("2 Sign-in, 3 post create, 4 comment create on March, 2022.", async () => {
+  it("2 Sign-in, 3 post create, 4 comment create, and 2 extra on March, 2022.", async () => {
     // Sign-in
     await setSignInPoint(dayjs().year(2022).month(2).date(2).unix(), 102);
     await setSignInPoint(dayjs().year(2022).month(2).date(12).unix(), 112);
@@ -134,8 +146,13 @@ describe("Point history test with: " + uid, () => {
     await setCommentCreatePoint(dayjs().year(2022).month(2).date(8).unix(), 108);
     await setCommentCreatePoint(dayjs().year(2022).month(2).date(9).unix(), 109);
 
+    // Extra point. test & jobCreate
+
+    await setExtraPoint(dayjs().year(2022).month(2).date(9).unix(), 10000, "test");
+    await setExtraPoint(dayjs().year(2022).month(2).date(9).unix(), -2000, ExtraReason.jobCreate);
+
     const all9 = await Point.history({ year: 2022, month: 3, uid: uid });
-    expect(all9).to.be.an("array").lengthOf(9);
+    expect(all9).to.be.an("array").lengthOf(11);
   });
 
   it("List by timestamp ascending order", async () => {
@@ -149,14 +166,19 @@ describe("Point history test with: " + uid, () => {
 
     // 102, 104, 105, 108, 109, 110, 112, 116, 117
     const mar2022 = await Point.history({ year: 2022, month: 3, uid: uid });
+    // console.log(mar2022);
     expect(mar2022[0].point == 102).true;
     expect(mar2022[1].point == 104).true;
     expect(mar2022[2].point == 105).true;
     expect(mar2022[3].point == 108).true;
     expect(mar2022[4].point == 109).true;
-    expect(mar2022[5].point == 110).true;
-    expect(mar2022[6].point == 112).true;
-    expect(mar2022[7].point == 116).true;
-    expect(mar2022[8].point == 117).true;
+    // extra test
+    expect(mar2022[5].point == 10000).true;
+    // extra jobCreate
+    expect(mar2022[6].point == -2000).true;
+    expect(mar2022[7].point == 110).true;
+    expect(mar2022[8].point == 112).true;
+    expect(mar2022[9].point == 116).true;
+    expect(mar2022[10].point == 117).true;
   });
 });

@@ -3,19 +3,7 @@ import { Ref } from "./ref";
 import { Utils } from "./utils";
 import * as dayjs from "dayjs";
 import { CategoryDocument } from "../interfaces/forum.interface";
-
-interface PointHistory {
-  key?: string;
-  eventName: string;
-  point: number;
-  timestamp: number;
-}
-export class EventName {
-  static register = "register";
-  static signIn = "signIn";
-  static postCreate = "postCreate";
-  static commentCreate = "commentCreate";
-}
+import { EventName, ExtraPointDocument, PointHistory } from "../interfaces/point.interface";
 
 // / Within is seconds.
 export const randomPoint = {
@@ -54,7 +42,7 @@ export class Point {
     // console.log("data; ", after);
     const uid = context.params.uid;
 
-    const signInRef = Ref.pointSignIn(uid);
+    const signInRef = Ref.signInPoint(uid);
 
     if ((await this.timePassed(signInRef, EventName.signIn)) === false) return null;
     const point = this.getRandomPoint(EventName.signIn);
@@ -84,7 +72,7 @@ export class Point {
    */
   static async registerPoint(data: any, context: any): Promise<null | admin.database.Reference> {
     const uid = context.params.uid;
-    const ref = Ref.pointRegister(uid);
+    const ref = Ref.registerPoint(uid);
     const snapshot = await ref.get();
     if (snapshot.exists()) {
       // Registration point has already given.
@@ -108,7 +96,7 @@ export class Point {
    */
   static async postCreatePoint(category: CategoryDocument, uid: string, postId: string) {
     // Get ref of point folder.
-    const postCreateRef = Ref.pointPostCreate(uid);
+    const postCreateRef = Ref.postCreatePointHistory(uid);
 
     // Point document to add into point folder.
     const data: any = { timestamp: Utils.getTimestamp() };
@@ -152,7 +140,7 @@ export class Point {
   static async commentCreatePoint(uid: string, commentId: string) {
     // console.log("uid; ", uid, ", commentId", commentId);
 
-    const commentCreateRef = Ref.pointCommentCreate(uid);
+    const commentCreateRef = Ref.commentCreatePointHistory(uid);
     if ((await this.timePassed(commentCreateRef, EventName.commentCreate)) === false) return null;
     const point = this.getRandomPoint(EventName.commentCreate);
     const docData = { timestamp: Utils.getTimestamp(), point: point };
@@ -196,6 +184,15 @@ export class Point {
     } else {
       return 0;
     }
+  }
+
+  /**
+   * Alias of getUserPoint
+   * @param uid the user's uid
+   * @returns 0 or point
+   */
+  static async current(uid: string): Promise<number> {
+    return this.getUserPoint(uid);
   }
 
   /**
@@ -266,6 +263,65 @@ export class Point {
   }
 
   /**
+   * Update user point with reason and history in extra folder.
+   *
+   * See readme for details.
+   *
+   * @param uid the user uid
+   * @param point the point
+   * @param reason Why this point should be added?
+   *
+   * @usage
+   *  - Use this to add point for payment.
+   *  - Use this for job opening point deduction.
+   *  - Use this for any kinds of point addition or deduction.
+   *  - Use this for tests
+   *
+   * @example
+   * ```ts
+   *  await Point.extraPoint(user.id, 12000, "test");
+   *  const currentPoint = await Point.current(user.id);
+   *  console.log("current point; ", currentPoint);
+   * ```
+   */
+  static async extraPoint(uid: string, point: number, reason: string): Promise<any> {
+    // Add point history in `/point/<uid>/extra` folder why this point has been added.
+    await Ref.extraPointHistory(uid)
+        .push()
+        .set({ point: point, reason: reason, timestamp: Utils.getTimestamp() });
+
+    return this.updateUserPoint(uid, point);
+  }
+
+  /**
+   * Returns the registration bonus point.
+   * @param uid the user's uid
+   * @returns point if exists or 0
+   */
+  static async getRegistrationPoint(uid: string): Promise<number> {
+    const snapshot = await Ref.registerPoint(uid).once("value");
+
+    if (snapshot.exists()) {
+      return snapshot.val().point ?? 0;
+    }
+    return 0;
+  }
+
+  /**
+   * Returns the last point event from `extra` folder.
+   * @param uid the user's uid
+   * @returns Document of point history of extra point folder.
+   */
+  static async getLastExtraPointEvent(uid: string): Promise<ExtraPointDocument | null> {
+    const lastEventSnapshot = await Ref.extraPointHistory(uid).limitToLast(1).once("value");
+    if (lastEventSnapshot.exists()) {
+      const docs = lastEventSnapshot.val();
+      return docs[Object.keys(docs)[0]];
+    }
+    return null;
+  }
+
+  /**
    * Returns the level of the point.
    *
    * Point can be any number. and it returns the level based on the fomula in the function.
@@ -307,22 +363,37 @@ export class Point {
 
     const history: Array<PointHistory> = [];
 
+    // Get history of registration
     const register = await this._getReistrationEventWithin(data.uid, startAt, endAt);
     if (register) {
       history.push(register);
     }
 
-    await this._getPointHistoryWithin(Ref.pointSignIn(data.uid), "signIn", history, startAt, endAt);
+    // Get history of sign-in
+    await this._getPointHistoryWithin(Ref.signInPoint(data.uid), "signIn", history, startAt, endAt);
+
+    // Get history of post create
     await this._getPointHistoryWithin(
-        Ref.pointPostCreate(data.uid),
+        Ref.postCreatePointHistory(data.uid),
         "postCreate",
         history,
         startAt,
         endAt
     );
+
+    // Get history of comemnt create
     await this._getPointHistoryWithin(
-        Ref.pointCommentCreate(data.uid),
+        Ref.commentCreatePointHistory(data.uid),
         "commentCreate",
+        history,
+        startAt,
+        endAt
+    );
+
+    // Get history of extra point event like jobCreate, payment, test
+    await this._getPointHistoryWithin(
+        Ref.extraPointHistory(data.uid),
+        "extra",
         history,
         startAt,
         endAt
@@ -335,8 +406,15 @@ export class Point {
     return history;
   }
 
+  /**
+   * Returns the document of registration point event.
+   * @param uid uid of the user
+   * @param startAt starting timestamp
+   * @param endAt end timestamp
+   * @returns document of registration point event.
+   */
   static async _getReistrationEventWithin(uid: string, startAt: number, endAt: number) {
-    const snapshot = await Ref.pointRegister(uid).get();
+    const snapshot = await Ref.registerPoint(uid).get();
     if (snapshot.exists()) {
       const val = snapshot.val();
       if (val.timestamp > startAt && val.timestamp < endAt) {
@@ -348,6 +426,16 @@ export class Point {
     }
   }
 
+  /**
+   * Returns histories of point event.
+   *
+   * @param ref Reference of point history folder.
+   * @param eventName Event name. it can be 'extra' for extra event. and it can be postCreate, commentCreate, signIn.
+   * @param history Array to hold the history
+   * @param startAt starting timestamp
+   * @param endAt end timestamp
+   * @returns None. It adds histories into history param.
+   */
   static async _getPointHistoryWithin(
       ref: admin.database.Reference,
       eventName: string,

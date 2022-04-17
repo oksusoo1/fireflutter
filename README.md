@@ -152,6 +152,7 @@ Table of contents
     - [PointBuilder](#pointbuilder)
     - [MyPointBuilder](#mypointbuilder)
     - [ForumPoint](#forumpoint)
+  - [Point history](#point-history)
   - [Displaying point history](#displaying-point-history)
   - [Senario](#senario)
   - [User point and level](#user-point-and-level)
@@ -1892,6 +1893,18 @@ ForumPoint(
   padding: EdgeInsets.only(top: 8.0, left: 8.0),
 ),
 ```
+
+
+
+
+## Point history
+
+- Some point history folders (like sign, postCreate, commentCreate) are used to limit the point event within a period of time.
+
+- Since the histories are saved in realtime database, each events are segregated in different folders.
+  - But some point history that are not used for the time limit purpose are saved under `/point/<uid>/extra` folder.
+  - use `Point.extraPoint` in `point.ts` to leave history in `extra` folder with the reason why the point has added(or deducted).
+
 
 
 

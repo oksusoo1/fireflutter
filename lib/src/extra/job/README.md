@@ -12,7 +12,20 @@ Job functionality using FireFlutter
 # Conditions and rules
 
 - A user can create only one job opening. So if the user needs more than one job opening, he can create another account.
+  - Don't block creating a job opening when there is same name of company or same number of phone.
 - Creating job opening deducts user's point. To update the amount of pint, refer `Job.pointDeductionForCreation` in job class.
+
+
+# Logics
+
+- When a user creates a job opening, then the app collects from the input form and sent it to cloud function via http call.
+- Then, cloud function does
+  - Checking the input data
+  - Check if the user has a job opening already. (User can create only one job opening.)
+  - Check if the user has enough point to create
+  - Create the job opening.
+  - Deduct point and and leave the point history in `/point/<uid>/extra`.
+    - Then, later the app can get display the job creating point deduction on his point history list screen.
 
 
 
@@ -32,4 +45,10 @@ Job functionality using FireFlutter
 
 
 
+
+
+
+# Unit testing
+
+- run `npm run test:job`.
 

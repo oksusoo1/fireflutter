@@ -40,7 +40,7 @@ class Ref {
     static point(uid) {
         return this.rdb.ref("point").child(uid);
     }
-    static pointSignIn(uid) {
+    static signInPoint(uid) {
         return this.point(uid).child("signIn");
     }
     static userPoint(uid) {
@@ -54,7 +54,7 @@ class Ref {
      *
      * @param {*} uid uid
      */
-    static pointRegister(uid) {
+    static registerPoint(uid) {
         return this.point(uid).child("register");
     }
     static get messageTokens() {
@@ -69,13 +69,17 @@ class Ref {
     static userSettingTopic(uid) {
         return this.userSetting(uid, "topic");
     }
-    // post create point folder of the user
-    static pointPostCreate(uid) {
+    // Point history folder for post point events.
+    static postCreatePointHistory(uid) {
         return this.point(uid).child("postCreate");
     }
-    // comment create point folder of the user
-    static pointCommentCreate(uid) {
+    // Point history folder for comment point events.
+    static commentCreatePointHistory(uid) {
         return this.point(uid).child("commentCreate");
+    }
+    // Point history folder for extra point events.
+    static extraPointHistory(uid) {
+        return this.point(uid).child("extra");
     }
     static get postCol() {
         return this.db.collection("posts");
