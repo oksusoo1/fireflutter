@@ -1,7 +1,7 @@
 import * as functions from "firebase-functions";
 import { Utils } from "../classes/utils";
 import { ERROR_TEST } from "../defines";
-import { ready } from "../ready";
+import { ready, sanitizeError } from "../ready";
 
 export const inputTest = functions
     .region("us-central1", "asia-northeast3")
@@ -27,10 +27,18 @@ export const serverTime = functions
       });
     });
 
-export const produceError = functions
+export const produceErrorString = functions
     .region("us-central1", "asia-northeast3")
     .https.onRequest((req, res) => {
       ready({ req, res, auth: false }, async () => {
         res.status(200).send(ERROR_TEST);
+      });
+    });
+
+export const produceErrorObject = functions
+    .region("us-central1", "asia-northeast3")
+    .https.onRequest((req, res) => {
+      ready({ req, res, auth: false }, async () => {
+        res.status(200).send(sanitizeError(ERROR_TEST));
       });
     });

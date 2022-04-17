@@ -130,11 +130,12 @@ Table of contents
 - [Location Service](#location-service)
 - [Cloud Functions](#cloud-functions)
   - [Unit test for Cloud Functions](#unit-test-for-cloud-functions)
-  - [How to send error back to client](#how-to-send-error-back-to-client)
+  - [Error handling](#error-handling)
+    - [How to send error back to client](#how-to-send-error-back-to-client)
+    - [Error handling on client end](#error-handling-on-client-end)
   - [Cloud functions - http trigger, restful api.](#cloud-functions---http-trigger-restful-api)
     - [Ready](#ready)
     - [Request and data handling](#request-and-data-handling)
-    - [Error handling on http trigger](#error-handling-on-http-trigger)
     - [Post create](#post-create)
     - [Cloud functions Sample codes](#cloud-functions-sample-codes)
   - [Meilisearch](#meilisearch)
@@ -1574,19 +1575,63 @@ HttpException: Invalid statusCode: 403, uri = https://firebasestorage.googleapis
 - `<root>/firebase/functions/tests` folder has all the tests.
 
 
-## How to send error back to client
+## Error handling
 
+### How to send error back to client
 
+- Below is an example of sending error from cloud function to client.
 
 ```ts
-export const produceError = functions
-  .region("us-central1", "asia-northeast3")
-  .https.onRequest((req, res) => {
-    ready({ req, res, auth: false }, async () => {
-      res.status(200).send(ERROR_TEST);
+export const produceErrorString = functions
+    .region("us-central1", "asia-northeast3")
+    .https.onRequest((req, res) => {
+      ready({ req, res, auth: false }, async () => {
+        res.status(200).send(ERROR_TEST);
+      });
     });
-  });
+
+export const produceErrorObject = functions
+    .region("us-central1", "asia-northeast3")
+    .https.onRequest((req, res) => {
+      ready({ req, res, auth: false }, async () => {
+        res.status(200).send(sanitizeError(ERROR_TEST));
+      });
+    });
 ```
+
+- Below is how to handle error on flutter.
+
+```dart
+ElevatedButton(
+  onPressed: () => FunctionsApi.instance
+      .request(FunctionName.produceErrorString)
+      .catchError(service.error),
+  child: Text('Produce error string'),
+),
+ElevatedButton(
+  onPressed: () => FunctionsApi.instance
+      .request(FunctionName.produceErrorObject)
+      .catchError(service.error),
+  child: Text('Produce error object'),
+),
+```
+
+- You can update the translation to display the error text nicely.
+  - App uses (or should use) translated text on error if translation is available.
+
+### Error handling on client end
+
+- The response from could funtion http call must be an object.
+  - So, if the http cloud function method sends any string (or num) then, it will be an error.
+  - Note that if there is an error on cloud function itself, then a string of json-encrypted will be returned and it will be parsed as JSON on client end.
+- If there is a non-empty value of `code` property in response object, then it is considered as an error. And the value of `code` property is the error message or an informational string of the error.
+- The `request` may produce an error from `Dio` and that will also throw an error.
+
+- Example of error response from http cloud function
+  - `{ code: 'ERROR_EMPTY_UID' }`
+
+- Note, the helper classes may still return a string of error and it would be encapsulated as error response object in `ready`.
+
 
 
 
@@ -1679,20 +1724,6 @@ class _ServerTimeState extends State<ServerTime> {
 ```
 
 
-
-
-
-### Error handling on http trigger
-
-- If the http cloud function method sends any string (or num) then, it will be an error.
-- The http cloud funtion method must send an object back to the client. Note that if there is an error on cloud function, then a string of json-encrypted will be returned and it will be parsed as JSON on client end.
-- If there is an error, `code` as the key and value as the error information will be returned.
-- The `request` may get an error from `Dio` service and that will also throw an error.
-
-- Example of error response from http cloud function
-  - `{ code: 'ERROR_EMPTY_UID' }`
-
-- Note, the helper classes may still return a string of error and it would be encapsulated as error response object in `ready`.
 
 
 

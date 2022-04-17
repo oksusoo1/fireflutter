@@ -5,4 +5,6 @@ class FunctionName {
   static const String commentCreate = 'commentCreate';
   static const String commentUpdate = 'commentUpdate';
   static const String commentDelete = 'commentDelete';
+  static const String produceErrorString = 'produceErrorString';
+  static const String produceErrorObject = 'produceErrorObject';
 }

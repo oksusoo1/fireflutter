@@ -62,11 +62,18 @@ class FunctionsApi {
         data: data,
       );
 
+      /// If the response is a string and begins with `ERROR_`, then it is an error.
       if (res.data is String && (res.data as String).startsWith('ERROR_')) {
         throw res.data;
-      } else if (res.data is Map && res.data['code'] != null && res.data['code'] != '') {
+      } else
+
+      /// If the response is an Map(object) and has a non-empty value of `code` property, then it is considered as an error.
+      if (res.data is Map && res.data['code'] != null && res.data['code'] != '') {
         throw res.data['code'];
-      } else if (res.data is String &&
+      } else
+
+      /// If the response is a JSON string and has `code` property and `ERR_` string, then it is firebase error.
+      if (res.data is String &&
           (res.data as String).contains('code') &&
           (res.data as String).contains('ERR_')) {
         throw res.data;
@@ -75,9 +82,11 @@ class FunctionsApi {
         return res.data;
       }
     } catch (e) {
+      /// Dio error
       if (e is DioError) {
         throw e.message;
       } else {
+        /// Unknown error
         rethrow;
       }
     }
