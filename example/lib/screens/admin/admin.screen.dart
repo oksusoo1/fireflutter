@@ -78,15 +78,23 @@ class _AdminScreenState extends State<AdminScreen> {
             ],
           ),
           Divider(),
-          ElevatedButton(
-            onPressed: () => AppService.instance.open('/pushNotification'),
-            child: const Text('Push Notification'),
+          Wrap(
+            children: [
+              ElevatedButton(
+                onPressed: () => AppService.instance.open('/pushNotification'),
+                child: const Text('Push Notification'),
+              ),
+              ElevatedButton(
+                onPressed: () => AppService.instance
+                    .open('/pushNotification', arguments: {'postId': '0EWGGe64ckjBtiU1LeB1'}),
+                child: const Text('Push Notification with postId'),
+              )
+            ],
           ),
           ElevatedButton(
-            onPressed: () => AppService.instance
-                .open('/pushNotification', arguments: {'postId': '0EWGGe64ckjBtiU1LeB1'}),
-            child: const Text('Push Notification with postId'),
-          )
+              onPressed: () => alert(
+                  'Create test users', "Run \$ node create.test.user.js in firebase/lab foler."),
+              child: Text('Create test users')),
         ],
       ),
     );

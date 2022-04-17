@@ -29,6 +29,7 @@ class JobModel {
     this.workingHours = -1,
     this.withAccomodation = '',
     this.files = const [],
+    this.status = 'Y',
     createdAt,
     updatedAt,
   })  : createdAt = createdAt ?? Timestamp.now(),
@@ -59,6 +60,7 @@ class JobModel {
   int workingHours;
   String withAccomodation;
   List<String> files;
+  String status;
 
   Timestamp createdAt;
   Timestamp updatedAt;
@@ -95,34 +97,15 @@ class JobModel {
       siNm: json['siNm'] ?? '',
       sggNm: json['sggNm'] ?? '',
       emdNm: json['emdNm'] ?? '',
-      files: List<String>.from(json['files']),
+      files: List<String>.from(json['files'] ?? []),
+      status: json['status'] ?? 'Y',
       createdAt: json['createdAt'],
       updatedAt: json['updatedAt'],
     );
   }
 
   factory JobModel.empty() {
-    return JobModel(
-      id: '',
-      uid: '',
-      companyName: '',
-      phoneNumber: '',
-      mobileNumber: '',
-      email: '',
-      detailAddress: '',
-      aboutUs: '',
-      numberOfHiring: '',
-      description: '',
-      requirement: '',
-      duty: '',
-      benefit: '',
-      jobCategory: '',
-      salary: '',
-      workingDays: -1,
-      workingHours: -1,
-      withAccomodation: '',
-      files: [],
-    );
+    return JobModel();
   }
 
   Map<String, dynamic> get toCreate => {
@@ -149,34 +132,14 @@ class JobModel {
         'sggNm': sggNm,
         'emdNm': emdNm,
         'files': files,
+        'status': status,
       };
 
-  Map<String, dynamic> get toUpdate => {
-        'id': id,
-        'companyName': companyName,
-        'phoneNumber': phoneNumber,
-        'mobileNumber': mobileNumber,
-        'email': email,
-        'detailAddress': detailAddress,
-        'aboutUs': aboutUs,
-        'numberOfHiring': numberOfHiring,
-        'description': description,
-        'requirement': requirement,
-        'duty': duty,
-        'benefit': benefit,
-        'jobCategory': jobCategory,
-        'salary': salary,
-        'workingDays': workingDays,
-        'workingHours': workingHours,
-        'withAccomodation': withAccomodation,
-        'roadAddr': roadAddr,
-        'korAddr': korAddr,
-        'zipNo': zipNo,
-        'siNm': siNm,
-        'sggNm': sggNm,
-        'emdNm': emdNm,
-        'files': files,
-      };
+  Map<String, dynamic> get toUpdate {
+    final data = toCreate;
+    data['id'] = id;
+    return data;
+  }
 
   // AddressModel get address => AddressModel.fromMap(toMap);
 

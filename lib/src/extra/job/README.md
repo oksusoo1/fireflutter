@@ -3,6 +3,10 @@
 Job functionality using FireFlutter
 
 
+# TODO
+
+- Let user to update the post creation date.
+
 # Overview
 
 - We put the `job` as an extra feature because it is not a general functionality that most apps requires.
@@ -11,8 +15,9 @@ Job functionality using FireFlutter
 
 # Conditions and rules
 
-- A user can create only one job opening. So if the user needs more than one job opening, he can create another account.
-  - Don't block creating a job opening when there is same name of company or same number of phone.
+- A user can create only one job opening.
+  - So if the user needs more than one job opening, he can create another account.
+  - For this reason, it does not block creating a job opening when there is same name of company or same number of phone.
 - Creating job opening deducts user's point. To update the amount of pint, refer `Job.pointDeductionForCreation` in job class.
 
 

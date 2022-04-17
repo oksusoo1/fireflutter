@@ -55,7 +55,7 @@ class _PointHistoryState extends State<PointHistory> {
 
                   final d = DateTime.fromMillisecondsSinceEpoch(history.timestamp * 1000);
                   return ListTile(
-                    title: Text(_text(history.eventName)),
+                    title: Text(_text(history)),
                     subtitle: Text(
                       "Point. ${history.point} at ${d.year}-${d.month}-${d.day} ${d.hour}:${d.minute}:${d.second}",
                       style: TextStyle(fontSize: 12),
@@ -65,8 +65,8 @@ class _PointHistoryState extends State<PointHistory> {
               );
   }
 
-  _text(String t) {
-    switch (t) {
+  _text(PointHistoryModel history) {
+    switch (history.eventName) {
       case 'register':
         return 'Registration bonus';
       case 'signIn':
@@ -75,8 +75,12 @@ class _PointHistoryState extends State<PointHistory> {
         return 'Post creation bonus';
       case 'commentCreate':
         return 'Comment creation bonus';
+      case 'extra':
+        String str = '';
+        if (history.reason == 'jobCreate') str = 'Job openning';
+        return str;
       default:
-        return t;
+        return history.eventName;
     }
   }
 }

@@ -83,6 +83,7 @@ for (let i = 1; i <= 10; i++) {
     .ref("users")
     .child(uid)
     .set({
+      email: email,
       firstName: firstName,
       lastName: lastName,
       nickname: firstName + lastName,

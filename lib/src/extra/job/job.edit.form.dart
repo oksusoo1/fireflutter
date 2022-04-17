@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 
 import '../../../fireflutter.dart';
 
+enum Status { Y, N }
+
 /// Job posting form
 ///
 class JobEditForm extends StatefulWidget {
@@ -112,7 +114,7 @@ class _JobEditFormState extends State<JobEditForm> {
             onChanged: (s) => job.companyName = s,
             validator: (v) => validateFieldValue(v, "* Please input company name."),
           ),
-          SizedBox(height: 10),
+          SizedBox(height: 16),
 
           JobEditFormTextField(
             label: "Mobile number",
@@ -121,7 +123,7 @@ class _JobEditFormState extends State<JobEditForm> {
             validator: (v) => validateFieldValue(v, "* Please input company mobile number."),
             keyboardType: TextInputType.phone,
           ),
-          SizedBox(height: 10),
+          SizedBox(height: 16),
 
           JobEditFormTextField(
             label: 'Office phone number number',
@@ -130,7 +132,7 @@ class _JobEditFormState extends State<JobEditForm> {
             validator: (v) => validateFieldValue(v, "* Please input company office phone number."),
             keyboardType: TextInputType.phone,
           ),
-          SizedBox(height: 10),
+          SizedBox(height: 16),
 
           JobEditFormTextField(
             label: 'Email Address',
@@ -139,7 +141,7 @@ class _JobEditFormState extends State<JobEditForm> {
             validator: (v) => validateEmailFieldStringValue(v),
             keyboardType: TextInputType.emailAddress,
           ),
-          SizedBox(height: 10),
+          SizedBox(height: 16),
 
           JobEditFormTextField(
             label: "About us",
@@ -148,7 +150,7 @@ class _JobEditFormState extends State<JobEditForm> {
             validator: (v) => validateFieldValue(v, "* Please tell something about your company."),
             maxLines: 5,
           ),
-          SizedBox(height: 10),
+          SizedBox(height: 16),
 
           GestureDetector(
             onTap: getAddress,
@@ -316,7 +318,7 @@ class _JobEditFormState extends State<JobEditForm> {
             onChanged: (s) => setState(() => job.salary = s ?? ""),
             validator: (n) => validateFieldValue(n, "* Please select a salary to offer."),
           ),
-          SizedBox(height: 10),
+          SizedBox(height: 16),
 
           JobEditFormTextField(
             label: "Number of hiring",
@@ -328,7 +330,7 @@ class _JobEditFormState extends State<JobEditForm> {
             ),
             keyboardType: TextInputType.number,
           ),
-          SizedBox(height: 10),
+          SizedBox(height: 16),
 
           JobEditFormTextField(
             label: "Job description(details of what workers will do)",
@@ -337,7 +339,7 @@ class _JobEditFormState extends State<JobEditForm> {
             validator: (v) => validateFieldValue(v, "* Please describe something about the job."),
             maxLines: 3,
           ),
-          SizedBox(height: 10),
+          SizedBox(height: 16),
 
           JobEditFormTextField(
             label: "Requirements and qualifications",
@@ -349,7 +351,7 @@ class _JobEditFormState extends State<JobEditForm> {
             ),
             maxLines: 5,
           ),
-          SizedBox(height: 10),
+          SizedBox(height: 16),
 
           JobEditFormTextField(
             label: "Duties and responsibilities",
@@ -358,7 +360,7 @@ class _JobEditFormState extends State<JobEditForm> {
             validator: (v) => validateFieldValue(v, "* Please enumerate the duties of the job."),
             maxLines: 5,
           ),
-          SizedBox(height: 10),
+          SizedBox(height: 16),
 
           JobEditFormTextField(
             label: "benefits(free meals, dormitory, transporation, etc)",
@@ -370,7 +372,7 @@ class _JobEditFormState extends State<JobEditForm> {
             ),
             maxLines: 5,
           ),
-          SizedBox(height: 10),
+          SizedBox(height: 16),
 
           JobEditAccomodationRadioField(
             initialValue: job.withAccomodation,
@@ -441,6 +443,30 @@ class _JobEditFormState extends State<JobEditForm> {
               onError: (e) => widget.onError(e),
             ),
           ],
+
+          Divider(),
+
+          Text('Enable or disable this job opening? status: ${job.status}'),
+          Row(
+            children: [
+              Expanded(
+                child: RadioListTile<Status>(
+                  value: Status.Y,
+                  groupValue: Status.values.asNameMap()[job.status],
+                  title: Text('Enable'),
+                  onChanged: (Status? v) => setState(() => job.status = v!.name),
+                ),
+              ),
+              Expanded(
+                child: RadioListTile<Status>(
+                  value: Status.N,
+                  groupValue: Status.values.asNameMap()[job.status],
+                  title: Text('Disabled'),
+                  onChanged: (Status? v) => setState(() => job.status = v!.name),
+                ),
+              ),
+            ],
+          ),
 
           Divider(),
 

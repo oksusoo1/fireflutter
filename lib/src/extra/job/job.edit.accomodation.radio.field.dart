@@ -34,7 +34,7 @@ class JobEditAccomodationRadioField extends FormField<String> {
                         ),
                         onTap: () => updateValue("Y"),
                         selected: state.value == "Y",
-                        selectedTileColor: Colors.yellow.shade100,
+                        selectedTileColor: Colors.grey.shade100,
                       ),
                     ),
                     Expanded(
@@ -48,12 +48,16 @@ class JobEditAccomodationRadioField extends FormField<String> {
                         ),
                         onTap: () => updateValue("N"),
                         selected: state.value == "N",
-                        selectedTileColor: Colors.yellow.shade100,
+                        selectedTileColor: Colors.grey.shade100,
                       ),
                     ),
                   ],
                 ),
-                if (state.hasError) Text("${state.errorText}", style: TextStyle(color: Colors.red)),
+                if (state.hasError)
+                  Text(
+                    "${state.errorText}",
+                    style: TextStyle(color: Colors.red),
+                  ),
               ],
             );
           },
