@@ -88,20 +88,28 @@ class Point {
     }
     /**
      * Returns point document reference
-     * @param data post data
-     * @param context context
+     * @param category the category of the post
+     * @param uid the uid of the post
+     * @param postId the post id that had just been created.
      * @returns reference of the point history document or null if the point event didn't happen.
      * @reference see `tests/point/list.ts` for generating post creation bonus point for test.
      */
-    static async postCreatePoint(uid, postId) {
-        // Get data
+    static async postCreatePoint(category, uid, postId) {
+        // Get ref of point folder.
         const postCreateRef = ref_1.Ref.pointPostCreate(uid);
-        // Time didn't passed from last bonus point event? then don't do point event.
-        if ((await this.timePassed(postCreateRef, EventName.postCreate)) === false)
-            return null;
-        const point = this.getRandomPoint(EventName.postCreate);
-        const docData = { timestamp: utils_1.Utils.getTimestamp(), point: point };
-        // New reference to create a history with postId.
+        // Point document to add into point folder.
+        const data = { timestamp: utils_1.Utils.getTimestamp() };
+        // If category has point value, then use category point value.
+        if (category.point) {
+            data.point = category.point;
+        }
+        else {
+            // Time didn't passed from last bonus point event? then don't do point event.
+            if ((await this.timePassed(postCreateRef, EventName.postCreate)) === false)
+                return null;
+            data.point = this.getRandomPoint(EventName.postCreate);
+        }
+        // New reference (of point folder) to add(create) a history with postId.
         const ref = postCreateRef.child(postId);
         // Check if the post has already point event.
         // Note, this will not happen in production mode since it only works on `onCreate` event.
@@ -110,11 +118,11 @@ class Point {
         if (snapshot.exists() && snapshot.val())
             return null;
         // Set(add) history of post document. so, it will not do it again within the limited time.
-        await ref.set(docData);
+        await ref.set(data);
         // Update user point.
-        await this.updateUserPoint(uid, point);
+        await this.updateUserPoint(uid, data.point);
         // Update the post with point. So, it can display on screen.
-        await ref_1.Ref.postDoc(postId).update({ point: point });
+        await ref_1.Ref.postDoc(postId).update({ point: data.point });
         return ref;
     }
     /**
@@ -228,6 +236,14 @@ class Point {
             });
         }
     }
+    /**
+     * Returns the level of the point.
+     *
+     * Point can be any number. and it returns the level based on the fomula in the function.
+     *
+     * @param point point to get level of
+     * @returns level
+     */
     static getLevel(point) {
         const seed = 1000;
         let acc = 0;

@@ -30,8 +30,9 @@ class Post {
         if (!data.category)
             throw defines_1.ERROR_EMPTY_CATEGORY;
         // Ref.categoryDoc(data.category);
-        const re = await category_1.Category.exists(data.category);
-        if (re === false)
+        // const re = await Category.exists(data.category);
+        const category = await category_1.Category.get(data.category);
+        if (category === null)
             throw defines_1.ERROR_CATEGORY_NOT_EXISTS;
         // get all the data from client.
         const doc = data;
@@ -61,7 +62,7 @@ class Post {
             ref = await ref_1.Ref.postCol.add(doc);
         }
         // Post create event
-        await point_1.Point.postCreatePoint(data.uid, ref.id);
+        await point_1.Point.postCreatePoint(category, data.uid, ref.id);
         // return the document object of newly created post.
         const snapshot = await ref.get();
         // Post create success
