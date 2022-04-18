@@ -375,15 +375,6 @@ class _JobEditFormState extends State<JobEditForm> {
           ),
           SizedBox(height: 16),
 
-          // JobEditAccomodationRadioField(
-          //   initialValue: job.withAccomodation,
-          //   onChanged: (v) => job.withAccomodation = v ?? '',
-          //   validator: (v) => validateFieldValue(
-          //     v,
-          //     "* Please select if the job includes an accomodation.",
-          //   ),
-          // ),
-
           // Accommodation
           Text('Includes accomodation?'),
           Row(
@@ -399,7 +390,7 @@ class _JobEditFormState extends State<JobEditForm> {
               Expanded(
                 child: RadioListTile<Accomodation>(
                   value: Accomodation.N,
-                  groupValue: Accomodation.values.asNameMap()[job.status],
+                  groupValue: Accomodation.values.asNameMap()[job.withAccomodation],
                   title: Text('No'),
                   onChanged: (Accomodation? v) => setState(() => job.withAccomodation = v!.name),
                 ),

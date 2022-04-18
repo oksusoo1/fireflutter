@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class JobEditAccomodationRadioField extends FormField<String> {
+class JobEditAccomodationRadioField<T> extends FormField<String> {
   JobEditAccomodationRadioField({
     String label = "Includes accomodation?",
     required FormFieldValidator<String> validator,
@@ -24,31 +24,19 @@ class JobEditAccomodationRadioField extends FormField<String> {
                 Row(
                   children: <Widget>[
                     Expanded(
-                      child: ListTile(
-                        dense: true,
-                        title: const Text('Yes'),
-                        leading: Radio<String>(
-                          value: "Y",
-                          groupValue: state.value,
-                          onChanged: (v) => updateValue("Y"),
-                        ),
-                        onTap: () => updateValue("Y"),
-                        selected: state.value == "Y",
-                        selectedTileColor: Colors.grey.shade100,
+                      child: RadioListTile<String>(
+                        value: "Y",
+                        groupValue: state.value,
+                        title: Text('Yes'),
+                        onChanged: (v) => updateValue("Y"),
                       ),
                     ),
                     Expanded(
-                      child: ListTile(
-                        dense: true,
-                        title: const Text('No'),
-                        leading: Radio<String>(
-                          value: 'N',
-                          groupValue: state.value,
-                          onChanged: (v) => updateValue("N"),
-                        ),
-                        onTap: () => updateValue("N"),
-                        selected: state.value == "N",
-                        selectedTileColor: Colors.grey.shade100,
+                      child: RadioListTile<String>(
+                        value: "N",
+                        groupValue: state.value,
+                        title: Text('N'),
+                        onChanged: (v) => updateValue("N"),
                       ),
                     ),
                   ],
