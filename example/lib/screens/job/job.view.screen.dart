@@ -27,12 +27,6 @@ class _JobViewScreenState extends State<JobViewScreen> with FirestoreMixin, Foru
           children: [
             JobView(
               job: widget.arguments['job'],
-              onImageTap: (i, files) {
-                showDialog(
-                  context: context,
-                  builder: (context) => Dialog(child: ImageViewer(files, initialIndex: i)),
-                );
-              },
             ),
             space2xl,
           ],

@@ -8,12 +8,12 @@ class JobView extends StatefulWidget {
   const JobView({
     Key? key,
     this.job,
-    required this.onImageTap,
+    // required this.onImageTap,
   }) : super(key: key);
 
   final JobModel? job;
 
-  final Function(int index, List<String> fileList) onImageTap;
+  // final Function(int index, List<String> fileList) onImageTap;
 
   @override
   State<JobView> createState() => _JobViewState();
@@ -147,10 +147,13 @@ class _JobViewState extends State<JobView> {
             ),
           ),
           SizedBox(height: 8),
-          ImageList(
-            files: job.files,
-            onImageTap: (i) => widget.onImageTap(i, job.files),
-          ),
+          for (int i = 0; i < job.files.length; i++) ...[
+            UploadedImage(
+              url: job.files[i],
+              width: double.infinity,
+            ),
+            SizedBox(height: 8)
+          ]
         ]
       ],
     );
