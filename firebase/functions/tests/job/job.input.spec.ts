@@ -22,8 +22,9 @@ import {
   ERROR_EMPTY_JOB_SALARY,
   ERROR_EMPTY_JOB_WORKING_DAYS,
   ERROR_EMPTY_JOB_WORKING_HOURS,
-  ERROR_EMPTY_PROVINCE,
   ERROR_WRONG_JOB_ACCOMODATION_VALUE,
+  ERROR_EMPTY_SINM,
+  ERROR_EMPTY_SGGNM,
 } from "../../src/defines";
 import { Test } from "../../src/classes/test";
 import { Utils } from "../../src/classes/utils";
@@ -41,17 +42,25 @@ describe("Job input check test", () => {
       expect(e).equals(ERROR_EMPTY_COMPANY_NAME);
     }
   });
-  it("Create fail - ERROR_EMPTY_PROVINCE", async () => {
+  it("Create fail - ERROR_EMPTY_SINM", async () => {
     try {
       sampleData.companyName = "abc";
       await Job.create(sampleData);
     } catch (e) {
-      expect(e).equals(ERROR_EMPTY_PROVINCE);
+      expect(e).equals(ERROR_EMPTY_SINM);
+    }
+  });
+  it("Create fail - ERROR_EMPTY_SGGNM", async () => {
+    try {
+      sampleData.siNm = "siNm";
+      await Job.create(sampleData);
+    } catch (e) {
+      expect(e).equals(ERROR_EMPTY_SGGNM);
     }
   });
   it("Create fail - ERROR_EMPTY_COMPANY_DETAIL_ADDRESS", async () => {
     try {
-      sampleData.siNm = "siNm";
+      sampleData.sggNm = "sggNm";
       await Job.create(sampleData);
     } catch (e) {
       expect(e).equals(ERROR_EMPTY_COMPANY_DETAIL_ADDRESS);

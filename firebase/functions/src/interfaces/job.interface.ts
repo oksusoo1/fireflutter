@@ -6,6 +6,7 @@ export interface JobDocument {
   files?: string[];
   companyName: string;
   siNm: string;
+  sggNm: string;
   detailAddress: string;
   mobileNumber: string;
   phoneNumber: string;

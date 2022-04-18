@@ -17,12 +17,13 @@ import {
   ERROR_EMPTY_JOB_SALARY,
   ERROR_EMPTY_JOB_WORKING_DAYS,
   ERROR_EMPTY_JOB_WORKING_HOURS,
-  ERROR_EMPTY_PROVINCE,
   ERROR_JOB_ALREADY_CREATED,
   ERROR_JOB_NOT_EXIST,
   ERROR_LACK_OF_POINT,
   ERROR_NOT_YOUR_JOB,
   ERROR_WRONG_JOB_ACCOMODATION_VALUE,
+  ERROR_EMPTY_SINM,
+  ERROR_EMPTY_SGGNM,
 } from "../defines";
 import { JobDocument } from "../interfaces/job.interface";
 import { ExtraReason } from "../interfaces/point.interface";
@@ -127,8 +128,8 @@ export class Job {
 
     // Address
     //  province - siNm
-    //  todo: sggNm
-    if (this.valueNotValid(data.siNm)) throw ERROR_EMPTY_PROVINCE;
+    if (this.valueNotValid(data.siNm)) throw ERROR_EMPTY_SINM;
+    if (this.valueNotValid(data.sggNm)) throw ERROR_EMPTY_SGGNM;
     if (this.valueNotValid(data.detailAddress)) throw ERROR_EMPTY_COMPANY_DETAIL_ADDRESS;
 
     // Mobile number
@@ -138,7 +139,6 @@ export class Job {
     if (this.valueNotValid(data.phoneNumber)) throw ERROR_EMPTY_COMPANY_OFFICE_PHONE_NUMBER;
 
     // Email address number
-    //  todo: validate email format.
     if (this.valueNotValid(data.email)) throw ERROR_EMPTY_COMPANY_EMAIL_ADDRESS;
 
     // About us
