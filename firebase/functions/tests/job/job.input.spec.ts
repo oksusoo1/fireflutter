@@ -197,7 +197,7 @@ describe("Job input check test", () => {
       expect(e).equals(ERROR_EMPTY_JOB_ACCOMODATION);
     }
   });
-  /// Success
+  // / Success
   it("Create success", async () => {
     const user = await Test.createUser();
     await Utils.delay(200);
