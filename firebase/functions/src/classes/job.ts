@@ -181,7 +181,7 @@ export class Job {
 
   // Check if the item has an invalid value
   //
-  static valueNotValid(item: String | number): boolean {
+  static valueNotValid(item: string | number): boolean {
     if (typeof item === "undefined") return true;
     if (typeof item === "string" && item.trim() == "") return true;
     if (typeof item === "number" && item < 0) return true;
