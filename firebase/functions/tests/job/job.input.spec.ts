@@ -105,7 +105,7 @@ describe("Job input check test", () => {
       expect(e).equals(ERROR_EMPTY_JOB_CATEGORY);
     }
   });
-  /// WORKING DAYS - undefined
+  // / WORKING DAYS - undefined
   it("Create fail - ERROR_EMPTY_JOB_WORKING_DAYS (undefined)", async () => {
     try {
       sampleData.category = "IT";
@@ -114,7 +114,7 @@ describe("Job input check test", () => {
       expect(e).equals(ERROR_EMPTY_JOB_WORKING_DAYS);
     }
   });
-  /// WORKING DAYS - -1
+  // / WORKING DAYS - -1
   it("Create fail - ERROR_EMPTY_JOB_WORKING_DAYS (-1 as num)", async () => {
     try {
       sampleData.workingDays = -1;
@@ -123,7 +123,7 @@ describe("Job input check test", () => {
       expect(e).equals(ERROR_EMPTY_JOB_WORKING_DAYS);
     }
   });
-  /// WORKING DAYS - undefined
+  // / WORKING DAYS - undefined
   it("Create fail - ERROR_EMPTY_JOB_WORKING_HOURS (undefined)", async () => {
     try {
       sampleData.workingDays = 0;
@@ -132,7 +132,7 @@ describe("Job input check test", () => {
       expect(e).equals(ERROR_EMPTY_JOB_WORKING_HOURS);
     }
   });
-  /// WORKING DAYS - -1
+  // / WORKING DAYS - -1
   it("Create fail - ERROR_EMPTY_JOB_WORKING_HOURS (-1 as num)", async () => {
     try {
       sampleData.workingHours = -1;
@@ -204,12 +204,12 @@ describe("Job input check test", () => {
 
     await Point.extraPoint(user.id, 100000, "test");
 
-    
+
     sampleData.withAccomodation = "N";
     sampleData.uid = user.id;
     const job = await Job.create(sampleData);
-    
-    expect(job).to.be.an('object').has.property('id');
+
+    expect(job).to.be.an("object").has.property("id");
     expect(job.companyName).equals(sampleData.companyName);
   });
 });

@@ -191,9 +191,11 @@ class UserModel with FirestoreMixin, DatabaseMixin {
     return '''UserModel($map)''';
   }
 
+  /// Creates user document.
   ///
+  /// Note, `update()` will create document if it's not existing.
   Future<void> create() {
-    return _userDoc.set({
+    return _userDoc.update({
       'registeredAt': ServerValue.timestamp,
       'updatedAt': ServerValue.timestamp,
       'profileReady': 90000000000000,
