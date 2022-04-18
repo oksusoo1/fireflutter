@@ -189,6 +189,14 @@ describe("Job input check test", () => {
       expect(e).equals(ERROR_WRONG_JOB_ACCOMODATION_VALUE);
     }
   });
+  it("Create fail - ERROR_WRONG_JOB_ACCOMODATION_VALUE", async () => {
+    try {
+      sampleData.withAccomodation = "T";
+      await Job.create(sampleData);
+    } catch (e) {
+      expect(e).equals(ERROR_WRONG_JOB_ACCOMODATION_VALUE);
+    }
+  });
   /// Success
   it("Create success", async () => {
     const user = await Test.createUser();
@@ -200,11 +208,8 @@ describe("Job input check test", () => {
     sampleData.withAccomodation = "N";
     sampleData.uid = user.id;
     const job = await Job.create(sampleData);
-    console.log(job);
+    
+    expect(job).to.be.an('object').has.property('id');
+    expect(job.companyName).equals(sampleData.companyName);
   });
-  // it("test", () => {
-  //   const data = <any>{ negativeNumAsText: "-1", negativeNumAsNum: -1 };
-  //   console.log(data.negativeNumAsNum < 0);
-  //   console.log(data.negativeNumAsText < 0);
-  // });
 });

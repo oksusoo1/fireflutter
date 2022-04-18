@@ -188,10 +188,10 @@ export class Job {
       throw ERROR_EMPTY_JOB_BENEFITS;
     }
     // Accomodation
-    //  - value other than "Y" or "N" should error.
     if (typeof data.withAccomodation === "undefined" || data.withAccomodation.trim() == "") {
       throw ERROR_EMPTY_JOB_ACCOMODATION;
     }
+    //  - value other than "Y" or "N" should error.
     if (data.withAccomodation.trim() != ("N" || "Y")) {
       throw ERROR_WRONG_JOB_ACCOMODATION_VALUE;
     }
