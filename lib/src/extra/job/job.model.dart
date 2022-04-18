@@ -23,7 +23,7 @@ class JobModel {
     this.siNm = '',
     this.sggNm = '',
     this.emdNm = '',
-    this.jobCategory = '',
+    this.category = '',
     this.salary = '',
     this.workingDays = -1,
     this.workingHours = -1,
@@ -54,7 +54,7 @@ class JobModel {
   String siNm;
   String sggNm;
   String emdNm;
-  String jobCategory;
+  String category;
   String salary;
   int workingDays;
   int workingHours;
@@ -86,7 +86,7 @@ class JobModel {
       requirement: json['requirement'] ?? '',
       duty: json['duty'] ?? '',
       benefit: json['benefit'] ?? '',
-      jobCategory: json['jobCategory'] ?? '',
+      category: json['category'] ?? '',
       salary: json['salary'] ?? '',
       workingDays: _days,
       workingHours: _hours,
@@ -120,7 +120,7 @@ class JobModel {
         'requirement': requirement,
         'duty': duty,
         'benefit': benefit,
-        'jobCategory': jobCategory,
+        'category': category,
         'salary': salary,
         'workingDays': workingDays,
         'workingHours': workingHours,

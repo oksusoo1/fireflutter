@@ -113,7 +113,7 @@ class _JobListViewState extends State<JobListView> with FirestoreMixin {
                     title: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(JobService.instance.categories[job.jobCategory] ?? ''),
+                        Text(JobService.instance.categories[job.category] ?? ''),
                         Row(
                           children: [
                             Text(job.companyName + '.', style: style),

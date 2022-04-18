@@ -102,7 +102,7 @@ class _JobViewState extends State<JobView> {
           Text('Job details', style: TextStyle(fontSize: 16, color: Colors.black)),
           SizedBox(height: 10),
           JobViewItem(
-            value: JobService.instance.categories[job.jobCategory] ?? '',
+            value: JobService.instance.categories[job.category] ?? '',
             label: "Job Category",
           ),
           JobViewItem(

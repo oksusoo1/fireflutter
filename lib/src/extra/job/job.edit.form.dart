@@ -228,7 +228,7 @@ class _JobEditFormState extends State<JobEditForm> {
 
           JobEditFormDropdownField<String>(
             label: "Job category",
-            value: job.jobCategory,
+            value: job.category,
             items: [
               DropdownMenuItem(
                 child: Text('Select job category'),
@@ -241,7 +241,7 @@ class _JobEditFormState extends State<JobEditForm> {
                       ))
                   .toList(),
             ],
-            onChanged: (s) => setState(() => job.jobCategory = s ?? ''),
+            onChanged: (s) => setState(() => job.category = s ?? ''),
             validator: (s) => validateFieldValue(s, "* Please select job category."),
           ),
 

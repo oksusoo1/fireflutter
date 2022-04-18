@@ -7,9 +7,7 @@ import { Test } from "../../src/classes/test";
 import { Utils } from "../../src/classes/utils";
 import { Job } from "../../src/classes/job";
 import {
-  ERROR_EMPTY_COMPANY_NAME,
   ERROR_EMPTY_ID,
-  ERROR_EMPTY_PROVINCE,
   ERROR_JOB_ALREADY_CREATED,
   ERROR_JOB_NOT_EXIST,
   ERROR_LACK_OF_POINT,
@@ -17,8 +15,26 @@ import {
 } from "../../src/defines";
 import { Point } from "../../src/classes/point";
 import { ExtraReason } from "../../src/interfaces/point.interface";
+import { JobDocument } from "../../src/interfaces/job.interface";
 
 new FirebaseAppInitializer();
+
+const jobDetails: JobDocument = {
+  mobileNumber: "+1111111111",
+  phoneNumber: "(202) 123 4567",
+  email: "company@email.com",
+  aboutUs: "Company about us.",
+  category: "testCatJob",
+  workingDays: 1,
+  workingHours: 1,
+  salary: "100k",
+  numberOfHiring: "3",
+  description: "Job description",
+  requirements: "Job requirements",
+  duties: "Job duties",
+  benefits: "Job benefits",
+  withAccomodation: "N",
+} as any;
 
 describe("Job test", () => {
   it("Get fail - ERROR_EMPTY_ID", async () => {
@@ -37,24 +53,9 @@ describe("Job test", () => {
       expect(e).equals(ERROR_JOB_NOT_EXIST);
     }
   });
-
-  it("Create fail - ERROR_EMPTY_COMPANY_NAME", async () => {
-    try {
-      await Job.create({});
-    } catch (e) {
-      expect(e).equals(ERROR_EMPTY_COMPANY_NAME);
-    }
-  });
-  it("Create fail - ERROR_EMPTY_PROVINCE", async () => {
-    try {
-      await Job.create({ companyName: "abc" });
-    } catch (e) {
-      expect(e).equals(ERROR_EMPTY_PROVINCE);
-    }
-  });
   it("Create success", async () => {
     try {
-      await Job.create({ uid: "Not-existing-uid-job-123", companyName: "abc", siNm: "Seoul" });
+      await Job.create({ uid: "Not-existing-uid-job-123", companyName: "abc", siNm: "Seoul", ...jobDetails });
     } catch (e) {
       expect(e).equals(ERROR_LACK_OF_POINT);
     }
@@ -63,14 +64,12 @@ describe("Job test", () => {
     await Utils.delay(200);
 
     await Point.extraPoint(user.id, 100000, "test");
-    const job = await Job.create({ uid: user.id, companyName: "abc", siNm: "Seoul" });
+    const job = await Job.create({ uid: user.id, companyName: "abc", siNm: "Seoul", ...jobDetails });
     expect(job).to.be.an("object").to.have.property("companyName").equals("abc");
 
     const registrationPoint = await Point.getRegistrationPoint(user.id);
     const afterPoint = await Point.current(user.id);
-    console.log(
-        `expect(100000 + ${registrationPoint} - ${Job.pointDeductionForCreation}).equals(${afterPoint});`
-    );
+    console.log(`expect(100000 + ${registrationPoint} - ${Job.pointDeductionForCreation}).equals(${afterPoint});`);
 
     expect(100000 + registrationPoint - Job.pointDeductionForCreation).equals(afterPoint);
 
@@ -81,9 +80,9 @@ describe("Job test", () => {
   it("Update fail - wrong uid - not your job", async () => {
     const user = await Test.createUser();
     await Point.extraPoint(user.id, 100000, "test");
-    const job = await Job.create({ uid: user.id, companyName: "abc", siNm: "Seoul" });
+    const job = await Job.create({ uid: user.id, companyName: "abc", siNm: "Seoul", ...jobDetails });
     try {
-      await Job.update({ id: job.id, uid: "userB" });
+      await Job.update({ id: job.id, uid: "userB", companyName: "abc", siNm: "Seoul", ...jobDetails });
       expect.fail();
     } catch (e) {
       expect(e).equals(ERROR_NOT_YOUR_JOB);
@@ -93,8 +92,8 @@ describe("Job test", () => {
   it("Update success", async () => {
     const user = await Test.createUser();
     await Point.extraPoint(user.id, 100000, "test");
-    const job = await Job.create({ uid: user.id, companyName: "abc", siNm: "Seoul" });
-    const updated = await Job.update({ id: job.id, uid: user.id, companyName: "def" });
+    const job = await Job.create({ uid: user.id, companyName: "abc", siNm: "Seoul", ...jobDetails });
+    const updated = await Job.update({ id: job.id, uid: user.id, companyName: "def", siNm: "Seoul", ...jobDetails });
     expect(job.id).equals(updated.id);
     expect(updated.companyName).equals("def");
   });
@@ -108,7 +107,7 @@ describe("Job test", () => {
 
     const user = await Test.createUser();
     await Point.extraPoint(user.id, 100000, "test");
-    const created = await Job.create({ uid: user.id, companyName: "abc", siNm: "Seoul" });
+    const created = await Job.create({ uid: user.id, companyName: "abc", siNm: "Seoul", ...jobDetails });
     const got = await Job.getJobFromUid(created.uid);
     expect(got!.uid).equals(user.id);
   });
@@ -118,11 +117,11 @@ describe("Job test", () => {
     await Point.extraPoint(user.id, 100000, "test");
 
     // Create a job
-    await Job.create({ uid: user.id, companyName: "abc", siNm: "Seoul" });
+    await Job.create({ uid: user.id, companyName: "abc", siNm: "Seoul", ...jobDetails });
 
     // Create second job
     try {
-      await Job.create({ uid: user.id, companyName: "abc", siNm: "Seoul" });
+      await Job.create({ uid: user.id, companyName: "abc", siNm: "Seoul", ...jobDetails });
       expect.fail();
     } catch (e) {
       expect(e).equals(ERROR_JOB_ALREADY_CREATED);
