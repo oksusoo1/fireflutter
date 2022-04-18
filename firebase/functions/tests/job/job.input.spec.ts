@@ -82,7 +82,6 @@ describe("Job input check test", () => {
       expect(e).equals(ERROR_EMPTY_COMPANY_OFFICE_PHONE_NUMBER);
     }
   });
-  // TODO: test email format
   it("Create fail - ERROR_EMPTY_COMPANY_EMAIL_ADDRESS", async () => {
     try {
       sampleData.phoneNumber = "01234";
