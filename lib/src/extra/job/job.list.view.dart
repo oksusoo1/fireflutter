@@ -87,8 +87,6 @@ class _JobListViewState extends State<JobListView> with FirestoreMixin {
               snapshot.fetchMore();
             }
 
-            // Json data = snapshot.docs[index].data() as Json;
-
             final job = JobModel.fromJson(
               snapshot.docs[index].data() as Json,
               snapshot.docs[index].id,
@@ -96,14 +94,10 @@ class _JobListViewState extends State<JobListView> with FirestoreMixin {
 
             return Column(
               children: [
-                // if (index == 0) JobListOptions(),
                 GestureDetector(
                   onTap: () => widget.onTap(job),
                   child: ListTile(
                     key: ValueKey(snapshot.docs[index].id),
-                    // margin: EdgeInsets.only(top: index == 0 ? 16 : 0),
-                    // padding:
-                    //     EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     leading: job.files.isNotEmpty
                         ? UploadedImage(
                             url: job.files.first,
@@ -114,8 +108,8 @@ class _JobListViewState extends State<JobListView> with FirestoreMixin {
                     title: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(JobService.instance.categories[job.jobCategory] ??
-                            ''),
+                        Text(
+                            JobService.instance.categories[job.category] ?? ''),
                         Text(
                           job.companyName + '.',
                           style: style,

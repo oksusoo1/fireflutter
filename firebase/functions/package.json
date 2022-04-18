@@ -51,7 +51,9 @@
     "test:comment:oncreate:sendmessage": "mocha --timeout 20000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/comment/comment-send-message-on-create.spec.ts",
     "test:user:management": "mocha --timeout 20000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/user/user-management.spec.ts",
     "test:user:admin-search": "mocha --timeout 20000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/user/user-admin-search.spec.ts",
-    "test:job": "mocha --timeout 20000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/job/job.spec.ts",
+    "test:job": "mocha --timeout 20000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/job/*.spec.ts",
+    "test:job:edit": "mocha --timeout 20000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/job/job.edit.spec.ts",
+    "test:job:input": "mocha --timeout 20000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/job/job.input.spec.ts",
     "test:category": "mocha --timeout 20000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/category/category.spec.ts"
   },
   "engines": {

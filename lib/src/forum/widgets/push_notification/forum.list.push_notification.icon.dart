@@ -191,16 +191,3 @@ class _ForumListPushNotificationIconState
     // );
   }
 }
-
-class NotificationOptions {
-  static String notifyPost = 'posts_';
-  static String notifyComment = 'comments_';
-
-  static String post(String category) {
-    return notifyPost + category;
-  }
-
-  static String comment(String category) {
-    return notifyComment + category;
-  }
-}

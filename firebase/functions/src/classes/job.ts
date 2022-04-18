@@ -1,22 +1,31 @@
 import * as admin from "firebase-admin";
 import {
+  ERROR_EMPTY_COMPANY_ABOUT_US,
+  ERROR_EMPTY_COMPANY_EMAIL_ADDRESS,
+  ERROR_EMPTY_COMPANY_MOBILE_NUMBER,
   ERROR_EMPTY_COMPANY_NAME,
+  ERROR_EMPTY_COMPANY_OFFICE_PHONE_NUMBER,
   ERROR_EMPTY_ID,
+  ERROR_EMPTY_JOB_ACCOMODATION,
+  ERROR_EMPTY_JOB_BENEFITS,
+  ERROR_EMPTY_JOB_CATEGORY,
+  ERROR_EMPTY_JOB_DESCRIPTION,
+  ERROR_EMPTY_JOB_DUTIES,
+  ERROR_EMPTY_JOB_NUMBER_OF_HIRING,
+  ERROR_EMPTY_JOB_REQUIREMENTS,
+  ERROR_EMPTY_JOB_SALARY,
+  ERROR_EMPTY_JOB_WORKING_DAYS,
+  ERROR_EMPTY_JOB_WORKING_HOURS,
   ERROR_EMPTY_PROVINCE,
   ERROR_JOB_ALREADY_CREATED,
   ERROR_JOB_NOT_EXIST,
   ERROR_LACK_OF_POINT,
   ERROR_NOT_YOUR_JOB,
+  ERROR_WRONG_JOB_ACCOMODATION_VALUE,
 } from "../defines";
+import { JobDocument } from "../interfaces/job.interface";
 import { ExtraReason } from "../interfaces/point.interface";
 import { Point } from "./point";
-
-interface JobDocument {
-  id: string;
-  uid: string;
-  companyName: string;
-  files: string[];
-}
 
 export class Job {
   static pointDeductionForCreation = 1200;
@@ -27,12 +36,8 @@ export class Job {
    */
   static async create(data: any): Promise<JobDocument> {
     /** Check input */
-    if (typeof data.companyName === "undefined") {
-      throw ERROR_EMPTY_COMPANY_NAME;
-    }
-    if (typeof data.siNm === "undefined") {
-      throw ERROR_EMPTY_PROVINCE;
-    }
+
+    this.isInputDataComplete(data);
 
     // Check if the user already create job opening before.
     const previousJob = await this.getJobFromUid(data.uid);
@@ -60,7 +65,12 @@ export class Job {
   }
 
   static async update(data: any): Promise<JobDocument> {
+    // check if Job ID is present.
     if (!data.id) throw ERROR_EMPTY_ID;
+
+    // check if data is complete and correct.
+    this.isInputDataComplete(data);
+
     const job = await this.get(data.id);
     if (job === null) throw ERROR_JOB_NOT_EXIST;
     if (job.uid !== data.uid) throw ERROR_NOT_YOUR_JOB;
@@ -96,16 +106,96 @@ export class Job {
    * @note User can only create one job. See readme for details.
    */
   static async getJobFromUid(uid: string): Promise<JobDocument | null> {
-    const snapshot = await admin
-        .firestore()
-        .collection("jobs")
-        .where("uid", "==", uid)
-        .limit(1)
-        .get();
+    const snapshot = await admin.firestore().collection("jobs").where("uid", "==", uid).limit(1).get();
     if (snapshot.size > 0) {
       return snapshot.docs[0].data() as JobDocument;
     } else {
       return null;
     }
+  }
+
+  /**
+   * Checks if the job post data is complete and correct.
+   *
+   * @param data job data
+   * @returns true if complete. throws an error if not.
+   */
+  static isInputDataComplete(data: any): boolean {
+    // company name
+    if (typeof data.companyName === "undefined" || data.companyName.trim() == "") {
+      throw ERROR_EMPTY_COMPANY_NAME;
+    }
+
+    // Address
+    //  province - siNm
+    //  todo: sggNm
+    if (typeof data.siNm === "undefined" || data.siNm.trim() == "") {
+      throw ERROR_EMPTY_PROVINCE;
+    }
+
+    // Mobile number
+    if (typeof data.mobileNumber === "undefined" || data.mobileNumber.trim() == "") {
+      throw ERROR_EMPTY_COMPANY_MOBILE_NUMBER;
+    }
+    // Office number
+    if (typeof data.phoneNumber === "undefined" || data.phoneNumber.trim() == "") {
+      throw ERROR_EMPTY_COMPANY_OFFICE_PHONE_NUMBER;
+    }
+    // Email address number
+    //  todo: validate email format.
+    if (typeof data.email === "undefined" || data.email.trim() == "") {
+      throw ERROR_EMPTY_COMPANY_EMAIL_ADDRESS;
+    }
+    // About us
+    if (typeof data.aboutUs === "undefined" || data.aboutUs.trim() == "") {
+      throw ERROR_EMPTY_COMPANY_ABOUT_US;
+    }
+    // Job category
+    if (typeof data.category === "undefined" || data.category.trim() == "") {
+      throw ERROR_EMPTY_JOB_CATEGORY;
+    }
+    // Working days
+    // Working hours
+    //  - undefined or value less than 0 should error
+    if (typeof data.workingDays === "undefined" || data.workingDays < 0) {
+      throw ERROR_EMPTY_JOB_WORKING_DAYS;
+    }
+    if (typeof data.workingHours === "undefined" || data.workingHours < 0) {
+      throw ERROR_EMPTY_JOB_WORKING_HOURS;
+    }
+    // Salary
+    if (typeof data.salary === "undefined" || data.salary.trim() == "") {
+      throw ERROR_EMPTY_JOB_SALARY;
+    }
+    // Number of hiring
+    if (typeof data.numberOfHiring === "undefined" || data.numberOfHiring.trim() == "") {
+      throw ERROR_EMPTY_JOB_NUMBER_OF_HIRING;
+    }
+    // Job Description
+    if (typeof data.description === "undefined" || data.description.trim() == "") {
+      throw ERROR_EMPTY_JOB_DESCRIPTION;
+    }
+    // Requirements
+    if (typeof data.requirements === "undefined" || data.requirements.trim() == "") {
+      throw ERROR_EMPTY_JOB_REQUIREMENTS;
+    }
+    // Duties
+    if (typeof data.duties === "undefined" || data.duties.trim() == "") {
+      throw ERROR_EMPTY_JOB_DUTIES;
+    }
+    // Benefits
+    if (typeof data.benefits === "undefined" || data.benefits.trim() == "") {
+      throw ERROR_EMPTY_JOB_BENEFITS;
+    }
+    // Accomodation
+    if (typeof data.withAccomodation === "undefined" || data.withAccomodation.trim() == "") {
+      throw ERROR_EMPTY_JOB_ACCOMODATION;
+    }
+    //  - value other than "Y" or "N" should error.
+    if (data.withAccomodation.trim() != ("N" || "Y")) {
+      throw ERROR_WRONG_JOB_ACCOMODATION_VALUE;
+    }
+
+    return true;
   }
 }

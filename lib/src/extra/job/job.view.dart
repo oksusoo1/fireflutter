@@ -17,8 +17,7 @@ class JobView extends StatefulWidget {
 }
 
 class _JobViewState extends State<JobView> {
-  JobModel job = JobModel.empty();
-
+  late JobModel job;
   @override
   initState() {
     super.initState();
@@ -30,26 +29,27 @@ class _JobViewState extends State<JobView> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        RichText(
-            text: TextSpan(children: [
-          TextSpan(
-              text: "Job recruitment from ",
-              style: TextStyle(
-                fontSize: 14,
-                color: Colors.black,
-              )),
-          TextSpan(
-              text: job.companyName,
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.bold,
-                color: Colors.black,
-              )),
-        ])),
-        SizedBox(height: 15),
+        // RichText(
+        //     text: TextSpan(children: [
+        //   TextSpan(
+        //       text: "Job recruitment from: ",
+        //       style: TextStyle(
+        //         fontSize: 14,
+        //         color: Colors.black,
+        //       )),
+        //   TextSpan(
+        //       text: job.companyName,
+        //       style: TextStyle(
+        //         fontSize: 14,
+        //         fontWeight: FontWeight.bold,
+        //         color: Colors.black,
+        //       )),
+        // ])),
+        // SizedBox(height: 15),
         JobViewItem(
           value: job.companyName,
           label: "Company Name",
+          dividerTop: false,
         ),
         JobViewItem(
           value: job.mobileNumber,
@@ -80,7 +80,7 @@ class _JobViewState extends State<JobView> {
             style: TextStyle(fontSize: 16, color: Colors.black)),
         SizedBox(height: 10),
         JobViewItem(
-          value: JobService.instance.categories[job.jobCategory] ?? '',
+          value: JobService.instance.categories[job.category] ?? '',
           label: "Job Category",
         ),
         JobViewItem(
@@ -108,6 +108,10 @@ class _JobViewState extends State<JobView> {
           label: "Vacant",
         ),
         JobViewItem(
+          value: job.withAccomodation == 'Y' ? "Yes" : 'No',
+          label: "Accomodation",
+        ),
+        JobViewItem(
           value: job.description,
           label: "Descriptions",
         ),
@@ -130,10 +134,6 @@ class _JobViewState extends State<JobView> {
           value: job.benefit,
           label: "benefits(free meals, dormitory, transporation, etc)",
         ),
-        JobViewItem(
-          value: job.withAccomodation == 'Y' ? "Yes" : 'No',
-          label: "Accomodation",
-        ),
       ],
     );
   }
@@ -144,17 +144,19 @@ class JobViewItem extends StatelessWidget {
     Key? key,
     required this.value,
     required this.label,
+    this.dividerTop = true,
   }) : super(key: key);
 
   final String value;
   final String label;
+  final bool dividerTop;
 
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Divider(height: 24),
+        if (dividerTop) Divider(height: 24),
         Text(
           label,
           style: TextStyle(
