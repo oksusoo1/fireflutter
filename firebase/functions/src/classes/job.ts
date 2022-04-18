@@ -5,14 +5,15 @@ import {
   ERROR_EMPTY_COMPANY_MOBILE_NUMBER,
   ERROR_EMPTY_COMPANY_NAME,
   ERROR_EMPTY_COMPANY_OFFICE_PHONE_NUMBER,
+  ERROR_EMPTY_COMPANY_DETAIL_ADDRESS,
   ERROR_EMPTY_ID,
   ERROR_EMPTY_JOB_ACCOMODATION,
-  ERROR_EMPTY_JOB_BENEFITS,
+  ERROR_EMPTY_JOB_BENEFIT,
   ERROR_EMPTY_JOB_CATEGORY,
   ERROR_EMPTY_JOB_DESCRIPTION,
-  ERROR_EMPTY_JOB_DUTIES,
+  ERROR_EMPTY_JOB_DUTY,
   ERROR_EMPTY_JOB_NUMBER_OF_HIRING,
-  ERROR_EMPTY_JOB_REQUIREMENTS,
+  ERROR_EMPTY_JOB_REQUIREMENT,
   ERROR_EMPTY_JOB_SALARY,
   ERROR_EMPTY_JOB_WORKING_DAYS,
   ERROR_EMPTY_JOB_WORKING_HOURS,
@@ -120,7 +121,7 @@ export class Job {
    * @param data job data
    * @returns true if complete. throws an error if not.
    */
-  static isInputDataComplete(data: any): boolean {
+  static isInputDataComplete(data: JobDocument): boolean {
     // company name
     if (typeof data.companyName === "undefined" || data.companyName.trim() == "") {
       throw ERROR_EMPTY_COMPANY_NAME;
@@ -131,6 +132,10 @@ export class Job {
     //  todo: sggNm
     if (typeof data.siNm === "undefined" || data.siNm.trim() == "") {
       throw ERROR_EMPTY_PROVINCE;
+    }
+    
+    if (typeof data.detailAddress === "undefined" || data.detailAddress.trim() == "") {
+      throw ERROR_EMPTY_COMPANY_DETAIL_ADDRESS;
     }
 
     // Mobile number
@@ -176,16 +181,16 @@ export class Job {
       throw ERROR_EMPTY_JOB_DESCRIPTION;
     }
     // Requirements
-    if (typeof data.requirements === "undefined" || data.requirements.trim() == "") {
-      throw ERROR_EMPTY_JOB_REQUIREMENTS;
+    if (typeof data.requirement === "undefined" || data.requirement.trim() == "") {
+      throw ERROR_EMPTY_JOB_REQUIREMENT;
     }
     // Duties
-    if (typeof data.duties === "undefined" || data.duties.trim() == "") {
-      throw ERROR_EMPTY_JOB_DUTIES;
+    if (typeof data.duty === "undefined" || data.duty.trim() == "") {
+      throw ERROR_EMPTY_JOB_DUTY;
     }
     // Benefits
-    if (typeof data.benefits === "undefined" || data.benefits.trim() == "") {
-      throw ERROR_EMPTY_JOB_BENEFITS;
+    if (typeof data.benefit === "undefined" || data.benefit.trim() == "") {
+      throw ERROR_EMPTY_JOB_BENEFIT;
     }
     // Accomodation
     if (typeof data.withAccomodation === "undefined" || data.withAccomodation.trim() == "") {
