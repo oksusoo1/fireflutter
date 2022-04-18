@@ -375,33 +375,33 @@ class _JobEditFormState extends State<JobEditForm> {
           ),
           SizedBox(height: 16),
 
-          JobEditAccomodationRadioField(
-            initialValue: job.withAccomodation,
-            onChanged: (v) => job.withAccomodation = v ?? '',
-            validator: (v) => validateFieldValue(
-              v,
-              "* Please select if the job includes an accomodation.",
-            ),
-          ),
+          // JobEditAccomodationRadioField(
+          //   initialValue: job.withAccomodation,
+          //   onChanged: (v) => job.withAccomodation = v ?? '',
+          //   validator: (v) => validateFieldValue(
+          //     v,
+          //     "* Please select if the job includes an accomodation.",
+          //   ),
+          // ),
 
           // Accommodation
-          Text('Includes accomodation? status: ${job.status}'),
+          Text('Includes accomodation?'),
           Row(
             children: [
               Expanded(
                 child: RadioListTile<Accomodation>(
                   value: Accomodation.Y,
-                  groupValue: Accomodation.values.asNameMap()[job.status],
-                  title: Text('Enable'),
-                  onChanged: (Accomodation? v) => setState(() => job.status = v!.name),
+                  groupValue: Accomodation.values.asNameMap()[job.withAccomodation],
+                  title: Text('Yes'),
+                  onChanged: (Accomodation? v) => setState(() => job.withAccomodation = v!.name),
                 ),
               ),
               Expanded(
                 child: RadioListTile<Accomodation>(
-                  value: Status.N,
-                  groupValue: Status.values.asNameMap()[job.status],
-                  title: Text('Disabled'),
-                  onChanged: (Status? v) => setState(() => job.status = v!.name),
+                  value: Accomodation.N,
+                  groupValue: Accomodation.values.asNameMap()[job.status],
+                  title: Text('No'),
+                  onChanged: (Accomodation? v) => setState(() => job.withAccomodation = v!.name),
                 ),
               ),
             ],
