@@ -19,7 +19,7 @@ class _JobViewScreenState extends State<JobViewScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Job View'),
+        title: Text(widget.arguments['job'].companyName ?? ''),
       ),
       body: SingleChildScrollView(
           child: Padding(

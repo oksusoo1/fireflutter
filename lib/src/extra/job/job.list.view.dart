@@ -52,7 +52,8 @@ class _JobListViewState extends State<JobListView> with FirestoreMixin {
     if (options.accomodation != '') {
       query = query.where('withAccomodation', isEqualTo: options.accomodation);
     }
-    if (options.salary != '') query = query.where('salary', isEqualTo: options.salary);
+    if (options.salary != '')
+      query = query.where('salary', isEqualTo: options.salary);
 
     // Only 'status=Y' jobs can be displayed.
     query = query.where('status', isEqualTo: 'Y');
@@ -86,8 +87,6 @@ class _JobListViewState extends State<JobListView> with FirestoreMixin {
               snapshot.fetchMore();
             }
 
-            // Json data = snapshot.docs[index].data() as Json;
-
             final job = JobModel.fromJson(
               snapshot.docs[index].data() as Json,
               snapshot.docs[index].id,
@@ -95,14 +94,10 @@ class _JobListViewState extends State<JobListView> with FirestoreMixin {
 
             return Column(
               children: [
-                // if (index == 0) JobListOptions(),
                 GestureDetector(
                   onTap: () => widget.onTap(job),
                   child: ListTile(
                     key: ValueKey(snapshot.docs[index].id),
-                    // margin: EdgeInsets.only(top: index == 0 ? 16 : 0),
-                    // padding:
-                    //     EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     leading: job.files.isNotEmpty
                         ? UploadedImage(
                             url: job.files.first,
@@ -113,11 +108,17 @@ class _JobListViewState extends State<JobListView> with FirestoreMixin {
                     title: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(JobService.instance.categories[job.category] ?? ''),
+                        Text(
+                            JobService.instance.categories[job.category] ?? ''),
+                        Text(
+                          job.companyName + '.',
+                          style: style,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        SizedBox(width: 8),
                         Row(
                           children: [
-                            Text(job.companyName + '.', style: style),
-                            SizedBox(width: 8),
                             Text(job.siNm + ',', style: style),
                             SizedBox(width: 4),
                             Text(job.sggNm, style: style),
@@ -125,25 +126,40 @@ class _JobListViewState extends State<JobListView> with FirestoreMixin {
                         ),
                         Row(
                           children: [
-                            Text('Salary: ${job.salary}, ', style: style),
-                            if (job.workingDays == 0)
-                              Text('Working days: flexible', style: style)
+                            Text('Schedule: ', style: style),
+                            if (job.workingHours == 0)
+                              Text('flexible hours and ', style: style)
                             else
-                              Text('Working days: ${job.workingDays} days in a week', style: style),
+                              Text('${job.workingHours}hours a day and ',
+                                  style: style),
+                            if (job.workingDays == 0)
+                              Text('flexible days in a week', style: style)
+                            else
+                              Text('${job.workingDays} days in a week',
+                                  style: style),
                           ],
                         ),
+                        Row(
+                          children: [
+                            Text('Salary: ${job.salary}, ', style: style),
+                            Text('Available Slot: ${job.numberOfHiring}, ',
+                                style: style),
+                          ],
+                        )
+
                         // Text(job.description, style: style),
                       ],
                     ),
-                    subtitle: Padding(
-                      padding: const EdgeInsets.only(top: 8.0),
-                      child: Text(shortDateTime(job.createdAt), style: style),
-                    ),
+                    // subtitle: Padding(
+                    //   padding: const EdgeInsets.only(top: 8.0),
+                    //   child: Text(shortDateTime(job.createdAt), style: style),
+                    // ),
                     trailing: Icon(Icons.arrow_right),
                   ),
                 ),
                 if (job.uid == UserService.instance.uid)
-                  TextButton(child: Text('edit'), onPressed: () => widget.onEdit(job)),
+                  TextButton(
+                      child: Text('edit'), onPressed: () => widget.onEdit(job)),
                 Divider(
                   color: Colors.grey.shade400,
                 ),
