@@ -60,7 +60,7 @@ class JobListTitleBottom extends StatefulWidget with PreferredSizeWidget {
   final Function(JobListOptionModel) change;
 
   @override
-  Size get preferredSize => Size.fromHeight(200);
+  Size get preferredSize => Size.fromHeight(145);
 
   @override
   State<JobListTitleBottom> createState() => _JobListTitleBottomState();
