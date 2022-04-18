@@ -52,8 +52,7 @@ class _JobListViewState extends State<JobListView> with FirestoreMixin {
     if (options.accomodation != '') {
       query = query.where('withAccomodation', isEqualTo: options.accomodation);
     }
-    if (options.salary != '')
-      query = query.where('salary', isEqualTo: options.salary);
+    if (options.salary != '') query = query.where('salary', isEqualTo: options.salary);
 
     // Only 'status=Y' jobs can be displayed.
     query = query.where('status', isEqualTo: 'Y');
@@ -109,7 +108,10 @@ class _JobListViewState extends State<JobListView> with FirestoreMixin {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                            JobService.instance.categories[job.category] ?? ''),
+                          JobService.instance.categories[job.category] ?? '',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                         Text(
                           job.companyName + '.',
                           style: style,
@@ -124,42 +126,25 @@ class _JobListViewState extends State<JobListView> with FirestoreMixin {
                             Text(job.sggNm, style: style),
                           ],
                         ),
-                        Row(
-                          children: [
-                            Text('Schedule: ', style: style),
-                            if (job.workingHours == 0)
-                              Text('flexible hours and ', style: style)
-                            else
-                              Text('${job.workingHours}hours a day and ',
-                                  style: style),
-                            if (job.workingDays == 0)
-                              Text('flexible days in a week', style: style)
-                            else
-                              Text('${job.workingDays} days in a week',
-                                  style: style),
-                          ],
+                        Text(
+                          'Schedule: ${schedule(job)}',
+                          style: style,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
-                        Row(
-                          children: [
-                            Text('Salary: ${job.salary}, ', style: style),
-                            Text('Available Slot: ${job.numberOfHiring}, ',
-                                style: style),
-                          ],
-                        )
-
-                        // Text(job.description, style: style),
+                        Text(
+                          'Salary: ${job.salary}, Available Slot: ${job.numberOfHiring}, ',
+                          style: style,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ],
                     ),
-                    // subtitle: Padding(
-                    //   padding: const EdgeInsets.only(top: 8.0),
-                    //   child: Text(shortDateTime(job.createdAt), style: style),
-                    // ),
                     trailing: Icon(Icons.arrow_right),
                   ),
                 ),
                 if (job.uid == UserService.instance.uid)
-                  TextButton(
-                      child: Text('edit'), onPressed: () => widget.onEdit(job)),
+                  TextButton(child: Text('edit'), onPressed: () => widget.onEdit(job)),
                 Divider(
                   color: Colors.grey.shade400,
                 ),
@@ -169,5 +154,18 @@ class _JobListViewState extends State<JobListView> with FirestoreMixin {
         );
       },
     );
+  }
+
+  schedule(JobModel job) {
+    String s = '';
+    if (job.workingHours == 0)
+      s += 'flexible hours and ';
+    else
+      s += '${job.workingHours}hours a day and ';
+    if (job.workingDays == 0)
+      s += 'flexible days in a week';
+    else
+      s += '${job.workingDays} days in a week';
+    return s;
   }
 }
