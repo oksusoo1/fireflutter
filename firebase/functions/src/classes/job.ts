@@ -123,84 +123,68 @@ export class Job {
    */
   static isInputDataComplete(data: JobDocument): boolean {
     // company name
-    if (typeof data.companyName === "undefined" || data.companyName.trim() == "") {
-      throw ERROR_EMPTY_COMPANY_NAME;
-    }
+    if (this.valueNotValid(data.companyName)) throw ERROR_EMPTY_COMPANY_NAME;
 
     // Address
     //  province - siNm
     //  todo: sggNm
-    if (typeof data.siNm === "undefined" || data.siNm.trim() == "") {
-      throw ERROR_EMPTY_PROVINCE;
-    }
-    
-    if (typeof data.detailAddress === "undefined" || data.detailAddress.trim() == "") {
-      throw ERROR_EMPTY_COMPANY_DETAIL_ADDRESS;
-    }
+    if (this.valueNotValid(data.siNm)) throw ERROR_EMPTY_PROVINCE;
+    if (this.valueNotValid(data.detailAddress)) throw ERROR_EMPTY_COMPANY_DETAIL_ADDRESS;
 
     // Mobile number
-    if (typeof data.mobileNumber === "undefined" || data.mobileNumber.trim() == "") {
-      throw ERROR_EMPTY_COMPANY_MOBILE_NUMBER;
-    }
+    if (this.valueNotValid(data.mobileNumber)) throw ERROR_EMPTY_COMPANY_MOBILE_NUMBER;
+
     // Office number
-    if (typeof data.phoneNumber === "undefined" || data.phoneNumber.trim() == "") {
-      throw ERROR_EMPTY_COMPANY_OFFICE_PHONE_NUMBER;
-    }
+    if (this.valueNotValid(data.phoneNumber)) throw ERROR_EMPTY_COMPANY_OFFICE_PHONE_NUMBER;
+
     // Email address number
     //  todo: validate email format.
-    if (typeof data.email === "undefined" || data.email.trim() == "") {
-      throw ERROR_EMPTY_COMPANY_EMAIL_ADDRESS;
-    }
+    if (this.valueNotValid(data.email)) throw ERROR_EMPTY_COMPANY_EMAIL_ADDRESS;
+
     // About us
-    if (typeof data.aboutUs === "undefined" || data.aboutUs.trim() == "") {
-      throw ERROR_EMPTY_COMPANY_ABOUT_US;
-    }
+    if (this.valueNotValid(data.aboutUs)) throw ERROR_EMPTY_COMPANY_ABOUT_US;
+
     // Job category
-    if (typeof data.category === "undefined" || data.category.trim() == "") {
-      throw ERROR_EMPTY_JOB_CATEGORY;
-    }
+    if (this.valueNotValid(data.category)) throw ERROR_EMPTY_JOB_CATEGORY;
+
     // Working days
     // Working hours
     //  - undefined or value less than 0 should error
-    if (typeof data.workingDays === "undefined" || data.workingDays < 0) {
-      throw ERROR_EMPTY_JOB_WORKING_DAYS;
-    }
-    if (typeof data.workingHours === "undefined" || data.workingHours < 0) {
-      throw ERROR_EMPTY_JOB_WORKING_HOURS;
-    }
+    if (this.valueNotValid(data.workingDays)) throw ERROR_EMPTY_JOB_WORKING_DAYS;
+    if (this.valueNotValid(data.workingHours)) throw ERROR_EMPTY_JOB_WORKING_HOURS;
+
     // Salary
-    if (typeof data.salary === "undefined" || data.salary.trim() == "") {
-      throw ERROR_EMPTY_JOB_SALARY;
-    }
+    if (this.valueNotValid(data.salary)) throw ERROR_EMPTY_JOB_SALARY;
+
     // Number of hiring
-    if (typeof data.numberOfHiring === "undefined" || data.numberOfHiring.trim() == "") {
-      throw ERROR_EMPTY_JOB_NUMBER_OF_HIRING;
-    }
+    if (this.valueNotValid(data.numberOfHiring)) throw ERROR_EMPTY_JOB_NUMBER_OF_HIRING;
+
     // Job Description
-    if (typeof data.description === "undefined" || data.description.trim() == "") {
-      throw ERROR_EMPTY_JOB_DESCRIPTION;
-    }
+    if (this.valueNotValid(data.description)) throw ERROR_EMPTY_JOB_DESCRIPTION;
+
     // Requirements
-    if (typeof data.requirement === "undefined" || data.requirement.trim() == "") {
-      throw ERROR_EMPTY_JOB_REQUIREMENT;
-    }
+    if (this.valueNotValid(data.requirement)) throw ERROR_EMPTY_JOB_REQUIREMENT;
+
     // Duties
-    if (typeof data.duty === "undefined" || data.duty.trim() == "") {
-      throw ERROR_EMPTY_JOB_DUTY;
-    }
+    if (this.valueNotValid(data.duty)) throw ERROR_EMPTY_JOB_DUTY;
+
     // Benefits
-    if (typeof data.benefit === "undefined" || data.benefit.trim() == "") {
-      throw ERROR_EMPTY_JOB_BENEFIT;
-    }
+    if (this.valueNotValid(data.benefit)) throw ERROR_EMPTY_JOB_BENEFIT;
+
     // Accomodation
-    if (typeof data.withAccomodation === "undefined" || data.withAccomodation.trim() == "") {
-      throw ERROR_EMPTY_JOB_ACCOMODATION;
-    }
     //  - value other than "Y" or "N" should error.
-    if (data.withAccomodation.trim() != ("N" || "Y")) {
-      throw ERROR_WRONG_JOB_ACCOMODATION_VALUE;
-    }
+    if (this.valueNotValid(data.withAccomodation)) throw ERROR_EMPTY_JOB_ACCOMODATION;
+    if (data.withAccomodation.trim() != ("N" || "Y")) throw ERROR_WRONG_JOB_ACCOMODATION_VALUE;
 
     return true;
+  }
+
+  // Check if the item has an invalid value
+  //
+  static valueNotValid(item: String | number): boolean {
+    if (typeof item === "undefined") return true;
+    if (typeof item === "string" && item.trim() == "") return true;
+    if (typeof item === "number" && item < 0) return true;
+    return false;
   }
 }
