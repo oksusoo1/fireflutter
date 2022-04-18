@@ -22,7 +22,6 @@ import {
   ERROR_EMPTY_JOB_SALARY,
   ERROR_EMPTY_JOB_WORKING_DAYS,
   ERROR_EMPTY_JOB_WORKING_HOURS,
-  ERROR_WRONG_JOB_ACCOMODATION_VALUE,
   ERROR_EMPTY_SINM,
   ERROR_EMPTY_SGGNM,
 } from "../../src/defines";
@@ -196,22 +195,6 @@ describe("Job input check test", () => {
       await Job.create(sampleData);
     } catch (e) {
       expect(e).equals(ERROR_EMPTY_JOB_ACCOMODATION);
-    }
-  });
-  it("Create fail - ERROR_WRONG_JOB_ACCOMODATION_VALUE", async () => {
-    try {
-      sampleData.withAccomodation = "0";
-      await Job.create(sampleData);
-    } catch (e) {
-      expect(e).equals(ERROR_WRONG_JOB_ACCOMODATION_VALUE);
-    }
-  });
-  it("Create fail - ERROR_WRONG_JOB_ACCOMODATION_VALUE", async () => {
-    try {
-      sampleData.withAccomodation = "T";
-      await Job.create(sampleData);
-    } catch (e) {
-      expect(e).equals(ERROR_WRONG_JOB_ACCOMODATION_VALUE);
     }
   });
   /// Success
