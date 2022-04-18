@@ -6,6 +6,7 @@ export interface JobDocument {
   files?: string[];
   companyName: string;
   siNm: string;
+  detailAddress: string;
   mobileNumber: string;
   phoneNumber: string;
   email: string;
@@ -16,10 +17,11 @@ export interface JobDocument {
   salary: string;
   numberOfHiring: string;
   description: string;
-  requirements: string;
-  duties: string;
-  benefits: string;
+  requirement: string;
+  duty: string;
+  benefit: string;
   withAccomodation: string;
+  status: string;
   createdAt?: admin.firestore.FieldValue;
   updatedAt?: admin.firestore.FieldValue;
 }

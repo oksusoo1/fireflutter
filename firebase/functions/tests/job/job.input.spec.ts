@@ -11,13 +11,14 @@ import {
   ERROR_EMPTY_COMPANY_MOBILE_NUMBER,
   ERROR_EMPTY_COMPANY_NAME,
   ERROR_EMPTY_COMPANY_OFFICE_PHONE_NUMBER,
+  ERROR_EMPTY_COMPANY_DETAIL_ADDRESS,
   ERROR_EMPTY_JOB_ACCOMODATION,
-  ERROR_EMPTY_JOB_BENEFITS,
+  ERROR_EMPTY_JOB_BENEFIT,
   ERROR_EMPTY_JOB_CATEGORY,
   ERROR_EMPTY_JOB_DESCRIPTION,
-  ERROR_EMPTY_JOB_DUTIES,
+  ERROR_EMPTY_JOB_DUTY,
   ERROR_EMPTY_JOB_NUMBER_OF_HIRING,
-  ERROR_EMPTY_JOB_REQUIREMENTS,
+  ERROR_EMPTY_JOB_REQUIREMENT,
   ERROR_EMPTY_JOB_SALARY,
   ERROR_EMPTY_JOB_WORKING_DAYS,
   ERROR_EMPTY_JOB_WORKING_HOURS,
@@ -48,9 +49,17 @@ describe("Job input check test", () => {
       expect(e).equals(ERROR_EMPTY_PROVINCE);
     }
   });
-  it("Create fail - ERROR_EMPTY_COMPANY_MOBILE_NUMBER", async () => {
+  it("Create fail - ERROR_EMPTY_COMPANY_DETAIL_ADDRESS", async () => {
     try {
       sampleData.siNm = "siNm";
+      await Job.create(sampleData);
+    } catch (e) {
+      expect(e).equals(ERROR_EMPTY_COMPANY_DETAIL_ADDRESS);
+    }
+  });
+  it("Create fail - ERROR_EMPTY_COMPANY_MOBILE_NUMBER", async () => {
+    try {
+      sampleData.detailAddress = "company detailed address";
       await Job.create(sampleData);
     } catch (e) {
       expect(e).equals(ERROR_EMPTY_COMPANY_MOBILE_NUMBER);
@@ -154,28 +163,28 @@ describe("Job input check test", () => {
       sampleData.description = "this is the job description";
       await Job.create(sampleData);
     } catch (e) {
-      expect(e).equals(ERROR_EMPTY_JOB_REQUIREMENTS);
+      expect(e).equals(ERROR_EMPTY_JOB_REQUIREMENT);
     }
   });
   it("Create fail - ERROR_EMPTY_JOB_DUTIES", async () => {
     try {
-      sampleData.requirements = "Job requirements";
+      sampleData.requirement = "Job requirements";
       await Job.create(sampleData);
     } catch (e) {
-      expect(e).equals(ERROR_EMPTY_JOB_DUTIES);
+      expect(e).equals(ERROR_EMPTY_JOB_DUTY);
     }
   });
   it("Create fail - ERROR_EMPTY_JOB_BENEFITS", async () => {
     try {
-      sampleData.duties = "Some job duties";
+      sampleData.duty = "Some job duties";
       await Job.create(sampleData);
     } catch (e) {
-      expect(e).equals(ERROR_EMPTY_JOB_BENEFITS);
+      expect(e).equals(ERROR_EMPTY_JOB_BENEFIT);
     }
   });
   it("Create fail - ERROR_EMPTY_JOB_ACCOMODATION", async () => {
     try {
-      sampleData.benefits = "job benefits";
+      sampleData.benefit = "job benefits";
       await Job.create(sampleData);
     } catch (e) {
       expect(e).equals(ERROR_EMPTY_JOB_ACCOMODATION);
