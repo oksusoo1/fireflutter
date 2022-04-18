@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import '../../../fireflutter.dart';
 
 enum Status { Y, N }
+enum Accomodation { Y, N }
 
 /// Job posting form
 ///
@@ -383,6 +384,31 @@ class _JobEditFormState extends State<JobEditForm> {
             ),
           ),
 
+          // Accommodation
+          Text('Includes accomodation? status: ${job.status}'),
+          Row(
+            children: [
+              Expanded(
+                child: RadioListTile<Accomodation>(
+                  value: Accomodation.Y,
+                  groupValue: Accomodation.values.asNameMap()[job.status],
+                  title: Text('Enable'),
+                  onChanged: (Accomodation? v) => setState(() => job.status = v!.name),
+                ),
+              ),
+              Expanded(
+                child: RadioListTile<Accomodation>(
+                  value: Status.N,
+                  groupValue: Status.values.asNameMap()[job.status],
+                  title: Text('Disabled'),
+                  onChanged: (Status? v) => setState(() => job.status = v!.name),
+                ),
+              ),
+            ],
+          ),
+
+          // Eo accommodation
+
           /// Upload button
           Divider(),
           if (uploadLimited)
@@ -446,7 +472,7 @@ class _JobEditFormState extends State<JobEditForm> {
 
           Divider(),
 
-          Text('Enable or disable this job opening? status: ${job.status}'),
+          Text('Enable or disable this job opening?'),
           Row(
             children: [
               Expanded(

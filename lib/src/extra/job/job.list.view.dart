@@ -54,7 +54,10 @@ class _JobListViewState extends State<JobListView> with FirestoreMixin {
     }
     if (options.salary != '') query = query.where('salary', isEqualTo: options.salary);
 
+    // Only 'status=Y' jobs can be displayed.
     query = query.where('status', isEqualTo: 'Y');
+
+    //
     query = query.orderBy('createdAt', descending: true);
 
     return query;

@@ -27,7 +27,7 @@ class JobModel {
     this.salary = '',
     this.workingDays = -1,
     this.workingHours = -1,
-    this.withAccomodation = '',
+    this.withAccomodation = 'N',
     this.files = const [],
     this.status = 'Y',
     createdAt,
