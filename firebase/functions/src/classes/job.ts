@@ -21,7 +21,6 @@ import {
   ERROR_JOB_NOT_EXIST,
   ERROR_LACK_OF_POINT,
   ERROR_NOT_YOUR_JOB,
-  ERROR_WRONG_JOB_ACCOMODATION_VALUE,
   ERROR_EMPTY_SINM,
   ERROR_EMPTY_SGGNM,
 } from "../defines";
@@ -172,16 +171,14 @@ export class Job {
     if (this.valueNotValid(data.benefit)) throw ERROR_EMPTY_JOB_BENEFIT;
 
     // Accomodation
-    //  - value other than "Y" or "N" should error.
     if (this.valueNotValid(data.withAccomodation)) throw ERROR_EMPTY_JOB_ACCOMODATION;
-    if (data.withAccomodation.trim() != ("N" || "Y")) throw ERROR_WRONG_JOB_ACCOMODATION_VALUE;
 
     return true;
   }
 
   // Check if the item has an invalid value
   //
-  static valueNotValid(item: String | number): boolean {
+  static valueNotValid(item: string | number): boolean {
     if (typeof item === "undefined") return true;
     if (typeof item === "string" && item.trim() == "") return true;
     if (typeof item === "number" && item < 0) return true;
