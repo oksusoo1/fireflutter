@@ -8,9 +8,12 @@ class JobView extends StatefulWidget {
   const JobView({
     Key? key,
     this.job,
+    // required this.onImageTap,
   }) : super(key: key);
 
   final JobModel? job;
+
+  // final Function(int index, List<String> fileList) onImageTap;
 
   @override
   State<JobView> createState() => _JobViewState();
@@ -76,8 +79,7 @@ class _JobViewState extends State<JobView> {
           label: "Detail Address",
         ),
         SizedBox(height: 15),
-        Text('Job details',
-            style: TextStyle(fontSize: 16, color: Colors.black)),
+        Text('Job details', style: TextStyle(fontSize: 16, color: Colors.black)),
         SizedBox(height: 10),
         JobViewItem(
           value: JobService.instance.categories[job.category] ?? '',
@@ -95,7 +97,7 @@ class _JobViewState extends State<JobView> {
           value: job.workingHours == 0
               ? "Flexible"
               : job.workingHours > 0
-                  ? '${job.workingHours} hour'
+                  ? '${job.workingHours} hours'
                   : '',
           label: "Working Hours",
         ),
@@ -134,6 +136,25 @@ class _JobViewState extends State<JobView> {
           value: job.benefit,
           label: "benefits(free meals, dormitory, transporation, etc)",
         ),
+        if (job.files.isNotEmpty) ...[
+          Divider(height: 24),
+          Text(
+            'Attach Images',
+            style: TextStyle(
+              fontSize: 11,
+              color: Colors.grey.shade700,
+              fontStyle: FontStyle.italic,
+            ),
+          ),
+          SizedBox(height: 8),
+          for (int i = 0; i < job.files.length; i++) ...[
+            UploadedImage(
+              url: job.files[i],
+              width: double.infinity,
+            ),
+            SizedBox(height: 8)
+          ]
+        ]
       ],
     );
   }
