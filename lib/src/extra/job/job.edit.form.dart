@@ -415,11 +415,14 @@ class _JobEditFormState extends State<JobEditForm> {
                     color: Colors.grey,
                   ),
                   SizedBox(width: 10),
-                  Text(
-                    '* File upload limit reached.\n* Delete and upload again to replace existing image.',
-                    style: TextStyle(
-                      color: Colors.orangeAccent,
-                      fontStyle: FontStyle.italic,
+                  Flexible(
+                    child: Text(
+                      '* File upload limit reached.\n* Delete and upload again to replace existing image.',
+                      style: TextStyle(
+                        color: Colors.orangeAccent,
+                        fontStyle: FontStyle.italic,
+                        fontSize: 12,
+                      ),
                     ),
                   ),
                 ],
