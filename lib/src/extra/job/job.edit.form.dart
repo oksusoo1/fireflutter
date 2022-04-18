@@ -47,6 +47,8 @@ class _JobEditFormState extends State<JobEditForm> {
 
   bool isSubmitted = false;
 
+  bool loading = false;
+
   @override
   initState() {
     super.initState();
@@ -338,7 +340,7 @@ class _JobEditFormState extends State<JobEditForm> {
             initialValue: job.description,
             onChanged: (s) => job.description = s,
             validator: (v) => validateFieldValue(v, "* Please describe something about the job."),
-            maxLines: 3,
+            maxLines: 5,
           ),
           SizedBox(height: 16),
 
@@ -487,45 +489,52 @@ class _JobEditFormState extends State<JobEditForm> {
 
           Divider(),
 
-          ElevatedButton(
-            onPressed: () async {
-              setState(() => isSubmitted = true);
-              // Validate returns true if the form is valid, or false otherwise.
-              if (_formKey.currentState!.validate() && address != null) {
-                addJobAddress(address!);
-                try {
-                  if (isCreate) {
-                    print(job.toCreate);
-                    await FunctionsApi.instance.request(
-                      'jobCreate',
-                      data: job.toCreate,
-                      addAuth: true,
-                    );
-                    widget.onCreated();
-                  } else {
-                    print(job.toUpdate);
-                    await FunctionsApi.instance.request(
-                      'jobUpdate',
-                      data: job.toUpdate,
-                      addAuth: true,
-                    );
-                    widget.onUpdated();
+          if (loading)
+            Center(child: CircularProgressIndicator.adaptive(strokeWidth: 2))
+          else
+            ElevatedButton(
+              child: Text('Submit'),
+              onPressed: () async {
+                setState(() {
+                  isSubmitted = true;
+                  loading = true;
+                });
+                // Validate returns true if the form is valid, or false otherwise.
+                if (_formKey.currentState!.validate() && address != null) {
+                  addJobAddress(address!);
+                  try {
+                    if (isCreate) {
+                      print(job.toCreate);
+                      await FunctionsApi.instance.request(
+                        'jobCreate',
+                        data: job.toCreate,
+                        addAuth: true,
+                      );
+                      widget.onCreated();
+                    } else {
+                      print(job.toUpdate);
+                      await FunctionsApi.instance.request(
+                        'jobUpdate',
+                        data: job.toUpdate,
+                        addAuth: true,
+                      );
+                      widget.onUpdated();
+                    }
+                  } catch (e, stacks) {
+                    debugPrintStack(stackTrace: stacks);
+                    widget.onError(e);
                   }
-                } catch (e, stacks) {
-                  debugPrintStack(stackTrace: stacks);
-                  widget.onError(e);
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                        content: Text(
+                      'Form incomplete, please check for missing information.',
+                    )),
+                  );
                 }
-              } else {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                      content: Text(
-                    'Form incomplete, please check for missing information.',
-                  )),
-                );
-              }
-            },
-            child: Text('Submit'),
-          )
+                setState(() => loading = false);
+              },
+            )
         ],
       ),
     );

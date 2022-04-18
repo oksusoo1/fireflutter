@@ -35,7 +35,7 @@ class JobEditFormTextField extends StatelessWidget {
       controller: controller,
       autovalidateMode: AutovalidateMode.always,
       keyboardType: keyboardType,
-      minLines: maxLines != null ? 1 : null,
+      minLines: maxLines != null ? 2 : null,
       maxLines: maxLines,
       validator: validator,
       onChanged: onChanged,
