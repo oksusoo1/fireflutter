@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.jobUpdate = exports.jobCreate = void 0;
+exports.jobGetProfile = exports.jobUpdateProfile = exports.jobUpdate = exports.jobCreate = void 0;
 /**
  * @file job.functions.ts
  *
@@ -34,6 +34,20 @@ exports.jobUpdate = functions
     .https.onRequest((req, res) => {
     ready_1.ready({ req, res, auth: true }, async (data) => {
         res.status(200).send(await job_1.Job.update(data));
+    });
+});
+exports.jobUpdateProfile = functions
+    .region("us-central1", "asia-northeast3")
+    .https.onRequest((req, res) => {
+    ready_1.ready({ req, res, auth: true }, async (data) => {
+        res.status(200).send(await job_1.Job.updateProfile(data));
+    });
+});
+exports.jobGetProfile = functions
+    .region("us-central1", "asia-northeast3")
+    .https.onRequest((req, res) => {
+    ready_1.ready({ req, res, auth: false }, async (data) => {
+        res.status(200).send(await job_1.Job.getProfile(data.uid));
     });
 });
 //# sourceMappingURL=job.functions.js.map

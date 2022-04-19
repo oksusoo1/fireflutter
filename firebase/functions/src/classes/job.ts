@@ -107,7 +107,12 @@ export class Job {
    * @note User can only create one job. See readme for details.
    */
   static async getJobFromUid(uid: string): Promise<JobDocument | null> {
-    const snapshot = await admin.firestore().collection("jobs").where("uid", "==", uid).limit(1).get();
+    const snapshot = await admin
+        .firestore()
+        .collection("jobs")
+        .where("uid", "==", uid)
+        .limit(1)
+        .get();
     if (snapshot.size > 0) {
       return snapshot.docs[0].data() as JobDocument;
     } else {
@@ -183,5 +188,45 @@ export class Job {
     if (typeof item === "string" && item.trim() == "") return true;
     if (typeof item === "number" && item < 0) return true;
     return false;
+  }
+
+  // ******************** JOB SEEKER PROFILE ***************************
+
+  /**
+   * Job seekers profile
+   *
+   * For the first update, it will create the job profile.
+   * And for the second update, it will simploy update the profile.
+   */
+  static async updateProfile(data: any): Promise<any> {
+    const id = data.uid;
+    delete data.uid;
+
+    const profile = await this.getProfile(id);
+    if (!profile) {
+      data.createdAt = admin.firestore.FieldValue.serverTimestamp();
+    }
+    data.updatedAt = admin.firestore.FieldValue.serverTimestamp();
+
+    await admin.firestore().collection("job-seekers").doc(id).set(data, { merge: true });
+    return this.getProfile(id);
+  }
+
+  /**
+   *
+   * @param id the user uid
+   * @returns job profile document or null if does not exists.
+   */
+  static async getProfile(id: string): Promise<any> {
+    if (typeof id === void 0 || id.trim() === "") throw ERROR_EMPTY_ID;
+    const ref = admin.firestore().collection("job-seekers").doc(id);
+    // return the document object of newly created post.
+    const snapshot = await ref.get();
+    if (snapshot.exists === false) return null;
+    // Post create success
+    const profile = snapshot.data() as any;
+    profile.id = ref.id;
+
+    return profile;
   }
 }
