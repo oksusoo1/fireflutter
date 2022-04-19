@@ -37,7 +37,7 @@ class _JobEditFormState extends State<JobEditForm> {
 
   JobModel job = JobModel.empty();
   bool get isCreate {
-    return widget.job == null;
+    return widget.job == null || widget.job?.id == '';
   }
 
   bool get isUpdate => !isCreate;
