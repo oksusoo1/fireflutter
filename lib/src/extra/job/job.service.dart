@@ -439,9 +439,9 @@ class JobService {
                         : search!.totalCount == 0
                             ? _noAddressFound()
                             : SingleChildScrollView(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: search!.addresses
+                                child:
+                                    Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                                  ...search!.addresses
                                       .map(
                                         (addr) => GestureDetector(
                                           onTap: () => Navigator.of(context).pop(addr),
@@ -463,7 +463,10 @@ class JobService {
                                         ),
                                       )
                                       .toList(),
-                                ),
+                                  SizedBox(
+                                    height: 100,
+                                  )
+                                ]),
                               ),
                   ),
                   if (search != null && search!.totalCount > 100)
