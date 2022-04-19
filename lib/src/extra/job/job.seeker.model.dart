@@ -1,11 +1,32 @@
 import '../../../fireflutter.dart';
 
 class JobSeekerModel {
-  String proficiency = '';
-  String skills = '';
-  String experiences = '';
-  String industry = '';
-  String comment = '';
+  String id;
+  String proficiency;
+  String skills;
+  String experiences;
+  String industry;
+  String comment;
+
+  JobSeekerModel({
+    this.id = '',
+    this.proficiency = '',
+    this.skills = '',
+    this.experiences = '',
+    this.industry = '',
+    this.comment = '',
+  });
+
+  factory JobSeekerModel.fromJson(Map<String, dynamic> json, String id) {
+    return JobSeekerModel(
+      id: id,
+      proficiency: json['proficiency'] ?? '',
+      skills: json['skills'] ?? '',
+      experiences: json['experiences'] ?? '',
+      industry: json['industry'] ?? '',
+      comment: json['comment'] ?? '',
+    );
+  }
 
   copyWith(Map<String, dynamic> data) {
     proficiency = data['proficiency'] ?? '';
@@ -28,6 +49,7 @@ class JobSeekerModel {
       'jobGetProfile',
       data: {'uid': uid},
     );
+    if (data is String) return;
     print('job profile; $data');
     copyWith(data);
     print('updateMap; $updateMap');

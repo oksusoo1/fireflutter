@@ -14,20 +14,17 @@ class JobEditForm extends StatefulWidget {
     required this.onCreated,
     required this.onUpdated,
     required this.onError,
-    this.job,
   }) : super(key: key);
 
   final Function() onCreated;
   final Function() onUpdated;
   final Function(dynamic) onError;
 
-  final JobModel? job;
-
   @override
   State<JobEditForm> createState() => _JobEditFormState();
 }
 
-class _JobEditFormState extends State<JobEditForm> {
+class _JobEditFormState extends State<JobEditForm> with FirestoreMixin {
   // Note: This is a `GlobalKey<FormState>`,
   // not a GlobalKey<MyCustomFormState>.
   final _formKey = GlobalKey<FormState>();
@@ -37,7 +34,7 @@ class _JobEditFormState extends State<JobEditForm> {
 
   JobModel job = JobModel.empty();
   bool get isCreate {
-    return widget.job == null || widget.job?.id == '';
+    return job.id == '';
   }
 
   bool get isUpdate => !isCreate;
@@ -55,12 +52,17 @@ class _JobEditFormState extends State<JobEditForm> {
     init();
   }
 
-  init() {
-    if (isUpdate) {
-      job = widget.job!;
+  init() async {
+    final snapshot = await jobs.where('uid', isEqualTo: UserService.instance.uid).get();
+    if (snapshot.size > 0) {
+      job = JobModel.fromJson(
+        snapshot.docs.first.data() as Map<String, dynamic>,
+        snapshot.docs.first.id,
+      );
       address = AddressModel.fromMap(job.toUpdate);
       detailedAddress.text = job.detailAddress;
       addJobAddress(address!);
+      setState(() {});
     }
   }
 

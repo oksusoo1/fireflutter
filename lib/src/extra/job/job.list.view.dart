@@ -14,7 +14,7 @@ class JobListView extends StatefulWidget {
   }) : super(key: key);
 
   final Function onError;
-  final Function(JobModel) onEdit;
+  final Function() onEdit;
   final Function(JobModel) onTap;
   final JobListOptionModel options;
 
@@ -144,7 +144,7 @@ class _JobListViewState extends State<JobListView> with FirestoreMixin {
                   ),
                 ),
                 if (job.uid == UserService.instance.uid)
-                  TextButton(child: Text('edit'), onPressed: () => widget.onEdit(job)),
+                  TextButton(child: Text('edit'), onPressed: widget.onEdit),
                 Divider(
                   color: Colors.grey.shade400,
                 ),

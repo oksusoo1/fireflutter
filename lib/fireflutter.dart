@@ -126,3 +126,4 @@ export 'src/extra/job/job.list.push.notification.icon.dart';
 
 export 'src/extra/job/job.seeker.form.dart';
 export 'src/extra/job/job.seeker.model.dart';
+export 'src/extra/job/job.seeker.list.dart';

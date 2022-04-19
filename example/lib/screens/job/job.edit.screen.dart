@@ -35,7 +35,6 @@ class _JobEditScreenState extends State<JobEditScreen> {
                 await alert('Job updated', 'Job opening updated!');
                 AppService.instance.back();
               },
-              job: widget.arguments['job'],
             ),
             space2xl,
           ],
