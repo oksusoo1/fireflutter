@@ -194,18 +194,21 @@ export class Job {
 
   /**
    * Job seekers profile
+   *
+   * For the first update, it will create the job profile.
+   * And for the second update, it will simploy update the profile.
    */
   static async updateProfile(data: any): Promise<any> {
     const id = data.uid;
     delete data.uid;
 
     const profile = await this.getProfile(id);
-    if (profile) {
+    if (!profile) {
       data.createdAt = admin.firestore.FieldValue.serverTimestamp();
     }
     data.updatedAt = admin.firestore.FieldValue.serverTimestamp();
 
-    await admin.firestore().collection("job-seekers").doc(id).update(data);
+    await admin.firestore().collection("job-seekers").doc(id).set(data, { merge: true });
     return this.getProfile(id);
   }
 

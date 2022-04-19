@@ -323,15 +323,16 @@ class JobService {
     'construction': 'Construction',
     'cook': 'Cook, Chef, Backer',
     'customer-service': 'Customer service',
+    'delivery': 'Delivery, Transportation',
     'education': 'Education, Academic, Teacher',
     'entertainer': 'Entertainer, Musician',
     'factory-work': 'Factory work',
     'farm-work': 'Farm work',
+    'it': 'Tech & IT',
     'management': 'Management',
     'marketing': 'Marketing, Advertising',
     'office-work': 'Office work, Clerk, Cashier',
     'sales': 'Sales, Waiter, Agent',
-    'it': 'Tech & IT',
     'travel': 'Tour guide, Travel',
   };
 
