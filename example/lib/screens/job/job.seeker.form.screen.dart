@@ -25,7 +25,10 @@ class _JobSeekerFormScreenState extends State<JobSeekerFormScreen> {
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            JobSeekerForm(),
+            JobSeekerForm(
+              onSuccess: () => alert('Success', 'Job seeker profile has been updated!'),
+              onError: error,
+            ),
             space2xl,
           ],
         ),

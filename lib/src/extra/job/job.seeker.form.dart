@@ -3,7 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:flutterfire_ui/auth.dart';
 
 class JobSeekerForm extends StatefulWidget {
-  JobSeekerForm({Key? key}) : super(key: key);
+  JobSeekerForm({
+    Key? key,
+    required this.onSuccess,
+    required this.onError,
+  }) : super(key: key);
+
+  final Function onSuccess;
+  final Function(String) onError;
 
   @override
   State<JobSeekerForm> createState() => _JobSeekerFormState();
@@ -17,16 +24,12 @@ class _JobSeekerFormState extends State<JobSeekerForm> {
   final _formKey = GlobalKey<FormState>(debugLabel: 'jobSeeker');
 
   final form = JobSeekerModel();
+  bool loaded = false;
 
   @override
   void initState() {
-    // form.firstName = userService.user.firstName;
-    // form.middleName = userService.user.middleName;
-    // form.lastName = userService.user.lastName;
-    // form.email = userService.user.email;
-    // form.phoneNumber = userService.user.phoneNumber;
-    // form.gender = userService.user.gender;
     super.initState();
+    form.load(uid: UserService.instance.uid).then((x) => setState(() => loaded = true));
   }
 
   @override
@@ -53,75 +56,93 @@ class _JobSeekerFormState extends State<JobSeekerForm> {
         Text('Gender', style: labelStyle),
         Text('${UserService.instance.user.gender}'),
         Divider(height: 30),
-        Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              TextFormField(
-                initialValue: form.proficiency,
-                decoration: InputDecoration(labelText: 'Proficiency'),
-                minLines: 2,
-                maxLines: 5,
-              ),
-              SizedBox(height: 8),
-              TextFormField(
-                initialValue: form.skills,
-                decoration: InputDecoration(labelText: 'Skills'),
-                minLines: 2,
-                maxLines: 5,
-              ),
-              SizedBox(height: 8),
-              TextFormField(
-                initialValue: form.experiences,
-                decoration: InputDecoration(labelText: 'Working experiences'),
-                minLines: 2,
-                maxLines: 5,
-              ),
-              SizedBox(height: 8),
-              Text('What industry would you like to work in?'),
-              DropdownButtonFormField<String>(
-                autovalidateMode: AutovalidateMode.onUserInteraction,
-                validator: (v) =>
-                    v == null || v.trim().isEmpty ? '* Please select an industry' : null,
-                onChanged: (v) => form.industry = v ?? '',
-                value: form.industry,
-                items: [
-                  DropdownMenuItem(
-                    child: Text('Select industry'),
-                    value: '',
-                  ),
-                  DropdownMenuItem(
-                    child: Text('Any kind of industry'),
-                    value: 'any',
-                  ),
-                  ...JobService.instance.categories.entries
-                      .map((e) => DropdownMenuItem(
-                            child: Text(e.value),
-                            value: e.key,
-                          ))
-                      .toList(),
-                ],
-              ),
-              SizedBox(height: 8),
-              TextFormField(
-                initialValue: form.comment,
-                decoration: InputDecoration(labelText: 'What do you expect on your future job?'),
-                minLines: 2,
-                maxLines: 5,
-              ),
-              ElevatedButton(onPressed: onSubmit, child: Text('Submit'))
-            ],
-          ),
-        )
+        loaded == false
+            ? Container(
+                height: 300,
+                child: Center(
+                  child: CircularProgressIndicator.adaptive(),
+                ),
+              )
+            : Form(
+                key: _formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    TextFormField(
+                      initialValue: form.proficiency,
+                      decoration: InputDecoration(labelText: 'Proficiency'),
+                      minLines: 2,
+                      maxLines: 5,
+                      onChanged: (s) => form.proficiency = s,
+                    ),
+                    SizedBox(height: 8),
+                    TextFormField(
+                      initialValue: form.skills,
+                      decoration: InputDecoration(labelText: 'Skills'),
+                      minLines: 2,
+                      maxLines: 5,
+                      onChanged: (s) => form.skills = s,
+                    ),
+                    SizedBox(height: 8),
+                    TextFormField(
+                      initialValue: form.experiences,
+                      decoration: InputDecoration(labelText: 'Years of experience'),
+                      minLines: 2,
+                      maxLines: 5,
+                      onChanged: (s) => form.experiences = s,
+                    ),
+                    SizedBox(height: 8),
+                    Text('What industry would you like to work in?'),
+                    DropdownButtonFormField<String>(
+                      autovalidateMode: AutovalidateMode.onUserInteraction,
+                      validator: (v) =>
+                          v == null || v.trim().isEmpty ? '* Please select an industry' : null,
+                      onChanged: (v) => form.industry = v ?? '',
+                      value: form.industry,
+                      items: [
+                        DropdownMenuItem(
+                          child: Text('Select industry'),
+                          value: '',
+                        ),
+                        DropdownMenuItem(
+                          child: Text('Any kind of industry'),
+                          value: 'any',
+                        ),
+                        ...JobService.instance.categories.entries
+                            .map((e) => DropdownMenuItem(
+                                  child: Text(e.value),
+                                  value: e.key,
+                                ))
+                            .toList(),
+                      ],
+                    ),
+                    SizedBox(height: 8),
+                    TextFormField(
+                      initialValue: form.comment,
+                      decoration:
+                          InputDecoration(labelText: 'What do you expect on your future job?'),
+                      minLines: 2,
+                      maxLines: 5,
+                      onChanged: (s) => form.comment = s,
+                    ),
+                    ElevatedButton(onPressed: onSubmit, child: Text('Submit'))
+                  ],
+                ),
+              )
       ],
     );
   }
 
-  onSubmit() {
+  onSubmit() async {
     if (_formKey.currentState!.validate()) {
       print('JobSeekerForm::onSubmit::form');
       print('${form.toString()}');
+      try {
+        await form.update();
+        widget.onSuccess();
+      } catch (e) {
+        widget.onError(e.toString());
+      }
     } else {
       print('validation error');
     }

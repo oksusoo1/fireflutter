@@ -36,3 +36,19 @@ export const jobUpdate = functions
         res.status(200).send(await Job.update(data));
       });
     });
+
+export const jobUpdateProfile = functions
+    .region("us-central1", "asia-northeast3")
+    .https.onRequest((req, res) => {
+      ready({ req, res, auth: true }, async (data) => {
+        res.status(200).send(await Job.updateProfile(data));
+      });
+    });
+
+export const jobGetProfile = functions
+    .region("us-central1", "asia-northeast3")
+    .https.onRequest((req, res) => {
+      ready({ req, res, auth: false }, async (data) => {
+        res.status(200).send(await Job.getProfile(data.uid));
+      });
+    });

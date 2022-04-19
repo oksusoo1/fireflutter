@@ -24,7 +24,7 @@ describe("Job seeker test", () => {
     expect(created.createdAt._nanoseconds).equals(updated.createdAt._nanoseconds);
     expect(created.updatedAt._nanoseconds).not.equals(updated.updatedAt._nanoseconds);
 
-    /// Get the profile
+    // / Get the profile
     const got = await Job.getProfile(uid);
     expect(got).to.have.property("id").equals(uid);
 

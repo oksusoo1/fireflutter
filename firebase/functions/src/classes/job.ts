@@ -108,11 +108,11 @@ export class Job {
    */
   static async getJobFromUid(uid: string): Promise<JobDocument | null> {
     const snapshot = await admin
-      .firestore()
-      .collection("jobs")
-      .where("uid", "==", uid)
-      .limit(1)
-      .get();
+        .firestore()
+        .collection("jobs")
+        .where("uid", "==", uid)
+        .limit(1)
+        .get();
     if (snapshot.size > 0) {
       return snapshot.docs[0].data() as JobDocument;
     } else {
