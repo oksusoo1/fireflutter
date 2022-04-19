@@ -2,20 +2,6 @@ import '../../../fireflutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterfire_ui/auth.dart';
 
-class JobSeekerModel {
-  String firstName = '';
-  String middleName = '';
-  String lastName = '';
-  String email = '';
-  String phoneNumber = '';
-  String gender = '';
-  String proficiency = '';
-  String skills = '';
-  String experiences = '';
-  String industry = '';
-  String comment = '';
-}
-
 class JobSeekerForm extends StatefulWidget {
   JobSeekerForm({Key? key}) : super(key: key);
 
@@ -30,16 +16,16 @@ class _JobSeekerFormState extends State<JobSeekerForm> {
 
   final _formKey = GlobalKey<FormState>(debugLabel: 'jobSeeker');
 
-  final formData = JobSeekerModel();
+  final form = JobSeekerModel();
 
   @override
   void initState() {
-    formData.firstName = userService.user.firstName;
-    formData.middleName = userService.user.middleName;
-    formData.lastName = userService.user.lastName;
-    formData.email = userService.user.email;
-    formData.phoneNumber = userService.user.phoneNumber;
-    formData.gender = userService.user.gender;
+    // form.firstName = userService.user.firstName;
+    // form.middleName = userService.user.middleName;
+    // form.lastName = userService.user.lastName;
+    // form.email = userService.user.email;
+    // form.phoneNumber = userService.user.phoneNumber;
+    // form.gender = userService.user.gender;
     super.initState();
   }
 
@@ -70,38 +56,44 @@ class _JobSeekerFormState extends State<JobSeekerForm> {
         Form(
           key: _formKey,
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               TextFormField(
-                initialValue: formData.proficiency,
+                initialValue: form.proficiency,
                 decoration: InputDecoration(labelText: 'Proficiency'),
                 minLines: 2,
                 maxLines: 5,
               ),
               SizedBox(height: 8),
               TextFormField(
-                initialValue: formData.skills,
+                initialValue: form.skills,
                 decoration: InputDecoration(labelText: 'Skills'),
                 minLines: 2,
                 maxLines: 5,
               ),
               SizedBox(height: 8),
               TextFormField(
-                initialValue: formData.experiences,
+                initialValue: form.experiences,
                 decoration: InputDecoration(labelText: 'Working experiences'),
                 minLines: 2,
                 maxLines: 5,
               ),
               SizedBox(height: 8),
+              Text('What industry would you like to work in?'),
               DropdownButtonFormField<String>(
                 autovalidateMode: AutovalidateMode.onUserInteraction,
                 validator: (v) =>
                     v == null || v.trim().isEmpty ? '* Please select an industry' : null,
-                onChanged: (v) => formData.industry = v ?? '',
-                value: formData.industry,
+                onChanged: (v) => form.industry = v ?? '',
+                value: form.industry,
                 items: [
                   DropdownMenuItem(
-                    child: Text('What industry would you like to work in?'),
+                    child: Text('Select industry'),
                     value: '',
+                  ),
+                  DropdownMenuItem(
+                    child: Text('Any kind of industry'),
+                    value: 'any',
                   ),
                   ...JobService.instance.categories.entries
                       .map((e) => DropdownMenuItem(
@@ -113,7 +105,7 @@ class _JobSeekerFormState extends State<JobSeekerForm> {
               ),
               SizedBox(height: 8),
               TextFormField(
-                initialValue: formData.comment,
+                initialValue: form.comment,
                 decoration: InputDecoration(labelText: 'What do you expect on your future job?'),
                 minLines: 2,
                 maxLines: 5,
@@ -128,8 +120,8 @@ class _JobSeekerFormState extends State<JobSeekerForm> {
 
   onSubmit() {
     if (_formKey.currentState!.validate()) {
-      print('JobSeekerForm::onSubmit::formData');
-      print('${formData.toString()}');
+      print('JobSeekerForm::onSubmit::form');
+      print('${form.toString()}');
     } else {
       print('validation error');
     }
