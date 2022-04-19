@@ -114,6 +114,9 @@ class StorageService {
   /// If [url] does exist on storage, then it will not delete.
   ///
   /// Ignore object-not-found exception.
+  ///
+  /// If it throws [firestore_storage/unauthorized], then the user may try to delete file that does not belong him.
+  /// This may happens in testing or putting url(photoUrl) of other user's photo.
   Future<void> delete(String url) async {
     // final String thumbnailUrl = getThumbnailUrl(url);
 

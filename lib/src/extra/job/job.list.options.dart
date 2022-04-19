@@ -129,7 +129,7 @@ class _JobListOptionsState extends State<JobListOptions> with FirestoreMixin {
                       },
                     ),
                   ),
-                  SizedBox(width: 8),
+                  if (options.siNm != '') SizedBox(width: 8),
                   if (options.siNm != '')
                     Expanded(
                       flex: 1,

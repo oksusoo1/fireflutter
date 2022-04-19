@@ -99,6 +99,7 @@ Table of contents
   - [firebase_database/permission-denied](#firebase_databasepermission-denied)
   - [Firebase realtime database is not working](#firebase-realtime-database-is-not-working)
   - [firebase_auth/internal-error](#firebase_authinternal-error)
+  - [Unauthorized permission error on storage.](#unauthorized-permission-error-on-storage)
 - [Dyanmic Links Service](#dyanmic-links-service)
   - [Installation](#installation-1)
     - [Installation on Anroid](#installation-on-anroid)
@@ -1147,6 +1148,12 @@ If you see this error message while working with Firebase Auth, check the follow
 
 - Check if REVERSE_CLIENT_ID is set on iOS.
 - Check if GCP credential is properly set iOS.
+
+
+## Unauthorized permission error on storage.
+
+If fireflutter throws `[firestore_storage/unauthorized]`, then the user may try to delete file that does not belong him.
+This may happens in testing or putting url(photoUrl) of other user's photo.
 
 # Dyanmic Links Service
 
