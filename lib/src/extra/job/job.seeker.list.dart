@@ -37,6 +37,7 @@ class _JobSeekerListState extends State<JobSeekerList> with FirestoreMixin {
   Widget build(BuildContext context) {
     return FirestoreListView(
       query: _query,
+      loadingBuilder: (context) => Center(child: Text('loading ...')),
       errorBuilder: (c, o, s) {
         debugPrint('Object; $o');
         debugPrintStack(stackTrace: s);
