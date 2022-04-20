@@ -1,8 +1,8 @@
 import '../../../fireflutter.dart';
 import 'package:flutter/material.dart';
 
-class JobSeekerForm extends StatefulWidget {
-  JobSeekerForm({
+class JobSeekerProfileForm extends StatefulWidget {
+  JobSeekerProfileForm({
     Key? key,
     required this.onSuccess,
     required this.onError,
@@ -12,10 +12,10 @@ class JobSeekerForm extends StatefulWidget {
   final Function(String) onError;
 
   @override
-  State<JobSeekerForm> createState() => _JobSeekerFormState();
+  State<JobSeekerProfileForm> createState() => _JobSeekerProfileFormState();
 }
 
-class _JobSeekerFormState extends State<JobSeekerForm> {
+class _JobSeekerProfileFormState extends State<JobSeekerProfileForm> {
   final userService = UserService.instance;
 
   final labelStyle = TextStyle(fontSize: 12, color: Colors.blueGrey);
@@ -113,21 +113,15 @@ class _JobSeekerFormState extends State<JobSeekerForm> {
                       maxLines: 5,
                     ),
                     SizedBox(height: 8),
-                    // TextFormField(
-                    //   initialValue: form.skills,
-                    //   decoration: InputDecoration(labelText: 'Skills'),
-                    //   minLines: 2,
-                    //   maxLines: 5,
-                    //   onChanged: (s) => form.skills = s,
-                    // ),
                     SizedBox(height: 8),
                     JobFormTextField(
                       label: "Years of experience",
                       initialValue: form.experiences,
                       onChanged: (s) => form.experiences = s,
-                      validator: (s) =>
-                          validateFieldValue(s, "* Please enter years of experience."),
-                      maxLines: 5,
+                      validator: (s) => validateFieldValue(
+                        s,
+                        "* Please enter years of experience.",
+                      ),
                     ),
                     SizedBox(height: 10),
                     Text("Location", style: TextStyle(fontSize: 14, color: Colors.grey.shade700)),
@@ -157,12 +151,13 @@ class _JobSeekerFormState extends State<JobSeekerForm> {
                           SizedBox(width: 10),
                           Expanded(
                             child: JobFormDropdownField<String>(
-                              validator: (v) => validateFieldValue(v, "* Please select location"),
+                              validator: (v) =>
+                                  validateFieldValue(v, "* Please select city/county/gu."),
                               onChanged: (v) => form.sggNm = v ?? '',
                               value: form.sggNm,
                               items: [
                                 DropdownMenuItem(
-                                  child: Text('Select location'),
+                                  child: Text('Select city/county/gu'),
                                   value: '',
                                 ),
                                 for (String sggNm in JobService.instance.areas[form.siNm]!)
@@ -196,7 +191,6 @@ class _JobSeekerFormState extends State<JobSeekerForm> {
                         "* Please select your desired industry.",
                       ),
                     ),
-
                     SizedBox(height: 8),
                     JobFormTextField(
                       label: 'What do you expect on your future job?',
@@ -209,7 +203,7 @@ class _JobSeekerFormState extends State<JobSeekerForm> {
                       maxLines: 5,
                     ),
                     Divider(),
-                    ElevatedButton(onPressed: onSubmit, child: Text('Submit'))
+                    ElevatedButton(onPressed: onSubmit, child: Text('UPDATE'))
                   ],
                 ),
               )
@@ -220,7 +214,7 @@ class _JobSeekerFormState extends State<JobSeekerForm> {
   onSubmit() async {
     setState(() => isSubmitted = true);
     if (_formKey.currentState!.validate()) {
-      print('JobSeekerForm::onSubmit::form');
+      print('JobSeekerProfileForm::onSubmit::form');
       print('${form.toString()}');
       try {
         await form.update();

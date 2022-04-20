@@ -1,19 +1,18 @@
 import 'package:extended/extended.dart';
-// import 'package:fe/service/app.service.dart';
 import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
 
-class JobSeekerFormScreen extends StatefulWidget {
-  const JobSeekerFormScreen({
+class JobSeekerProfileScreen extends StatefulWidget {
+  const JobSeekerProfileScreen({
     Key? key,
   }) : super(key: key);
-  static final String routeName = '/jobSeeker';
+  static final String routeName = '/jobSeekerProfile';
 
   @override
-  State<JobSeekerFormScreen> createState() => _JobSeekerFormScreenState();
+  State<JobSeekerProfileScreen> createState() => _JobSeekerProfileScreenState();
 }
 
-class _JobSeekerFormScreenState extends State<JobSeekerFormScreen> {
+class _JobSeekerProfileScreenState extends State<JobSeekerProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -25,7 +24,7 @@ class _JobSeekerFormScreenState extends State<JobSeekerFormScreen> {
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            JobSeekerForm(
+            JobSeekerProfileForm(
               onSuccess: () => alert('Success', 'Job seeker profile has been updated!'),
               onError: error,
             ),

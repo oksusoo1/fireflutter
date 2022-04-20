@@ -124,6 +124,8 @@ export 'src/extra/job/job.form.text.field.dart';
 export 'src/extra/job/job.form.dropdown.field.dart';
 export 'src/extra/job/job.list.push.notification.icon.dart';
 
-export 'src/extra/job/job.seeker.form.dart';
+export 'src/extra/job/job.seeker.profile.form.dart';
 export 'src/extra/job/models/job.seeker.model.dart';
+export 'src/extra/job/models/job.seeker.list.options.model.dart';
+export 'src/extra/job/job.seeker.list.options.dart';
 export 'src/extra/job/job.seeker.list.dart';
