@@ -120,8 +120,8 @@ export 'src/extra/job/job.list.view.dart';
 export 'src/extra/job/job.view.dart';
 export 'src/extra/job/job.list.options.dart';
 export 'src/extra/job/job.list.option.model.dart';
-export 'src/extra/job/job.edit.form.text.field.dart';
-export 'src/extra/job/job.edit.form.dropdown.field.dart';
+export 'src/extra/job/job.form.text.field.dart';
+export 'src/extra/job/job.form.dropdown.field.dart';
 export 'src/extra/job/job.list.push.notification.icon.dart';
 
 export 'src/extra/job/job.seeker.form.dart';

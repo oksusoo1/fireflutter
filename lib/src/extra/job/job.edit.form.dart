@@ -113,7 +113,7 @@ class _JobEditFormState extends State<JobEditForm> with FirestoreMixin {
           ),
           SizedBox(height: 15),
 
-          JobEditFormTextField(
+          JobFormTextField(
             label: "Company name",
             initialValue: job.companyName,
             onChanged: (s) => job.companyName = s,
@@ -121,7 +121,7 @@ class _JobEditFormState extends State<JobEditForm> with FirestoreMixin {
           ),
           SizedBox(height: 16),
 
-          JobEditFormTextField(
+          JobFormTextField(
             label: "Mobile number",
             initialValue: job.mobileNumber,
             onChanged: (s) => job.mobileNumber = s,
@@ -130,7 +130,7 @@ class _JobEditFormState extends State<JobEditForm> with FirestoreMixin {
           ),
           SizedBox(height: 16),
 
-          JobEditFormTextField(
+          JobFormTextField(
             label: 'Office phone number number',
             initialValue: job.phoneNumber,
             onChanged: (s) => job.phoneNumber = s,
@@ -139,7 +139,7 @@ class _JobEditFormState extends State<JobEditForm> with FirestoreMixin {
           ),
           SizedBox(height: 16),
 
-          JobEditFormTextField(
+          JobFormTextField(
             label: 'Email Address',
             initialValue: job.email,
             onChanged: (s) => job.email = s,
@@ -148,7 +148,7 @@ class _JobEditFormState extends State<JobEditForm> with FirestoreMixin {
           ),
           SizedBox(height: 16),
 
-          JobEditFormTextField(
+          JobFormTextField(
             label: "About us",
             initialValue: job.aboutUs,
             onChanged: (s) => job.aboutUs = s,
@@ -213,7 +213,7 @@ class _JobEditFormState extends State<JobEditForm> with FirestoreMixin {
           /// Company detailed address
           if (address != null) ...[
             SizedBox(height: 9),
-            JobEditFormTextField(
+            JobFormTextField(
               label: "Input detail address",
               // initialValue: job.detailAddress,
               controller: detailedAddress,
@@ -228,7 +228,7 @@ class _JobEditFormState extends State<JobEditForm> with FirestoreMixin {
 
           Divider(height: 64),
 
-          JobEditFormDropdownField<String>(
+          JobFormDropdownField<String>(
             label: "Job category",
             value: job.category,
             items: [
@@ -247,7 +247,7 @@ class _JobEditFormState extends State<JobEditForm> with FirestoreMixin {
             validator: (s) => validateFieldValue(s, "* Please select job category."),
           ),
 
-          JobEditFormDropdownField<int>(
+          JobFormDropdownField<int>(
             label: "Working days (per week)",
             value: job.workingDays,
             items: [
@@ -276,7 +276,7 @@ class _JobEditFormState extends State<JobEditForm> with FirestoreMixin {
             ),
           ),
 
-          JobEditFormDropdownField<int>(
+          JobFormDropdownField<int>(
             label: "Working hours (per day)",
             value: job.workingHours,
             items: [
@@ -305,7 +305,7 @@ class _JobEditFormState extends State<JobEditForm> with FirestoreMixin {
             ),
           ),
 
-          JobEditFormDropdownField<String>(
+          JobFormDropdownField<String>(
             label: "Salary",
             value: job.salary,
             items: [
@@ -325,7 +325,7 @@ class _JobEditFormState extends State<JobEditForm> with FirestoreMixin {
           ),
           SizedBox(height: 16),
 
-          JobEditFormTextField(
+          JobFormTextField(
             label: "Number of hiring",
             initialValue: job.numberOfHiring,
             onChanged: (s) => job.numberOfHiring = s,
@@ -337,7 +337,7 @@ class _JobEditFormState extends State<JobEditForm> with FirestoreMixin {
           ),
           SizedBox(height: 16),
 
-          JobEditFormTextField(
+          JobFormTextField(
             label: "Job description(details of what workers will do)",
             initialValue: job.description,
             onChanged: (s) => job.description = s,
@@ -346,7 +346,7 @@ class _JobEditFormState extends State<JobEditForm> with FirestoreMixin {
           ),
           SizedBox(height: 16),
 
-          JobEditFormTextField(
+          JobFormTextField(
             label: "Requirements and qualifications",
             initialValue: job.requirement,
             onChanged: (s) => job.requirement = s,
@@ -358,7 +358,7 @@ class _JobEditFormState extends State<JobEditForm> with FirestoreMixin {
           ),
           SizedBox(height: 16),
 
-          JobEditFormTextField(
+          JobFormTextField(
             label: "Duties and responsibilities",
             initialValue: job.duty,
             onChanged: (s) => job.duty = s,
@@ -367,7 +367,7 @@ class _JobEditFormState extends State<JobEditForm> with FirestoreMixin {
           ),
           SizedBox(height: 16),
 
-          JobEditFormTextField(
+          JobFormTextField(
             label: "benefits(free meals, dormitory, transporation, etc)",
             initialValue: job.benefit,
             onChanged: (s) => job.benefit = s,

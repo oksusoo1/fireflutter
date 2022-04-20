@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-class JobEditFormDropdownField<T> extends StatelessWidget {
-  const JobEditFormDropdownField({
-    required this.label,
+class JobFormDropdownField<T> extends StatelessWidget {
+  const JobFormDropdownField({
+    this.label,
     required this.value,
     required this.validator,
     required this.items,
@@ -10,7 +10,7 @@ class JobEditFormDropdownField<T> extends StatelessWidget {
     Key? key,
   }) : super(key: key);
 
-  final String label;
+  final String? label;
   final T value;
   final String? Function(T?) validator;
   final List<DropdownMenuItem<T>> items;
@@ -28,7 +28,8 @@ class JobEditFormDropdownField<T> extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: TextStyle(fontSize: 14, color: Colors.grey.shade700)),
+        if (label != null)
+          Text(label!, style: TextStyle(fontSize: 14, color: Colors.grey.shade700)),
         SizedBox(height: 5),
         DropdownButtonFormField<T>(
           autovalidateMode: AutovalidateMode.onUserInteraction,
