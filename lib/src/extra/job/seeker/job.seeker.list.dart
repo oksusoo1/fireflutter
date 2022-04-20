@@ -56,8 +56,9 @@ class _JobSeekerListState extends State<JobSeekerList> with FirestoreMixin {
           return Center(child: Text('No job seekers found...'));
         }
 
-        return ListView.builder(
+        return ListView.separated(
           itemCount: snapshot.docs.length,
+          separatorBuilder: (context, index) => Divider(height: 32),
           itemBuilder: (context, index) {
             if (snapshot.hasMore && index + 1 == snapshot.docs.length) {
               snapshot.fetchMore();
@@ -73,17 +74,22 @@ class _JobSeekerListState extends State<JobSeekerList> with FirestoreMixin {
               behavior: HitTestBehavior.opaque,
               onTap: widget.onTap != null ? () => widget.onTap!(seeker) : null,
               child: Container(
-                margin: EdgeInsets.only(top: 15),
                 padding: widget.padding,
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    UserProfilePhoto(uid: seeker.id, size: 55),
+                    Column(
+                      children: [
+                        if (index == 0) SizedBox(height: 32),
+                        UserProfilePhoto(uid: seeker.id, size: 55),
+                      ],
+                    ),
                     SizedBox(width: 16),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
+                          if (index == 0) SizedBox(height: 32),
                           UserDoc(
                             uid: seeker.id,
                             builder: (u) => Text(
@@ -101,12 +107,6 @@ class _JobSeekerListState extends State<JobSeekerList> with FirestoreMixin {
                     ),
                     SizedBox(width: 16),
                     Icon(Icons.arrow_right),
-
-                    // if (widget.onTapChat != null)
-                    //   IconButton(
-                    //     onPressed: () => widget.onTapChat!(seeker.id),
-                    //     icon: Icon(Icons.chat_rounded),
-                    //   )
                   ],
                 ),
               ),

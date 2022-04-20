@@ -16,7 +16,7 @@ class JobSeekerProfileView extends StatefulWidget {
 }
 
 class _JobSeekerProfileViewState extends State<JobSeekerProfileView> {
-  final labelStyle = TextStyle(fontSize: 12, color: Colors.blueGrey);
+  final labelStyle = TextStyle(fontSize: 10, color: Colors.blueGrey);
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +29,7 @@ class _JobSeekerProfileViewState extends State<JobSeekerProfileView> {
           Center(child: UserProfilePhoto(uid: user.uid, size: 100)),
           SizedBox(height: 20),
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Column(
                 children: [
@@ -38,13 +38,14 @@ class _JobSeekerProfileViewState extends State<JobSeekerProfileView> {
                   Text('${user.firstName}'),
                 ],
               ),
-              Column(
-                children: [
-                  Text('Middle Name', style: labelStyle),
-                  SizedBox(height: 5),
-                  Text('${user.middleName}'),
-                ],
-              ),
+              SizedBox(width: 16),
+              // Column(
+              //   children: [
+              //     Text('Middle Name', style: labelStyle),
+              //     SizedBox(height: 5),
+              //     Text('${user.middleName}'),
+              //   ],
+              // ),
               Column(
                 children: [
                   Text('Last Name', style: labelStyle),
@@ -57,22 +58,22 @@ class _JobSeekerProfileViewState extends State<JobSeekerProfileView> {
           Divider(height: 30),
           Text('Gender', style: labelStyle),
           Text(user.gender == 'F' ? 'Female' : 'Male'),
-          SizedBox(height: 8),
+          SizedBox(height: 18),
           Text('Proficiency', style: labelStyle),
           Text(widget.seeker.proficiency),
-          SizedBox(height: 8),
+          SizedBox(height: 18),
           Text('Years of experience', style: labelStyle),
           Text(widget.seeker.experiences),
-          SizedBox(height: 8),
+          SizedBox(height: 18),
           Text('Location', style: labelStyle),
           Text('${widget.seeker.siNm}, ${widget.seeker.sggNm}'),
-          SizedBox(height: 8),
+          SizedBox(height: 18),
           Text('Industry', style: labelStyle),
           Text('${JobService.instance.categories[widget.seeker.industry]}'),
-          SizedBox(height: 8),
+          SizedBox(height: 18),
           Text('Comment', style: labelStyle),
           Text('${widget.seeker.comment}'),
-          SizedBox(height: 24),
+          SizedBox(height: 32),
           GestureDetector(
             behavior: HitTestBehavior.opaque,
             onTap: () => widget.onChat(user.uid),

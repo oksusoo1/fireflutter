@@ -47,7 +47,7 @@ class JobService {
       'Seocho-gu',
       'Gangnam-gu',
       'Songpa-gu',
-      'Gangdong',
+      'Gangdong-gu',
     ],
     'Busan': [
       'Jung-gu',
