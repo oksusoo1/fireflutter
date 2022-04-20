@@ -11,6 +11,8 @@ class JobSeekerModel {
   String siNm;
   String sggNm;
 
+  String status;
+
   JobSeekerModel({
     this.id = '',
     this.proficiency = '',
@@ -20,6 +22,7 @@ class JobSeekerModel {
     this.comment = '',
     this.siNm = '',
     this.sggNm = '',
+    this.status = 'Y',
   });
 
   factory JobSeekerModel.fromJson(Map<String, dynamic> json, String id) {
@@ -32,6 +35,7 @@ class JobSeekerModel {
       comment: json['comment'] ?? '',
       siNm: json['siNm'] ?? '',
       sggNm: json['sggNm'] ?? '',
+      status: json['status'] ?? 'Y',
     );
   }
 
@@ -43,6 +47,7 @@ class JobSeekerModel {
     comment = data['comment'] ?? '';
     siNm = data['siNm'] ?? '';
     sggNm = data['sggNm'] ?? '';
+    status = data['status'] ?? 'Y';
   }
 
   update() async {
@@ -72,5 +77,6 @@ class JobSeekerModel {
         'comment': comment,
         'siNm': siNm,
         'sggNm': sggNm,
+        'status': status,
       };
 }

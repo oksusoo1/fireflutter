@@ -17,7 +17,7 @@ class JobSeekerList extends StatefulWidget {
 
 class _JobSeekerListState extends State<JobSeekerList> with FirestoreMixin {
   Query get _query {
-    Query q = jobSeekers;
+    Query q = jobSeekers.where('status', isEqualTo: 'Y');
 
     JobSeekerListOptionsModel options = widget.options ?? JobSeekerListOptionsModel();
 
@@ -33,7 +33,7 @@ class _JobSeekerListState extends State<JobSeekerList> with FirestoreMixin {
       q = q.where('industry', isEqualTo: options.industry);
     }
 
-    return q;
+    return q.limit(20);
   }
 
   @override

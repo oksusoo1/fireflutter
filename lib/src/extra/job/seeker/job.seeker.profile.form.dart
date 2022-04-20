@@ -214,6 +214,28 @@ class _JobSeekerProfileFormState extends State<JobSeekerProfileForm> {
                       ),
                       maxLines: 5,
                     ),
+                    SizedBox(height: 16),
+                    Text('Show your profile on job seeker listing?'),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: RadioListTile<Status>(
+                            value: Status.Y,
+                            groupValue: Status.values.asNameMap()[form.status],
+                            title: Text('Yes'),
+                            onChanged: (Status? v) => setState(() => form.status = v!.name),
+                          ),
+                        ),
+                        Expanded(
+                          child: RadioListTile<Status>(
+                            value: Status.N,
+                            groupValue: Status.values.asNameMap()[form.status],
+                            title: Text('No'),
+                            onChanged: (Status? v) => setState(() => form.status = v!.name),
+                          ),
+                        ),
+                      ],
+                    ),
                     Divider(),
                     if (loading)
                       Center(child: CircularProgressIndicator.adaptive(strokeWidth: 2))
