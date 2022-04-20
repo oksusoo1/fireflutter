@@ -42,13 +42,18 @@ class _JobSeekerListState extends State<JobSeekerList> with FirestoreMixin {
       query: _query,
       builder: (context, snapshot, _) {
         if (snapshot.isFetching) {
-          return Text('loading...');
+          return Center(child: Text('loading...'));
         }
 
         if (snapshot.hasError) {
           debugPrint("${snapshot.error}");
-          return Text('Something went wrong! ${snapshot.error}');
+          return Center(child: Text('Something went wrong! ${snapshot.error}'));
         }
+
+        if (snapshot.docs.isEmpty) {
+          return Center(child: Text('No job seekers found...'));
+        }
+
         return ListView.builder(
           itemCount: snapshot.docs.length,
           itemBuilder: (context, index) {

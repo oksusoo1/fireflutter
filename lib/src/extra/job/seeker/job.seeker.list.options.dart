@@ -60,10 +60,12 @@ class _JobSeekerListOptionsState extends State<JobSeekerListOptions> with Firest
                         child: Text('Select city/county/gu', style: optionStyle),
                         value: '',
                       ),
-                      for (String sggNm in JobService.instance.areas[options.siNm]!)
+                      for (final name
+                          in JobService.instance.areas[options.siNm]!
+                            ..sort((a, b) => a.compareTo(b)))
                         DropdownMenuItem(
-                          child: Text(sggNm, style: optionStyle),
-                          value: sggNm,
+                          child: Text(name, style: optionStyle),
+                          value: name,
                         )
                     ],
                     onChanged: (v) {
