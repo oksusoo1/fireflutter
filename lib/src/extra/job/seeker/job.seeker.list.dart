@@ -4,11 +4,12 @@ import 'package:flutterfire_ui/firestore.dart';
 import '../../../../fireflutter.dart';
 
 class JobSeekerList extends StatefulWidget {
-  JobSeekerList({this.options, this.onTapChat, this.onTap, Key? key}) : super(key: key);
+  JobSeekerList({this.options, this.onTap, Key? key, this.padding}) : super(key: key);
 
   final JobSeekerListOptionsModel? options;
-  final Function(String)? onTapChat;
+  // final Function(String)? onTapChat;
   final Function(JobSeekerModel)? onTap;
+  final EdgeInsets? padding;
 
   @override
   State<JobSeekerList> createState() => _JobSeekerListState();
@@ -66,12 +67,12 @@ class _JobSeekerListState extends State<JobSeekerList> with FirestoreMixin {
               onTap: widget.onTap != null ? () => widget.onTap!(seeker) : null,
               child: Container(
                 margin: EdgeInsets.only(top: 15),
-                padding: EdgeInsets.symmetric(horizontal: 8),
+                padding: widget.padding,
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     UserProfilePhoto(uid: seeker.id, size: 55),
-                    SizedBox(width: 10),
+                    SizedBox(width: 16),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -91,11 +92,14 @@ class _JobSeekerListState extends State<JobSeekerList> with FirestoreMixin {
                         ],
                       ),
                     ),
-                    if (widget.onTapChat != null)
-                      IconButton(
-                        onPressed: () => widget.onTapChat!(seeker.id),
-                        icon: Icon(Icons.chat_rounded),
-                      )
+                    SizedBox(width: 16),
+                    Icon(Icons.arrow_right),
+
+                    // if (widget.onTapChat != null)
+                    //   IconButton(
+                    //     onPressed: () => widget.onTapChat!(seeker.id),
+                    //     icon: Icon(Icons.chat_rounded),
+                    //   )
                   ],
                 ),
               ),

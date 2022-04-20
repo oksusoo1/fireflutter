@@ -5,9 +5,11 @@ class JobSeekerProfileView extends StatefulWidget {
   JobSeekerProfileView({
     Key? key,
     required this.seeker,
+    required this.onChat,
   }) : super(key: key);
 
   final JobSeekerModel seeker;
+  final Function(String) onChat;
 
   @override
   State<JobSeekerProfileView> createState() => _JobSeekerProfileViewState();
@@ -74,6 +76,36 @@ class _JobSeekerProfileViewState extends State<JobSeekerProfileView> {
               Text('${widget.seeker.comment}'),
               SizedBox(height: 8),
             ],
+          ),
+          SizedBox(height: 24),
+          GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: () => widget.onChat(user.uid),
+            child: Container(
+              width: double.infinity,
+              padding: EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: Color.fromARGB(255, 243, 150, 0),
+                borderRadius: BorderRadius.circular(32),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.maps_ugc_outlined,
+                    size: 28,
+                    color: Colors.white,
+                  ),
+                  SizedBox(width: 8),
+                  Text(
+                    'Send message to ${user.firstName}',
+                    style: TextStyle(
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
         ],
       ),
