@@ -5,6 +5,7 @@ const ref_1 = require("./ref");
 const defines_1 = require("../defines");
 const meilisearch_1 = require("../classes/meilisearch");
 const utils_1 = require("./utils");
+const comment_1 = require("./comment");
 class Test {
     /**
      * Create a user for test
@@ -123,6 +124,11 @@ class Test {
         const data = snapshot.data();
         data.id = ref.id;
         return data;
+    }
+    static async createComment(data = {}) {
+        const post = this.createPost();
+        data.postId = (await post).id;
+        return comment_1.Comment.create(data);
     }
 }
 exports.Test = Test;

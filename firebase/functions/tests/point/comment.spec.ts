@@ -51,7 +51,7 @@ describe("Comment point test", () => {
     const comment3 = await Comment.create({ postId: "post-id-2-c", uid: user.id });
     const pointAfterCreate3 = await Point.getUserPoint(user.id);
     expect(
-      startingPoint + comment.point! + comment2.point! + (comment3.point ?? 0) === pointAfterCreate3
+        startingPoint + comment.point! + comment2.point! + (comment3.point ?? 0) === pointAfterCreate3
     ).true;
 
     const u = await User.get(user.id);
