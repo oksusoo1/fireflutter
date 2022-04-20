@@ -47,6 +47,8 @@ export class Comment {
     const comment = snapshot.data() as CommentDocument;
     comment.id = ref.id;
     return comment;
+
+    /// TODO: increase no of comment.
   }
 
   /**
@@ -117,6 +119,8 @@ export class Comment {
       // If there is no comment (under this comment), then delete it.
       await Ref.commentDoc(id).delete();
     }
+
+    /// TODO: decrease no of comment.
 
     return { id };
   }
