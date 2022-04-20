@@ -77,6 +77,19 @@ class _JobSeekerProfileFormState extends State<JobSeekerProfileForm> {
             ),
             Column(
               children: [
+                Text('Phone number', style: labelStyle),
+                SizedBox(height: 5),
+                Text('${userService.user.phoneNumber}'),
+              ],
+            ),
+          ],
+        ),
+        SizedBox(height: 15),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            Column(
+              children: [
                 Text('Gender', style: labelStyle),
                 SizedBox(height: 5),
                 Text('${userService.user.gender}'),
@@ -84,9 +97,9 @@ class _JobSeekerProfileFormState extends State<JobSeekerProfileForm> {
             ),
             Column(
               children: [
-                Text('Phone number', style: labelStyle),
+                Text('Birthdate', style: labelStyle),
                 SizedBox(height: 5),
-                Text('${userService.user.phoneNumber}'),
+                Text('${userService.user.birthday}'),
               ],
             ),
           ],
@@ -129,9 +142,9 @@ class _JobSeekerProfileFormState extends State<JobSeekerProfileForm> {
                       children: [
                         Expanded(
                           child: JobFormDropdownField<String>(
-                            validator: (v) => validateFieldValue(v, "* Please select location."),
-                            onChanged: (v) => setState(() => form.siNm = v ?? ''),
                             value: form.siNm,
+                            onChanged: (v) => setState(() => form.siNm = v ?? ''),
+                            validator: (v) => validateFieldValue(v, "* Please select location."),
                             items: [
                               DropdownMenuItem(
                                 child: Text('Select location'),
@@ -150,10 +163,12 @@ class _JobSeekerProfileFormState extends State<JobSeekerProfileForm> {
                           SizedBox(width: 10),
                           Expanded(
                             child: JobFormDropdownField<String>(
-                              validator: (v) =>
-                                  validateFieldValue(v, "* Please select city/county/gu."),
-                              onChanged: (v) => form.sggNm = v ?? '',
                               value: form.sggNm,
+                              onChanged: (v) => form.sggNm = v ?? '',
+                              validator: (v) => validateFieldValue(
+                                v,
+                                "* Please select city/county/gu.",
+                              ),
                               items: [
                                 DropdownMenuItem(
                                   child: Text('Select city/county/gu'),
@@ -176,7 +191,6 @@ class _JobSeekerProfileFormState extends State<JobSeekerProfileForm> {
                       value: form.industry,
                       items: [
                         DropdownMenuItem(child: Text('Select industry'), value: ''),
-                        DropdownMenuItem(child: Text('Any kind of industry'), value: 'any'),
                         ...JobService.instance.categories.entries
                             .map((e) => DropdownMenuItem(
                                   child: Text(e.value),
@@ -218,7 +232,9 @@ class _JobSeekerProfileFormState extends State<JobSeekerProfileForm> {
       isSubmitted = true;
       loading = true;
     });
-    if (_formKey.currentState!.validate()) {
+    if (userService.user.profileError.isNotEmpty) {
+      widget.onError(userService.user.profileError);
+    } else if (_formKey.currentState!.validate()) {
       print('JobSeekerProfileForm::onSubmit::form');
       print('${form.toString()}');
       try {
@@ -227,8 +243,6 @@ class _JobSeekerProfileFormState extends State<JobSeekerProfileForm> {
       } catch (e) {
         widget.onError(e.toString());
       }
-    } else {
-      print('validation error');
     }
     setState(() => loading = false);
   }

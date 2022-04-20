@@ -43,7 +43,7 @@ class _JobSeekerListOptionsState extends State<JobSeekerListOptions> with Firest
                   onChanged: (v) {
                     setState(() {
                       options.siNm = v ?? '';
-                      if (options.siNm.isEmpty) options.sggNm = '';
+                      options.sggNm = '';
                     });
                     widget.change(options);
                   },

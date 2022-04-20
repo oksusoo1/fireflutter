@@ -1,3 +1,4 @@
+import 'package:fe/service/app.service.dart';
 import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
 
@@ -26,6 +27,7 @@ class _JobSeekerListScreenState extends State<JobSeekerListScreen> {
       ),
       body: JobSeekerList(
         options: options,
+        onTapChat: (seekerId) => AppService.instance.openChatRoom(seekerId),
       ),
     );
   }

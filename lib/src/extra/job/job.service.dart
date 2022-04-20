@@ -318,6 +318,7 @@ class JobService {
   };
 
   final Map<String, String> categories = {
+    'any': 'Any kind of industry',
     'accountant': 'Accountant',
     'call-center': 'Call center',
     'construction': 'Construction',

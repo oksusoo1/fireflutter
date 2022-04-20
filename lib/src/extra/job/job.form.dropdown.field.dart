@@ -36,7 +36,7 @@ class JobFormDropdownField<T> extends StatelessWidget {
         SizedBox(height: 5),
         DropdownButtonFormField<T>(
           isExpanded: true,
-          autovalidateMode: AutovalidateMode.onUserInteraction,
+          autovalidateMode: AutovalidateMode.always,
           validator: validator,
           value: value,
           items: items,
