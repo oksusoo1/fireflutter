@@ -3,37 +3,46 @@ import '../../../fireflutter.dart';
 class JobSeekerModel {
   String id;
   String proficiency;
-  String skills;
+  // String skills;
   String experiences;
   String industry;
   String comment;
 
+  String siNm;
+  String sggNm;
+
   JobSeekerModel({
     this.id = '',
     this.proficiency = '',
-    this.skills = '',
+    // this.skills = '',
     this.experiences = '',
     this.industry = '',
     this.comment = '',
+    this.siNm = '',
+    this.sggNm = '',
   });
 
   factory JobSeekerModel.fromJson(Map<String, dynamic> json, String id) {
     return JobSeekerModel(
       id: id,
       proficiency: json['proficiency'] ?? '',
-      skills: json['skills'] ?? '',
+      // skills: json['skills'] ?? '',
       experiences: json['experiences'] ?? '',
       industry: json['industry'] ?? '',
       comment: json['comment'] ?? '',
+      siNm: json['siNm'] ?? '',
+      sggNm: json['sggNm'] ?? '',
     );
   }
 
   copyWith(Map<String, dynamic> data) {
     proficiency = data['proficiency'] ?? '';
-    skills = data['skills'] ?? '';
+    // skills = data['skills'] ?? '';
     experiences = data['experiences'] ?? '0';
     industry = data['industry'] ?? '';
     comment = data['comment'] ?? '';
+    siNm = data['siNm'] ?? '';
+    sggNm = data['sggNm'] ?? '';
   }
 
   update() async {
@@ -57,9 +66,11 @@ class JobSeekerModel {
 
   Map<String, dynamic> get updateMap => {
         'proficiency': proficiency,
-        'skills': skills,
+        // 'skills': skills,
         'experiences': experiences,
         'industry': industry,
         'comment': comment,
+        'siNm': siNm,
+        'sggNm': sggNm,
       };
 }

@@ -76,13 +76,13 @@ class _JobSeekerFormState extends State<JobSeekerForm> {
                       onChanged: (s) => form.proficiency = s,
                     ),
                     SizedBox(height: 8),
-                    TextFormField(
-                      initialValue: form.skills,
-                      decoration: InputDecoration(labelText: 'Skills'),
-                      minLines: 2,
-                      maxLines: 5,
-                      onChanged: (s) => form.skills = s,
-                    ),
+                    // TextFormField(
+                    //   initialValue: form.skills,
+                    //   decoration: InputDecoration(labelText: 'Skills'),
+                    //   minLines: 2,
+                    //   maxLines: 5,
+                    //   onChanged: (s) => form.skills = s,
+                    // ),
                     SizedBox(height: 8),
                     TextFormField(
                       initialValue: form.experiences,
@@ -91,8 +91,63 @@ class _JobSeekerFormState extends State<JobSeekerForm> {
                       maxLines: 5,
                       onChanged: (s) => form.experiences = s,
                     ),
-                    SizedBox(height: 8),
-                    Text('What industry would you like to work in?'),
+                    SizedBox(height: 10),
+                    Text('Location', style: TextStyle(fontSize: 11, color: Colors.grey.shade700)),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: DropdownButtonFormField<String>(
+                            isExpanded: false,
+                            autovalidateMode: AutovalidateMode.onUserInteraction,
+                            validator: (v) =>
+                                v == null || v.trim().isEmpty ? '* Please select location' : null,
+                            onChanged: (v) => setState(() => form.siNm = v ?? ''),
+                            value: form.siNm,
+                            items: [
+                              DropdownMenuItem(
+                                child: Text('Select location'),
+                                value: '',
+                              ),
+                              ...JobService.instance.areas.entries
+                                  .map((e) => DropdownMenuItem(
+                                        child: Text(e.key),
+                                        value: e.key,
+                                      ))
+                                  .toList(),
+                            ],
+                          ),
+                        ),
+                        if (form.siNm.isNotEmpty) ...[
+                          SizedBox(width: 10),
+                          Expanded(
+                            child: DropdownButtonFormField<String>(
+                              isExpanded: false,
+                              autovalidateMode: AutovalidateMode.onUserInteraction,
+                              validator: (v) =>
+                                  v == null || v.trim().isEmpty ? '* Please select location' : null,
+                              onChanged: (v) => form.sggNm = v ?? '',
+                              value: form.sggNm,
+                              items: [
+                                DropdownMenuItem(
+                                  child: Text('Select location'),
+                                  value: '',
+                                ),
+                                for (String sggNm in JobService.instance.areas[form.siNm]!)
+                                  DropdownMenuItem(
+                                    child: Text(sggNm),
+                                    value: sggNm,
+                                  )
+                              ],
+                            ),
+                          ),
+                        ]
+                      ],
+                    ),
+                    SizedBox(height: 10),
+                    Text(
+                      'What industry would you like to work in?',
+                      style: TextStyle(fontSize: 11, color: Colors.grey.shade700),
+                    ),
                     DropdownButtonFormField<String>(
                       autovalidateMode: AutovalidateMode.onUserInteraction,
                       validator: (v) =>
