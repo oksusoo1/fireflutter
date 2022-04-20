@@ -212,8 +212,9 @@ class CommentModel with FirestoreMixin, ForumBase {
     });
   }
 
-  @Deprecated('Use CommentApi')
-  Future<void> delete() async {
+  Future<String> delete() async {
+    return CommentApi.instance.delete(id);
+/*
     if (files.length > 0) {
       for (final url in files) {
         await StorageService.instance.delete(url);
@@ -228,6 +229,7 @@ class CommentModel with FirestoreMixin, ForumBase {
     });
 
     return PostModel.decreaseNoOfComments(postId);
+    */
   }
 
   Future<void> report(String? reason) {

@@ -305,8 +305,9 @@ class PostModel with FirestoreMixin, ForumBase {
   }
 
   /// See readme.
-  @Deprecated('Use CommentApi')
-  Future<void> delete() async {
+  Future<String> delete() async {
+    return PostApi.instance.delete(id);
+/*
     if (files.length > 0) {
       for (final url in files) {
         await StorageService.instance.delete(url);
@@ -329,6 +330,7 @@ class PostModel with FirestoreMixin, ForumBase {
       'files': [],
       'updatedAt': FieldValue.serverTimestamp(),
     });
+    */
   }
 
   /// Increases no of the post read.
@@ -351,10 +353,12 @@ class PostModel with FirestoreMixin, ForumBase {
   /// ```dart
   /// PostModel.increaseNoOfComments(postId);
   /// ```
+  @Deprecated('Do not use this. noOfComments will be automatically adjusted by cloud funtions.')
   static Future<void> increaseNoOfComments(postId) {
     return FirestoreMixin.postDocument(postId).update({'noOfComments': FieldValue.increment(1)});
   }
 
+  @Deprecated('Do not use this. noOfComments will be automatically adjusted by cloud funtions.')
   static Future<void> decreaseNoOfComments(postId) {
     return FirestoreMixin.postDocument(postId).update({'noOfComments': FieldValue.increment(-1)});
   }

@@ -239,8 +239,8 @@ class _MainAppState extends State<MainApp> {
         // print('onNotificationPermissionNotDetermined()');
       },
       onTokenUpdated: (token) {
-        print('##########onTokenUpdated###########');
-        print(token);
+        // print('##########onTokenUpdated###########');
+        // print(token);
       },
     );
   }
