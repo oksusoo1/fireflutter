@@ -43,7 +43,7 @@ class _JobSeekerListOptionsState extends State<JobSeekerListOptions> with Firest
                   onChanged: (v) {
                     setState(() {
                       options.siNm = v ?? '';
-                      if (options.siNm.isEmpty) options.sggNm = '';
+                      options.sggNm = '';
                     });
                     widget.change(options);
                   },
@@ -86,6 +86,10 @@ class _JobSeekerListOptionsState extends State<JobSeekerListOptions> with Firest
               DropdownMenuItem(
                 child: Text('Industry', style: optionStyle),
                 value: '',
+              ),
+              DropdownMenuItem(
+                child: Text('Any kind of industry', style: optionStyle),
+                value: 'any',
               ),
               ...JobService.instance.categories.entries
                   .map((e) => DropdownMenuItem(

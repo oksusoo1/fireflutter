@@ -37,7 +37,9 @@ class _JobSeekerListState extends State<JobSeekerList> with FirestoreMixin {
   Widget build(BuildContext context) {
     return FirestoreListView(
       query: _query,
-      loadingBuilder: (context) => Center(child: Text('loading ...')),
+      loadingBuilder: (context) => Center(
+        child: CircularProgressIndicator.adaptive(strokeWidth: 2),
+      ),
       errorBuilder: (c, o, s) {
         debugPrint('Object; $o');
         debugPrintStack(stackTrace: s);
@@ -49,17 +51,76 @@ class _JobSeekerListState extends State<JobSeekerList> with FirestoreMixin {
           snapshot.id,
         );
 
-        /// todo: job seeker list item ui
-        ///  - show seeker's profile image
-        ///  - show chat button for contact
-        ///  - show details (first name, middle name, last name, gender, proficiency, comment)
-        return ListTile(
-          title: Text(
-            '${JobService.instance.categories[seeker.industry]} - ${seeker.siNm},${seeker.sggNm}',
-          ),
-          subtitle: Text(seeker.comment),
+        return JobSeekerListItem(
+          seeker: seeker,
+          key: ValueKey(seeker.id),
         );
       },
+    );
+  }
+}
+
+class JobSeekerListItem extends StatefulWidget {
+  const JobSeekerListItem({
+    required this.seeker,
+    Key? key,
+  }) : super(key: key);
+
+  final JobSeekerModel seeker;
+
+  @override
+  State<JobSeekerListItem> createState() => _JobSeekerListItemState();
+}
+
+class _JobSeekerListItemState extends State<JobSeekerListItem> {
+  bool open = false;
+
+  @override
+  Widget build(BuildContext context) {
+    /// todo: job seeker list item ui
+    ///  - show seeker's profile image
+    ///  - show chat button for contact
+    ///  - show details (first name, middle name, last name, gender, proficiency, comment)
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: () => setState(() => open = !open),
+      child: Container(
+        margin: EdgeInsets.only(top: 10),
+        padding: EdgeInsets.symmetric(horizontal: 8),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                UserProfilePhoto(uid: widget.seeker.id, size: 55),
+                SizedBox(width: 10),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    UserDoc(
+                      uid: widget.seeker.id,
+                      builder: (u) => Text(
+                        '${u.firstName} ${u.middleName.isNotEmpty ? u.middleName : ''} ${u.lastName} - ${u.gender}',
+                      ),
+                    ),
+                    SizedBox(height: 4),
+                    Text('Industry: ${JobService.instance.categories[widget.seeker.industry]}'),
+                    SizedBox(height: 4),
+                    Text('Location: ${widget.seeker.siNm}, ${widget.seeker.sggNm}'),
+                  ],
+                ),
+              ],
+            ),
+            SizedBox(height: 10),
+            if (open) ...[
+              Text('Proficiency: ${widget.seeker.proficiency}'),
+              SizedBox(height: 5),
+              Text('Comment: ${widget.seeker.comment}'),
+            ]
+          ],
+        ),
+      ),
     );
   }
 }

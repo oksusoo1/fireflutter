@@ -77,6 +77,19 @@ class _JobSeekerProfileFormState extends State<JobSeekerProfileForm> {
             ),
             Column(
               children: [
+                Text('Phone number', style: labelStyle),
+                SizedBox(height: 5),
+                Text('${userService.user.phoneNumber}'),
+              ],
+            ),
+          ],
+        ),
+        SizedBox(height: 15),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            Column(
+              children: [
                 Text('Gender', style: labelStyle),
                 SizedBox(height: 5),
                 Text('${userService.user.gender}'),
@@ -84,9 +97,9 @@ class _JobSeekerProfileFormState extends State<JobSeekerProfileForm> {
             ),
             Column(
               children: [
-                Text('Phone number', style: labelStyle),
+                Text('Birthdate', style: labelStyle),
                 SizedBox(height: 5),
-                Text('${userService.user.phoneNumber}'),
+                Text('${userService.user.birthday}'),
               ],
             ),
           ],
@@ -176,7 +189,6 @@ class _JobSeekerProfileFormState extends State<JobSeekerProfileForm> {
                       value: form.industry,
                       items: [
                         DropdownMenuItem(child: Text('Select industry'), value: ''),
-                        DropdownMenuItem(child: Text('Any kind of industry'), value: 'any'),
                         ...JobService.instance.categories.entries
                             .map((e) => DropdownMenuItem(
                                   child: Text(e.value),
@@ -218,6 +230,10 @@ class _JobSeekerProfileFormState extends State<JobSeekerProfileForm> {
       isSubmitted = true;
       loading = true;
     });
+    // if (userService.user.profileError.isNotEmpty) {
+    //   widget.onError(userService.user.profileError);
+    // } else
+
     if (_formKey.currentState!.validate()) {
       print('JobSeekerProfileForm::onSubmit::form');
       print('${form.toString()}');
@@ -227,8 +243,6 @@ class _JobSeekerProfileFormState extends State<JobSeekerProfileForm> {
       } catch (e) {
         widget.onError(e.toString());
       }
-    } else {
-      print('validation error');
     }
     setState(() => loading = false);
   }
