@@ -139,6 +139,17 @@ class Post {
         return { id: id };
     }
     /**
+     * Increase no of comments.
+     *
+     * Use this method to increase the no of comment on the post when there is new comment.
+     */
+    static async increaseNoOfComments(postId) {
+        return ref_1.Ref.postDoc(postId).update({ noOfComments: admin.firestore.FieldValue.increment(1) });
+    }
+    static async decreaseNoOfComments(postId) {
+        return ref_1.Ref.postDoc(postId).update({ noOfComments: admin.firestore.FieldValue.increment(-1) });
+    }
+    /**
      * Returns a post as PostDocument or null if the post does not exists.
      * @param id post id
      * @returns post document or null if the post does not exitss.

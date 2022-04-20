@@ -6,6 +6,7 @@ const ref_1 = require("./ref");
 const defines_1 = require("../defines");
 const storage_1 = require("./storage");
 const point_1 = require("./point");
+const post_1 = require("./post");
 class Comment {
     /**
      * Creates a comment
@@ -31,6 +32,7 @@ class Comment {
         };
         const ref = await ref_1.Ref.commentCol.add(doc);
         await point_1.Point.commentCreatePoint(data.uid, ref.id);
+        await post_1.Post.increaseNoOfComments(data.postId);
         const snapshot = await ref.get();
         const comment = snapshot.data();
         comment.id = ref.id;
@@ -107,6 +109,7 @@ class Comment {
             // If there is no comment (under this comment), then delete it.
             await ref_1.Ref.commentDoc(id).delete();
         }
+        await post_1.Post.decreaseNoOfComments(comment.postId);
         return { id };
     }
     static async get(id) {

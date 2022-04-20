@@ -5,7 +5,6 @@ import { FirebaseAppInitializer } from "../firebase-app-initializer";
 import { Comment } from "../../src/classes/comment";
 import { ERROR_EMPTY_UID } from "../../src/defines";
 import { Test } from "../../src/classes/test";
-import { Post } from "../../src/classes/post";
 
 new FirebaseAppInitializer();
 
