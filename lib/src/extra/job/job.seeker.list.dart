@@ -48,6 +48,10 @@ class _JobSeekerListState extends State<JobSeekerList> with FirestoreMixin {
           snapshot.id,
         );
 
+        /// todo: job seeker list item ui
+        ///  - show seeker's profile image
+        ///  - show chat button for contact
+        ///  - show details (first name, middle name, last name, gender, proficiency, comment)
         return ListTile(
           title: Text(
             '${JobService.instance.categories[seeker.industry]} - ${seeker.siNm},${seeker.sggNm}',

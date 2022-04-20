@@ -16,14 +16,13 @@ class JobSeekerProfileForm extends StatefulWidget {
 }
 
 class _JobSeekerProfileFormState extends State<JobSeekerProfileForm> {
-  final userService = UserService.instance;
-
   final labelStyle = TextStyle(fontSize: 12, color: Colors.blueGrey);
-
   final _formKey = GlobalKey<FormState>(debugLabel: 'jobSeeker');
-
+  final userService = UserService.instance;
   final form = JobSeekerModel();
+
   bool loaded = false;
+  bool loading = false;
   bool isSubmitted = false;
 
   @override
@@ -203,7 +202,10 @@ class _JobSeekerProfileFormState extends State<JobSeekerProfileForm> {
                       maxLines: 5,
                     ),
                     Divider(),
-                    ElevatedButton(onPressed: onSubmit, child: Text('UPDATE'))
+                    if (loading)
+                      Center(child: CircularProgressIndicator.adaptive(strokeWidth: 2))
+                    else
+                      ElevatedButton(onPressed: onSubmit, child: Text('UPDATE'))
                   ],
                 ),
               )
@@ -212,7 +214,10 @@ class _JobSeekerProfileFormState extends State<JobSeekerProfileForm> {
   }
 
   onSubmit() async {
-    setState(() => isSubmitted = true);
+    setState(() {
+      isSubmitted = true;
+      loading = true;
+    });
     if (_formKey.currentState!.validate()) {
       print('JobSeekerProfileForm::onSubmit::form');
       print('${form.toString()}');
@@ -225,6 +230,7 @@ class _JobSeekerProfileFormState extends State<JobSeekerProfileForm> {
     } else {
       print('validation error');
     }
+    setState(() => loading = false);
   }
 
   String? validateFieldValue(dynamic value, String error) {
@@ -236,14 +242,3 @@ class _JobSeekerProfileFormState extends State<JobSeekerProfileForm> {
     return null;
   }
 }
-
-/// all the info from porofile.
-// - photo url, first, middle, last name, birthday, gender, email, phone number …
-
-// professioncy
-// skills, experience
-
-// what industry I would like to work;
-// …
-
-// comment and expectation for future job.
