@@ -16,7 +16,7 @@ class JobSeekerProfileForm extends StatefulWidget {
 }
 
 class _JobSeekerProfileFormState extends State<JobSeekerProfileForm> {
-  final labelStyle = TextStyle(fontSize: 12, color: Colors.blueGrey);
+  final labelStyle = TextStyle(fontSize: 10, color: Colors.blueGrey);
   final _formKey = GlobalKey<FormState>(debugLabel: 'jobSeeker');
   final userService = UserService.instance;
   final form = JobSeekerModel();
@@ -39,7 +39,7 @@ class _JobSeekerProfileFormState extends State<JobSeekerProfileForm> {
         UserProfilePhoto(uid: userService.uid, size: 100),
         SizedBox(height: 20),
         Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Column(
               children: [
@@ -48,13 +48,15 @@ class _JobSeekerProfileFormState extends State<JobSeekerProfileForm> {
                 Text('${userService.user.firstName}'),
               ],
             ),
-            Column(
-              children: [
-                Text('Middle Name', style: labelStyle),
-                SizedBox(height: 5),
-                Text('${userService.user.middleName}'),
-              ],
-            ),
+            SizedBox(width: 16),
+
+            // Column(
+            //   children: [
+            //     Text('Middle Name', style: labelStyle),
+            //     SizedBox(height: 5),
+            //     Text('${userService.user.middleName}'),
+            //   ],
+            // ),
             Column(
               children: [
                 Text('Last Name', style: labelStyle),
@@ -64,46 +66,54 @@ class _JobSeekerProfileFormState extends State<JobSeekerProfileForm> {
             ),
           ],
         ),
-        SizedBox(height: 15),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            Column(
-              children: [
-                Text('Email Address', style: labelStyle),
-                SizedBox(height: 5),
-                Text('${userService.user.email}'),
-              ],
-            ),
-            Column(
-              children: [
-                Text('Phone number', style: labelStyle),
-                SizedBox(height: 5),
-                Text('${userService.user.phoneNumber}'),
-              ],
-            ),
-          ],
+        SizedBox(height: 32),
+        Text(
+          'We do not expose your number and eamil.\nJob hunters will send you a message in app.',
+          style: TextStyle(
+            fontSize: 10,
+            color: Colors.grey,
+          ),
+          textAlign: TextAlign.center,
         ),
-        SizedBox(height: 15),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            Column(
-              children: [
-                Text('Gender', style: labelStyle),
-                SizedBox(height: 5),
-                Text('${userService.user.gender}'),
-              ],
-            ),
-            Column(
-              children: [
-                Text('Birthdate', style: labelStyle),
-                SizedBox(height: 5),
-                Text('${userService.user.birthday}'),
-              ],
-            ),
-          ],
-        ),
+        // Row(
+        //   mainAxisAlignment: MainAxisAlignment.spaceAround,
+        //   children: [
+        //     Column(
+        //       children: [
+        //         Text('Email Address', style: labelStyle),
+        //         SizedBox(height: 5),
+        //         Text('${userService.user.email}'),
+        //       ],
+        //     ),
+        //     Column(
+        //       children: [
+        //         Text('Phone number', style: labelStyle),
+        //         SizedBox(height: 5),
+        //         Text('${userService.user.phoneNumber}'),
+        //       ],
+        //     ),
+        //   ],
+        // ),
+        // SizedBox(height: 15),
+        // Row(
+        //   mainAxisAlignment: MainAxisAlignment.spaceAround,
+        //   children: [
+        //     Column(
+        //       children: [
+        //         Text('Gender', style: labelStyle),
+        //         SizedBox(height: 5),
+        //         Text('${userService.user.gender}'),
+        //       ],
+        //     ),
+        //     Column(
+        //       children: [
+        //         Text('Birthdate', style: labelStyle),
+        //         SizedBox(height: 5),
+        //         Text('${userService.user.birthday}'),
+        //       ],
+        //     ),
+        //   ],
+        // ),
         Divider(height: 30),
         loaded == false
             ? Container(
@@ -118,7 +128,7 @@ class _JobSeekerProfileFormState extends State<JobSeekerProfileForm> {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     JobFormTextField(
-                      label: 'Proficiency',
+                      label: 'Input Your Proficiency',
                       initialValue: form.proficiency,
                       onChanged: (s) => form.proficiency = s,
                       validator: (s) => validateFieldValue(s, "* Please enter proficiency."),
@@ -134,8 +144,9 @@ class _JobSeekerProfileFormState extends State<JobSeekerProfileForm> {
                         "* Please enter years of experience.",
                       ),
                     ),
-                    SizedBox(height: 10),
-                    Text("Location", style: TextStyle(fontSize: 14, color: Colors.grey.shade700)),
+                    SizedBox(height: 16),
+                    Text("Where do you want to work?",
+                        style: TextStyle(fontSize: 14, color: Colors.grey.shade700)),
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
