@@ -4,9 +4,10 @@ import 'package:flutterfire_ui/firestore.dart';
 import '../../../fireflutter.dart';
 
 class JobSeekerList extends StatefulWidget {
-  JobSeekerList({required this.options, Key? key}) : super(key: key);
+  JobSeekerList({required this.options, this.onTapChat, Key? key}) : super(key: key);
 
   final JobSeekerListOptionsModel options;
+  final Function(String)? onTapChat;
 
   @override
   State<JobSeekerList> createState() => _JobSeekerListState();
@@ -54,6 +55,7 @@ class _JobSeekerListState extends State<JobSeekerList> with FirestoreMixin {
         return JobSeekerListItem(
           seeker: seeker,
           key: ValueKey(seeker.id),
+          onTapChat: widget.onTapChat != null ? () => widget.onTapChat!(seeker.id) : null,
         );
       },
     );
@@ -63,10 +65,12 @@ class _JobSeekerListState extends State<JobSeekerList> with FirestoreMixin {
 class JobSeekerListItem extends StatefulWidget {
   const JobSeekerListItem({
     required this.seeker,
+    this.onTapChat,
     Key? key,
   }) : super(key: key);
 
   final JobSeekerModel seeker;
+  final Function()? onTapChat;
 
   @override
   State<JobSeekerListItem> createState() => _JobSeekerListItemState();
@@ -77,10 +81,6 @@ class _JobSeekerListItemState extends State<JobSeekerListItem> {
 
   @override
   Widget build(BuildContext context) {
-    /// todo: job seeker list item ui
-    ///  - show seeker's profile image
-    ///  - show chat button for contact
-    ///  - show details (first name, middle name, last name, gender, proficiency, comment)
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       onTap: () => setState(() => open = !open),
@@ -95,21 +95,27 @@ class _JobSeekerListItemState extends State<JobSeekerListItem> {
               children: [
                 UserProfilePhoto(uid: widget.seeker.id, size: 55),
                 SizedBox(width: 10),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    UserDoc(
-                      uid: widget.seeker.id,
-                      builder: (u) => Text(
-                        '${u.firstName} ${u.middleName.isNotEmpty ? u.middleName : ''} ${u.lastName} - ${u.gender}',
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      UserDoc(
+                        uid: widget.seeker.id,
+                        builder: (u) => Text(
+                          '${u.firstName} ${u.middleName.isNotEmpty ? u.middleName : ''} ${u.lastName} - ${u.gender}',
+                        ),
                       ),
-                    ),
-                    SizedBox(height: 4),
-                    Text('Industry: ${JobService.instance.categories[widget.seeker.industry]}'),
-                    SizedBox(height: 4),
-                    Text('Location: ${widget.seeker.siNm}, ${widget.seeker.sggNm}'),
-                  ],
+                      SizedBox(height: 4),
+                      Text('Industry: ${JobService.instance.categories[widget.seeker.industry]}'),
+                      SizedBox(height: 4),
+                      Text(
+                        'Location: ${widget.seeker.siNm}, ${widget.seeker.sggNm}',
+                      ),
+                    ],
+                  ),
                 ),
+                if (widget.onTapChat != null)
+                  IconButton(onPressed: widget.onTapChat, icon: Icon(Icons.chat_rounded))
               ],
             ),
             SizedBox(height: 10),

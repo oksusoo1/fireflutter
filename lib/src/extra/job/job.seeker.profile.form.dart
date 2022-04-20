@@ -230,11 +230,9 @@ class _JobSeekerProfileFormState extends State<JobSeekerProfileForm> {
       isSubmitted = true;
       loading = true;
     });
-    // if (userService.user.profileError.isNotEmpty) {
-    //   widget.onError(userService.user.profileError);
-    // } else
-
-    if (_formKey.currentState!.validate()) {
+    if (userService.user.profileError.isNotEmpty) {
+      widget.onError(userService.user.profileError);
+    } else if (_formKey.currentState!.validate()) {
       print('JobSeekerProfileForm::onSubmit::form');
       print('${form.toString()}');
       try {
