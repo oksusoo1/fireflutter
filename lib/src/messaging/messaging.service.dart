@@ -208,7 +208,7 @@ class MessagingService with FirestoreMixin, DatabaseMixin {
   initializeSubscriptions() async {
     final _tokenChanged = await tokenChanged;
     final _userChanged = await userChanged;
-    print('_tokenChanged; $_tokenChanged, _userChanged; $_userChanged');
+    // print('_tokenChanged; $_tokenChanged, _userChanged; $_userChanged');
     if (_tokenChanged || _userChanged) {
       await UserSettingService.instance.unsubscribeAllTopic();
       await UserSettingService.instance.subscribeToUserTopics();

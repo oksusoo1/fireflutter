@@ -25,7 +25,7 @@ class JobListView extends StatefulWidget {
 ///
 class _JobListViewState extends State<JobListView> with FirestoreMixin {
   Query get _searchQuery {
-    print('_serchQuery ${widget.options}');
+    // print('_serchQuery ${widget.options}');
 
     final options = widget.options;
 
