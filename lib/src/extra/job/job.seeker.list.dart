@@ -37,62 +37,70 @@ class _JobSeekerListState extends State<JobSeekerList> with FirestoreMixin {
 
   @override
   Widget build(BuildContext context) {
-    return FirestoreListView(
+    return FirestoreQueryBuilder(
       query: _query,
-      loadingBuilder: (context) => Center(
-        child: CircularProgressIndicator.adaptive(strokeWidth: 2),
-      ),
-      errorBuilder: (c, o, s) {
-        debugPrint('Object; $o');
-        debugPrintStack(stackTrace: s);
-        return Text(o.toString());
-      },
-      itemBuilder: (context, snapshot) {
-        JobSeekerModel seeker = JobSeekerModel.fromJson(
-          snapshot.data() as Map<String, dynamic>,
-          snapshot.id,
-        );
+      builder: (context, snapshot, _) {
+        if (snapshot.isFetching) {
+          return Text('loading...');
+        }
 
-        return GestureDetector(
-          key: ValueKey(seeker.id),
-          behavior: HitTestBehavior.opaque,
-          onTap: widget.onTap != null ? () => widget.onTap!(seeker) : null,
-          child: Container(
-            margin: EdgeInsets.only(top: 15),
-            padding: EdgeInsets.symmetric(horizontal: 8),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                UserProfilePhoto(uid: seeker.id, size: 55),
-                SizedBox(width: 10),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+        if (snapshot.hasError) {
+          debugPrint("${snapshot.error}");
+          return Text('Something went wrong! ${snapshot.error}');
+        }
+        return ListView.builder(
+            itemCount: snapshot.docs.length,
+            itemBuilder: (context, index) {
+              if (snapshot.hasMore && index + 1 == snapshot.docs.length) {
+                snapshot.fetchMore();
+              }
+
+              JobSeekerModel seeker = JobSeekerModel.fromJson(
+                snapshot.docs[index].data() as Map<String, dynamic>,
+                snapshot.docs[index].id,
+              );
+
+              return GestureDetector(
+                key: ValueKey(seeker.id),
+                behavior: HitTestBehavior.opaque,
+                onTap: widget.onTap != null ? () => widget.onTap!(seeker) : null,
+                child: Container(
+                  margin: EdgeInsets.only(top: 15),
+                  padding: EdgeInsets.symmetric(horizontal: 8),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      UserDoc(
-                        uid: seeker.id,
-                        builder: (u) => Text(
-                          '${u.firstName} ${u.middleName.isNotEmpty ? u.middleName : ''} ${u.lastName} - ${u.gender}',
+                      UserProfilePhoto(uid: seeker.id, size: 55),
+                      SizedBox(width: 10),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            UserDoc(
+                              uid: seeker.id,
+                              builder: (u) => Text(
+                                '${u.firstName} ${u.middleName.isNotEmpty ? u.middleName : ''} ${u.lastName} - ${u.gender}',
+                              ),
+                            ),
+                            SizedBox(height: 4),
+                            Text('Industry: ${JobService.instance.categories[seeker.industry]}'),
+                            SizedBox(height: 4),
+                            Text(
+                              'Location: ${seeker.siNm}, ${seeker.sggNm}',
+                            ),
+                          ],
                         ),
                       ),
-                      SizedBox(height: 4),
-                      Text('Industry: ${JobService.instance.categories[seeker.industry]}'),
-                      SizedBox(height: 4),
-                      Text(
-                        'Location: ${seeker.siNm}, ${seeker.sggNm}',
-                      ),
+                      if (widget.onTapChat != null)
+                        IconButton(
+                          onPressed: () => widget.onTapChat!(seeker.id),
+                          icon: Icon(Icons.chat_rounded),
+                        )
                     ],
                   ),
                 ),
-                if (widget.onTapChat != null)
-                  IconButton(
-                    onPressed: () => widget.onTapChat!(seeker.id),
-                    icon: Icon(Icons.chat_rounded),
-                  )
-              ],
-            ),
-          ),
-        );
+              );
+            });
       },
     );
   }
