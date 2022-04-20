@@ -4,9 +4,9 @@ import 'package:flutterfire_ui/firestore.dart';
 import '../../../fireflutter.dart';
 
 class JobSeekerList extends StatefulWidget {
-  JobSeekerList({required this.options, Key? key}) : super(key: key);
+  JobSeekerList({this.options, Key? key}) : super(key: key);
 
-  final JobSeekerListOptionsModel options;
+  final JobSeekerListOptionsModel? options;
 
   @override
   State<JobSeekerList> createState() => _JobSeekerListState();
@@ -16,7 +16,7 @@ class _JobSeekerListState extends State<JobSeekerList> with FirestoreMixin {
   Query get _query {
     Query q = jobSeekers;
 
-    JobSeekerListOptionsModel options = widget.options;
+    JobSeekerListOptionsModel options = widget.options ?? JobSeekerListOptionsModel();
 
     if (options.siNm != '') {
       q = q.where('siNm', isEqualTo: options.siNm);
