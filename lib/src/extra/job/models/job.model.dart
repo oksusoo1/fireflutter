@@ -147,4 +147,20 @@ class JobModel {
   String toString() {
     return '''JobModel($toUpdate)''';
   }
+
+  Future edit() {
+    if (id == '') {
+      return FunctionsApi.instance.request(
+        'jobCreate',
+        data: toCreate,
+        addAuth: true,
+      );
+    } else {
+      return FunctionsApi.instance.request(
+        'jobUpdate',
+        data: toUpdate,
+        addAuth: true,
+      );
+    }
+  }
 }

@@ -87,10 +87,6 @@ class _JobSeekerListOptionsState extends State<JobSeekerListOptions> with Firest
                 child: Text('Industry', style: optionStyle),
                 value: '',
               ),
-              DropdownMenuItem(
-                child: Text('Any kind of industry', style: optionStyle),
-                value: 'any',
-              ),
               ...JobService.instance.categories.entries
                   .map((e) => DropdownMenuItem(
                         child: Text(e.value, style: optionStyle),

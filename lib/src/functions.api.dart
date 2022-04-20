@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:dio/dio.dart';
 import '../fireflutter.dart';
 
@@ -51,8 +49,8 @@ class FunctionsApi {
         temp[k] = data[k].toString();
       }
     }
-    final httpsUri = Uri(queryParameters: temp);
-    log(FunctionsApi.instance.serverUrl + functionName + httpsUri.toString());
+    // final httpsUri = Uri(queryParameters: temp);
+    // log(FunctionsApi.instance.serverUrl + functionName + httpsUri.toString());
 
     /// EO Debug URL
 

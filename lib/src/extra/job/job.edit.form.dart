@@ -33,11 +33,6 @@ class _JobEditFormState extends State<JobEditForm> with FirestoreMixin {
   AddressModel? address;
 
   JobModel job = JobModel.empty();
-  bool get isCreate {
-    return job.id == '';
-  }
-
-  bool get isUpdate => !isCreate;
 
   double uploadProgress = 0;
   bool get uploadLimited => job.files.length >= 5;
@@ -495,10 +490,14 @@ class _JobEditFormState extends State<JobEditForm> with FirestoreMixin {
           Divider(),
 
           if (loading)
-            Center(child: CircularProgressIndicator.adaptive(strokeWidth: 2))
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Center(child: CircularProgressIndicator.adaptive(strokeWidth: 2)),
+            )
           else
             ElevatedButton(
-              child: Text('Submit'),
+              child: Text('SUBMIT'),
+              style: ElevatedButton.styleFrom(elevation: 0),
               onPressed: () async {
                 setState(() {
                   isSubmitted = true;
@@ -507,24 +506,12 @@ class _JobEditFormState extends State<JobEditForm> with FirestoreMixin {
                 // Validate returns true if the form is valid, or false otherwise.
                 if (_formKey.currentState!.validate() && address != null) {
                   addJobAddress(address!);
+
                   try {
-                    if (isCreate) {
-                      print(job.toCreate);
-                      // TODO: move this into JobModel.
-                      await FunctionsApi.instance.request(
-                        'jobCreate',
-                        data: job.toCreate,
-                        addAuth: true,
-                      );
+                    await job.edit();
+                    if (job.id == '') {
                       widget.onCreated();
                     } else {
-                      print(job.toUpdate);
-                      // TODO: move this into JobModel.
-                      await FunctionsApi.instance.request(
-                        'jobUpdate',
-                        data: job.toUpdate,
-                        addAuth: true,
-                      );
                       widget.onUpdated();
                     }
                   } catch (e, stacks) {

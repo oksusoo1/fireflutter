@@ -142,9 +142,9 @@ class _JobSeekerProfileFormState extends State<JobSeekerProfileForm> {
                       children: [
                         Expanded(
                           child: JobFormDropdownField<String>(
-                            validator: (v) => validateFieldValue(v, "* Please select location."),
-                            onChanged: (v) => setState(() => form.siNm = v ?? ''),
                             value: form.siNm,
+                            onChanged: (v) => setState(() => form.siNm = v ?? ''),
+                            validator: (v) => validateFieldValue(v, "* Please select location."),
                             items: [
                               DropdownMenuItem(
                                 child: Text('Select location'),
@@ -163,10 +163,12 @@ class _JobSeekerProfileFormState extends State<JobSeekerProfileForm> {
                           SizedBox(width: 10),
                           Expanded(
                             child: JobFormDropdownField<String>(
-                              validator: (v) =>
-                                  validateFieldValue(v, "* Please select city/county/gu."),
-                              onChanged: (v) => form.sggNm = v ?? '',
                               value: form.sggNm,
+                              onChanged: (v) => form.sggNm = v ?? '',
+                              validator: (v) => validateFieldValue(
+                                v,
+                                "* Please select city/county/gu.",
+                              ),
                               items: [
                                 DropdownMenuItem(
                                   child: Text('Select city/county/gu'),
