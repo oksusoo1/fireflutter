@@ -33,7 +33,9 @@ class _JobSeekerListState extends State<JobSeekerList> with FirestoreMixin {
       q = q.where('industry', isEqualTo: options.industry);
     }
 
-    return q.limit(20);
+    q = q.orderBy('createAt', descending: true);
+
+    return q;
   }
 
   @override
