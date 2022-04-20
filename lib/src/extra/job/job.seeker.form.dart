@@ -147,7 +147,7 @@ class _JobSeekerFormState extends State<JobSeekerForm> {
                               ),
                               ...JobService.instance.areas.entries
                                   .map((e) => DropdownMenuItem(
-                                        child: Text(e.key),
+                                        child: Text(e.key, style: TextStyle(fontSize: 14)),
                                         value: e.key,
                                       ))
                                   .toList(),
@@ -168,7 +168,7 @@ class _JobSeekerFormState extends State<JobSeekerForm> {
                                 ),
                                 for (String sggNm in JobService.instance.areas[form.siNm]!)
                                   DropdownMenuItem(
-                                    child: Text(sggNm),
+                                    child: Text(sggNm, style: TextStyle(fontSize: 14)),
                                     value: sggNm,
                                   )
                               ],
