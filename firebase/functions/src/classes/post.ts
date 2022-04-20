@@ -159,6 +159,20 @@ export class Post {
 
     return { id: id };
   }
+
+  /**
+   * Increase no of comments.
+   *
+   * Use this method to increase the no of comment on the post when there is new comment.
+   */
+  static async increaseNoOfComments(postId: string) {
+    return Ref.postDoc(postId).update({ noOfComments: admin.firestore.FieldValue.increment(1) });
+  }
+
+  static async decreaseNoOfComments(postId: string) {
+    return Ref.postDoc(postId).update({ noOfComments: admin.firestore.FieldValue.increment(-1) });
+  }
+
   /**
    * Returns a post as PostDocument or null if the post does not exists.
    * @param id post id
@@ -190,8 +204,8 @@ export class Post {
   }
 
   static async sendMessageOnCommentCreate(
-      data: CommentDocument,
-      id: string
+    data: CommentDocument,
+    id: string
   ): Promise<OnCommentCreateResponse | null> {
     const post = await this.get(data.postId);
     if (!post) return null;
@@ -220,16 +234,16 @@ export class Post {
 
     // Don't send the same message twice to topic subscribers and comment notifyees.
     const userUids = await Messaging.getCommentNotifyeeWithoutTopicSubscriber(
-        ancestorsUid.join(","),
-        topic
+      ancestorsUid.join(","),
+      topic
     );
 
     // get users tokens
     const tokens = await Messaging.getTokensFromUids(userUids.join(","));
 
     const sendToTokenRes = await Messaging.sendingMessageToTokens(
-        tokens,
-        Messaging.preMessagePayload(messageData)
+      tokens,
+      Messaging.preMessagePayload(messageData)
     );
     return {
       topicResponse: sendToTopicRes,

@@ -3,7 +3,8 @@ import { Ref } from "./ref";
 import { ERROR_USER_EXISTS } from "../defines";
 import { Meilisearch } from "../classes/meilisearch";
 import { Utils } from "./utils";
-import { CategoryDocument, PostDocument } from "../interfaces/forum.interface";
+import { CategoryDocument, CommentDocument, PostDocument } from "../interfaces/forum.interface";
+import { Comment } from "./comment";
 
 export class Test {
   static testCount = 0;
@@ -139,5 +140,11 @@ export class Test {
     const data = snapshot.data() as PostDocument;
     data.id = ref.id;
     return data;
+  }
+
+  static async createComment(data = {} as any): Promise<CommentDocument> {
+    const post = this.createPost();
+    data.postId = (await post!).id;
+    return Comment.create(data);
   }
 }

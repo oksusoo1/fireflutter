@@ -1,13 +1,14 @@
 import "mocha";
 import { expect } from "chai";
 
-import { EventName, Point, randomPoint } from "../../src/classes/point";
+import { Point, randomPoint } from "../../src/classes/point";
 import { FirebaseAppInitializer } from "../firebase-app-initializer";
 import { Utils } from "../../src/classes/utils";
 import { Comment } from "../../src/classes/comment";
 // import { User } from "../../src/classes/user";
 import { Test } from "../../src/classes/test";
 import { User } from "../../src/classes/user";
+import { EventName } from "../../src/interfaces/point.interface";
 
 new FirebaseAppInitializer();
 
@@ -50,7 +51,7 @@ describe("Comment point test", () => {
     const comment3 = await Comment.create({ postId: "post-id-2-c", uid: user.id });
     const pointAfterCreate3 = await Point.getUserPoint(user.id);
     expect(
-        startingPoint + comment.point! + comment2.point! + (comment3.point ?? 0) === pointAfterCreate3
+      startingPoint + comment.point! + comment2.point! + (comment3.point ?? 0) === pointAfterCreate3
     ).true;
 
     const u = await User.get(user.id);

@@ -16,6 +16,7 @@ import {
 } from "../interfaces/forum.interface";
 import { Storage } from "./storage";
 import { Point } from "./point";
+import { Post } from "./post";
 
 export class Comment {
   /**
@@ -40,15 +41,17 @@ export class Comment {
       updatedAt: admin.firestore.FieldValue.serverTimestamp(),
     };
     const ref = await Ref.commentCol.add(doc);
+
     await Point.commentCreatePoint(data.uid, ref.id);
+
+    await Post.increaseNoOfComments(data.postId);
 
     const snapshot = await ref.get();
 
     const comment = snapshot.data() as CommentDocument;
     comment.id = ref.id;
-    return comment;
 
-    /// TODO: increase no of comment.
+    return comment;
   }
 
   /**
@@ -120,7 +123,7 @@ export class Comment {
       await Ref.commentDoc(id).delete();
     }
 
-    /// TODO: decrease no of comment.
+    await Post.decreaseNoOfComments(comment.postId);
 
     return { id };
   }
