@@ -29,9 +29,13 @@ class JobFormDropdownField<T> extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         if (label != null)
-          Text(label!, style: TextStyle(fontSize: 14, color: Colors.grey.shade700)),
+          Text(
+            label!,
+            style: TextStyle(fontSize: 14, color: Colors.grey.shade700),
+          ),
         SizedBox(height: 5),
         DropdownButtonFormField<T>(
+          isExpanded: true,
           autovalidateMode: AutovalidateMode.onUserInteraction,
           validator: validator,
           value: value,
