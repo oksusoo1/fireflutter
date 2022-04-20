@@ -123,7 +123,7 @@ export class Comment {
       await Ref.commentDoc(id).delete();
     }
 
-    await Post.decreaseNoOfComments(data.postId);
+    await Post.decreaseNoOfComments(comment.postId);
 
     return { id };
   }

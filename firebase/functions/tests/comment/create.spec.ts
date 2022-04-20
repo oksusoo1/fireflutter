@@ -4,6 +4,8 @@ import { expect } from "chai";
 import { FirebaseAppInitializer } from "../firebase-app-initializer";
 import { Comment } from "../../src/classes/comment";
 import { ERROR_EMPTY_UID } from "../../src/defines";
+import { Test } from "../../src/classes/test";
+import { Post } from "../../src/classes/post";
 
 new FirebaseAppInitializer();
 
@@ -18,9 +20,10 @@ describe("comment create test", () => {
   });
 
   it("Succed to create a comment", async () => {
+    const post = await Test.createPost();
     const comment = await Comment.create({
       uid: "a",
-      postId: "comment-id",
+      postId: post!.id,
       parentId: "parent-id",
       content: "yo",
     } as any);
@@ -30,5 +33,6 @@ describe("comment create test", () => {
     expect(comment!.uid).equals("a");
     expect(comment.hasPhoto).to.be.an("boolean");
     expect(comment.hasPhoto).to.be.false;
+    // console.log(await Post.get(post.id!));
   });
 });
