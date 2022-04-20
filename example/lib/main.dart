@@ -19,6 +19,7 @@ import 'package:fe/screens/job/job.edit.screen.dart';
 import 'package:fe/screens/job/job.list.screen.dart';
 import 'package:fe/screens/job/job.seeker.profile.screen.dart';
 import 'package:fe/screens/job/job.seeker.list.screen.dart';
+import 'package:fe/screens/job/job.seeker.profile.view.screen.dart';
 import 'package:fe/screens/job/job.view.screen.dart';
 import 'package:fe/screens/point_history/point_history.screen.dart';
 import 'package:fe/screens/search/search.screen.dart';
@@ -81,7 +82,9 @@ final Map<String, RouteFunction> routes = {
   JobViewScreen.routeName: (context, arguments) => JobViewScreen(arguments: arguments),
   PointHistoryScreen.routeName: (context, arguments) => PointHistoryScreen(),
   CategoryGroupScreen.routeName: (context, arguments) => CategoryGroupScreen(),
-  JobSeekerProfileScreen.routeName: (context, arguments) => JobSeekerProfileScreen(),
+  JobSeekerProfileFormScreen.routeName: (context, arguments) => JobSeekerProfileFormScreen(),
+  JobSeekerProfileViewScreen.routeName: (context, arguments) =>
+      JobSeekerProfileViewScreen(arguments: arguments),
   JobSeekerListScreen.routeName: (context, arguments) => JobSeekerListScreen(),
 };
 

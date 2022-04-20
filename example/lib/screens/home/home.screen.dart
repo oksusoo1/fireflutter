@@ -246,7 +246,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: const Text('Job'),
                   ),
                   ElevatedButton(
-                    onPressed: () => AppService.instance.open(JobSeekerProfileScreen.routeName),
+                    onPressed: () => AppService.instance.open(JobSeekerProfileFormScreen.routeName),
                     child: const Text('Job seeker profile'),
                   ),
                   ElevatedButton(

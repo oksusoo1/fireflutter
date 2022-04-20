@@ -125,7 +125,6 @@ class _JobSeekerProfileFormState extends State<JobSeekerProfileForm> {
                       maxLines: 5,
                     ),
                     SizedBox(height: 8),
-                    SizedBox(height: 8),
                     JobFormTextField(
                       label: "Years of experience",
                       initialValue: form.experiences,
