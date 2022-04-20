@@ -112,18 +112,18 @@ export 'src/point/point.history.model.dart';
 
 export 'src/forum/widgets/category.group.management.dart';
 
-export 'src/extra/job/address_search.model.dart';
+export 'src/extra/job/models/address_search.model.dart';
 export 'src/extra/job/job.edit.form.dart';
 export 'src/extra/job/job.service.dart';
-export 'src/extra/job/job.model.dart';
+export 'src/extra/job/models/job.model.dart';
 export 'src/extra/job/job.list.view.dart';
 export 'src/extra/job/job.view.dart';
 export 'src/extra/job/job.list.options.dart';
-export 'src/extra/job/job.list.option.model.dart';
+export 'src/extra/job/models/job.list.option.model.dart';
 export 'src/extra/job/job.form.text.field.dart';
 export 'src/extra/job/job.form.dropdown.field.dart';
 export 'src/extra/job/job.list.push.notification.icon.dart';
 
 export 'src/extra/job/job.seeker.form.dart';
-export 'src/extra/job/job.seeker.model.dart';
+export 'src/extra/job/models/job.seeker.model.dart';
 export 'src/extra/job/job.seeker.list.dart';

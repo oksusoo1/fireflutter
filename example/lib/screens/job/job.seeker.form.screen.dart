@@ -18,7 +18,7 @@ class _JobSeekerFormScreenState extends State<JobSeekerFormScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Job Seeker'),
+        title: Text('Job Seeker Profile'),
       ),
       body: SingleChildScrollView(
           child: Padding(

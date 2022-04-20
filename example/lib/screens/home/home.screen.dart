@@ -7,6 +7,7 @@ import 'package:fe/screens/friend_map/friend_map.screen.dart';
 import 'package:fe/screens/help/help.screen.dart';
 import 'package:fe/screens/job/job.list.screen.dart';
 import 'package:fe/screens/job/job.seeker.form.screen.dart';
+import 'package:fe/screens/job/job.seeker.list.screen.dart';
 import 'package:fe/screens/phone_sign_in/phone_sign_in.screen.dart';
 import 'package:fe/screens/phone_sign_in_ui/phone_sign_in_ui.screen.dart';
 import 'package:fe/screens/point_history/point_history.screen.dart';
@@ -247,6 +248,10 @@ class _HomeScreenState extends State<HomeScreen> {
                   ElevatedButton(
                     onPressed: () => AppService.instance.open(JobSeekerFormScreen.routeName),
                     child: const Text('Job seeker profile'),
+                  ),
+                  ElevatedButton(
+                    onPressed: () => AppService.instance.open(JobSeekerListScreen.routeName),
+                    child: const Text('Job seeker list'),
                   ),
                 ],
               ),

@@ -1,6 +1,5 @@
 import '../../../fireflutter.dart';
 import 'package:flutter/material.dart';
-import 'package:flutterfire_ui/auth.dart';
 
 class JobSeekerForm extends StatefulWidget {
   JobSeekerForm({
@@ -192,7 +191,10 @@ class _JobSeekerFormState extends State<JobSeekerForm> {
                             .toList(),
                       ],
                       onChanged: (v) => form.industry = v ?? '',
-                      validator: (s) => validateFieldValue(s, "* Please select an industry."),
+                      validator: (s) => validateFieldValue(
+                        s,
+                        "* Please select your desired industry.",
+                      ),
                     ),
 
                     SizedBox(height: 8),
@@ -200,7 +202,10 @@ class _JobSeekerFormState extends State<JobSeekerForm> {
                       label: 'What do you expect on your future job?',
                       initialValue: form.comment,
                       onChanged: (s) => form.comment = s,
-                      validator: (s) => validateFieldValue(s, "* Please enter your expectations."),
+                      validator: (s) => validateFieldValue(
+                        s,
+                        "* Please enter your comments or expections about your future job.",
+                      ),
                       maxLines: 5,
                     ),
                     Divider(),

@@ -18,6 +18,7 @@ import 'package:fe/screens/forum/post.view.screen.dart';
 import 'package:fe/screens/job/job.edit.screen.dart';
 import 'package:fe/screens/job/job.list.screen.dart';
 import 'package:fe/screens/job/job.seeker.form.screen.dart';
+import 'package:fe/screens/job/job.seeker.list.screen.dart';
 import 'package:fe/screens/job/job.view.screen.dart';
 import 'package:fe/screens/point_history/point_history.screen.dart';
 import 'package:fe/screens/search/search.screen.dart';
@@ -81,6 +82,7 @@ final Map<String, RouteFunction> routes = {
   PointHistoryScreen.routeName: (context, arguments) => PointHistoryScreen(),
   CategoryGroupScreen.routeName: (context, arguments) => CategoryGroupScreen(),
   JobSeekerFormScreen.routeName: (context, arguments) => JobSeekerFormScreen(),
+  JobSeekerListScreen.routeName: (context, arguments) => JobSeekerListScreen(),
 };
 
 void main() async {
