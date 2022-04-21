@@ -117,10 +117,10 @@ class _JobViewState extends State<JobView> {
           value: job.description,
           label: "Descriptions",
         ),
-        JobViewItem(
-          value: job.requirement,
-          label: "Requirements",
-        ),
+        // JobViewItem(
+        //   value: job.requirement,
+        //   label: "Requirements",
+        // ),
         JobViewItem(
           key: UniqueKey(),
           value: job.requirement,
@@ -131,11 +131,12 @@ class _JobViewState extends State<JobView> {
           value: job.duty,
           label: "Duties and responsibilities",
         ),
-        JobViewItem(
-          key: UniqueKey(),
-          value: job.benefit,
-          label: "benefits(free meals, dormitory, transporation, etc)",
-        ),
+        if (job.benefit.isNotEmpty)
+          JobViewItem(
+            key: UniqueKey(),
+            value: job.benefit,
+            label: "benefits(free meals, dormitory, transporation, etc)",
+          ),
         if (job.files.isNotEmpty) ...[
           Divider(height: 24),
           Text(

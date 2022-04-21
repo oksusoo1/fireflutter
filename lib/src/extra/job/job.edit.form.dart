@@ -366,10 +366,6 @@ class _JobEditFormState extends State<JobEditForm> with FirestoreMixin {
             label: "benefits(free meals, dormitory, transporation, etc)",
             initialValue: job.benefit,
             onChanged: (s) => job.benefit = s,
-            validator: (v) => validateFieldValue(
-              v,
-              "* Please enumerate the benefit given for the job.",
-            ),
             maxLines: 5,
           ),
           SizedBox(height: 16),

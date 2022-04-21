@@ -75,45 +75,6 @@ class _JobSeekerProfileFormState extends State<JobSeekerProfileForm> {
           ),
           textAlign: TextAlign.center,
         ),
-        // Row(
-        //   mainAxisAlignment: MainAxisAlignment.spaceAround,
-        //   children: [
-        //     Column(
-        //       children: [
-        //         Text('Email Address', style: labelStyle),
-        //         SizedBox(height: 5),
-        //         Text('${userService.user.email}'),
-        //       ],
-        //     ),
-        //     Column(
-        //       children: [
-        //         Text('Phone number', style: labelStyle),
-        //         SizedBox(height: 5),
-        //         Text('${userService.user.phoneNumber}'),
-        //       ],
-        //     ),
-        //   ],
-        // ),
-        // SizedBox(height: 15),
-        // Row(
-        //   mainAxisAlignment: MainAxisAlignment.spaceAround,
-        //   children: [
-        //     Column(
-        //       children: [
-        //         Text('Gender', style: labelStyle),
-        //         SizedBox(height: 5),
-        //         Text('${userService.user.gender}'),
-        //       ],
-        //     ),
-        //     Column(
-        //       children: [
-        //         Text('Birthdate', style: labelStyle),
-        //         SizedBox(height: 5),
-        //         Text('${userService.user.birthday}'),
-        //       ],
-        //     ),
-        //   ],
-        // ),
         Divider(height: 30),
         loaded == false
             ? Container(
@@ -153,7 +114,10 @@ class _JobSeekerProfileFormState extends State<JobSeekerProfileForm> {
                         Expanded(
                           child: JobFormDropdownField<String>(
                             value: form.siNm,
-                            onChanged: (v) => setState(() => form.siNm = v ?? ''),
+                            onChanged: (v) => setState(() {
+                              form.siNm = v ?? '';
+                              form.sggNm = '';
+                            }),
                             validator: (v) => validateFieldValue(v, "* Please select location."),
                             items: [
                               DropdownMenuItem(
@@ -169,7 +133,7 @@ class _JobSeekerProfileFormState extends State<JobSeekerProfileForm> {
                             ],
                           ),
                         ),
-                        if (form.siNm.isNotEmpty) ...[
+                        if (form.siNm.isNotEmpty && form.siNm != 'Sejong') ...[
                           SizedBox(width: 10),
                           Expanded(
                             child: JobFormDropdownField<String>(
@@ -181,13 +145,16 @@ class _JobSeekerProfileFormState extends State<JobSeekerProfileForm> {
                               ),
                               items: [
                                 DropdownMenuItem(
-                                  child: Text('Select city/county/gu'),
+                                  child:
+                                      Text('Select city/county/gu', style: TextStyle(fontSize: 14)),
                                   value: '',
                                 ),
-                                for (String sggNm in JobService.instance.areas[form.siNm]!)
+                                for (final name
+                                    in JobService.instance.areas[form.siNm]!
+                                      ..sort((a, b) => a.compareTo(b)))
                                   DropdownMenuItem(
-                                    child: Text(sggNm, style: TextStyle(fontSize: 14)),
-                                    value: sggNm,
+                                    child: Text(name, style: TextStyle(fontSize: 14)),
+                                    value: name,
                                   )
                               ],
                             ),

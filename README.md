@@ -159,6 +159,8 @@ Table of contents
   - [User point and level](#user-point-and-level)
 - [Extra Features](#extra-features)
   - [Job](#job)
+- [Release mode error](#release-mode-error)
+  - [How to fix](#how-to-fix)
 
 # TODOs
 
@@ -2007,5 +2009,29 @@ lv. 499: 124750000
 - See `<fireflutter>/lib/src/extra/job/README.md` for details.
 - See `<fireflutter>/lib/src/extra/job` for the source code and details.
 
+# Release mode error
 
+```
+java.lang.LinkageError: Method java.lang.Object com.google.android.gms.internal.ads.lo3.zzb() overrides final method in class Lcom/google/android/gms/internal/ads/do3; (declaration of 'com.google.android.gms.internal.ads.lo3' appears in /data/app/com.sonub.app-IZie7riyQF-iBzjhN4a3Dw==/base.apk)
+```
 
+## How to fix
+- [source](https://github.com/googleads/googleads-mobile-flutter/issues/471)
+- Update `android\build.gradle`
+```gradle
+buildscript {
+  ...
+    dependencies {
+        classpath 'com.android.tools.build:gradle:4.2.2'
+        // classpath 'com.android.tools.build:gradle:4.1.0' (from old version)
+        ...
+    }
+}
+...
+```
+- Update `android\gradle\wrapper\gradle-wrapper.properties`
+```properties
+...
+distributionUrl=https\://services.gradle.org/distributions/gradle-6.7.1-all.zip
+# distributionUrl=https\://services.gradle.org/distributions/gradle-6.7-all.zip (from old version)
+```
