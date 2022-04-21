@@ -8,7 +8,7 @@ import {
   ERROR_EMPTY_COMPANY_DETAIL_ADDRESS,
   ERROR_EMPTY_ID,
   ERROR_EMPTY_JOB_ACCOMODATION,
-  ERROR_EMPTY_JOB_BENEFIT,
+  // ERROR_EMPTY_JOB_BENEFIT,
   ERROR_EMPTY_JOB_CATEGORY,
   ERROR_EMPTY_JOB_DESCRIPTION,
   ERROR_EMPTY_JOB_DUTY,
@@ -173,7 +173,8 @@ export class Job {
     if (this.valueNotValid(data.duty)) throw ERROR_EMPTY_JOB_DUTY;
 
     // Benefits
-    if (this.valueNotValid(data.benefit)) throw ERROR_EMPTY_JOB_BENEFIT;
+    // as of April 21, 2022. this field is optional.
+    // if (this.valueNotValid(data.benefit)) throw ERROR_EMPTY_JOB_BENEFIT;
 
     // Accomodation
     if (this.valueNotValid(data.withAccomodation)) throw ERROR_EMPTY_JOB_ACCOMODATION;
