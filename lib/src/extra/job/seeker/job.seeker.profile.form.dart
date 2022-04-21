@@ -133,7 +133,7 @@ class _JobSeekerProfileFormState extends State<JobSeekerProfileForm> {
                             ],
                           ),
                         ),
-                        if (form.siNm.isNotEmpty) ...[
+                        if (form.siNm.isNotEmpty && form.siNm != 'Sejong') ...[
                           SizedBox(width: 10),
                           Expanded(
                             child: JobFormDropdownField<String>(
