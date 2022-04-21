@@ -237,7 +237,12 @@ class _JobListOptionsState extends State<JobListOptions> with FirestoreMixin {
                         value: options.accomodation,
                         items: [
                           DropdownMenuItem(
-                            child: Text('Accomodation?', style: optionStyle),
+                            child: Text(
+                              'Accomodation?',
+                              style: optionStyle,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
                             value: '',
                           ),
                           DropdownMenuItem(
