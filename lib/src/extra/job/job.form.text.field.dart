@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class JobFormTextField extends StatelessWidget {
   JobFormTextField({
     required this.label,
-    required this.validator,
+    this.validator,
     this.initialValue,
     this.controller,
     required this.onChanged,
@@ -13,7 +13,7 @@ class JobFormTextField extends StatelessWidget {
   }) : super(key: key);
 
   final String label;
-  final String? Function(String?) validator;
+  final String? Function(String?)? validator;
   final String? initialValue;
   final TextEditingController? controller;
   final Function(String) onChanged;
