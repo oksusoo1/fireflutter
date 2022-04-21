@@ -434,7 +434,7 @@ class JobService {
                     style: TextStyle(fontSize: 11),
                   ),
                   Container(
-                    height: 200,
+                    height: 150,
                     child: search == null
                         ? _inputAddress()
                         : search!.totalCount == 0
@@ -464,9 +464,9 @@ class JobService {
                                         ),
                                       )
                                       .toList(),
-                                  SizedBox(
-                                    height: 100,
-                                  )
+                                  // SizedBox(
+                                  //   height: 100,
+                                  // )
                                 ]),
                               ),
                   ),

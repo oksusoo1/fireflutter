@@ -95,7 +95,7 @@ class _JobSeekerProfileFormState extends State<JobSeekerProfileForm> {
                       validator: (s) => validateFieldValue(s, "* Please enter proficiency."),
                       maxLines: 5,
                     ),
-                    SizedBox(height: 8),
+                    SizedBox(height: 16),
                     JobFormTextField(
                       label: "Years of experience",
                       initialValue: form.experiences,
@@ -181,7 +181,7 @@ class _JobSeekerProfileFormState extends State<JobSeekerProfileForm> {
                         "* Please select your desired industry.",
                       ),
                     ),
-                    SizedBox(height: 8),
+                    SizedBox(height: 16),
                     JobFormTextField(
                       label: 'What do you expect on your future job?',
                       initialValue: form.comment,
@@ -216,9 +216,15 @@ class _JobSeekerProfileFormState extends State<JobSeekerProfileForm> {
                     ),
                     Divider(),
                     if (loading)
-                      Center(child: CircularProgressIndicator.adaptive(strokeWidth: 2))
+                      Padding(
+                        padding: const EdgeInsets.all(32.0),
+                        child: Center(child: CircularProgressIndicator.adaptive(strokeWidth: 2)),
+                      )
                     else
-                      ElevatedButton(onPressed: onSubmit, child: Text('UPDATE'))
+                      Padding(
+                        padding: const EdgeInsets.only(top: 16),
+                        child: ElevatedButton(onPressed: onSubmit, child: Text('UPDATE')),
+                      )
                   ],
                 ),
               )
