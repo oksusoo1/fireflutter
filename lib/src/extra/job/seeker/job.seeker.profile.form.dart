@@ -145,13 +145,16 @@ class _JobSeekerProfileFormState extends State<JobSeekerProfileForm> {
                               ),
                               items: [
                                 DropdownMenuItem(
-                                  child: Text('Select city/county/gu'),
+                                  child:
+                                      Text('Select city/county/gu', style: TextStyle(fontSize: 14)),
                                   value: '',
                                 ),
-                                for (String sggNm in JobService.instance.areas[form.siNm]!)
+                                for (final name
+                                    in JobService.instance.areas[form.siNm]!
+                                      ..sort((a, b) => a.compareTo(b)))
                                   DropdownMenuItem(
-                                    child: Text(sggNm, style: TextStyle(fontSize: 14)),
-                                    value: sggNm,
+                                    child: Text(name, style: TextStyle(fontSize: 14)),
+                                    value: name,
                                   )
                               ],
                             ),
