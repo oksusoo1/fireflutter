@@ -2,9 +2,8 @@ import { FirebaseAppInitializer } from "../firebase-app-initializer";
 import { Index, MeiliSearch as Meili } from "meilisearch";
 import * as admin from "firebase-admin";
 
-import { UserModel } from "../../functions/src/interfaces/user.interface";
+import { UserDocument } from "../../functions/src/interfaces/user.interface";
 import { PostDocument, CommentDocument } from "../../functions/src/interfaces/forum.interface";
-import { Ref } from "../../functions/src/classes/ref";
 import { Utils } from "../../functions/src/classes/utils";
 
 new FirebaseAppInitializer();
@@ -44,6 +43,46 @@ export class Meilisearch {
   }
   static get forumIndex(): Index {
     return this.client.index("posts-and-comments");
+  }
+
+
+  static async resetSearchSettings() {
+    const promises = [];
+
+    /// users index
+    promises.push(this.client.index(this.USER_INDEX).updateSettings({
+      displayedAttributes: ['*'],
+      searchableAttributes: ['*'],
+      sortableAttributes: ['registeredAt'],
+      filterableAttributes: ["id"],
+      rankingRules: ["words","typo","proximity","attribute","sort","exactness"],
+    }))
+    /// posts-and-comments index
+    promises.push(this.client.index('posts-and-comments').updateSettings({
+      displayedAttributes: ['*'],
+      sortableAttributes: ['createdAt'],
+      searchableAttributes: ['title', 'content'],
+      filterableAttributes: ["category","id","uid"],
+      rankingRules: ["words","exactness","typo","attribute","proximity","sort"],
+    }))
+    /// posts index
+    promises.push(this.client.index(this.POST_INDEX).updateSettings({
+      displayedAttributes: ['*'],
+      sortableAttributes: ['createdAt'],
+      searchableAttributes: ['title', 'content'],
+      filterableAttributes: ["category","id","uid"],
+      rankingRules: ["words","exactness","typo","attribute","proximity","sort"],
+    }))
+    /// comments index
+    promises.push(this.client.index(this.COMMENT_INDEX).updateSettings({
+      displayedAttributes: ['*'],
+      sortableAttributes: ['createdAt'],
+      searchableAttributes: ['content'],
+      filterableAttributes: ["id","uid"],
+      rankingRules: ["words","exactness","typo","attribute","proximity","sort"],
+    }))
+
+    return Promise.all(promises);
   }
 
   /**
@@ -113,7 +152,7 @@ export class Meilisearch {
     console.log("Re-indexing " + docs.numChildren() + " of user documents.");
     let success = 0;
     let failed: string[] = [];
-    for (const [key, value] of Object.entries<UserModel>(docs.val())) {
+    for (const [key, value] of Object.entries<UserDocument>(docs.val())) {
       const _data = {
         // If id contains symbols other than "-" and "_" it will not be indexed, an error will not occur.
         // It will simply get ignored.
@@ -179,7 +218,7 @@ export class Meilisearch {
    *  - posts with `quiz` category will not be indexed.
    */
   static async indexPostDocuments(docs: Array<any>): Promise<IndexingResult> {
-    const cats = await Ref.categoryCol.get();
+    const cats = await fsdb.collection("categories").get();
     const dbCategories: string[] = cats.docs.map((doc) => doc.id);
 
     let success = 0;
@@ -220,8 +259,8 @@ export class Meilisearch {
         category: data.category,
         content: Utils.removeHtmlTags(data.content) ?? "",
         files: data.files && data.files.length ? data.files.join(",") : "",
-        createdAt: data.createdAt,
-        updatedAt: data.updatedAt,
+        createdAt: Utils.getTimestamp(data.createdAt),
+        updatedAt: Utils.getTimestamp(data.updatedAt),
       } as any;
 
       const promises = [this.forumIndex.addDocuments([_data]), this.postsIndex.addDocuments([_data])];
@@ -290,8 +329,8 @@ export class Meilisearch {
         parentId: data.parentId,
         content: Utils.removeHtmlTags(data.content) ?? "",
         files: data.files && data.files.length ? data.files.join(",") : "",
-        createdAt: data.createdAt,
-        updatedAt: data.updatedAt,
+        createdAt: Utils.getTimestamp(data.createdAt),
+        updatedAt: Utils.getTimestamp(data.updatedAt),
       } as any;
 
       const promises = [this.forumIndex.addDocuments([_data]), this.commentsIndex.addDocuments([_data])];
