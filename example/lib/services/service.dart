@@ -26,8 +26,6 @@ class Service {
 
   BuildContext get context => globalNavigatorKey.currentContext!;
 
-  /// Service 가 싱글톤으로 처음 한 번 호출(생성)될 때, 이 함수가 호출된다.
-  /// 이 함수에서 파이어베이스 및 파이어베이스 관련된 것들을 초기화 많이 하므로, 이곳에 함께둔다.
   init() async {
     /// Display toast error debounced by a second on `No Internet`
     dioNoInternetError.debounceTime(const Duration(seconds: 1)).listen(
