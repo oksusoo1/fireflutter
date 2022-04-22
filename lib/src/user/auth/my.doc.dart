@@ -35,8 +35,17 @@ class _MyDocState extends State<MyDoc> {
 
   @override
   Widget build(BuildContext context) {
-    if (user == null)
-      return Center(child: CircularProgressIndicator.adaptive());
+    if (user == null) {
+      return const Center(
+        child: SizedBox(
+          width: 10,
+          height: 10,
+          child: CircularProgressIndicator.adaptive(
+            strokeWidth: 2,
+          ),
+        ),
+      );
+    }
     return widget.builder(user!);
   }
 }
