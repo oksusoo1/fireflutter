@@ -28,11 +28,13 @@ Table of contents
   - [Chat](#chat)
 - [Changes](#changes)
 - [Installation](#installation)
+  - [Install fireflutter package](#install-fireflutter-package)
+  - [Firebase Installation](#firebase-installation)
   - [Running the example](#running-the-example)
   - [Creating a new project](#creating-a-new-project)
-  - [Firebase installation](#firebase-installation)
+  - [Additional Firebase installation](#additional-firebase-installation)
     - [iOS installation](#ios-installation)
-  - [Firebase Realtime Database Installation](#firebase-realtime-database-installation)
+  - [Firebase Realtime Database Security Rules Installation](#firebase-realtime-database-security-rules-installation)
   - [Firebase Storage installation](#firebase-storage-installation)
   - [Firestore installation](#firestore-installation)
     - [Setting admin on firestore security rules](#setting-admin-on-firestore-security-rules)
@@ -196,17 +198,28 @@ Table of contents
 
 # Installation
 
+## Install fireflutter package
+
+- Add the laste version of fireflutter into pubspec.yaml
+
+
+## Firebase Installation
+
+- See the official document of [Using the FlutterFire CLI](https://firebase.flutter.dev/docs/overview#using-the-flutterfire-cli)
+
+
 ## Running the example
 
 - Do the [Firebase installation](#firebase-installation).
 - Git fork the [fireflutter](https://github.com/thruthesky/fireflutter).
+- Run the example in `<fireflutter>/example`.
 
 ## Creating a new project
 
 - Do the [Firebase installation](#firebase-installation).
 - Edit platform version to `platform :ios, '10.0'` in Podfile.
 
-## Firebase installation
+## Additional Firebase installation
 
 - Refer the instructions of [FlutterFire Overview](https://firebase.flutter.dev/docs/overview)
 
@@ -216,7 +229,7 @@ Table of contents
   - Remember to update other settings like `REVERSED_CLIENT_ID` into `Info.plist`.
     - When you change the firebase project, you have to update all the related settings again.
 
-## Firebase Realtime Database Installation
+## Firebase Realtime Database Security Rules Installation
 
 - To install Firebase Realtime Database, enable it on Firebase console and put the security rules.
 
@@ -242,8 +255,9 @@ Table of contents
       }
     },
     "users": {
+      ".read": true,
+      ".indexOn": ["disabled", "profileReady"],
       "$uid": {
-        ".read": true,
         ".write": "$uid === auth.uid"
       }
     },
@@ -258,6 +272,27 @@ Table of contents
         ".read": true,
         ".write": true
       }
+    },
+  	"message-tokens": {
+      ".indexOn": ["uid"],
+      ".read": true,
+      ".write": true
+    },
+    "point": {
+      ".read": true,
+        "$uid": {
+          "$eventName": {
+            ".indexOn": "timestamp"
+          }
+        }
+    },
+    "log": {
+      ".read": true,
+      ".write": true
+    },
+    "tests": {
+      ".read": true,
+      ".write": true
     }
   }
 }
