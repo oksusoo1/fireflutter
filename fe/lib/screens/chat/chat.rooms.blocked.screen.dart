@@ -17,7 +17,7 @@ class ChatRoomsBlockedScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Chat Blocked Rooms'),
       ),
-      body: AuthState(
+      body: Auth(
         signedIn: (u) => Column(
           children: [
             Text('my uid: ' + FirebaseAuth.instance.currentUser!.uid),

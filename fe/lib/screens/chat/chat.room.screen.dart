@@ -29,7 +29,7 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
           },
         ),
       ),
-      body: AuthState(
+      body: Auth(
           signedOut: () => const Text('login first'),
           signedIn: (u) {
             return ChatRoom(
@@ -43,8 +43,7 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
                       if (message.isProtocol) {
                         if (message.text.contains('friendMap')) {
                           final arr = message.text.split(':').last.split(',');
-                          AppService.instance
-                              .open(FriendMapScreen.routeName, arguments: {
+                          AppService.instance.open(FriendMapScreen.routeName, arguments: {
                             'latitude': arr.first.trim(),
                             'longitude': arr.last.trim(),
                           });
@@ -55,14 +54,12 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
                   );
                 }
                 return PopupMenuButton<String>(
-                  offset: message.isMine
-                      ? const Offset(1, 50)
-                      : const Offset(0, 50),
+                  offset: message.isMine ? const Offset(1, 50) : const Offset(0, 50),
                   child: ChatRoomMessage(message),
                   onSelected: (String result) async {
                     if (result == 'delete') {
-                      final re = await confirm('Message delete',
-                          'Do you want to delete this message?');
+                      final re =
+                          await confirm('Message delete', 'Do you want to delete this message?');
                       if (re == false) return;
                       message.delete().catchError((e) => error(e));
                     } else if (result == 'edit') {
@@ -106,8 +103,7 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
                       }
                     }
                   },
-                  itemBuilder: (BuildContext context) =>
-                      <PopupMenuEntry<String>>[
+                  itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
                     if (message.isMine && message.isImage == false)
                       const PopupMenuItem<String>(
                         value: 'edit',
@@ -133,8 +129,7 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
               onError: error,
 
               /// Send push notification here with no of new message.
-              onUpdateOtherUserRoomInformation:
-                  (Map<String, dynamic> data) async {
+              onUpdateOtherUserRoomInformation: (Map<String, dynamic> data) async {
                 //          int newMessages = 0;
 
                 /// Send push notification to the other user.
@@ -164,8 +159,7 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
                 //   },
                 // );
               },
-              emptyDisplay:
-                  Text('Chat room is empty for ${widget.arguments['uid']}'),
+              emptyDisplay: Text('Chat room is empty for ${widget.arguments['uid']}'),
             );
           }),
     );
