@@ -11,6 +11,18 @@ fe/analysis_options.yaml
 fe/pubspec.lock
 fe/lib/service/config.dart
 
+example/.dart_tool
+example/.idea
+example/android
+example/build
+example/ios
+example/test
+example/README.md
+example/analysis_options.yaml
+example/pubspec.lock
+example/lib/service/config.dart
+example/lib/firebase_options.dart
+
 
 readme
 test

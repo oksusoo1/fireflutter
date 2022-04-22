@@ -24,7 +24,6 @@ Table of contents
   - [Install fireflutter package](#install-fireflutter-package)
   - [Firebase Installation](#firebase-installation)
   - [Running the example](#running-the-example)
-    - [iOS installation](#ios-installation)
   - [Firebase Realtime Database Security Rules Installation](#firebase-realtime-database-security-rules-installation)
   - [Firebase Storage installation](#firebase-storage-installation)
   - [Firestore installation](#firestore-installation)
@@ -33,6 +32,7 @@ Table of contents
     - [Run cloud function using shell](#run-cloud-function-using-shell)
 - [Sources and packages](#sources-and-packages)
 - [Coding Guideline](#coding-guideline)
+- [Examples of fireflutter](#examples-of-fireflutter)
 - [User](#user)
   - [User installation](#user-installation)
   - [User data and user profile](#user-data-and-user-profile)
@@ -167,6 +167,9 @@ Table of contents
 
 - See the official document of [Using the FlutterFire CLI](https://firebase.flutter.dev/docs/overview#using-the-flutterfire-cli)
 
+- After installing firebase, you will see `<fireflutter>/example/lib/firebase_options.dart` that is not stored on github since it is excepted by `.gitignore`.
+
+- If you prefer to install manually (which is not recommended), you can follow [Manual Installation](https://firebase.flutter.dev/docs/manual-installation)
 
 
 ## Running the example
@@ -174,13 +177,7 @@ Table of contents
 - Do the [Firebase installation](#firebase-installation).
 - Git fork the [fireflutter](https://github.com/thruthesky/fireflutter).
 - Run the example in `<fireflutter>/example/lib/main.dart`.
-
-
-### iOS installation
-
-- Download ios app's `GoogleService-Info.plist`. And save it under `<root>/example/ios/Runnder`, Then open Xcode and drag it under Runner.
-  - Remember to update other settings like `REVERSED_CLIENT_ID` into `Info.plist`.
-    - When you change the firebase project, you have to update all the related settings again.
+  - See the [examples of fireflutter](#examples-of-fireflutter)
 
 ## Firebase Realtime Database Security Rules Installation
 
@@ -360,6 +357,14 @@ $ npm run shell
 - All model have `.data` property (getter) to export its model data to a map which then can be saved into firestore.
   - Note, that `.data` must contain only the data to be saved in firestore.
 - All model should have `.map` property(getter) to export its model data to a map. while `.data` only contains for saving firestore, `.map` may contain other values.
+
+
+# Examples of fireflutter
+
+- We put some easy to follow sample code in branches. Here are some
+  - [example-setup](https://github.com/thruthesky/fireflutter/tree/example-setup) for the simplest code to run fireflutter.
+
+
 
 # User
 
