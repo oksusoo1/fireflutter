@@ -19,7 +19,8 @@ class CommentApi {
     List<String> files = const [],
   }) async {
     if (UserService.instance.notSignIn) throw ERROR_NOT_SIGN_IN;
-    if (UserService.instance.user.ready == false) throw UserService.instance.user.profileError;
+    if (UserService.instance.user.ready == false)
+      throw UserService.instance.user.profileError;
     final data = {
       'postId': postId,
       'parentId': parentId,

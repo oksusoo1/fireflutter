@@ -24,7 +24,8 @@ class CategoryService with FirestoreMixin {
   /// Note that, this is async call. So, it should be used with `setState`
   /// ```dart
   /// ```
-  Future<List<CategoryModel>> getCategories({bool hideHiddenCategory: false}) async {
+  Future<List<CategoryModel>> getCategories(
+      {bool hideHiddenCategory: false}) async {
     if (categories.length == 0) {
       categories = await loadCategories();
     }

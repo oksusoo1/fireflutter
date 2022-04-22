@@ -23,7 +23,8 @@ class PostApi {
     Map<String, dynamic> extra = const {},
   }) async {
     if (UserService.instance.notSignIn) throw ERROR_NOT_SIGN_IN;
-    if (UserService.instance.user.ready == false) throw UserService.instance.user.profileError;
+    if (UserService.instance.user.ready == false)
+      throw UserService.instance.user.profileError;
 
     final data = {
       'category': category,

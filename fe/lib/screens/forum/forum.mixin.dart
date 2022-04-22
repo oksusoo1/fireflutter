@@ -146,7 +146,8 @@ mixin ForumMixin {
     // return alert('Display original image', 'TODO: display original images with a scaffold.');
     return showDialog(
       context: ctx,
-      builder: (context) => Dialog(child: ImageViewer(files, initialIndex: initialIndex)),
+      builder: (context) =>
+          Dialog(child: ImageViewer(files, initialIndex: initialIndex)),
     );
   }
 }

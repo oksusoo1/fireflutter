@@ -17,7 +17,9 @@ class _AdminScreenState extends State<AdminScreen> {
   void initState() {
     super.initState();
     // print('initState;');
-    UserService.instance.updateAdminStatus().then((value) => setState(() => {}));
+    UserService.instance
+        .updateAdminStatus()
+        .then((value) => setState(() => {}));
   }
 
   @override
@@ -54,7 +56,8 @@ class _AdminScreenState extends State<AdminScreen> {
           ),
           Divider(),
           ElevatedButton(
-              onPressed: AppService.instance.openTranslations, child: Text('Update Translations')),
+              onPressed: AppService.instance.openTranslations,
+              child: Text('Update Translations')),
           Divider(),
           Text('Report Management'),
           Wrap(
@@ -85,15 +88,15 @@ class _AdminScreenState extends State<AdminScreen> {
                 child: const Text('Push Notification'),
               ),
               ElevatedButton(
-                onPressed: () => AppService.instance
-                    .open('/pushNotification', arguments: {'postId': '0EWGGe64ckjBtiU1LeB1'}),
+                onPressed: () => AppService.instance.open('/pushNotification',
+                    arguments: {'postId': '0EWGGe64ckjBtiU1LeB1'}),
                 child: const Text('Push Notification with postId'),
               )
             ],
           ),
           ElevatedButton(
-              onPressed: () => alert(
-                  'Create test users', "Run \$ node create.test.user.js in firebase/lab foler."),
+              onPressed: () => alert('Create test users',
+                  "Run \$ node create.test.user.js in firebase/lab foler."),
               child: Text('Create test users')),
         ],
       ),
