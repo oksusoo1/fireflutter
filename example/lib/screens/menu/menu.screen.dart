@@ -1,0 +1,16 @@
+import 'package:example/widgets/layout/layout.dart';
+import 'package:flutter/material.dart';
+
+class MenuScreen extends StatelessWidget {
+  const MenuScreen({Key? key}) : super(key: key);
+
+  static const String routeName = '/menu';
+
+  @override
+  Widget build(BuildContext context) {
+    return const Layout(
+      title: 'Menu ...',
+      body: Text('body'),
+    );
+  }
+}

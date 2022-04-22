@@ -1,5 +1,16 @@
 # Pub examples
 
+fe/.dart_tool
+fe/.idea
+fe/android
+fe/build
+fe/ios
+fe/test
+fe/README.md
+fe/analysis_options.yaml
+fe/pubspec.lock
+fe/lib/service/config.dart
+
 example/.dart_tool
 example/.idea
 example/android
@@ -10,6 +21,7 @@ example/README.md
 example/analysis_options.yaml
 example/pubspec.lock
 example/lib/service/config.dart
+example/lib/firebase_options.dart
 
 
 readme

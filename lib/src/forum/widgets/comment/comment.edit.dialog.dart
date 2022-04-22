@@ -95,11 +95,14 @@ class _CommentEditDialogState extends State<CommentEditDialog> {
                 onPressed: inSubmit
                     ? null
                     : () {
-                        widget.onSubmit({'content': content.text, 'files': files}, progress);
+                        widget.onSubmit(
+                            {'content': content.text, 'files': files},
+                            progress);
                       },
               ),
             ]),
-            if (uploadProgress > 0) LinearProgressIndicator(value: uploadProgress),
+            if (uploadProgress > 0)
+              LinearProgressIndicator(value: uploadProgress),
             ImageListEdit(files: files, onError: widget.onError),
           ],
         ),

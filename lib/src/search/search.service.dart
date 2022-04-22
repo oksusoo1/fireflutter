@@ -31,7 +31,7 @@ class SearchService {
   int limit = 20;
   int offset = 0;
   int page = 1;
-  List<String> sort = ['timestamp:desc'];
+  List<String> sort = ['createdAt:desc'];
 
   int _hits = 0;
   int get hits => _hits;
@@ -52,7 +52,8 @@ class SearchService {
 
     List filters = [];
     if (uid.isNotEmpty) filters.add('uid = $uid');
-    if (category.isNotEmpty && index != 'comments') filters.add('category = $category');
+    if (category.isNotEmpty && index != 'comments')
+      filters.add('category = $category');
 
     List<Map<String, dynamic>> _posts = [];
     final SearchResult res = await client.index(index).search(
@@ -90,7 +91,7 @@ class SearchService {
     category = '';
     index = index;
     searchKey = '';
-    sort = ['timestamp:desc'];
+    sort = ['createdAt:desc'];
   }
 
   resetListAndPagination({int limit = 20}) {

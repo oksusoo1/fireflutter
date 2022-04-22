@@ -12,6 +12,7 @@ import 'package:flutter/material.dart';
 ///    loader: Text('loading...'),
 ///  ),
 /// ```
+@Deprecated('User Auth')
 class AuthState extends StatelessWidget {
   const AuthState({
     this.signedIn,

@@ -20,19 +20,11 @@ A free, open source, complete, rapid development package for creating Social app
 Table of contents
 
 - [Fire Flutter](#fire-flutter)
-- [TODOs](#todos)
-  - [Creating short samples for better document.](#creating-short-samples-for-better-document)
-  - [Friendly Post ID](#friendly-post-id)
-  - [Display uploaded files](#display-uploaded-files)
-  - [Admin](#admin)
-  - [Chat](#chat)
-- [Changes](#changes)
 - [Installation](#installation)
+  - [Install fireflutter package](#install-fireflutter-package)
+  - [Firebase Installation](#firebase-installation)
   - [Running the example](#running-the-example)
-  - [Creating a new project](#creating-a-new-project)
-  - [Firebase installation](#firebase-installation)
-    - [iOS installation](#ios-installation)
-  - [Firebase Realtime Database Installation](#firebase-realtime-database-installation)
+  - [Firebase Realtime Database Security Rules Installation](#firebase-realtime-database-security-rules-installation)
   - [Firebase Storage installation](#firebase-storage-installation)
   - [Firestore installation](#firestore-installation)
     - [Setting admin on firestore security rules](#setting-admin-on-firestore-security-rules)
@@ -40,6 +32,7 @@ Table of contents
     - [Run cloud function using shell](#run-cloud-function-using-shell)
 - [Sources and packages](#sources-and-packages)
 - [Coding Guideline](#coding-guideline)
+- [Examples of fireflutter](#examples-of-fireflutter)
 - [User](#user)
   - [User installation](#user-installation)
   - [User data and user profile](#user-data-and-user-profile)
@@ -51,7 +44,7 @@ Table of contents
   - [Email authentication under phone sign-in](#email-authentication-under-phone-sign-in)
     - [Email authentication under phone sign-in logic](#email-authentication-under-phone-sign-in-logic)
       - [When user has an email already](#when-user-has-an-email-already)
-- [Admin](#admin-1)
+- [Admin](#admin)
   - [Admin status check & update](#admin-status-check--update)
 - [Translation](#translation)
   - [Get translated text](#get-translated-text)
@@ -64,7 +57,7 @@ Table of contents
     - [MyDoc](#mydoc)
     - [UserDoc](#userdoc)
   - [User Auth State](#user-auth-state)
-- [Chat](#chat-1)
+- [Chat](#chat)
   - [Chat todo;](#chat-todo)
   - [Chat structure of Firestore](#chat-structure-of-firestore)
   - [Chat logic](#chat-logic)
@@ -162,61 +155,31 @@ Table of contents
 - [Release mode error](#release-mode-error)
   - [How to fix](#how-to-fix)
 
-# TODOs
-
-## Creating short samples for better document.
-
-
-- Provide more sample code and use cases.
-  - Providing as much as possible code based on official document and firebase code sample, and [cloud funtions sample code](https://github.com/firebase/functions-samples)
-
-
-## Friendly Post ID
-
-- To make a readable post id,
-  - Get SEO friendly id from post title.
-  - Create that a post with that ID
-    - If exception happens with `same document id exists`, then get another seo friendly id with tagging 1,2,3,....
-
-## Display uploaded files
-
-- The file upload functionality is focused on uploading and display images. what if the uploaded file is not an image?
-## Admin
-
-- Since email & phone no are saved in firebase auth service, admin needs a special function to know what is the email and phone no of users.
-
-## Chat
-
-- combine many chat messages in one chat message box(balloon) if they are written in 20 minutes.
-
-# Changes
-
-- Before Apr 10, 2022, `PostService` and `CommentService` handled for the `create, update, delete`.
-  - But to support multi client end platform, we decided to move the `Flutter client service model` to `HTTP Cloud functions`.
-
 # Installation
+
+## Install fireflutter package
+
+- Add the laste version of fireflutter into pubspec.yaml
+- You may edit platform version to `platform :ios, '11.0'` in Podfile for firestore and firebase auth.
+
+
+## Firebase Installation
+
+- See the official document of [Using the FlutterFire CLI](https://firebase.flutter.dev/docs/overview#using-the-flutterfire-cli)
+
+- After installing firebase, you will see `<fireflutter>/example/lib/firebase_options.dart` that is not stored on github since it is excepted by `.gitignore`.
+
+- If you prefer to install manually (which is not recommended), you can follow [Manual Installation](https://firebase.flutter.dev/docs/manual-installation)
+
 
 ## Running the example
 
 - Do the [Firebase installation](#firebase-installation).
 - Git fork the [fireflutter](https://github.com/thruthesky/fireflutter).
+- Run the example in `<fireflutter>/example/lib/main.dart`.
+  - See the [examples of fireflutter](#examples-of-fireflutter)
 
-## Creating a new project
-
-- Do the [Firebase installation](#firebase-installation).
-- Edit platform version to `platform :ios, '10.0'` in Podfile.
-
-## Firebase installation
-
-- Refer the instructions of [FlutterFire Overview](https://firebase.flutter.dev/docs/overview)
-
-### iOS installation
-
-- Download ios app's `GoogleService-Info.plist`. And save it under `<root>/example/ios/Runnder`, Then open Xcode and drag it under Runner.
-  - Remember to update other settings like `REVERSED_CLIENT_ID` into `Info.plist`.
-    - When you change the firebase project, you have to update all the related settings again.
-
-## Firebase Realtime Database Installation
+## Firebase Realtime Database Security Rules Installation
 
 - To install Firebase Realtime Database, enable it on Firebase console and put the security rules.
 
@@ -242,8 +205,9 @@ Table of contents
       }
     },
     "users": {
+      ".read": true,
+      ".indexOn": ["disabled", "profileReady"],
       "$uid": {
-        ".read": true,
         ".write": "$uid === auth.uid"
       }
     },
@@ -258,6 +222,27 @@ Table of contents
         ".read": true,
         ".write": true
       }
+    },
+  	"message-tokens": {
+      ".indexOn": ["uid"],
+      ".read": true,
+      ".write": true
+    },
+    "point": {
+      ".read": true,
+        "$uid": {
+          "$eventName": {
+            ".indexOn": "timestamp"
+          }
+        }
+    },
+    "log": {
+      ".read": true,
+      ".write": true
+    },
+    "tests": {
+      ".read": true,
+      ".write": true
     }
   }
 }
@@ -372,6 +357,14 @@ $ npm run shell
 - All model have `.data` property (getter) to export its model data to a map which then can be saved into firestore.
   - Note, that `.data` must contain only the data to be saved in firestore.
 - All model should have `.map` property(getter) to export its model data to a map. while `.data` only contains for saving firestore, `.map` may contain other values.
+
+
+# Examples of fireflutter
+
+- We put some easy to follow sample code in branches. Here are some
+  - [example-setup](https://github.com/thruthesky/fireflutter/tree/example-setup) for the simplest code to run fireflutter.
+
+
 
 # User
 

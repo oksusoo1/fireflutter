@@ -6,7 +6,7 @@
   "configurations": [
     {
       "name": "Simulator - iPhone 13 Pro Max - iMac",
-      "program": "example/lib/main.dart",
+      "program": "fe/lib/main.dart",
       "args": ["--dart-define", "KEY=VALUE"],
       "request": "launch",
       "type": "dart",
@@ -14,7 +14,7 @@
     },
     {
       "name": "Simulator - iPhone 12 Pro Max - iMac",
-      "program": "example/lib/main.dart",
+      "program": "fe/lib/main.dart",
       "args": ["--dart-define", "KEY=VALUE"],
       "request": "launch",
       "type": "dart",
@@ -22,7 +22,7 @@
     },
     {
       "name": "Simulator - iPhone 12 Pro Max - A",
-      "cwd": "example",
+      "cwd": "fe",
       "program": "lib/main.dart",
       "request": "launch",
       "type": "dart",
@@ -30,7 +30,7 @@
     },
     {
       "name": "Simulator - iPhone 13 - A",
-      "cwd": "example",
+      "cwd": "fe",
       "program": "lib/main.dart",
       "request": "launch",
       "type": "dart",
@@ -38,7 +38,7 @@
     },
     {
       "name": "Simulator - iPhone 13 Pro Max - A",
-      "cwd": "example",
+      "cwd": "fe",
       "program": "lib/main.dart",
       "request": "launch",
       "type": "dart",
@@ -46,7 +46,7 @@
     },
     {
       "name": "Simulator - iPhone 13",
-      "cwd": "example",
+      "cwd": "fe",
       "program": "lib/main.dart",
       "request": "launch",
       "type": "dart",
@@ -54,7 +54,7 @@
     },
     {
       "name": "iPhone11MaxPro",
-      "cwd": "example",
+      "cwd": "fe",
       "program": "lib/main.dart",
       "request": "launch",
       "type": "dart",
@@ -62,7 +62,7 @@
     },
     {
       "name": "iPhone11MaxPro - Release",
-      "cwd": "example",
+      "cwd": "fe",
       "program": "lib/main.dart",
       "request": "launch",
       "type": "dart",
@@ -71,7 +71,7 @@
     },
     {
       "name": "Emulator - Pixel3a - A",
-      "cwd": "example",
+      "cwd": "fe",
       "program": "lib/main.dart",
       "request": "launch",
       "type": "dart",
@@ -79,7 +79,7 @@
     },
     {
       "name": "RMX1911 - Ace phone",
-      "cwd": "example",
+      "cwd": "fe",
       "program": "lib/main.dart",
       "request": "launch",
       "type": "dart",
@@ -87,7 +87,7 @@
     },
     {
       "name": "SM J737S - Wide3",
-      "cwd": "example",
+      "cwd": "fe",
       "program": "lib/main.dart",
       "request": "launch",
       "type": "dart",
@@ -95,7 +95,7 @@
     },
     {
       "name": "ASUS X00TDB J8AXB761J32888A",
-      "cwd": "example",
+      "cwd": "fe",
       "program": "lib/main.dart",
       "request": "launch",
       "type": "dart",
@@ -114,16 +114,34 @@
     },
     {
       "name": "example",
-      "cwd": "example",
+      "cwd": "fe",
       "request": "launch",
       "type": "dart"
     },
     {
       "name": "example (profile mode)",
-      "cwd": "example",
+      "cwd": "fe",
       "request": "launch",
       "type": "dart",
       "flutterMode": "profile"
-    }
+    },
+
+    {
+      "name": "JaeHo - Emulator - example",
+      "cwd": "example",
+      "program": "lib/main.dart",
+      "request": "launch",
+      "type": "dart",
+      "deviceId": "emulator-5554"
+    },
+
+    {
+      "name": "JaeHo - Simulator - iPhone 13 Pro Max - AppleChip",
+      "cwd": "example",
+      "program": "lib/main.dart",
+      "request": "launch",
+      "type": "dart",
+      "deviceId": "63099345-05B9-4BE0-92DC-3BBA6CC4FA50"
+    },
   ]
 }

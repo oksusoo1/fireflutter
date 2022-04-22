@@ -10,6 +10,7 @@ const indexId = process.argv[2];
 // ts-node meilisearch-delete-index.ts users
 // ts-node meilisearch-delete-index.ts posts
 // ts-node meilisearch-delete-index.ts comments
+// ts-node meilisearch-delete-index.ts posts-and-comments
 
 if (!indexId) {
   console.log("[NOTICE]: Please provide an index. It's either posts, comments, users.");

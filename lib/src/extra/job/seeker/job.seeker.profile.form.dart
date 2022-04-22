@@ -92,7 +92,8 @@ class _JobSeekerProfileFormState extends State<JobSeekerProfileForm> {
                       label: 'Input Your Proficiency',
                       initialValue: form.proficiency,
                       onChanged: (s) => form.proficiency = s,
-                      validator: (s) => validateFieldValue(s, "* Please enter proficiency."),
+                      validator: (s) =>
+                          validateFieldValue(s, "* Please enter proficiency."),
                       maxLines: 5,
                     ),
                     SizedBox(height: 16),
@@ -107,7 +108,8 @@ class _JobSeekerProfileFormState extends State<JobSeekerProfileForm> {
                     ),
                     SizedBox(height: 16),
                     Text("Where do you want to work?",
-                        style: TextStyle(fontSize: 14, color: Colors.grey.shade700)),
+                        style: TextStyle(
+                            fontSize: 14, color: Colors.grey.shade700)),
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -118,7 +120,8 @@ class _JobSeekerProfileFormState extends State<JobSeekerProfileForm> {
                               form.siNm = v ?? '';
                               form.sggNm = '';
                             }),
-                            validator: (v) => validateFieldValue(v, "* Please select location."),
+                            validator: (v) => validateFieldValue(
+                                v, "* Please select location."),
                             items: [
                               DropdownMenuItem(
                                 child: Text('Select location'),
@@ -126,7 +129,8 @@ class _JobSeekerProfileFormState extends State<JobSeekerProfileForm> {
                               ),
                               ...JobService.instance.areas.entries
                                   .map((e) => DropdownMenuItem(
-                                        child: Text(e.key, style: TextStyle(fontSize: 14)),
+                                        child: Text(e.key,
+                                            style: TextStyle(fontSize: 14)),
                                         value: e.key,
                                       ))
                                   .toList(),
@@ -145,15 +149,16 @@ class _JobSeekerProfileFormState extends State<JobSeekerProfileForm> {
                               ),
                               items: [
                                 DropdownMenuItem(
-                                  child:
-                                      Text('Select city/county/gu', style: TextStyle(fontSize: 14)),
+                                  child: Text('Select city/county/gu',
+                                      style: TextStyle(fontSize: 14)),
                                   value: '',
                                 ),
                                 for (final name
                                     in JobService.instance.areas[form.siNm]!
                                       ..sort((a, b) => a.compareTo(b)))
                                   DropdownMenuItem(
-                                    child: Text(name, style: TextStyle(fontSize: 14)),
+                                    child: Text(name,
+                                        style: TextStyle(fontSize: 14)),
                                     value: name,
                                   )
                               ],
@@ -167,7 +172,8 @@ class _JobSeekerProfileFormState extends State<JobSeekerProfileForm> {
                       label: "What industry would you like to work in?",
                       value: form.industry,
                       items: [
-                        DropdownMenuItem(child: Text('Select industry'), value: ''),
+                        DropdownMenuItem(
+                            child: Text('Select industry'), value: ''),
                         ...JobService.instance.categories.entries
                             .map((e) => DropdownMenuItem(
                                   child: Text(e.value),
@@ -201,7 +207,8 @@ class _JobSeekerProfileFormState extends State<JobSeekerProfileForm> {
                             value: Status.Y,
                             groupValue: Status.values.asNameMap()[form.status],
                             title: Text('Yes'),
-                            onChanged: (Status? v) => setState(() => form.status = v!.name),
+                            onChanged: (Status? v) =>
+                                setState(() => form.status = v!.name),
                           ),
                         ),
                         Expanded(
@@ -209,7 +216,8 @@ class _JobSeekerProfileFormState extends State<JobSeekerProfileForm> {
                             value: Status.N,
                             groupValue: Status.values.asNameMap()[form.status],
                             title: Text('No'),
-                            onChanged: (Status? v) => setState(() => form.status = v!.name),
+                            onChanged: (Status? v) =>
+                                setState(() => form.status = v!.name),
                           ),
                         ),
                       ],
@@ -218,12 +226,15 @@ class _JobSeekerProfileFormState extends State<JobSeekerProfileForm> {
                     if (loading)
                       Padding(
                         padding: const EdgeInsets.all(32.0),
-                        child: Center(child: CircularProgressIndicator.adaptive(strokeWidth: 2)),
+                        child: Center(
+                            child: CircularProgressIndicator.adaptive(
+                                strokeWidth: 2)),
                       )
                     else
                       Padding(
                         padding: const EdgeInsets.only(top: 16),
-                        child: ElevatedButton(onPressed: onSubmit, child: Text('UPDATE')),
+                        child: ElevatedButton(
+                            onPressed: onSubmit, child: Text('UPDATE')),
                       )
                   ],
                 ),

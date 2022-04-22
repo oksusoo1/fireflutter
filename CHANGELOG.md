@@ -1,5 +1,9 @@
 # Change Log
 
+## [0.2.21]
+
+- Transform more functions from flutter code.
+
 ## [0.2.20]
 
 - Refactoring Flutter models. Transfer post and comment CRUD into cloud funtions HTTP call.

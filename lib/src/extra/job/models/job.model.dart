@@ -66,8 +66,9 @@ class JobModel {
   Timestamp updatedAt;
 
   factory JobModel.fromJson(Json json, [String id = '']) {
-    final int _days =
-        json['workingDays'] is int ? json['workingDays'] : int.parse(json['workingDays'] ?? '-1');
+    final int _days = json['workingDays'] is int
+        ? json['workingDays']
+        : int.parse(json['workingDays'] ?? '-1');
     final int _hours = json['workingHours'] is int
         ? json['workingHours']
         : int.parse(json['workingHours'] ?? '-1');

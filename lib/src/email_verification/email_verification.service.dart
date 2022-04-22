@@ -22,7 +22,8 @@ class EmailVerificationService {
   bool get userHasPhoneNumber => phoneNumber != '';
 
   /// Phone number or empty string.
-  String get phoneNumber => FirebaseAuth.instance.currentUser?.phoneNumber ?? '';
+  String get phoneNumber =>
+      FirebaseAuth.instance.currentUser?.phoneNumber ?? '';
 
   Timer? timer;
   late int _verificationIntervalSeconds;
@@ -82,7 +83,8 @@ class EmailVerificationService {
       (_t) async {
         // print('check verification result');
 
-        if (FirebaseAuth.instance.currentUser == null) throw 'User has not signed in.';
+        if (FirebaseAuth.instance.currentUser == null)
+          throw 'User has not signed in.';
 
         /// Note, if there is no internet, 'firebase_auth/network-request-failed' error will be happened.
         try {
@@ -123,7 +125,8 @@ class EmailVerificationService {
       if (FirebaseAuth.instance.currentUser!.emailVerified) {
         throw 'Email address had already verified.';
       }
-      await FirebaseAuth.instance.currentUser!.sendEmailVerification(_actionCodeSettings);
+      await FirebaseAuth.instance.currentUser!
+          .sendEmailVerification(_actionCodeSettings);
       _onVerificationEmailSent();
       _emailVerificationChecker();
     } on FirebaseAuthException catch (e) {
