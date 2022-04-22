@@ -31,7 +31,7 @@ class SearchService {
   int limit = 20;
   int offset = 0;
   int page = 1;
-  List<String> sort = ['timestamp:desc'];
+  List<String> sort = ['createdAt:desc'];
 
   int _hits = 0;
   int get hits => _hits;
@@ -90,7 +90,7 @@ class SearchService {
     category = '';
     index = index;
     searchKey = '';
-    sort = ['timestamp:desc'];
+    sort = ['createdAt:desc'];
   }
 
   resetListAndPagination({int limit = 20}) {

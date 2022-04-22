@@ -1,3 +1,21 @@
+Re-indexing summary (April 22, 2022):
+
+==============================================================
+Total of 936 documents under 'posts' collection on database.
+[MARK AS DELETED]: 5 documents.
+[SUCCESSFULLY INDEXED]: 747 documents.
+[REMARKS]:
+ 0 documents with unknown category
+ - 184 'quiz' documents.
+ - Categories from indexed posts - meetupIdea, share, job, eating, travel, qna, discussion, learnKorea, meetup, buyandsell, visa, business, guideBook, reminder, faq, meetupEvents  
+
+==============================================================
+Total of 126 documents under 'comments' collection on database.
+[MARK AS DELETED]: 35 documents.
+[SUCCESSFULLY INDEXED]: 91 documents.
+[REMARKS]:  - 0 comments without parentId or postId
+
+
 Re-indexing summary (April 4, 2022):
 
 ==============================================================
