@@ -217,6 +217,7 @@ export class Meilisearch {
         id: doc.id,
         uid: data.uid,
         title: data.title ?? "",
+        category: data.category,
         content: Utils.removeHtmlTags(data.content) ?? "",
         files: data.files && data.files.length ? data.files.join(",") : "",
         createdAt: data.createdAt,
