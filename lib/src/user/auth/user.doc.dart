@@ -8,7 +8,15 @@ class UserDoc extends StatefulWidget {
   const UserDoc({
     required this.uid,
     required this.builder,
-    this.loader = const Center(child: CircularProgressIndicator.adaptive()),
+    this.loader = const Center(
+      child: SizedBox(
+        width: 10,
+        height: 10,
+        child: CircularProgressIndicator.adaptive(
+          strokeWidth: 2,
+        ),
+      ),
+    ),
     Key? key,
   }) : super(key: key);
   final String uid;
