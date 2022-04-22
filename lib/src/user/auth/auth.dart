@@ -6,15 +6,14 @@ import 'package:flutter/material.dart';
 ///
 ///
 /// ```dart
-///  AuthState(
+///  Auth(
 ///    signedIn: (user) => Text('logged in'),
 ///    signedOut: () => Text('logged out'),
 ///    loader: Text('loading...'),
 ///  ),
 /// ```
-@Deprecated('User Auth')
-class AuthState extends StatelessWidget {
-  const AuthState({
+class Auth extends StatelessWidget {
+  const Auth({
     this.signedIn,
     this.signedOut,
     this.loader = const CircularProgressIndicator.adaptive(),
@@ -28,6 +27,8 @@ class AuthState extends StatelessWidget {
   Widget build(BuildContext context) {
     return StreamBuilder<User?>(
       stream: FirebaseAuth.instance.authStateChanges(),
+      // If the user is already signed-in, use it as initial data
+      initialData: FirebaseAuth.instance.currentUser,
       builder: (_, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return this.loader;

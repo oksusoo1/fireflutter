@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:example/services/app.router.dart';
 import 'package:example/services/defines.dart';
 import 'package:example/services/error_info.dart';
 import 'package:example/services/global.dart';
@@ -14,6 +15,8 @@ class Service {
     _instance ??= Service();
     return _instance!;
   }
+
+  AppRouter router = AppRouter.instance;
 
   Service() {
     init();
@@ -59,7 +62,7 @@ class Service {
           context: globalNavigatorKey.currentContext!,
           data: reminder,
           onLinkPressed: (page, arguments) {
-            open(page, arguments: arguments);
+            router.open(page, arguments: arguments);
           },
         );
       });
@@ -244,57 +247,5 @@ class Service {
         TranslationService.instance.tr(info.content),
       );
     }
-  }
-
-  /// 스크린(페이지) 이동
-  ///
-  /// [popAll] 에 true 가 지정되면, nav stack 의 중간에 있는 모든 페이지를 없애고 해당 페이지로 이동.
-  // Future? open(String routeName,
-  //     {Map<String, dynamic>? arguments, popAll = false, off = false, preventDuplicates = true}) {
-  //   global.routeName.value = routeName;
-  //   if (popAll) {
-  //     return Get.popAllNamed(routeName, arguments: arguments);
-  //   } else if (off) {
-  //     return Get.offNamed(routeName, arguments: arguments, preventDuplicates: preventDuplicates);
-  //   } else {
-  //     return Get.toNamed(routeName, arguments: arguments, preventDuplicates: preventDuplicates);
-  //   }
-  // }
-
-  /// If [pop] is set to true, then it will pop current page
-  ///   (which has name, Not drawer, and not limited to dialogs)
-  ///   and put a new screen.
-  /// If [popAll] is true, then it will remove all screen in route stack and put a new screen.
-  ///   Use [popAll] when the app goes to home screen.
-  Future<dynamic> open(
-    String routeName, {
-    Map? arguments,
-    bool pop = false,
-    bool popAll = false,
-    bool preventDuplicate = true,
-  }) {
-    if (pop) {
-      return Navigator.of(context).popAndPushNamed(
-        routeName,
-        arguments: arguments,
-      );
-    } else if (popAll) {
-      return Navigator.of(context).pushNamedAndRemoveUntil(
-        routeName,
-        (Route<dynamic> route) => false,
-        arguments: arguments,
-      );
-    } else {
-      return Navigator.pushNamed(
-        context,
-        routeName,
-        arguments: arguments,
-      );
-    }
-  }
-
-  /// Return to previous page
-  void back([dynamic data]) {
-    Navigator.pop(globalNavigatorKey.currentContext!, data);
   }
 }
