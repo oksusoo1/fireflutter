@@ -53,10 +53,41 @@ class _LayoutState extends State<Layout> with SingleTickerProviderStateMixin {
     /// TEST
     // Timer(Duration(milliseconds: 500), () => _scaffoldKey.currentState!.openEndDrawer());
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
+      body: NestedScrollView(
+        floatHeaderSlivers: true,
+        headerSliverBuilder: (context, innerBoxIsScrolled) {
+          return [
+            SliverAppBar(
+              floating: true,
+              // snap: true,
+              title: Text(widget.title),
+              bottom: const TabBar(
+                indicatorColor: Colors.red,
+                indicatorWeight: 5,
+                tabs: [
+                  Tab(
+                    icon: Icon(Icons.home),
+                    text: 'Home',
+                  ),
+                  Tab(
+                    icon: Icon(Icons.list_alt),
+                    text: 'Feed',
+                  ),
+                  Tab(
+                    icon: Icon(Icons.person),
+                    text: 'Profile',
+                  ),
+                  Tab(
+                    icon: Icon(Icons.settings),
+                    text: 'Settings',
+                  ),
+                ],
+              ),
+            ),
+          ];
+        },
+        body: widget.body,
       ),
-      body: widget.body,
       bottomNavigationBar: Container(
         height: 60,
         color: Colors.yellowAccent.shade700,

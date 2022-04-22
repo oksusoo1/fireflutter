@@ -1,9 +1,7 @@
-import 'package:example/services/global.dart';
+import 'package:example/screens/home/home.auth.dart';
 import 'package:example/widgets/layout/layout.dart';
 import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutterfire_ui/auth.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -15,32 +13,25 @@ class HomeScreen extends StatelessWidget {
     return Layout(
       isHome: true,
       title: 'Home',
-      body: Auth(
-        signedIn: (user) => Container(
-          padding: const EdgeInsets.all(36),
-          child: Column(
-            children: [
-              Text('You have signed in as ${user.email}'),
-              TextButton(
-                onPressed: FirebaseAuth.instance.signOut,
-                child: const Text(
-                  'Sign Out',
-                ),
-              )
-            ],
-          ),
-        ),
-        signedOut: () => SignInScreen(
-          providerConfigs: const [
-            EmailProviderConfiguration(),
-          ],
-          actions: [
-            AuthStateChangeAction<SignedIn>((context, state) {
-              service.router.openHome();
-            }),
-          ],
-        ),
-      ),
+      body: ListView.builder(
+          itemCount: 100,
+          itemBuilder: (c, i) {
+            final child = Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(i.toString()),
+            );
+
+            if (i == 0) {
+              return Column(
+                children: [
+                  const HomeAuth(),
+                  child,
+                ],
+              );
+            } else {
+              return child;
+            }
+          }),
     );
   }
 }
