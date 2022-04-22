@@ -3,6 +3,9 @@
 #
 
 list(APPEND FLUTTER_PLUGIN_LIST
+  desktop_webview_auth
+  geolocator_windows
+  url_launcher_windows
 )
 
 set(PLUGIN_BUNDLED_LIBRARIES)
