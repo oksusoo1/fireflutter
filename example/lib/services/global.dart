@@ -4,7 +4,7 @@ import 'service.dart';
 
 import 'package:fireflutter/fireflutter.dart';
 
-/// 글로벌 navigator key. MaterialApp 에 등록해서, 모든 영역에서 state 나 context 를 사용.
+/// Global navigator key to be registered in MaterialApp for global state & context
 final GlobalKey<NavigatorState> globalNavigatorKey = GlobalKey();
 
 Service service = Service.instance;

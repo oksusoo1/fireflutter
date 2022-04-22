@@ -134,5 +134,14 @@
       "type": "dart",
       "deviceId": "emulator-5554"
     },
+
+    {
+      "name": "JaeHo - Simulator - iPhone 13 Pro Max - AppleChip",
+      "cwd": "example",
+      "program": "lib/main.dart",
+      "request": "launch",
+      "type": "dart",
+      "deviceId": "63099345-05B9-4BE0-92DC-3BBA6CC4FA50"
+    },
   ]
 }
