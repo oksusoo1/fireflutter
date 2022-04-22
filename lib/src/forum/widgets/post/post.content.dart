@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import '../../../../fireflutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
@@ -38,13 +40,28 @@ class PostContent extends StatelessWidget {
                 onImageTap: (url, renderContext, attributes, element) {
                   if (onImageTapped != null) onImageTapped!(url ?? '');
                 },
+                customRenders: {
+                  networkSourceMatcher(): networkImageRender(loadingWidget: () {
+                    if (Platform.isIOS || Platform.isMacOS) {
+                      return SizedBox(
+                          width: double.infinity,
+                          height: 100,
+                          child: Center(child: CircularProgressIndicator.adaptive()));
+                    }
+                    return CircularProgressIndicator();
+                  }),
+                },
                 style: {
+                  "body": Style(
+                    margin: EdgeInsets.all(0),
+                    padding: EdgeInsets.all(0),
+                  ),
+
                   /// 웹에서 Tiny MCE 편집기로 글을 작성 할 때,
                   /// P 태그에 style="margin-top: 0; margin-bottom: 8px;" 와 같이 적용되는데,
                   /// flutter_html 에서 잘 적용이 안되어서, 여기서 따로 적용해 준다.
-                  "p": Style(margin: EdgeInsets.only(top: 8, bottom: 8.0)),
-                  "body": Style(
-                      margin: EdgeInsets.all(0), padding: EdgeInsets.all(0)),
+                  "p": Style(margin: EdgeInsets.only(top: 16, bottom: 16)),
+                  "img": Style(padding: EdgeInsets.only(top: 4, bottom: 4)),
                 },
                 onLinkTap: (url, renderContext, attr, element) => openLink(url),
               );
