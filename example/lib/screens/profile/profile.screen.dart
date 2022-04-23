@@ -1,3 +1,4 @@
+import 'package:example/services/global.dart';
 import 'package:example/widgets/layout/layout.dart';
 import 'package:flutter/material.dart';
 
@@ -36,7 +37,9 @@ class ProfileScreen extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 ElevatedButton(onPressed: () {}, child: Text('Photo log')),
-                ElevatedButton(onPressed: () {}, child: Text('Edit profile')),
+                ElevatedButton(
+                    onPressed: service.router.openProfileEdit,
+                    child: Text('Edit profile')),
                 ElevatedButton(onPressed: () {}, child: Text('...')),
               ],
             ),

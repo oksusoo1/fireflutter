@@ -1,6 +1,7 @@
 import 'package:example/screens/about/about.screen.dart';
 import 'package:example/screens/home/home.screen.dart';
 import 'package:example/screens/menu/menu.screen.dart';
+import 'package:example/screens/profile/profile.edit.screen.dart';
 import 'package:example/screens/profile/profile.screen.dart';
 import 'package:example/services/global.dart';
 import 'package:flutter/material.dart';
@@ -12,6 +13,8 @@ final Map<String, RouteFunction> _routes = {
   AboutScreen.routeName: (context, arguments) => const AboutScreen(),
   MenuScreen.routeName: (context, arguments) => const MenuScreen(),
   ProfileScreen.routeName: (context, arguments) => const ProfileScreen(),
+  ProfileEditScreen.routeName: (context, arguments) =>
+      const ProfileEditScreen(),
 };
 
 class NoAnimationMaterialPageRoute<T> extends MaterialPageRoute<T> {
@@ -68,9 +71,10 @@ class AppRouter extends NavigatorObserver {
     return route;
   }
 
-  /// 스크린(페이지) 이동
+  /// Open a screen.
   ///
-  /// [popAll] 에 true 가 지정되면, nav stack 의 중간에 있는 모든 페이지를 없애고 해당 페이지로 이동.
+  /// If [popAll] is set to true, then it removes all the screen in nav stack.
+  ///
   // Future? open(String routeName,
   //     {Map<String, dynamic>? arguments, popAll = false, off = false, preventDuplicates = true}) {
   //   global.routeName.value = routeName;
@@ -134,5 +138,9 @@ class AppRouter extends NavigatorObserver {
 
   Future openProfile() {
     return open(ProfileScreen.routeName, popAll: true);
+  }
+
+  Future openProfileEdit() {
+    return open(ProfileEditScreen.routeName);
   }
 }

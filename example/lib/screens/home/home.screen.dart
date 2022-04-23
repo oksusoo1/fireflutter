@@ -1,7 +1,6 @@
 import 'package:example/screens/home/home.auth.dart';
 import 'package:example/screens/home/home.menu.dart';
 import 'package:example/widgets/layout/layout.dart';
-import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -32,15 +31,16 @@ class HomeScreen extends StatelessWidget {
       bottom: const HomeMenu(height: 28),
       body: HomeAuth(
         child: ListView.builder(
-            itemCount: 100,
-            itemBuilder: (c, i) {
-              final child = Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text(i.toString()),
-              );
+          itemCount: 100,
+          itemBuilder: (c, i) {
+            final child = Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(i.toString()),
+            );
 
-              return child;
-            }),
+            return child;
+          },
+        ),
       ),
     );
   }

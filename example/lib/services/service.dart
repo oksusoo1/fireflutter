@@ -47,26 +47,6 @@ class Service {
             duration: 10,
           ),
         );
-
-    /// Listen to reminder
-    ///
-    /// Delay 3 seconds. This is just to display the reminder dialog 3 seconds
-    /// after the app boots. No big deal here.
-    Timer(const Duration(seconds: 3), () {
-      /// Listen to the reminder update event.
-      ReminderService.instance.init(onReminder: (reminder) {
-        /// Display the reminder using default dialog UI. You may copy the code
-        /// and customize by yourself.
-        ReminderService.instance.display(
-          /// Use the global NavigatorState to display dialog.
-          context: globalNavigatorKey.currentContext!,
-          data: reminder,
-          onLinkPressed: (page, arguments) {
-            router.open(page, arguments: arguments);
-          },
-        );
-      });
-    });
   }
 
   /// Open alert box
