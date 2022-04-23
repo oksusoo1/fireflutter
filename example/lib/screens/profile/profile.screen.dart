@@ -14,34 +14,43 @@ class ProfileScreen extends StatelessWidget {
         'Profile',
         style: TextStyle(color: Colors.blue),
       ),
-      body: Column(
-        children: [
-          Container(
-            width: 100,
-            height: 100,
-            decoration: BoxDecoration(
-              color: Colors.grey,
-              shape: BoxShape.circle,
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            Container(
+              width: 100,
+              height: 100,
+              decoration: BoxDecoration(
+                color: Colors.grey,
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                Icons.person,
+                size: 64,
+              ),
             ),
-            child: Icon(
-              Icons.person,
-              size: 64,
+            Text('@TODO: name'),
+            Text('@TODO: your level'),
+            Text('@TODO: member since'),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                ElevatedButton(onPressed: () {}, child: Text('Photo log')),
+                ElevatedButton(onPressed: () {}, child: Text('Edit profile')),
+                ElevatedButton(onPressed: () {}, child: Text('...')),
+              ],
             ),
-          ),
-          Text('@TODO: name'),
-          Text('@TODO: your level'),
-          Text('@TODO: member since'),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              ElevatedButton(onPressed: () {}, child: Text('Photo log')),
-              ElevatedButton(onPressed: () {}, child: Text('Edit profile')),
-              ElevatedButton(onPressed: () {}, child: Text('...')),
-            ],
-          ),
-          Divider(),
-          Text('Recent Reactions'),
-        ],
+            Divider(),
+            Text('Recent Reactions'),
+            for (int i = 0; i < 100; i++)
+              Padding(
+                padding: EdgeInsets.all(8),
+                child: Text(
+                  i.toString(),
+                ),
+              )
+          ],
+        ),
       ),
     );
   }

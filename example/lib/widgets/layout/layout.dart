@@ -67,7 +67,7 @@ class _LayoutState extends State<Layout> with SingleTickerProviderStateMixin {
         headerSliverBuilder: (context, innerBoxIsScrolled) {
           return [
             SliverAppBar(
-              pinned: true,
+              pinned: widget.bottom == null ? false : true,
               floating: true,
               // snap: true,
               backgroundColor: widget.appBarBackgroundColor,
