@@ -1,6 +1,7 @@
 import 'package:example/screens/about/about.screen.dart';
 import 'package:example/screens/home/home.screen.dart';
 import 'package:example/screens/menu/menu.screen.dart';
+import 'package:example/screens/profile/profile.screen.dart';
 import 'package:example/services/global.dart';
 import 'package:flutter/material.dart';
 
@@ -10,6 +11,7 @@ final Map<String, RouteFunction> _routes = {
   HomeScreen.routeName: (context, arguments) => const HomeScreen(),
   AboutScreen.routeName: (context, arguments) => const AboutScreen(),
   MenuScreen.routeName: (context, arguments) => const MenuScreen(),
+  ProfileScreen.routeName: (context, arguments) => const ProfileScreen(),
 };
 
 class NoAnimationMaterialPageRoute<T> extends MaterialPageRoute<T> {
@@ -128,5 +130,9 @@ class AppRouter extends NavigatorObserver {
 
   Future openMenu() {
     return open(MenuScreen.routeName, popAll: true);
+  }
+
+  Future openProfile() {
+    return open(ProfileScreen.routeName, popAll: true);
   }
 }

@@ -1,5 +1,6 @@
 import 'package:example/services/global.dart';
 import 'package:flutter/material.dart';
+import 'package:audioplayers/audioplayers.dart';
 
 class MenuItem {
   Widget icon;
@@ -12,13 +13,21 @@ class Layout extends StatefulWidget {
   const Layout({
     Key? key,
     this.isHome = false,
-    this.title = '',
+    required this.title,
+    this.bottom,
     required this.body,
+    this.actions,
+    this.backgroundColor = Colors.grey,
+    this.appBarBackgroundColor = Colors.white,
   }) : super(key: key);
 
   final bool isHome;
-  final String title;
+  final Widget title;
   final Widget body;
+  final PreferredSizeWidget? bottom;
+  final List<Widget>? actions;
+  final Color backgroundColor;
+  final Color appBarBackgroundColor;
 
   @override
   State<Layout> createState() => _LayoutState();
@@ -27,6 +36,7 @@ class Layout extends StatefulWidget {
 class _LayoutState extends State<Layout> with SingleTickerProviderStateMixin {
   late Map<String, MenuItem> menus;
 
+  final player = AudioPlayer();
   @override
   void initState() {
     super.initState();
@@ -42,7 +52,7 @@ class _LayoutState extends State<Layout> with SingleTickerProviderStateMixin {
       'Watch': MenuItem(
           icon: const Icon(Icons.zoom_in), onTap: service.router.openHome),
       'Profile': MenuItem(
-          icon: const Icon(Icons.person), onTap: service.router.openHome),
+          icon: const Icon(Icons.person), onTap: service.router.openProfile),
       'Menu': MenuItem(
           icon: const Icon(Icons.menu), onTap: service.router.openMenu),
     };
@@ -50,39 +60,20 @@ class _LayoutState extends State<Layout> with SingleTickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    /// TEST
-    // Timer(Duration(milliseconds: 500), () => _scaffoldKey.currentState!.openEndDrawer());
     return Scaffold(
+      backgroundColor: widget.backgroundColor,
       body: NestedScrollView(
         floatHeaderSlivers: true,
         headerSliverBuilder: (context, innerBoxIsScrolled) {
           return [
             SliverAppBar(
+              pinned: true,
               floating: true,
               // snap: true,
-              title: Text(widget.title),
-              bottom: const TabBar(
-                indicatorColor: Colors.red,
-                indicatorWeight: 5,
-                tabs: [
-                  Tab(
-                    icon: Icon(Icons.home),
-                    text: 'Home',
-                  ),
-                  Tab(
-                    icon: Icon(Icons.list_alt),
-                    text: 'Feed',
-                  ),
-                  Tab(
-                    icon: Icon(Icons.person),
-                    text: 'Profile',
-                  ),
-                  Tab(
-                    icon: Icon(Icons.settings),
-                    text: 'Settings',
-                  ),
-                ],
-              ),
+              backgroundColor: widget.appBarBackgroundColor,
+              title: widget.title,
+              bottom: widget.bottom,
+              actions: widget.actions,
             ),
           ];
         },
@@ -94,22 +85,31 @@ class _LayoutState extends State<Layout> with SingleTickerProviderStateMixin {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: menus.entries
-              .map((e) => GestureDetector(
-                    onTap: e.value.onTap,
-                    behavior: HitTestBehavior.opaque,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        e.value.icon,
-                        Text(
-                          e.key,
-                          style: const TextStyle(
-                            fontSize: 10,
-                          ),
+              .map(
+                (e) => GestureDetector(
+                  onTap: () async {
+                    // call this method when desired
+
+                    // await player.setSource(AssetSource('sounds/coin.wav'));
+                    player.play(AssetSource('click.mp3'));
+
+                    e.value.onTap();
+                  },
+                  behavior: HitTestBehavior.opaque,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      e.value.icon,
+                      Text(
+                        e.key,
+                        style: const TextStyle(
+                          fontSize: 10,
                         ),
-                      ],
-                    ),
-                  ))
+                      ),
+                    ],
+                  ),
+                ),
+              )
               .toList(),
         ),
       ),

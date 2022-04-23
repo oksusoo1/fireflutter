@@ -9,7 +9,10 @@ class MenuScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const Layout(
-      title: 'Menu ...',
+      title: Text(
+        'Menu ...',
+        style: TextStyle(color: Colors.blue),
+      ),
       body: Text('body'),
     );
   }

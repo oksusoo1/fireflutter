@@ -9,7 +9,10 @@ class AboutScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const Layout(
-      title: 'About ...',
+      title: Text(
+        'About ...',
+        style: TextStyle(color: Colors.blue),
+      ),
       body: Text('body'),
     );
   }
