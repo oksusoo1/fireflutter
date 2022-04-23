@@ -3,6 +3,7 @@ import 'package:example/screens/home/home.screen.dart';
 import 'package:example/screens/menu/menu.screen.dart';
 import 'package:example/screens/profile/profile.edit.screen.dart';
 import 'package:example/screens/profile/profile.screen.dart';
+import 'package:example/screens/user/sign-in-with-email-password.screen.dart';
 import 'package:example/services/global.dart';
 import 'package:flutter/material.dart';
 
@@ -15,6 +16,8 @@ final Map<String, RouteFunction> _routes = {
   ProfileScreen.routeName: (context, arguments) => const ProfileScreen(),
   ProfileEditScreen.routeName: (context, arguments) =>
       const ProfileEditScreen(),
+  SignInWithEmailAndPasswordScreen.routeName: (context, arugment) =>
+      const SignInWithEmailAndPasswordScreen(),
 };
 
 class NoAnimationMaterialPageRoute<T> extends MaterialPageRoute<T> {
@@ -142,5 +145,9 @@ class AppRouter extends NavigatorObserver {
 
   Future openProfileEdit() {
     return open(ProfileEditScreen.routeName);
+  }
+
+  Future openSignInWithEmailAndPassword() {
+    return open(SignInWithEmailAndPasswordScreen.routeName);
   }
 }

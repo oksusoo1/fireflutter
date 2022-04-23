@@ -29,17 +29,20 @@ class HomeScreen extends StatelessWidget {
         ),
       ],
       bottom: const HomeMenu(height: 28),
-      body: HomeAuth(
-        child: ListView.builder(
-          itemCount: 100,
-          itemBuilder: (c, i) {
-            final child = Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text(i.toString()),
-            );
+      body: Padding(
+        padding: EdgeInsets.all(16),
+        child: HomeAuth(
+          child: ListView.builder(
+            itemCount: 100,
+            itemBuilder: (c, i) {
+              final child = Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(i.toString()),
+              );
 
-            return child;
-          },
+              return child;
+            },
+          ),
         ),
       ),
     );

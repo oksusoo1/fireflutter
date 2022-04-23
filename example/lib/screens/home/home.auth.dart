@@ -24,9 +24,6 @@ class _HomeAuthState extends State<HomeAuth> {
   void initState() {
     phoneNumber.text = '+1 1111 111 111';
     super.initState();
-    // WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
-    //   smsCodeDialog();
-    // });
   }
 
   smsCodeDialog() async {
@@ -98,7 +95,11 @@ class _HomeAuthState extends State<HomeAuth> {
                 );
               },
               child: Text('Sign-in'),
-            )
+            ),
+            TextButton(
+              onPressed: service.router.openSignInWithEmailAndPassword,
+              child: Text('Sign-in with Email & Password'),
+            ),
           ],
         );
       },

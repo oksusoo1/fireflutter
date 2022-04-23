@@ -17,7 +17,7 @@ class Layout extends StatefulWidget {
     this.bottom,
     required this.body,
     this.actions,
-    this.backgroundColor = Colors.grey,
+    this.backgroundColor = Colors.white,
     this.appBarBackgroundColor = Colors.white,
   }) : super(key: key);
 
@@ -79,38 +79,40 @@ class _LayoutState extends State<Layout> with SingleTickerProviderStateMixin {
         },
         body: widget.body,
       ),
-      bottomNavigationBar: Container(
-        height: 60,
-        color: Colors.yellowAccent.shade700,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: menus.entries
-              .map(
-                (e) => GestureDetector(
-                  onTap: () async {
-                    // call this method when desired
+      bottomNavigationBar: SafeArea(
+        child: Container(
+          height: 60,
+          decoration: BoxDecoration(border: Border(top: BorderSide())),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: menus.entries
+                .map(
+                  (e) => GestureDetector(
+                    onTap: () async {
+                      // call this method when desired
 
-                    // await player.setSource(AssetSource('sounds/coin.wav'));
-                    player.play(AssetSource('click.mp3'));
+                      // await player.setSource(AssetSource('sounds/coin.wav'));
+                      player.play(AssetSource('click.mp3'));
 
-                    e.value.onTap();
-                  },
-                  behavior: HitTestBehavior.opaque,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      e.value.icon,
-                      Text(
-                        e.key,
-                        style: const TextStyle(
-                          fontSize: 10,
+                      e.value.onTap();
+                    },
+                    behavior: HitTestBehavior.opaque,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        e.value.icon,
+                        Text(
+                          e.key,
+                          style: const TextStyle(
+                            fontSize: 10,
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-              )
-              .toList(),
+                )
+                .toList(),
+          ),
         ),
       ),
     );
