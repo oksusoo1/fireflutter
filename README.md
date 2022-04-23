@@ -1,8 +1,10 @@
+# 2022.4.23 남승현
+
 ![FireFlutter](https://raw.githubusercontent.com/thruthesky/fireflutter/main/readme/images/logo2.png?raw=true)
 
 # Fire Flutter
 
-A free, open source, complete, rapid development package for creating Social apps, Chat apps, Community(Forum) apps, Shopping mall apps, and much more based on Firebase.
+A free, open  source, complete, rapid development package for creating Social apps, Chat apps, Community(Forum) apps, Shopping mall apps, and much more based on Firebase.
 
 - Complete features.\
   This package has complete features (see Features below) that most of apps require.
