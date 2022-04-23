@@ -367,30 +367,23 @@ $ npm run shell
 
 
 # User
-
 ## User installation
 
-- Do [Firebase installation](#firebase-installation)
-- Enable Email/Password Sign-In method to login with email and password.
-- Enable Google Sign-In method and add the following in `Info.plist` to login with Google account
 
-```xml
-<!-- Google Sign-in Section -->
-<key>CFBundleURLTypes</key>
-<array>
-	<dict>
-		<key>CFBundleTypeRole</key>
-		<string>Editor</string>
-		<key>CFBundleURLSchemes</key>
-		<array>
-			<!-- TODO Replace this value: -->
-			<!-- Copied from GoogleService-Info.plist key REVERSED_CLIENT_ID -->
-			<string>com.googleusercontent.apps.------------------------</string>
-		</array>
-	</dict>
-</array>
-<!-- End of the Google Sign-in Section -->
-```
+- To make this happen,
+  - for Android, SHA1 must be registered on debug mode.
+  - for iOS,
+    - push notification must be enabledand (URL scheme must be set on Xcode.
+      - `Open Xcode by dobule clicking on example/ios/Runner/Runner.xcworkspace`.
+      - `Add Push Notifications` under Signing & Capabilities.
+      - `Add App ID into URL Scheme` under Info. Use `app-....` format.
+    - APNs auth key should configured with FCM seeting in Firebase.
+
+- Note, when you install with `flutterfire configure`, you don't need to input `REVERSED_CLIENT_ID` and `BUNDLE_ID` for sign-in with phone number.
+
+- `UserService` needs to be called immediately after app boots to create and update user profile in realtime database.
+  - Simply call `UserService.instance.init()` in `main.dart` after Firebase has initialized.
+
 
 ## User data and user profile
 

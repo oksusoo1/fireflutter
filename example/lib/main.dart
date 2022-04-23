@@ -1,6 +1,7 @@
 import 'package:example/screens/home/home.screen.dart';
 import 'package:example/services/app.router.dart';
 import 'package:example/services/global.dart';
+import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
@@ -13,8 +14,19 @@ void main() async {
   runApp(const ExampleApp());
 }
 
-class ExampleApp extends StatelessWidget {
+class ExampleApp extends StatefulWidget {
   const ExampleApp({Key? key}) : super(key: key);
+
+  @override
+  State<ExampleApp> createState() => _ExampleAppState();
+}
+
+class _ExampleAppState extends State<ExampleApp> {
+  @override
+  void initState() {
+    super.initState();
+    UserService.instance.init();
+  }
 
   @override
   Widget build(BuildContext context) {

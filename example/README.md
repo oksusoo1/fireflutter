@@ -1,16 +1,25 @@
-# example
-
-A new Flutter project.
+# Fireflutter Example
 
 ## Getting Started
 
-This project is a starting point for a Flutter application.
 
-A few resources to get you started if this is your first Flutter project:
+- Install fireflutter and necessary setup stated in fireflutter README.md.
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+
+## example-profile branch
+
+- Example profile does `Phone Sign-in` for users to sign-in.
+
+- To make this happen,
+  - for Android, SHA1 must be registered on debug mode.
+  - for iOS,
+    - push notification must be enabledand (URL scheme must be set on Xcode.
+      - `Open Xcode by dobule clicking on example/ios/Runner/Runner.xcworkspace`.
+      - `Add Push Notifications` under Signing & Capabilities.
+      - `Add App ID into URL Scheme` under Info. Use `app-....` format.
+    - APNs auth key should configured with FCM seeting in Firebase.
+
+
+
+

@@ -16,8 +16,6 @@ class UserService with FirestoreMixin, DatabaseMixin {
   }
 
   UserService() {
-    // debugPrint('UserService::constructor');
-
     initAuthChanges();
   }
 
@@ -49,6 +47,9 @@ class UserService with FirestoreMixin, DatabaseMixin {
   /// This event will be posted whenever user document changes.
   // ignore: close_sinks
   BehaviorSubject<UserModel> changes = BehaviorSubject.seeded(UserModel());
+
+  /// Nothing but to instantiate `UserSerivce` object. So it will listen auth changes and update user profile.
+  init() {}
 
   /// User auth changes
   ///
