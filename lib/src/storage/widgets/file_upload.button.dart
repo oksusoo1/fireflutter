@@ -12,7 +12,7 @@ class FileUploadButton extends StatelessWidget {
     required this.type,
     required this.onUploaded,
     required this.onProgress,
-    required this.onError,
+    // required this.onError,
     Key? key,
   }) : super(key: key);
 
@@ -20,7 +20,7 @@ class FileUploadButton extends StatelessWidget {
   final String type;
   final Function(String) onUploaded;
   final Function(double) onProgress;
-  final Function(dynamic) onError;
+  // final Function(dynamic) onError;
 
   @override
   Widget build(BuildContext context) {
@@ -62,30 +62,30 @@ class FileUploadButton extends StatelessWidget {
       ),
     );
 
-    try {
-      if (re == null) return;
-      String uploadedFileUrl;
-      if (re == 'camera' || re == 'gallery') {
-        uploadedFileUrl = await StorageService.instance.pickUpload(
-          onProgress: onProgress,
-          source: re == 'camera' ? ImageSource.camera : ImageSource.gallery,
-          type: type,
-        );
-      } else {
-        FilePickerResult? result = await FilePicker.platform.pickFiles();
-        if (result == null) return;
-        File file = File(result.files.single.path!);
-        debugPrint('file; $file');
-        uploadedFileUrl = await StorageService.instance.upload(
-          file: file,
-          type: type,
-          onProgress: onProgress,
-        );
-      }
-
-      onUploaded(uploadedFileUrl);
-    } catch (e) {
-      onError(e);
+    // try {
+    if (re == null) return;
+    String uploadedFileUrl;
+    if (re == 'camera' || re == 'gallery') {
+      uploadedFileUrl = await StorageService.instance.pickUpload(
+        onProgress: onProgress,
+        source: re == 'camera' ? ImageSource.camera : ImageSource.gallery,
+        type: type,
+      );
+    } else {
+      FilePickerResult? result = await FilePicker.platform.pickFiles();
+      if (result == null) return;
+      File file = File(result.files.single.path!);
+      debugPrint('file; $file');
+      uploadedFileUrl = await StorageService.instance.upload(
+        file: file,
+        type: type,
+        onProgress: onProgress,
+      );
     }
+
+    onUploaded(uploadedFileUrl);
+    // } catch (e) {
+    //   onError(e);
+    // }
   }
 }

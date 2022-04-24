@@ -1,4 +1,3 @@
-import 'package:example/services/global.dart';
 import 'package:example/widgets/layout/layout.dart';
 import 'package:example/widgets/user_avatar/user_avatar.dart';
 import 'package:fireflutter/fireflutter.dart';
@@ -16,8 +15,8 @@ class ProfileEditScreen extends StatefulWidget {
 class _ProfileEditScreenState extends State<ProfileEditScreen> {
   double progress = 0;
 
-  updateProgress(progress) {
-    debugPrint('progress; $progress');
+  updateProgress(double progress) {
+    debugPrint('progress; $progress ...');
     setState(() => this.progress = progress);
   }
 
@@ -33,29 +32,36 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16),
-          child: UserDoc(
-            uid: UserService.instance.uid,
-            builder: (user) => Column(
-              children: [
-                FileUploadButton(
-                  child: UserAvatar(url: user.photoUrl, progress: progress),
+          child: Column(
+            children: [
+              MyDoc(builder: (my) {
+                return FileUploadButton(
+                  child: UserPhoto(url: my.photoUrl, progress: progress),
                   type: 'user',
                   onUploaded: (url) =>
-                      user.updatePhotoUrl(url).then((x) => updateProgress(0)),
+                      my.updatePhotoUrl(url).then((x) => updateProgress(0)),
                   onProgress: updateProgress,
-                  onError: service.error,
+                );
+              }),
+              UserDoc(
+                uid: UserService.instance.uid,
+                builder: (user) => Column(
+                  children: [
+                    TextField(
+                      controller: TextEditingController()
+                        ..text = user.firstName,
+                      decoration: InputDecoration(
+                        label: Text('First name'),
+                      ),
+                      onChanged: (s) =>
+                          user.update(field: 'firstName', value: s),
+                    ),
+                    Text('@TODO: your level'),
+                    Text('@TODO: member since'),
+                  ],
                 ),
-                TextField(
-                  controller: TextEditingController()..text = user.firstName,
-                  decoration: InputDecoration(
-                    label: Text('First name'),
-                  ),
-                  onChanged: (s) => user.update(field: 'firstName', value: s),
-                ),
-                Text('@TODO: your level'),
-                Text('@TODO: member since'),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),

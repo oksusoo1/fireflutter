@@ -26,7 +26,7 @@ class _JobEditScreenState extends State<JobEditScreen> {
         child: Column(
           children: [
             JobEditForm(
-              onError: error,
+              // onError: error,
               onCreated: () async {
                 await alert('Job create', 'Job opening created!');
                 AppService.instance.back();

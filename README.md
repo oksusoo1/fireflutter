@@ -251,7 +251,9 @@ Table of contents
 
 ## Firebase Storage installation
 
-- Install 'Image Resize' firebase extension with the following settings;
+- If storage exception happens, check if the `Image Resize` extension and the security rules are installed properly.
+
+- Install 'Image Resize' firebase extension with the following settings for generating thumbnails.
 
   - Upgrade billing plan
   - This extension will use cloud function. It will install `generateResizedImage` function.
@@ -264,6 +266,9 @@ Table of contents
   - List of absolute paths not included for resized images: leave it empty.
   - Cache-Control header for resized images: max-age=86400
   - Convert image to preferred types: webp
+  - Output options for selected formats: leave it empty
+  - GIF and WEBP animated option: No
+  - Cloud Function memory: 1GB
     Note, that you can see the configuration in firebase extensions menu and reconfigure it.
     Note, that you can see the location in firebase cloud functions menu.
 

@@ -1,13 +1,14 @@
+import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
 
-class UserAvatar extends StatelessWidget {
-  const UserAvatar(
-      {Key? key,
-      required this.url,
-      required this.progress,
-      this.width = 100,
-      this.height = 100})
-      : super(key: key);
+class UserPhoto extends StatelessWidget {
+  const UserPhoto({
+    Key? key,
+    required this.url,
+    this.progress = 0,
+    this.width = 100,
+    this.height = 100,
+  }) : super(key: key);
 
   final String url;
   final double progress;
@@ -17,20 +18,28 @@ class UserAvatar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 100,
-      height: 100,
+      width: width,
+      height: height,
       decoration: BoxDecoration(
         color: Colors.grey,
         shape: BoxShape.circle,
       ),
       child: Stack(
         children: [
-          Center(
-            child: Icon(
-              Icons.person,
-              size: 64,
-            ),
-          ),
+          url == ''
+              ? Center(
+                  child: Icon(
+                    Icons.person,
+                    size: 64,
+                  ),
+                )
+              : ClipOval(
+                  child: UploadedImage(
+                    url: url,
+                    width: width,
+                    height: height,
+                  ),
+                ),
           SizedBox(
             width: width,
             height: height,

@@ -32,7 +32,7 @@ class _PostFormScreenState extends State<PostFormScreen> with FirestoreMixin {
             onUpdate: (postId) {
               AppService.instance.back(postId);
             },
-            onError: error,
+            // onError: error,
           ),
         ]),
       ),

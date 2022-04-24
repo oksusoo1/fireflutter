@@ -6,13 +6,13 @@ class CommentEditDialog extends StatefulWidget {
     Key? key,
     required this.onCancel,
     required this.onSubmit,
-    required this.onError,
+    // required this.onError,
     this.comment,
   }) : super(key: key);
 
   final Function() onCancel;
   final Function(Json, Function(bool)) onSubmit;
-  final Function(dynamic) onError;
+  // final Function(dynamic) onError;
   final CommentModel? comment;
 
   @override
@@ -74,7 +74,7 @@ class _CommentEditDialogState extends State<CommentEditDialog> {
                 onProgress: (progress) {
                   if (mounted) setState(() => uploadProgress = progress);
                 },
-                onError: widget.onError,
+                // onError: widget.onError,
               ),
               Spacer(),
               TextButton(
@@ -103,7 +103,7 @@ class _CommentEditDialogState extends State<CommentEditDialog> {
             ]),
             if (uploadProgress > 0)
               LinearProgressIndicator(value: uploadProgress),
-            ImageListEdit(files: files, onError: widget.onError),
+            ImageListEdit(files: files),
           ],
         ),
       ),

@@ -44,7 +44,7 @@ class ProfileScreenState extends State<ProfileScreen> {
                   onUploaded: updatePhotoUrl,
                   onProgress: (progress) =>
                       setState(() => uploadProgress = progress),
-                  onError: error,
+                  // onError: error,
                 );
               },
             ),

@@ -13,12 +13,12 @@ class JobEditForm extends StatefulWidget {
     Key? key,
     required this.onCreated,
     required this.onUpdated,
-    required this.onError,
+    // required this.onError,
   }) : super(key: key);
 
   final Function() onCreated;
   final Function() onUpdated;
-  final Function(dynamic) onError;
+  // final Function(dynamic) onError;
 
   @override
   State<JobEditForm> createState() => _JobEditFormState();
@@ -413,7 +413,7 @@ class _JobEditFormState extends State<JobEditForm> with FirestoreMixin {
           Divider(),
           if (uploadLimited)
             GestureDetector(
-              onTap: () => widget.onError('Image upload is limited to 5 only.'),
+              onTap: () => throw 'Image upload is limited to 5 only.',
               child: Row(
                 children: [
                   Icon(
@@ -458,7 +458,7 @@ class _JobEditFormState extends State<JobEditForm> with FirestoreMixin {
               onProgress: (progress) {
                 if (mounted) setState(() => uploadProgress = progress);
               },
-              onError: (e) => widget.onError(e),
+              // onError: (e) => widget.onError(e),
             ),
           if (uploadProgress > 0) ...[
             SizedBox(height: 8),
@@ -469,7 +469,7 @@ class _JobEditFormState extends State<JobEditForm> with FirestoreMixin {
             ImageListEdit(
               files: job.files,
               onDeleted: () => setState(() {}),
-              onError: (e) => widget.onError(e),
+              // onError: (e) => widget.onError(e),
             ),
           ],
 
@@ -520,17 +520,17 @@ class _JobEditFormState extends State<JobEditForm> with FirestoreMixin {
                 if (_formKey.currentState!.validate() && address != null) {
                   addJobAddress(address!);
 
-                  try {
-                    await job.edit();
-                    if (job.id == '') {
-                      widget.onCreated();
-                    } else {
-                      widget.onUpdated();
-                    }
-                  } catch (e, stacks) {
-                    debugPrintStack(stackTrace: stacks);
-                    widget.onError(e);
+                  // try {
+                  await job.edit();
+                  if (job.id == '') {
+                    widget.onCreated();
+                  } else {
+                    widget.onUpdated();
                   }
+                  // } catch (e, stacks) {
+                  //   debugPrintStack(stackTrace: stacks);
+                  //   widget.onError(e);
+                  // }
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(

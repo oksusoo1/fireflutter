@@ -2,12 +2,11 @@ import 'dart:async';
 
 import 'package:example/services/app.router.dart';
 import 'package:example/services/defines.dart';
-import 'package:example/services/error_info.dart';
 import 'package:example/services/global.dart';
 import 'package:example/widgets/app_alert_dialog/app_alert_dialog.dart';
 import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
-import 'package:rxdart/rxdart.dart';
+// import 'package:rxdart/rxdart.dart';
 
 class Service {
   static Service? _instance;
@@ -24,29 +23,29 @@ class Service {
 
   /// Dio may produce consecutive errors when there are network problems.
   /// It catches those consecutive erros and reduces into one.
-  PublishSubject<int> dioNoInternetError = PublishSubject();
-  PublishSubject<int> dioConnectionError = PublishSubject();
+  // PublishSubject<int> dioNoInternetError = PublishSubject();
+  // PublishSubject<int> dioConnectionError = PublishSubject();
 
   BuildContext get context => globalNavigatorKey.currentContext!;
 
   init() async {
-    /// Display toast error debounced by a second on `No Internet`
-    dioNoInternetError.debounceTime(const Duration(seconds: 1)).listen(
-          (x) => alert(
-            "No Internet", // title
-            "Oops! Your device is not connected to the Internet, or the speed of Internet is very slow. Please check internet connectivity. And see if this app allowed to use mobile data when your are using mobile data", // message
-          ),
-        );
+    // /// Display toast error debounced by a second on `No Internet`
+    // dioNoInternetError.debounceTime(const Duration(seconds: 1)).listen(
+    //       (x) => alert(
+    //         "No Internet", // title
+    //         "Oops! Your device is not connected to the Internet, or the speed of Internet is very slow. Please check internet connectivity. And see if this app allowed to use mobile data when your are using mobile data", // message
+    //       ),
+    //     );
 
-    /// Display toast error debounded by 2 seconds on `Connection error to server`.
-    /// This happens when internet is slow and the client sometimes cannot connect to server.
-    dioConnectionError.throttleTime(const Duration(seconds: 2)).listen(
-          (x) => toast(
-            'Connection Error',
-            'Please check your connection. This error may happens on slow internet connection.',
-            duration: 10,
-          ),
-        );
+    // /// Display toast error debounded by 2 seconds on `Connection error to server`.
+    // /// This happens when internet is slow and the client sometimes cannot connect to server.
+    // dioConnectionError.throttleTime(const Duration(seconds: 2)).listen(
+    //       (x) => toast(
+    //         'Connection Error',
+    //         'Please check your connection. This error may happens on slow internet connection.',
+    //         duration: 10,
+    //       ),
+    //     );
   }
 
   /// Open alert box
@@ -220,12 +219,10 @@ class Service {
 
     if (e.toString() == 'IMAGE_NOT_SELECTED') return;
 
-    final ErrorInfo? info = errorInfo(e);
-    if (info != null) {
-      alert(
-        TranslationService.instance.tr(info.title),
-        TranslationService.instance.tr(info.content),
-      );
-    }
+    final ErrorInfo info = ErrorInfo.from(e);
+    alert(
+      TranslationService.instance.tr(info.title),
+      TranslationService.instance.tr(info.content),
+    );
   }
 }

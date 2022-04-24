@@ -10,28 +10,31 @@ import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 
 void main() {
-  runZonedGuarded(() async {
-    WidgetsFlutterBinding.ensureInitialized();
-    await Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform,
-    );
-    FlutterError.onError = (FlutterErrorDetails details) {
-      /// Flutter exceptions come here.
-      log("--> FlutterError.onError : from (the inside of) Flutter framework.");
-      log("------------------------------------------------------------------");
-      FlutterError.dumpErrorToConsole(details);
-      service.error(details.exception);
-    };
-    runApp(const ExampleApp());
-  }, (error, stackTrace) {
-    /// Firebase exceptions and dart(outside flutter) exceptions come here.
-    log("--> runZoneGuarded() : exceptions outside flutter framework.");
-    log("------------------------------------------------------------");
-    log("--> runtimeType: ${error.runtimeType}");
-    log("Dart Error :  $error");
-    log("StackTrace :  $stackTrace");
-    service.error(error);
-  });
+  runZonedGuarded(
+    () async {
+      WidgetsFlutterBinding.ensureInitialized();
+      await Firebase.initializeApp(
+        options: DefaultFirebaseOptions.currentPlatform,
+      );
+      FlutterError.onError = (FlutterErrorDetails details) {
+        /// Flutter exceptions come here.
+        log("--> FlutterError.onError : from (the inside of) Flutter framework.");
+        log("------------------------------------------------------------------");
+        FlutterError.dumpErrorToConsole(details);
+        service.error(details.exception);
+      };
+      runApp(const ExampleApp());
+    },
+    (error, stackTrace) {
+      /// Firebase exceptions and dart(outside flutter) exceptions come here.
+      log("--> runZoneGuarded() : exceptions outside flutter framework.");
+      log("------------------------------------------------------------");
+      log("--> runtimeType: ${error.runtimeType}");
+      log("Dart Error :  $error");
+      debugPrintStack(stackTrace: stackTrace);
+      service.error(error);
+    },
+  );
 }
 
 class ExampleApp extends StatefulWidget {

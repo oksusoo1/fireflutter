@@ -13,7 +13,7 @@ mixin ForumMixin {
       builder: (_) {
         return CommentEditDialog(
           onCancel: AppService.instance.back,
-          onError: error,
+          // onError: error,
           onSubmit: (Json form, progress) async {
             try {
               progress(true);
@@ -42,7 +42,7 @@ mixin ForumMixin {
         return CommentEditDialog(
           comment: comment,
           onCancel: AppService.instance.back,
-          onError: error,
+          // onError: error,
           onSubmit: (Json form, progress) async {
             try {
               progress(true);

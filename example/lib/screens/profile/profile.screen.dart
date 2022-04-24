@@ -1,5 +1,6 @@
 import 'package:example/services/global.dart';
 import 'package:example/widgets/layout/layout.dart';
+import 'package:example/widgets/user_avatar/user_avatar.dart';
 import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
 
@@ -20,18 +21,7 @@ class ProfileScreen extends StatelessWidget {
         child: MyDoc(builder: (my) {
           return Column(
             children: [
-              Container(
-                width: 100,
-                height: 100,
-                decoration: BoxDecoration(
-                  color: Colors.grey,
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(
-                  Icons.person,
-                  size: 64,
-                ),
-              ),
+              UserPhoto(url: my.photoUrl),
               Text(my.firstName),
               Text('@TODO: your level'),
               Text('@TODO: member since'),

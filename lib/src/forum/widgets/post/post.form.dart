@@ -9,7 +9,7 @@ class PostForm extends StatefulWidget {
     this.post,
     required this.onCreate,
     required this.onUpdate,
-    required this.onError,
+    // required this.onError,
     this.heightBetween = 10.0,
     this.titleFieldBuilder,
     this.contentFieldBuilder,
@@ -27,7 +27,7 @@ class PostForm extends StatefulWidget {
 
   final Function(String) onCreate;
   final Function(String) onUpdate;
-  final Function(dynamic) onError;
+  // final Function(dynamic) onError;
 
   final Widget Function(TextEditingController)? titleFieldBuilder;
   final Widget Function(TextEditingController)? contentFieldBuilder;
@@ -122,7 +122,7 @@ class _PostFormState extends State<PostForm> {
               onProgress: (progress) {
                 if (mounted) setState(() => uploadProgress = progress);
               },
-              onError: widget.onError,
+              // onError: widget.onError,
             ),
             inSubmit
                 ? Container(
@@ -146,7 +146,7 @@ class _PostFormState extends State<PostForm> {
               SizedBox(height: 8)
             ],
           ),
-        ImageListEdit(files: files, onError: widget.onError),
+        ImageListEdit(files: files),
         if (UserService.instance.user.isAdmin)
           Container(
             margin: EdgeInsets.only(top: 16),
@@ -181,42 +181,37 @@ class _PostFormState extends State<PostForm> {
   Future<void> onSubmit() async {
     if (widget.photo == true) {
       if (files.length == 0) {
-        widget.onError(ERROR_NO_PHOTO_ATTACHED);
-        return;
+        throw ERROR_NO_PHOTO_ATTACHED;
       }
     }
     setState(() => inSubmit = true);
-    try {
-      if (isCreate) {
-        final post = await PostApi.instance.create(
-          documentId: documentId.text,
-          category: widget.category!,
-          subcategory: widget.subcategory,
-          title: title.text,
-          content: content.text,
-          files: files,
-        );
 
-        widget.onCreate(post.id);
-      } else {
-        /// update
-        await PostApi.instance.update(
-          id: widget.post!.id,
-          title: title.text,
-          content: content.text,
-          files: files,
-          summary: summary.text,
-        );
+    if (isCreate) {
+      final post = await PostApi.instance.create(
+        documentId: documentId.text,
+        category: widget.category!,
+        subcategory: widget.subcategory,
+        title: title.text,
+        content: content.text,
+        files: files,
+      );
 
-        widget.onUpdate(widget.post!.id);
-      }
-    } catch (e, stacks) {
-      debugPrint(e.toString());
-      debugPrintStack(stackTrace: stacks);
-      widget.onError(e);
-      setState(() {
-        inSubmit = false;
-      });
+      widget.onCreate(post.id);
+    } else {
+      /// update
+      await PostApi.instance.update(
+        id: widget.post!.id,
+        title: title.text,
+        content: content.text,
+        files: files,
+        summary: summary.text,
+      );
+
+      widget.onUpdate(widget.post!.id);
     }
+
+    setState(() {
+      inSubmit = false;
+    });
   }
 }

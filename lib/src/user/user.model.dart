@@ -324,7 +324,7 @@ class UserModel with FirestoreMixin, DatabaseMixin {
   /// Note, an exception will be thrown if there is any error on user photo deletion.
   Future<void> updatePhotoUrl(String url) async {
     if (hasPhotoUrl) {
-      log('deleting previous photo');
+      log('--> deleting previous photo');
       await StorageService.instance.delete(photoUrl);
     }
     return update(field: 'photoUrl', value: url);
