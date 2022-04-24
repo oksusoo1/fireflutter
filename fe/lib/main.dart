@@ -2,6 +2,7 @@
 // import 'dart:async';
 
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:extended/extended.dart';
 import 'package:fe/screens/admin/admin.screen.dart';
@@ -107,13 +108,32 @@ final Map<String, RouteFunction> routes = {
   JobSeekerListScreen.routeName: (context, arguments) => JobSeekerListScreen(),
 };
 
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
-
-  runApp(MainApp(
-    initialLink: await DynamicLinkService.instance.initialLink,
-  ));
+void main() {
+  runZonedGuarded(
+    () async {
+      WidgetsFlutterBinding.ensureInitialized();
+      await Firebase.initializeApp();
+      FlutterError.onError = (FlutterErrorDetails details) {
+        /// Flutter exceptions come here.
+        log("--> FlutterError.onError : from (the inside of) Flutter framework.");
+        log("------------------------------------------------------------------");
+        FlutterError.dumpErrorToConsole(details);
+        error(details.exception);
+      };
+      runApp(MainApp(
+        initialLink: await DynamicLinkService.instance.initialLink,
+      ));
+    },
+    (e, stackTrace) {
+      /// Firebase exceptions and dart(outside flutter) exceptions come here.
+      log("--> runZoneGuarded() : exceptions outside flutter framework.");
+      log("------------------------------------------------------------");
+      log("--> runtimeType: ${e.runtimeType}");
+      log("Dart Error :  $e");
+      debugPrintStack(stackTrace: stackTrace);
+      error(e);
+    },
+  );
 }
 
 class MainApp extends StatefulWidget {

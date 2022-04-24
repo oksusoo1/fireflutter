@@ -376,6 +376,12 @@ class _HomeScreenState extends State<HomeScreen> {
                 ],
               ),
               Divider(color: Colors.blue),
+              Wrap(children: [
+                ElevatedButton(
+                    onPressed: () => throw 'error-test',
+                    child: Text('Throw error')),
+              ]),
+              Divider(),
               AdminButton(),
               space3xl,
             ],
