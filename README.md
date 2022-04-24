@@ -32,6 +32,7 @@ Table of contents
     - [Run cloud function using shell](#run-cloud-function-using-shell)
 - [Sources and packages](#sources-and-packages)
 - [Coding Guideline](#coding-guideline)
+  - [Error handling](#error-handling)
 - [Examples of fireflutter](#examples-of-fireflutter)
 - [User](#user)
   - [User installation](#user-installation)
@@ -124,7 +125,7 @@ Table of contents
 - [Location Service](#location-service)
 - [Cloud Functions](#cloud-functions)
   - [Unit test for Cloud Functions](#unit-test-for-cloud-functions)
-  - [Error handling](#error-handling)
+  - [Error handling](#error-handling-1)
     - [How to send error back to client](#how-to-send-error-back-to-client)
     - [Error handling on client end](#error-handling-on-client-end)
   - [Cloud functions - http trigger, restful api.](#cloud-functions---http-trigger-restful-api)
@@ -357,6 +358,86 @@ $ npm run shell
 - All model have `.data` property (getter) to export its model data to a map which then can be saved into firestore.
   - Note, that `.data` must contain only the data to be saved in firestore.
 - All model should have `.map` property(getter) to export its model data to a map. while `.data` only contains for saving firestore, `.map` may contain other values.
+
+
+
+## Error handling
+
+- The recommended error handling in fireflutter is that,
+  - define global flutter error handler and dart error handler using `FlutterError.onError` and `runZoendGuarded`,
+  - then, handle minimum errors(exceptions) as the app needs,
+  - leave other errors(exceptions) to the global error handlers.
+
+
+- How to define global error handlers.
+```dart
+void main() {
+  runZonedGuarded(() async {
+    WidgetsFlutterBinding.ensureInitialized();
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+    FlutterError.onError = (FlutterErrorDetails details) {
+      /// Flutter exceptions come here.
+      log("--> FlutterError.onError : from (the inside of) Flutter framework.");
+      log("------------------------------------------------------------------");
+      FlutterError.dumpErrorToConsole(details);
+      service.error(details.exception);
+    };
+    runApp(const ExampleApp());
+  }, (error, stackTrace) {
+    /// Firebase exceptions and dart(outside flutter) exceptions come here.
+    log("--> runZoneGuarded() : exceptions outside flutter framework.");
+    log("------------------------------------------------------------");
+    log("Dart Error :  $error");
+    log("StackTrace :  $stackTrace");
+    service.error(error);
+  });
+}
+```
+```dart
+// server error handler
+error(e) {
+  if ( e is FirebaseException) {
+    // ...
+    alert('Firebase error; $e');
+  } else {
+    // ...
+    alert('Flutter error; $e')
+  }
+}
+```
+
+- And the following is an example of code.
+  - What it does is to create an account with email and password of the account is not exists. Or it will login.
+  - See that, it only handles firebase exception if the account is already exists. All other exceptions are left to the global error handlers.
+
+```dart
+TextButton(
+  onPressed: () async {
+    try {
+      await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: email.text,
+        password: password.text,
+      );
+      service.router.openHome();
+    } on FirebaseException catch (e) {
+      if (e.code == 'email-already-in-use') {
+        await FirebaseAuth.instance.signInWithEmailAndPassword(
+          email: email.text,
+          password: password.text,
+        );
+        service.router.openHome();
+      } else {
+        rethrow;
+      }
+    }
+  },
+  child: Text('Sign-in Or Register'),
+),
+```
+
+
 
 
 # Examples of fireflutter

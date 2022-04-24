@@ -143,5 +143,13 @@
       "type": "dart",
       "deviceId": "63099345-05B9-4BE0-92DC-3BBA6CC4FA50"
     },
+    {
+      "name": "JaeHo - Simulator - iPhone 12 Pro Max - AppleChip",
+      "cwd": "example",
+      "program": "lib/main.dart",
+      "request": "launch",
+      "type": "dart",
+      "deviceId": "7AAD00A6-62CF-4563-A64C-92EB8F01DFF7"
+    },
   ]
 }

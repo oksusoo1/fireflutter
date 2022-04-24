@@ -1,6 +1,5 @@
 import 'package:example/services/global.dart';
 import 'package:flutter/material.dart';
-import 'package:audioplayers/audioplayers.dart';
 
 class MenuItem {
   Widget icon;
@@ -19,6 +18,8 @@ class Layout extends StatefulWidget {
     this.actions,
     this.backgroundColor = Colors.white,
     this.appBarBackgroundColor = Colors.white,
+    this.backButton = false,
+    this.backButtonColor = Colors.black,
   }) : super(key: key);
 
   final bool isHome;
@@ -28,6 +29,8 @@ class Layout extends StatefulWidget {
   final List<Widget>? actions;
   final Color backgroundColor;
   final Color appBarBackgroundColor;
+  final bool backButton;
+  final Color backButtonColor;
 
   @override
   State<Layout> createState() => _LayoutState();
@@ -36,25 +39,38 @@ class Layout extends StatefulWidget {
 class _LayoutState extends State<Layout> with SingleTickerProviderStateMixin {
   late Map<String, MenuItem> menus;
 
-  final player = AudioPlayer();
   @override
   void initState() {
     super.initState();
     menus = {
       'Home': MenuItem(
-          icon: const Icon(Icons.home), onTap: service.router.openHome),
+        icon: const Icon(Icons.home),
+        onTap: service.router.openHome,
+      ),
       'About': MenuItem(
-          icon: const Icon(Icons.info), onTap: service.router.openAbout),
+        icon: const Icon(Icons.info),
+        onTap: service.router.openAbout,
+      ),
       'Forum': MenuItem(
-          icon: const Icon(Icons.chat_bubble), onTap: service.router.openHome),
+        icon: const Icon(Icons.chat_bubble),
+        onTap: service.router.openHome,
+      ),
       'Meetup': MenuItem(
-          icon: const Icon(Icons.access_time), onTap: service.router.openHome),
+        icon: const Icon(Icons.access_time),
+        onTap: service.router.openTest,
+      ),
       'Watch': MenuItem(
-          icon: const Icon(Icons.zoom_in), onTap: service.router.openHome),
+        icon: const Icon(Icons.zoom_in),
+        onTap: service.router.openHome,
+      ),
       'Profile': MenuItem(
-          icon: const Icon(Icons.person), onTap: service.router.openProfile),
+        icon: const Icon(Icons.person),
+        onTap: service.router.openProfile,
+      ),
       'Menu': MenuItem(
-          icon: const Icon(Icons.menu), onTap: service.router.openMenu),
+        icon: const Icon(Icons.menu),
+        onTap: service.router.openMenu,
+      ),
     };
   }
 
@@ -67,6 +83,12 @@ class _LayoutState extends State<Layout> with SingleTickerProviderStateMixin {
         headerSliverBuilder: (context, innerBoxIsScrolled) {
           return [
             SliverAppBar(
+              leading: widget.backButton
+                  ? BackButton(
+                      color: widget.backButtonColor,
+                      onPressed: service.router.back,
+                    )
+                  : null,
               pinned: widget.bottom == null ? false : true,
               floating: true,
               // snap: true,
@@ -89,11 +111,6 @@ class _LayoutState extends State<Layout> with SingleTickerProviderStateMixin {
                 .map(
                   (e) => GestureDetector(
                     onTap: () async {
-                      // call this method when desired
-
-                      // await player.setSource(AssetSource('sounds/coin.wav'));
-                      player.play(AssetSource('click.mp3'));
-
                       e.value.onTap();
                     },
                     behavior: HitTestBehavior.opaque,

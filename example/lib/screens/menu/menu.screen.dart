@@ -24,6 +24,8 @@ class MenuScreen extends StatelessWidget {
             },
             child: Text('Sign-out'),
           ),
+          TextButton(
+              onPressed: service.router.openTest, child: Text('Test screen')),
           Text('body'),
         ],
       ),

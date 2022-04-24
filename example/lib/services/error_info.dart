@@ -47,7 +47,7 @@ ErrorInfo? errorInfo(e, [String? title]) {
   /// FirebaseException handler
   else if (e is FirebaseException ||
       e.runtimeType.toString() == 'FirebaseException') {
-    title = e.code;
+    title = (e.code as String).toUpperCase();
     content = '${e.message}';
   }
 

@@ -54,11 +54,10 @@ class StorageService {
   }) async {
     /// Get generated filename.
     final String basename = file.path.split('/').last;
-    // final String filename = basename.split('.').first;
     final String extension = basename.split('.').last;
 
     final filename = "${getRandomString()}.$extension";
-    // print('filename; $filename');
+    print('filename; $filename');
 
     final ref = uploadsFolder.child(filename);
 

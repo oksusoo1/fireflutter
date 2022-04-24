@@ -5,6 +5,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:file_picker/file_picker.dart';
 import '../../../fireflutter.dart';
 
+/// [onUploaded] is called on complete.
 class FileUploadButton extends StatelessWidget {
   const FileUploadButton({
     this.child,
@@ -74,6 +75,7 @@ class FileUploadButton extends StatelessWidget {
         FilePickerResult? result = await FilePicker.platform.pickFiles();
         if (result == null) return;
         File file = File(result.files.single.path!);
+        debugPrint('file; $file');
         uploadedFileUrl = await StorageService.instance.upload(
           file: file,
           type: type,

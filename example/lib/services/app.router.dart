@@ -1,3 +1,6 @@
+import 'package:example/screens/test/test.screen.dart';
+import 'package:flutter/material.dart';
+import 'package:audioplayers/audioplayers.dart';
 import 'package:example/screens/about/about.screen.dart';
 import 'package:example/screens/home/home.screen.dart';
 import 'package:example/screens/menu/menu.screen.dart';
@@ -5,10 +8,11 @@ import 'package:example/screens/profile/profile.edit.screen.dart';
 import 'package:example/screens/profile/profile.screen.dart';
 import 'package:example/screens/user/sign-in-with-email-password.screen.dart';
 import 'package:example/services/global.dart';
-import 'package:flutter/material.dart';
+import 'package:example/services/defines.dart';
 
-typedef RouteFunction = Widget Function(BuildContext, Map);
-
+/// Page screen (routes)
+///
+/// Define the page screens here.
 final Map<String, RouteFunction> _routes = {
   HomeScreen.routeName: (context, arguments) => const HomeScreen(),
   AboutScreen.routeName: (context, arguments) => const AboutScreen(),
@@ -16,10 +20,12 @@ final Map<String, RouteFunction> _routes = {
   ProfileScreen.routeName: (context, arguments) => const ProfileScreen(),
   ProfileEditScreen.routeName: (context, arguments) =>
       const ProfileEditScreen(),
-  SignInWithEmailAndPasswordScreen.routeName: (context, arugment) =>
+  SignInWithEmailAndPasswordScreen.routeName: (context, arugments) =>
       const SignInWithEmailAndPasswordScreen(),
+  TestScreen.routeName: (context, arguments) => const TestScreen(),
 };
 
+/// NoAnimationMaterialPageRoute is for removing page transition.
 class NoAnimationMaterialPageRoute<T> extends MaterialPageRoute<T> {
   NoAnimationMaterialPageRoute({
     required WidgetBuilder builder,
@@ -102,6 +108,8 @@ class AppRouter extends NavigatorObserver {
     bool popAll = false,
     bool preventDuplicate = true,
   }) {
+    AudioPlayer().play(AssetSource('click.mp3'));
+
     if (pop) {
       return Navigator.of(context).popAndPushNamed(
         routeName,
@@ -124,6 +132,7 @@ class AppRouter extends NavigatorObserver {
 
   /// Return to previous page
   void back([dynamic data]) {
+    AudioPlayer().play(AssetSource('click.mp3'));
     Navigator.pop(globalNavigatorKey.currentContext!, data);
   }
 
@@ -149,5 +158,9 @@ class AppRouter extends NavigatorObserver {
 
   Future openSignInWithEmailAndPassword() {
     return open(SignInWithEmailAndPasswordScreen.routeName);
+  }
+
+  Future openTest() {
+    return open(TestScreen.routeName);
   }
 }

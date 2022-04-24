@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -103,6 +105,8 @@ class UserModel with FirestoreMixin, DatabaseMixin {
   bool get hasDisplayName => displayName != '';
 
   String photoUrl;
+  bool get hasNotPhotoUrl => photoUrl == '';
+  bool get hasPhotoUrl => photoUrl != '';
 
   /// default is 0 if it's not set.
   int birthday;
@@ -314,9 +318,15 @@ class UserModel with FirestoreMixin, DatabaseMixin {
     return update(field: 'nickname', value: name);
   }
 
-  /// When user doc is updated, the model data will automatically updated by
-  /// auth state change listening in UserService.
-  Future<void> updatePhotoUrl(String url) {
+  /// Updaet user profile url
+  ///
+  /// Note, if the user has already profile url, then it will delete the user's photo in storage.
+  /// Note, an exception will be thrown if there is any error on user photo deletion.
+  Future<void> updatePhotoUrl(String url) async {
+    if (hasPhotoUrl) {
+      log('deleting previous photo');
+      await StorageService.instance.delete(photoUrl);
+    }
     return update(field: 'photoUrl', value: url);
   }
 

@@ -47,23 +47,14 @@ class _SignInWithEmailAndPasswordScreenState
                   service.router.openHome();
                 } on FirebaseException catch (e) {
                   if (e.code == 'email-already-in-use') {
-                    try {
-                      await FirebaseAuth.instance.signInWithEmailAndPassword(
-                        email: email.text,
-                        password: password.text,
-                      );
-                      service.router.openHome();
-                    } catch (e) {
-                      debugPrint(e.toString());
-                      service.error('$e');
-                    }
+                    await FirebaseAuth.instance.signInWithEmailAndPassword(
+                      email: email.text,
+                      password: password.text,
+                    );
+                    service.router.openHome();
                   } else {
-                    debugPrint(e.toString());
-                    service.error('$e');
+                    rethrow;
                   }
-                } catch (e) {
-                  debugPrint(e.toString());
-                  service.error('Unknown error; $e');
                 }
               },
               child: Text('Sign-in Or Register'),

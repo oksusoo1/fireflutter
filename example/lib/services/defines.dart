@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+typedef RouteFunction = Widget Function(BuildContext, Map);
+
 const double xxs = 4;
 const double xs = 8;
 const double xsm = 12;
