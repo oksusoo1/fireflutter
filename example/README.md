@@ -22,4 +22,10 @@
 
 
 
+- Enable storage in firebase project
+  - Set security rules in storage
+
+
+- Enable cloud functions by setting the project to paid plan (Blaze plan).
+  - Enable the `Image Resize` extention as described in the README of fireflutter.
 
