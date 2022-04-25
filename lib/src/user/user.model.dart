@@ -81,8 +81,8 @@ class UserModel with FirestoreMixin, DatabaseMixin {
   int level;
 
   int registeredAt;
-  String get registeredDate => DateFormat("MMMM dd, yyyy")
-      .format(DateTime.fromMillisecondsSinceEpoch(registeredAt));
+  String get registeredDate =>
+      DateFormat("MMMM dd, yyyy").format(DateTime.fromMillisecondsSinceEpoch(registeredAt));
   int updatedAt;
 
   /// Use display name to display user name.
@@ -141,8 +141,7 @@ class UserModel with FirestoreMixin, DatabaseMixin {
   bool get signedOut => signedIn == false;
 
   ///
-  DatabaseReference get _userDoc =>
-      FirebaseDatabase.instance.ref('users').child(uid);
+  DatabaseReference get _userDoc => FirebaseDatabase.instance.ref('users').child(uid);
 
   factory UserModel.fromJson(dynamic data, String uid) {
     if (data == null) return UserModel();
@@ -157,9 +156,8 @@ class UserModel with FirestoreMixin, DatabaseMixin {
       lastName: data['lastName'] ?? '',
       nickname: data['nickname'] ?? '',
       photoUrl: data['photoUrl'] ?? '',
-      birthday: (data['birthday'] is int)
-          ? data['birthday']
-          : (int.tryParse(data['birthday'] ?? '0')),
+      birthday:
+          (data['birthday'] is int) ? data['birthday'] : (int.tryParse(data['birthday'] ?? '0')),
       gender: data['gender'] ?? '',
       point: data['point'] ?? 0,
       level: data['level'] ?? 0,
@@ -249,8 +247,7 @@ class UserModel with FirestoreMixin, DatabaseMixin {
     if (photoUrl == '') return ERROR_NO_PROFILE_PHOTO;
     if (email == '')
       return ERROR_NO_EMAIL;
-    else if (EmailValidator.validate(email) == false)
-      return ERROR_MALFORMED_EMAIL;
+    else if (EmailValidator.validate(email) == false) return ERROR_MALFORMED_EMAIL;
     if (firstName == '') return ERROR_NO_FIRST_NAME;
     if (lastName == '') return ERROR_NO_LAST_NAME;
     if (gender == '') return ERROR_NO_GENER;
@@ -268,8 +265,7 @@ class UserModel with FirestoreMixin, DatabaseMixin {
       /// But the profile is set to false on database, then set it true.
       if (profileReady == 90000000000000) {
         /// It does +1 here to block perpetual running. This may happens somehow when registeredAt is 0.
-        return update(
-            field: 'profileReady', value: 90000000000000 - registeredAt + 1);
+        return update(field: 'profileReady', value: 90000000000000 - registeredAt + 1);
       }
     }
 
@@ -321,11 +317,16 @@ class UserModel with FirestoreMixin, DatabaseMixin {
   /// Updaet user profile url
   ///
   /// Note, if the user has already profile url, then it will delete the user's photo in storage.
-  /// Note, an exception will be thrown if there is any error on user photo deletion.
+  /// Note, an exception may be thrown if there is any error on user photo deletion like when the user
+  /// has no permission to delete. This may happen when the photo is uploaded for a test.
   Future<void> updatePhotoUrl(String url) async {
     if (hasPhotoUrl) {
       log('--> deleting previous photo');
-      await StorageService.instance.delete(photoUrl);
+
+      /// If the is an error like permission denied,
+      /// - just continue to update user photo url,
+      /// - and it will throw an error and let global error handler to handle it.
+      StorageService.instance.delete(photoUrl);
     }
     return update(field: 'photoUrl', value: url);
   }
