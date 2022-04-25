@@ -7,23 +7,21 @@ import 'dart:math' as math; // import this
 class ForumListPushNotificationIcon extends StatefulWidget {
   ForumListPushNotificationIcon(
     this.categoryId, {
-    required this.onError,
+    // required this.onError,
     required this.onSigninRequired,
     required this.onChanged,
     this.size,
   });
   final String categoryId;
   final double? size;
-  final Function onError;
+  // final Function onError;
   final Function onSigninRequired;
   final Function(String, bool) onChanged;
   @override
-  _ForumListPushNotificationIconState createState() =>
-      _ForumListPushNotificationIconState();
+  _ForumListPushNotificationIconState createState() => _ForumListPushNotificationIconState();
 }
 
-class _ForumListPushNotificationIconState
-    extends State<ForumListPushNotificationIcon> {
+class _ForumListPushNotificationIconState extends State<ForumListPushNotificationIcon> {
   bool get hasSubscription {
     return UserService.instance.user.settings
             .hasSubscription(NotificationOptions.post(widget.categoryId)) ||
@@ -69,18 +67,13 @@ class _ForumListPushNotificationIconState
                       Row(
                         children: [
                           Icon(
-                            hasPostSubscription
-                                ? Icons.notifications_on
-                                : Icons.notifications_off,
-                            color:
-                                hasPostSubscription ? Colors.blue : Colors.grey,
+                            hasPostSubscription ? Icons.notifications_on : Icons.notifications_off,
+                            color: hasPostSubscription ? Colors.blue : Colors.grey,
                           ),
                           Text(
                             ' Post' + " " + widget.categoryId,
                             style: TextStyle(
-                              color: hasPostSubscription
-                                  ? Colors.blue
-                                  : Colors.grey,
+                              color: hasPostSubscription ? Colors.blue : Colors.grey,
                             ),
                           ),
                         ],
@@ -93,18 +86,13 @@ class _ForumListPushNotificationIconState
                   child: Row(
                     children: [
                       Icon(
-                        hasCommentSubscription
-                            ? Icons.notifications_on
-                            : Icons.notifications_off,
-                        color:
-                            hasCommentSubscription ? Colors.blue : Colors.grey,
+                        hasCommentSubscription ? Icons.notifications_on : Icons.notifications_off,
+                        color: hasCommentSubscription ? Colors.blue : Colors.grey,
                       ),
                       Text(
                         ' Comment' + " " + widget.categoryId,
                         style: TextStyle(
-                          color: hasCommentSubscription
-                              ? Colors.blue
-                              : Colors.grey,
+                          color: hasCommentSubscription ? Colors.blue : Colors.grey,
                         ),
                       ),
                     ],
@@ -113,9 +101,7 @@ class _ForumListPushNotificationIconState
                 ),
               ],
               icon: Icon(
-                hasSubscription
-                    ? Icons.notifications_on
-                    : Icons.notifications_off,
+                hasSubscription ? Icons.notifications_on : Icons.notifications_off,
                 color: hasSubscription
                     ? Color.fromARGB(255, 74, 74, 74)
                     : Color.fromARGB(255, 177, 177, 177),
@@ -168,11 +154,11 @@ class _ForumListPushNotificationIconState
       topic = NotificationOptions.comment(widget.categoryId);
       title = 'comment ' + title;
     }
-    try {
-      await MessagingService.instance.toggleSubscription(topic);
-    } catch (e) {
-      widget.onError(e);
-    }
+    // try {
+    await MessagingService.instance.toggleSubscription(topic);
+    // } catch (e) {
+    //   widget.onError(e);
+    // }
 
     return widget.onChanged(
       selection,

@@ -1,4 +1,4 @@
-import 'package:extended/extended.dart';
+// import 'package:extended/extended.dart';
 import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
 
@@ -15,7 +15,7 @@ class PushNotificationScreen extends StatelessWidget {
       ),
       body: SendPushNotification(
         arguments: arguments,
-        onError: error,
+        // onError: error,
       ),
     );
   }
