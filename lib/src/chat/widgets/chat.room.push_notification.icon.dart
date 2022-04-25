@@ -5,22 +5,19 @@ import 'package:flutter/material.dart';
 class ChatRoomPushNotificationIcon extends StatefulWidget {
   ChatRoomPushNotificationIcon(
     this.uid, {
-    required this.onError,
+    // required this.onError,
     this.size,
   });
   final String uid;
   final double? size;
-  final Function onError;
+  // final Function onError;
   @override
-  _ChatRoomPushNotificationIconState createState() =>
-      _ChatRoomPushNotificationIconState();
+  _ChatRoomPushNotificationIconState createState() => _ChatRoomPushNotificationIconState();
 }
 
-class _ChatRoomPushNotificationIconState
-    extends State<ChatRoomPushNotificationIcon> {
+class _ChatRoomPushNotificationIconState extends State<ChatRoomPushNotificationIcon> {
   bool hasDisabledSubscription() {
-    return UserService.instance.user.settings
-        .hasDisabledSubscription('chatNotify' + widget.uid);
+    return UserService.instance.user.settings.hasDisabledSubscription('chatNotify' + widget.uid);
   }
 
   @override
@@ -28,9 +25,7 @@ class _ChatRoomPushNotificationIconState
     return widget.uid != ''
         ? GestureDetector(
             child: Icon(
-              hasDisabledSubscription()
-                  ? Icons.notifications_off
-                  : Icons.notifications,
+              hasDisabledSubscription() ? Icons.notifications_off : Icons.notifications,
               color: Colors.black,
               size: widget.size,
             ),
@@ -50,16 +45,16 @@ class _ChatRoomPushNotificationIconState
       );
     }
 
-    try {
-      // await MessagingService.instance.toggleSubscription('chatNotify' + widget.uid);
-      await MessagingService.instance.updateSubscription(
-        'chatNotify' + widget.uid,
-        hasDisabledSubscription(),
-      );
-      if (mounted) setState(() {});
-    } catch (e) {
-      widget.onError(e);
-    }
+    // try {
+    // await MessagingService.instance.toggleSubscription('chatNotify' + widget.uid);
+    await MessagingService.instance.updateSubscription(
+      'chatNotify' + widget.uid,
+      hasDisabledSubscription(),
+    );
+    if (mounted) setState(() {});
+    // } catch (e) {
+    //   widget.onError(e);
+    // }
     String msg = hasDisabledSubscription() ? 'unsubscribed' : 'subscribed';
     showDialog(
       context: context,
