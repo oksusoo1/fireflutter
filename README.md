@@ -836,6 +836,13 @@ UserDoc(
 ```
 
 - Note, to display if the user is online or offline, see user presence.
+- If `reset` is set to true, then it will not use cached data. Instead, it will get fresh data from database.
+  - So, it gets only one time without realtime update. It's good to be used for input text field.
+  - Use case would be that, for instance, a user is updating his profile information.
+    - Photo can be refreshed by `MyDoc`
+    - And other information may be refresh by `UserDoc(reset: true)` so, when value changes by user input, it will not connect to database to get data again.
+
+
 
 ## User Auth State
 
