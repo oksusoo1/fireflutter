@@ -12,7 +12,6 @@ class FileUploadButton extends StatelessWidget {
     required this.type,
     required this.onUploaded,
     required this.onProgress,
-    // required this.onError,
     Key? key,
   }) : super(key: key);
 
@@ -20,7 +19,6 @@ class FileUploadButton extends StatelessWidget {
   final String type;
   final Function(String) onUploaded;
   final Function(double) onProgress;
-  // final Function(dynamic) onError;
 
   @override
   Widget build(BuildContext context) {
@@ -62,7 +60,6 @@ class FileUploadButton extends StatelessWidget {
       ),
     );
 
-    // try {
     if (re == null) return;
     String uploadedFileUrl;
     if (re == 'camera' || re == 'gallery') {
@@ -84,8 +81,5 @@ class FileUploadButton extends StatelessWidget {
     }
 
     onUploaded(uploadedFileUrl);
-    // } catch (e) {
-    //   onError(e);
-    // }
   }
 }
