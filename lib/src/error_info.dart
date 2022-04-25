@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
 
@@ -22,12 +23,9 @@ class ErrorInfo {
     // If the error is a TypeError, then handle is nicely.
     else if (e.runtimeType.toString() == '_TypeError') {
       final errstr = e.toString();
-      if (errstr.contains('Future') &&
-          errstr.contains('is not a subtype of type')) {
+      if (errstr.contains('Future') && errstr.contains('is not a subtype of type')) {
         title = 'Await mistake';
-        content =
-            'It is a mistake.\n\nHe should use await on Future operation.\n\n' +
-                e.toString();
+        content = 'It is a mistake.\n\nHe should use await on Future operation.\n\n' + e.toString();
       } else {
         title = "Developer mistake!";
         content = 'Type error: ' + e.toString();
@@ -52,13 +50,30 @@ class ErrorInfo {
       }
     }
 
+    /// Dio error
+    else if (e is DioError) {
+      if (e.message.contains('host lookup')) {
+        title = 'Connection error';
+        content = 'Host lookup failed';
+      } else if (e.message.contains('CERTIFICATE_VERIFY_FAILED')) {
+        title = "Ceritificate verification failed";
+        content =
+            "Certificate error. Check if the app uses correct url scheme. CERTIFICATE_VERIFY_FAILED: application verification failure.";
+      } else if (e.message.contains('Unexpected character')) {
+        title = "Unexpected character in response";
+        content = "PHP script in backend produced error. Check PHP script.";
+      } else {
+        title = 'HTTP connection error';
+        content = e.message;
+      }
+    }
+
     /// Meilisearch handler
     else if (e.runtimeType.toString() == 'MeiliSearchApiException') {
       title = "Search settings misconfigured.";
 
       if (e.code.contains('invalid_filter')) {
-        content =
-            "Search filterables is not set properly. Please contact admin.";
+        content = "Search filterables is not set properly. Please contact admin.";
       } else if (e.code.contains('invalid_sort')) {
         content = "Search sortables is not set properly. Please contact admin.";
       } else {
@@ -67,10 +82,7 @@ class ErrorInfo {
     }
 
     // if it is a map error object and it has code and message.
-    else if (e != null &&
-        e is Map &&
-        e['code'] != null &&
-        e['message'] != null) {
+    else if (e != null && e is Map && e['code'] != null && e['message'] != null) {
       /// if the object has code and message, then handle it.
       content = "${e['message']} (${e['code']})";
     }
