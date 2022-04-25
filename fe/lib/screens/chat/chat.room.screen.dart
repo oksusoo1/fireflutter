@@ -126,7 +126,7 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
               },
 
               inputBuilder: (onSubmit) => ChatRoomMessageBox(onSend: onSubmit),
-              onError: error,
+              // onError: error,
 
               /// Send push notification here with no of new message.
               onUpdateOtherUserRoomInformation: (Map<String, dynamic> data) async {
