@@ -8,6 +8,7 @@ class UserDoc extends StatefulWidget {
   const UserDoc({
     required this.uid,
     required this.builder,
+    this.reset = false,
     this.loader = const Center(
       child: SizedBox(
         width: 10,
@@ -19,6 +20,7 @@ class UserDoc extends StatefulWidget {
     ),
     Key? key,
   }) : super(key: key);
+  final bool reset;
   final String uid;
   final Widget loader;
   final Widget Function(UserModel) builder;
@@ -34,7 +36,7 @@ class _UserDocState extends State<UserDoc> {
   void initState() {
     super.initState();
 
-    UserService.instance.getOtherUserDoc(widget.uid).then((v) {
+    UserService.instance.getOtherUserDoc(widget.uid, reset: widget.reset).then((v) {
       if (mounted) setState(() => user = v);
     });
   }

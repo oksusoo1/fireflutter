@@ -38,23 +38,21 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
                 return FileUploadButton(
                   child: UserPhoto(url: my.photoUrl, progress: progress),
                   type: 'user',
-                  onUploaded: (url) =>
-                      my.updatePhotoUrl(url).then((x) => updateProgress(0)),
+                  onUploaded: (url) => my.updatePhotoUrl(url).then((x) => updateProgress(0)),
                   onProgress: updateProgress,
                 );
               }),
               UserDoc(
                 uid: UserService.instance.uid,
+                reset: true,
                 builder: (user) => Column(
                   children: [
                     TextField(
-                      controller: TextEditingController()
-                        ..text = user.firstName,
+                      controller: TextEditingController()..text = user.firstName,
                       decoration: InputDecoration(
                         label: Text('First name'),
                       ),
-                      onChanged: (s) =>
-                          user.update(field: 'firstName', value: s),
+                      onChanged: (s) => user.update(field: 'firstName', value: s),
                     ),
                     Text('@TODO: your level'),
                     Text('@TODO: member since'),
