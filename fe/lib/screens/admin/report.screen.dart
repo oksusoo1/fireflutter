@@ -26,16 +26,14 @@ class ReportScreen extends StatelessWidget with FirestoreMixin {
             AppService.instance.openPostView(id: report.targetId);
           } else if (report.target == 'comment') {
             final doc = await commentCol.doc(report.targetId).get();
-            final CommentModel comment =
-                CommentModel.fromJson(doc.data() as Json, id: doc.id);
+            final CommentModel comment = CommentModel.fromJson(doc.data() as Json, id: doc.id);
             AppService.instance.openPostView(id: comment.postId);
           } else if (report.target == 'user') {
             // user profiler management
           } else if (report.target == 'image') {
             // file managet
           } else {
-            AppService.instance
-                .openReportForumMangement(report.target, report.targetId);
+            AppService.instance.openReportForumMangement(report.target, report.targetId);
           }
         },
       ),

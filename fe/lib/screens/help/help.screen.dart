@@ -29,8 +29,7 @@ class _HelpScreenState extends State<HelpScreen> {
           Text('who; ' + widget.arguments['who']),
           Text('what; ' + widget.arguments['what']),
           ElevatedButton(
-            onPressed: () =>
-                AppService.instance.open(PhoneSignInScreen.routeName),
+            onPressed: () => AppService.instance.open(PhoneSignInScreen.routeName),
             child: const Text('Phone Sign-In'),
           ),
         ],
