@@ -29,7 +29,7 @@ class _JobSeekerProfileFormScreenState
             JobSeekerProfileForm(
               onSuccess: () =>
                   alert('Success', 'Job seeker profile has been updated!'),
-              onError: error,
+              // onError: error,
             ),
             space2xl,
           ],

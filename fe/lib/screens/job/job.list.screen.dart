@@ -57,7 +57,7 @@ class _JobListScreenState extends State<JobListScreen>
         ),
       ),
       body: JobListView(
-        onError: error,
+        // onError: error,
         options: options,
         onEdit: () => AppService.instance.open(JobEditScreen.routeName),
         onTap: (job) => AppService.instance.open(
