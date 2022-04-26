@@ -184,31 +184,37 @@ class _PostFormState extends State<PostForm> {
     setState(() => inSubmit = true);
 
     if (isCreate) {
-      final post = await PostApi.instance.create(
-        documentId: documentId.text,
-        category: widget.category!,
-        subcategory: widget.subcategory,
-        title: title.text,
-        content: content.text,
-        files: files,
-      );
-
-      widget.onCreate(post.id);
+      PostApi.instance
+          .create(
+            documentId: documentId.text,
+            category: widget.category!,
+            subcategory: widget.subcategory,
+            title: title.text,
+            content: content.text,
+            files: files,
+          )
+          .then((post) => widget.onCreate(post.id))
+          .whenComplete(
+            () => setState(() {
+              inSubmit = false;
+            }),
+          );
     } else {
       /// update
-      await PostApi.instance.update(
-        id: widget.post!.id,
-        title: title.text,
-        content: content.text,
-        files: files,
-        summary: summary.text,
-      );
-
-      widget.onUpdate(widget.post!.id);
+      PostApi.instance
+          .update(
+            id: widget.post!.id,
+            title: title.text,
+            content: content.text,
+            files: files,
+            summary: summary.text,
+          )
+          .then((post) => widget.onUpdate(post.id))
+          .whenComplete(
+            () => setState(() {
+              inSubmit = false;
+            }),
+          );
     }
-
-    setState(() {
-      inSubmit = false;
-    });
   }
 }
