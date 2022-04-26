@@ -1,3 +1,7 @@
+import 'package:example/screens/admin/admin.category.screen.dart';
+import 'package:example/screens/admin/admin.category_group.screen.dart';
+import 'package:example/screens/admin/admin.screen.dart';
+import 'package:example/screens/settings/settings.screen.dart';
 import 'package:example/screens/test/test.screen.dart';
 import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart';
@@ -18,11 +22,13 @@ final Map<String, RouteFunction> _routes = {
   AboutScreen.routeName: (context, arguments) => const AboutScreen(),
   MenuScreen.routeName: (context, arguments) => const MenuScreen(),
   ProfileScreen.routeName: (context, arguments) => const ProfileScreen(),
-  ProfileEditScreen.routeName: (context, arguments) =>
-      const ProfileEditScreen(),
-  SignInWithEmailAndPasswordScreen.routeName: (context, arugments) =>
-      const SignInWithEmailAndPasswordScreen(),
+  ProfileEditScreen.routeName: (context, arguments) => const ProfileEditScreen(),
+  SignInWithEmailAndPasswordScreen.routeName: (p0, p1) => const SignInWithEmailAndPasswordScreen(),
+  SettingsScreen.routeName: (context, arguments) => const SettingsScreen(),
   TestScreen.routeName: (context, arguments) => const TestScreen(),
+  AdminScreen.routeName: (context, arguments) => const AdminScreen(),
+  AdminCategoryScreen.routeName: (p0, p1) => const AdminCategoryScreen(),
+  AdminCategoryGroupScreen.routeName: (context, arugment) => AdminCategoryGroupScreen(),
 };
 
 /// NoAnimationMaterialPageRoute is for removing page transition.
@@ -160,7 +166,23 @@ class AppRouter extends NavigatorObserver {
     return open(SignInWithEmailAndPasswordScreen.routeName);
   }
 
+  Future openSettings() {
+    return open(SettingsScreen.routeName);
+  }
+
   Future openTest() {
     return open(TestScreen.routeName);
+  }
+
+  Future openAdmin() {
+    return open(AdminScreen.routeName);
+  }
+
+  Future openAdminCategory() {
+    return open(AdminCategoryScreen.routeName);
+  }
+
+  Future openAdminCategoryGroup() {
+    return open(AdminCategoryGroupScreen.routeName);
   }
 }

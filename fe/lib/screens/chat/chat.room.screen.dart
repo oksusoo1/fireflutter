@@ -96,8 +96,8 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
                       );
                     } else if (result == 'open') {
                       /// Uploaded files or link typed by user.
-                      if (await canLaunch(message.text)) {
-                        launch(message.text);
+                      if (await canLaunchUrl(Uri.parse(message.text))) {
+                        launchUrl(Uri.parse(message.text));
                       } else {
                         error('Cannot launch ${message.text}');
                       }

@@ -33,6 +33,8 @@ class UserService with FirestoreMixin, DatabaseMixin {
   String get lastName => user.lastName;
   String get middleName => user.middleName;
 
+  bool get isAdmin => user.isAdmin;
+
   // No more email verification by Apr 13, 2022.
   // String get email => currentUser?.email ?? '';
   // bool get emailIsVerified => currentUser?.emailVerified ?? false;

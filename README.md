@@ -27,7 +27,7 @@ Table of contents
   - [Firebase Realtime Database Security Rules Installation](#firebase-realtime-database-security-rules-installation)
   - [Firebase Storage installation](#firebase-storage-installation)
   - [Firestore installation](#firestore-installation)
-    - [Setting admin on firestore security rules](#setting-admin-on-firestore-security-rules)
+    - [Admin setting](#admin-setting)
   - [Cloud functions installation](#cloud-functions-installation)
     - [Run cloud function using shell](#run-cloud-function-using-shell)
 - [Sources and packages](#sources-and-packages)
@@ -347,24 +347,30 @@ function checkType() {
 - Enable firestore.
 - Copy the [firestore securiy rules](https://raw.githubusercontent.com/thruthesky/fireflutter/main/firebase/firestore.rules) and update it on your firebase project.
 - To install the firestore indexes, it is recommended to run the query and click the link of it to generate the indexes.
-
-  - To do this, just call `getFirestoreIndexLinks` method and it will print the link on debug console. You just need to click the links.
-    - See example of `getFirestoreIndexLinks` in the [example home screen](https://github.com/thruthesky/fireflutter/blob/main/example/lib/screens/home/home.screen.dart).
+  - You may optionally install indexes by `firebase deploy --only firestore`.
+  - ~~To do this, just call `getFirestoreIndexLinks` method and it will print the link on debug console. You just need to click the links.~~
+    - ~~See example of `getFirestoreIndexLinks` in the [example home screen](https://github.com/thruthesky/fireflutter/blob/main/example/lib/screens/home/home.screen.dart).~~
   - See the [firestore indexes](https://raw.githubusercontent.com/thruthesky/fireflutter/main/firebase/firestore.indexes.json) and if you want to update it manually on your firebase project.
 
-- We use Firestore only for `Chat` and `Forum` features since they needs more support on query and search functionalities.
-  - All other features should go to realtime database.
+- We use Firestore for the features that needs conditional queries like `Chat` and `Forum`.
+  - If the app handles less complicated queries, then it should use firebase database.
 
 - Note that, you need to create your own composite indexes when you build functions that query on fields that are not indexed by fireflutter.
   - For instance, you make a function for getting posts that have most no of comments on this year. then, you may need to create an composite index with `noOfComments` and `year`.
 
-### Setting admin on firestore security rules
+### Admin setting
 
-- To set a user admin, Add the user's UID as field name(key) with the value of `true` in `/settings/admin`.
+- To set a user admin, Add the user's UID as field name(key) with the value of `true` in `/settings/admins`.
   - For instance, `{ "UID_AAA": true, "UID_BBB": true }`, then users whose uid is UID_AAA and UID_BBB are the admins.
 
 ![Security Rules Admin](https://raw.githubusercontent.com/thruthesky/fireflutter/main/readme/images/security-rules-admin.jpg?raw=true)
 
+
+- One thing to note is that, by adding user's UID into `/settings/admins` does not make the app to know who is the admin.
+  - Add `isAdmin` field to true on `/users/<UID>` in realtime database.
+  - Or you can call `UserModel::updateAdminStatus()` in app. But it will read firestore document onetime.
+    - So, it is also one way to run it when user signed in. It will be a good option when the app has less than 1,000 users who signs in a day. If the app has a lot more users who signs in a day, then it may costs also.
+    - Another options is that the app can call `UserModel::updateAdminStatus()` on a secret page. Like when a user long presses after 3 times of touches, the app opens a secret admin(or test) page, and there it can call the method.
 
 
 
