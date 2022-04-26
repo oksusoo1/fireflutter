@@ -50,7 +50,8 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
           padding: const EdgeInsets.all(16),
           child: Column(
             children: [
-              Text('@TODO: 사용자가 입력을 하면 로더표시 후 저장완료 표시.'),
+              Text('@TODO: UI - 사진에 카메라 표시. 삭제 버튼 표시.'),
+              Text('@TODO: UX - 사용자가 입력을 하면 로더표시 후 저장완료 표시.'),
               MyDoc(builder: (my) {
                 return FileUploadButton(
                   child: UserPhoto(url: my.photoUrl, progress: progress),
