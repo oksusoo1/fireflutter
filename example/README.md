@@ -38,7 +38,12 @@
 
 ## example-forum branch
 
-- Adding forum functionality
+- To make forum work,
+  - Do firestore setup as described in fireflutter README.
+  - Do cloud functions setup as described in fireflutter README.
+  - Set a user admin as described in fireflutter README.
+
+
 
 
 

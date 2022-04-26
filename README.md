@@ -347,13 +347,13 @@ function checkType() {
 - Enable firestore.
 - Copy the [firestore securiy rules](https://raw.githubusercontent.com/thruthesky/fireflutter/main/firebase/firestore.rules) and update it on your firebase project.
 - To install the firestore indexes, it is recommended to run the query and click the link of it to generate the indexes.
-
-  - To do this, just call `getFirestoreIndexLinks` method and it will print the link on debug console. You just need to click the links.
-    - See example of `getFirestoreIndexLinks` in the [example home screen](https://github.com/thruthesky/fireflutter/blob/main/example/lib/screens/home/home.screen.dart).
+  - You may optionally install indexes by `firebase deploy --only firestore`.
+  - ~~To do this, just call `getFirestoreIndexLinks` method and it will print the link on debug console. You just need to click the links.~~
+    - ~~See example of `getFirestoreIndexLinks` in the [example home screen](https://github.com/thruthesky/fireflutter/blob/main/example/lib/screens/home/home.screen.dart).~~
   - See the [firestore indexes](https://raw.githubusercontent.com/thruthesky/fireflutter/main/firebase/firestore.indexes.json) and if you want to update it manually on your firebase project.
 
-- We use Firestore only for `Chat` and `Forum` features since they needs more support on query and search functionalities.
-  - All other features should go to realtime database.
+- We use Firestore for the features that needs conditional queries like `Chat` and `Forum`.
+  - If the app handles less complicated queries, then it should use firebase database.
 
 - Note that, you need to create your own composite indexes when you build functions that query on fields that are not indexed by fireflutter.
   - For instance, you make a function for getting posts that have most no of comments on this year. then, you may need to create an composite index with `noOfComments` and `year`.
