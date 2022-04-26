@@ -15,7 +15,7 @@ class _HomeCategoriesState extends State<HomeCategories> {
   @override
   void initState() {
     super.initState();
-    CategoryService.instance.getCategories().then((value) => setState(() => null));
+    CategoryService.instance.getCategories().then((value) => setState(() {}));
   }
 
   @override
