@@ -240,7 +240,13 @@ class _JobSeekerProfileFormState extends State<JobSeekerProfileForm> {
       throw userService.user.profileError;
     }
 
-    if (!_formKey.currentState!.validate()) return;
+    if (!_formKey.currentState!.validate()) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Form incomplete, please check for missing information.')),
+      );
+      setState(() => loading = false);
+      return;
+    }
 
     // print('JobSeekerProfileForm::onSubmit::form');
     // print('${form.toString()}');

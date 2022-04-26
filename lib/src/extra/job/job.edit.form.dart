@@ -497,25 +497,27 @@ class _JobEditFormState extends State<JobEditForm> with FirestoreMixin {
                   isSubmitted = true;
                   loading = true;
                 });
-                // Validate returns true if the form is valid, or false otherwise.
-                if (_formKey.currentState!.validate() && address != null) {
-                  addJobAddress(address!);
+                if (address == null || !_formKey.currentState!.validate()) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                        content: Text('Form incomplete, please check for missing information.')),
+                  );
+                  setState(() => loading = false);
+                  return;
+                }
 
-                  await job.edit();
+                addJobAddress(address!);
+                await job.edit().then((value) {
                   if (job.id == '') {
                     widget.onCreated();
                   } else {
                     widget.onUpdated();
                   }
-                } else {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                        content: Text(
-                      'Form incomplete, please check for missing information.',
-                    )),
-                  );
-                }
-                setState(() => loading = false);
+                }).whenComplete(
+                  () => setState(() {
+                    loading = false;
+                  }),
+                );
               },
             )
         ],

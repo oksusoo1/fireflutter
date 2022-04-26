@@ -422,8 +422,7 @@ class JobService {
                 children: [
                   TextField(
                       controller: input,
-                      decoration:
-                          InputDecoration(label: Text("Input address.")),
+                      decoration: InputDecoration(label: Text("Input address.")),
                       onChanged: (addr) {
                         bounce('addr', 500, (s) async {
                           getAddresses(addr);
@@ -441,40 +440,34 @@ class JobService {
                         : search!.totalCount == 0
                             ? _noAddressFound()
                             : SingleChildScrollView(
-                                child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      ...search!.addresses
-                                          .map(
-                                            (addr) => GestureDetector(
-                                              onTap: () => Navigator.of(context)
-                                                  .pop(addr),
-                                              behavior: HitTestBehavior.opaque,
-                                              child: Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [
-                                                  Text(
-                                                    '${addr.roadAddr}',
-                                                    style:
-                                                        TextStyle(fontSize: 12),
-                                                  ),
-                                                  Text(
-                                                    '${addr.korAddr}',
-                                                    style:
-                                                        TextStyle(fontSize: 12),
-                                                  ),
-                                                  Divider(),
-                                                ],
+                                child:
+                                    Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                                  ...search!.addresses
+                                      .map(
+                                        (addr) => GestureDetector(
+                                          onTap: () => Navigator.of(context).pop(addr),
+                                          behavior: HitTestBehavior.opaque,
+                                          child: Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                '${addr.roadAddr}',
+                                                style: TextStyle(fontSize: 12),
                                               ),
-                                            ),
-                                          )
-                                          .toList(),
-                                      // SizedBox(
-                                      //   height: 100,
-                                      // )
-                                    ]),
+                                              Text(
+                                                '${addr.korAddr}',
+                                                style: TextStyle(fontSize: 12),
+                                              ),
+                                              Divider(),
+                                            ],
+                                          ),
+                                        ),
+                                      )
+                                      .toList(),
+                                  // SizedBox(
+                                  //   height: 100,
+                                  // )
+                                ]),
                               ),
                   ),
                   if (search != null && search!.totalCount > 100)
