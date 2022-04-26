@@ -9,7 +9,6 @@ class PostForm extends StatefulWidget {
     this.post,
     required this.onCreate,
     required this.onUpdate,
-    // required this.onError,
     this.heightBetween = 10.0,
     this.titleFieldBuilder,
     this.contentFieldBuilder,
@@ -27,7 +26,6 @@ class PostForm extends StatefulWidget {
 
   final Function(String) onCreate;
   final Function(String) onUpdate;
-  // final Function(dynamic) onError;
 
   final Widget Function(TextEditingController)? titleFieldBuilder;
   final Widget Function(TextEditingController)? contentFieldBuilder;
@@ -122,7 +120,6 @@ class _PostFormState extends State<PostForm> {
               onProgress: (progress) {
                 if (mounted) setState(() => uploadProgress = progress);
               },
-              // onError: widget.onError,
             ),
             inSubmit
                 ? Container(
