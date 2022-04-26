@@ -55,6 +55,7 @@ class _JobListScreenState extends State<JobListScreen> with FirestoreMixin, Foru
         ),
       ),
       body: JobListView(
+        // onError: error,
         options: options,
         onEdit: () => AppService.instance.open(JobEditScreen.routeName),
         onTap: (job) => AppService.instance.open(

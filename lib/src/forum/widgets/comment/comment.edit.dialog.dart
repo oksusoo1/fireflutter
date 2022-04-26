@@ -6,13 +6,11 @@ class CommentEditDialog extends StatefulWidget {
     Key? key,
     required this.onCancel,
     required this.onSubmit,
-    // required this.onError,
     this.comment,
   }) : super(key: key);
 
   final Function() onCancel;
   final Function(Json, Function(bool)) onSubmit;
-  // final Function(dynamic) onError;
   final CommentModel? comment;
 
   @override
@@ -95,14 +93,11 @@ class _CommentEditDialogState extends State<CommentEditDialog> {
                 onPressed: inSubmit
                     ? null
                     : () {
-                        widget.onSubmit(
-                            {'content': content.text, 'files': files},
-                            progress);
+                        widget.onSubmit({'content': content.text, 'files': files}, progress);
                       },
               ),
             ]),
-            if (uploadProgress > 0)
-              LinearProgressIndicator(value: uploadProgress),
+            if (uploadProgress > 0) LinearProgressIndicator(value: uploadProgress),
             ImageListEdit(files: files),
           ],
         ),

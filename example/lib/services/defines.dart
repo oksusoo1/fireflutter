@@ -25,3 +25,8 @@ const spaceXl = SizedBox(width: xl, height: xl);
 const spaceXxl = SizedBox(width: xxl, height: xxl);
 const space2xl = spaceXxl;
 const space3xl = SizedBox(width: xxxl, height: xxxl);
+
+const hintStyle = TextStyle(
+  fontSize: xsm,
+  color: Color(0xFF6f6f6f),
+);

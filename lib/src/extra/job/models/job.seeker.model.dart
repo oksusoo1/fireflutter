@@ -50,7 +50,7 @@ class JobSeekerModel {
     status = data['status'] ?? 'Y';
   }
 
-  update() async {
+  Future update() async {
     await FunctionsApi.instance.request(
       'jobUpdateProfile',
       data: updateMap,

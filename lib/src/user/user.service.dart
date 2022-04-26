@@ -29,6 +29,9 @@ class UserService with FirestoreMixin, DatabaseMixin {
   String get phoneNumber => currentUser?.phoneNumber ?? '';
 
   String get email => user.email;
+  String get firstName => user.firstName;
+  String get lastName => user.lastName;
+  String get middleName => user.middleName;
 
   // No more email verification by Apr 13, 2022.
   // String get email => currentUser?.email ?? '';

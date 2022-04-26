@@ -9,7 +9,6 @@ class PostForm extends StatefulWidget {
     this.post,
     required this.onCreate,
     required this.onUpdate,
-    // required this.onError,
     this.heightBetween = 10.0,
     this.titleFieldBuilder,
     this.contentFieldBuilder,
@@ -27,7 +26,6 @@ class PostForm extends StatefulWidget {
 
   final Function(String) onCreate;
   final Function(String) onUpdate;
-  // final Function(dynamic) onError;
 
   final Widget Function(TextEditingController)? titleFieldBuilder;
   final Widget Function(TextEditingController)? contentFieldBuilder;
@@ -122,7 +120,6 @@ class _PostFormState extends State<PostForm> {
               onProgress: (progress) {
                 if (mounted) setState(() => uploadProgress = progress);
               },
-              // onError: widget.onError,
             ),
             inSubmit
                 ? Container(
@@ -187,31 +184,37 @@ class _PostFormState extends State<PostForm> {
     setState(() => inSubmit = true);
 
     if (isCreate) {
-      final post = await PostApi.instance.create(
-        documentId: documentId.text,
-        category: widget.category!,
-        subcategory: widget.subcategory,
-        title: title.text,
-        content: content.text,
-        files: files,
-      );
-
-      widget.onCreate(post.id);
+      PostApi.instance
+          .create(
+            documentId: documentId.text,
+            category: widget.category!,
+            subcategory: widget.subcategory,
+            title: title.text,
+            content: content.text,
+            files: files,
+          )
+          .then((post) => widget.onCreate(post.id))
+          .whenComplete(
+            () => setState(() {
+              inSubmit = false;
+            }),
+          );
     } else {
       /// update
-      await PostApi.instance.update(
-        id: widget.post!.id,
-        title: title.text,
-        content: content.text,
-        files: files,
-        summary: summary.text,
-      );
-
-      widget.onUpdate(widget.post!.id);
+      PostApi.instance
+          .update(
+            id: widget.post!.id,
+            title: title.text,
+            content: content.text,
+            files: files,
+            summary: summary.text,
+          )
+          .then((post) => widget.onUpdate(post.id))
+          .whenComplete(
+            () => setState(() {
+              inSubmit = false;
+            }),
+          );
     }
-
-    setState(() {
-      inSubmit = false;
-    });
   }
 }

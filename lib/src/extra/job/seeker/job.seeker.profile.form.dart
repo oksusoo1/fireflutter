@@ -236,18 +236,24 @@ class _JobSeekerProfileFormState extends State<JobSeekerProfileForm> {
       loading = true;
     });
     if (userService.user.profileError.isNotEmpty) {
-      throw Exception(userService.user.profileError);
-    } else if (_formKey.currentState!.validate()) {
-      print('JobSeekerProfileForm::onSubmit::form');
-      print('${form.toString()}');
-      // try {
-      await form.update();
-      widget.onSuccess();
-      // } catch (e) {
-      //   widget.onError(e.toString());
-      // }
+      setState(() => loading = false);
+      throw userService.user.profileError;
     }
-    setState(() => loading = false);
+
+    if (!_formKey.currentState!.validate()) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Form incomplete, please check for missing information.')),
+      );
+      setState(() => loading = false);
+      return;
+    }
+
+    // print('JobSeekerProfileForm::onSubmit::form');
+    // print('${form.toString()}');
+
+    form.update().then((v) {
+      widget.onSuccess();
+    }).whenComplete(() => setState(() => loading = false));
   }
 
   String? validateFieldValue(dynamic value, String error) {

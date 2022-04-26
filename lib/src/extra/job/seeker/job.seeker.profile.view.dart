@@ -39,13 +39,6 @@ class _JobSeekerProfileViewState extends State<JobSeekerProfileView> {
                 ],
               ),
               SizedBox(width: 16),
-              // Column(
-              //   children: [
-              //     Text('Middle Name', style: labelStyle),
-              //     SizedBox(height: 5),
-              //     Text('${user.middleName}'),
-              //   ],
-              // ),
               Column(
                 children: [
                   Text('Last Name', style: labelStyle),

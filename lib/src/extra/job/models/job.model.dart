@@ -66,9 +66,8 @@ class JobModel {
   Timestamp updatedAt;
 
   factory JobModel.fromJson(Json json, [String id = '']) {
-    final int _days = json['workingDays'] is int
-        ? json['workingDays']
-        : int.parse(json['workingDays'] ?? '-1');
+    final int _days =
+        json['workingDays'] is int ? json['workingDays'] : int.parse(json['workingDays'] ?? '-1');
     final int _hours = json['workingHours'] is int
         ? json['workingHours']
         : int.parse(json['workingHours'] ?? '-1');
@@ -149,15 +148,15 @@ class JobModel {
     return '''JobModel($toUpdate)''';
   }
 
-  Future edit() {
+  Future edit() async {
     if (id == '') {
-      return FunctionsApi.instance.request(
+      await FunctionsApi.instance.request(
         'jobCreate',
         data: toCreate,
         addAuth: true,
       );
     } else {
-      return FunctionsApi.instance.request(
+      await FunctionsApi.instance.request(
         'jobUpdate',
         data: toUpdate,
         addAuth: true,

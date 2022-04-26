@@ -56,10 +56,8 @@ String getYoutubeId(String url, {bool trimWhitespaces = true}) {
   if (trimWhitespaces) url = url.trim();
 
   for (final exp in [
-    RegExp(
-        r"^https:\/\/(?:www\.|m\.)?youtube\.com\/watch\?v=([_\-a-zA-Z0-9]{11}).*$"),
-    RegExp(
-        r"^https:\/\/(?:www\.|m\.)?youtube(?:-nocookie)?\.com\/embed\/([_\-a-zA-Z0-9]{11}).*$"),
+    RegExp(r"^https:\/\/(?:www\.|m\.)?youtube\.com\/watch\?v=([_\-a-zA-Z0-9]{11}).*$"),
+    RegExp(r"^https:\/\/(?:www\.|m\.)?youtube(?:-nocookie)?\.com\/embed\/([_\-a-zA-Z0-9]{11}).*$"),
     RegExp(r"^https:\/\/youtu\.be\/([_\-a-zA-Z0-9]{11}).*$")
   ]) {
     RegExpMatch? match = exp.firstMatch(url);
@@ -109,13 +107,13 @@ launchURL(String uri) async {
   // print('uri; $uri');
   bool re = false;
   try {
-    re = await canLaunch(uri);
+    re = await canLaunchUrl(Uri.parse(uri));
   } catch (e) {
     service.error(e);
   }
   try {
     if (re) {
-      await launch(uri);
+      await canLaunchUrl(Uri.parse(uri));
     }
   } catch (e) {
     service.error(e);

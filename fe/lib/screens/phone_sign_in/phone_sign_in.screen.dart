@@ -31,8 +31,7 @@ class _PhoneSignInScreenState extends State<PhoneSignInScreen> {
             ElevatedButton(
               onPressed: () {
                 PhoneService.instance.verifyPhoneNumber(
-                  codeSent: (verificationId) =>
-                      AppService.instance.open(SmsCodeScreen.routeName),
+                  codeSent: (verificationId) => AppService.instance.open(SmsCodeScreen.routeName),
                   androidAutomaticVerificationSuccess: () {
                     alert('Phone sign-in success', 'You have signed-in.');
                     AppService.instance.openHome();
@@ -44,8 +43,7 @@ class _PhoneSignInScreenState extends State<PhoneSignInScreen> {
                   },
                   error: (e) => error(e),
                   codeAutoRetrievalTimeout: (String verificationId) {
-                    alert(
-                        'Timeout', 'SMS code timeouted. Please send it again');
+                    alert('Timeout', 'SMS code timeouted. Please send it again');
                   },
                 );
               },
