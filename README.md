@@ -1693,8 +1693,10 @@ HttpException: Invalid statusCode: 403, uri = https://firebasestorage.googleapis
 
 ### DatePicker
 
-```dart
+- Use `DatePicker` to choose date. 
 
+```dart
+DatePicker(initialValue: 19990304, onChanged: (int newDate) => update(newDate));
 ```
 
 # Location Service
