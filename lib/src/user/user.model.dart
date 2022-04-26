@@ -314,6 +314,31 @@ class UserModel with FirestoreMixin, DatabaseMixin {
     return update(field: 'nickname', value: name);
   }
 
+  Future<void> updateFirstName(String name) {
+    return update(field: 'firstName', value: name);
+  }
+
+  Future<void> updateMiddleName(String name) {
+    return update(field: 'middleName', value: name);
+  }
+
+  Future<void> updateLastName(String name) {
+    return update(field: 'lastName', value: name);
+  }
+
+  Future<void> updateEmail(String name) {
+    return update(field: 'email', value: name);
+  }
+
+  Future<void> updateGender(String gender) {
+    assert(gender == 'M' || gender == 'F');
+    return update(field: 'gender', value: gender);
+  }
+
+  Future<void> updateBirthday(int birthday) {
+    return update(field: 'birthday', value: birthday);
+  }
+
   /// Updaet user profile url
   ///
   /// Note, if the user has already profile url, then it will delete the user's photo in storage.
@@ -329,15 +354,6 @@ class UserModel with FirestoreMixin, DatabaseMixin {
       StorageService.instance.delete(photoUrl);
     }
     return update(field: 'photoUrl', value: url);
-  }
-
-  Future<void> updateGender(String gender) {
-    assert(gender == 'M' || gender == 'F');
-    return update(field: 'gender', value: gender);
-  }
-
-  Future<void> updateBirthday(int birthday) {
-    return update(field: 'birthday', value: birthday);
   }
 
   /// Update wether if the user is an admin or not.

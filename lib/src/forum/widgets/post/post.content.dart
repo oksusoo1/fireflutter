@@ -79,8 +79,8 @@ class PostContent extends StatelessWidget {
 
   openLink(String? url) async {
     if (url == null) return;
-    if (await canLaunch(url)) {
-      await launch(url);
+    if (await canLaunchUrl(Uri.parse(url))) {
+      await launchUrl(Uri.parse(url));
     } else {
       throw 'Could not launch $url';
     }
