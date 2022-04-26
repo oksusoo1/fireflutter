@@ -841,6 +841,7 @@ UserDoc(
   - Use case would be that, for instance, a user is updating his profile information.
     - Photo can be refreshed by `MyDoc`
     - And other information may be refresh by `UserDoc(reset: true)` so, when value changes by user input, it will not connect to database to get data again.
+    - You may still use `MyDoc` for all input text field though if you give the value in `initialValue` on `TextFormField`.
 
 
 
