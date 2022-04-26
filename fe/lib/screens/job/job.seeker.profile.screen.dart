@@ -9,12 +9,10 @@ class JobSeekerProfileFormScreen extends StatefulWidget {
   static final String routeName = '/jobSeekerProfileForm';
 
   @override
-  State<JobSeekerProfileFormScreen> createState() =>
-      _JobSeekerProfileFormScreenState();
+  State<JobSeekerProfileFormScreen> createState() => _JobSeekerProfileFormScreenState();
 }
 
-class _JobSeekerProfileFormScreenState
-    extends State<JobSeekerProfileFormScreen> {
+class _JobSeekerProfileFormScreenState extends State<JobSeekerProfileFormScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -27,8 +25,7 @@ class _JobSeekerProfileFormScreenState
         child: Column(
           children: [
             JobSeekerProfileForm(
-              onSuccess: () =>
-                  alert('Success', 'Job seeker profile has been updated!'),
+              onSuccess: () => alert('Success', 'Job seeker profile has been updated!'),
               // onError: error,
             ),
             space2xl,

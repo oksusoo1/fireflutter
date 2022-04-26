@@ -1,4 +1,3 @@
-import 'package:extended/extended.dart';
 import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
 
@@ -8,8 +7,7 @@ class NotificationSettingScreen extends StatefulWidget {
   static const String routeName = '/notificationSettings';
 
   @override
-  _NotificationSettingScreenState createState() =>
-      _NotificationSettingScreenState();
+  _NotificationSettingScreenState createState() => _NotificationSettingScreenState();
 }
 
 class _NotificationSettingScreenState extends State<NotificationSettingScreen> {
@@ -20,9 +18,7 @@ class _NotificationSettingScreenState extends State<NotificationSettingScreen> {
         title: const Text('Notification Settings'),
       ),
       body: SingleChildScrollView(
-        child: NotificationSetting(
-          onError: error,
-        ),
+        child: NotificationSetting(),
       ),
     );
   }

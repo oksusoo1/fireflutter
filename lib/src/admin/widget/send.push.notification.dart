@@ -2,10 +2,13 @@ import '../../../fireflutter.dart';
 import 'package:flutter/material.dart';
 
 class SendPushNotification extends StatefulWidget {
-  const SendPushNotification({Key? key, required this.onError, this.arguments})
-      : super(key: key);
+  const SendPushNotification({
+    Key? key,
+    // required this.onError,
+    this.arguments,
+  }) : super(key: key);
 
-  final Function onError;
+  // final Function onError;
   final Map? arguments;
 
   @override
@@ -63,8 +66,7 @@ class _SendPushNotificationState extends State<SendPushNotification> {
             title: DropdownButton(
               isExpanded: true,
               value: sendOption,
-              items: dropdownItem.keys
-                  .map<DropdownMenuItem<String>>((String value) {
+              items: dropdownItem.keys.map<DropdownMenuItem<String>>((String value) {
                 return DropdownMenuItem<String>(
                   value: value,
                   child: Text(
@@ -137,7 +139,7 @@ class _SendPushNotificationState extends State<SendPushNotification> {
   loadPost() async {
     if (postId.text.isEmpty) return;
     PostModel? post = await PostService.instance.load(postId.text);
-    if (post == null) return widget.onError('Post not found');
+    if (post == null) return throw Exception('Post not found');
     title.text = post.title;
     body.text = post.content;
   }
@@ -152,54 +154,54 @@ class _SendPushNotificationState extends State<SendPushNotification> {
       req['type'] = 'post';
     }
 
-    try {
-      Map<String, dynamic> data = {};
+    // try {
+    Map<String, dynamic> data = {};
 
-      if (sendOption == 'all') {
-        data = await SendPushNotificationService.instance.sendToAll(req);
-      } else if (sendOption == 'topic') {
-        req['topic'] = topic.text;
-        data = await SendPushNotificationService.instance.sendToTopic(req);
-      } else if (sendOption == 'tokens') {
-        req['tokens'] = tokens.text;
-        data = await SendPushNotificationService.instance.sendToToken(req);
-      } else if (sendOption == 'uids') {
-        req['uids'] = uids.text;
-        data = await SendPushNotificationService.instance.sendToUsers(req);
-      }
-
-      String msg = '';
-      if (data['code'] == null) {
-        if (sendOption == 'tokens' || sendOption == 'uids') {
-          int s = data['success'];
-          int f = data['error'];
-          msg = "Send count $s Success, $f Fail.";
-        } else if (data['messageId'] != null) {
-          msg = 'Push send Success';
-        } else {
-          msg = 'Push send didnt return proper data';
-        }
-      } else if (data['code'] == 'error') {
-        msg = data['message'];
-      }
-
-      // print(msg);
-      // return msg;
-      showDialog(
-        context: context,
-        builder: (c) => AlertDialog(
-          title: const Text('Send Push Message'),
-          content: Text(msg),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('Close'),
-            ),
-          ],
-        ),
-      );
-    } catch (e) {
-      widget.onError(e);
+    if (sendOption == 'all') {
+      data = await SendPushNotificationService.instance.sendToAll(req);
+    } else if (sendOption == 'topic') {
+      req['topic'] = topic.text;
+      data = await SendPushNotificationService.instance.sendToTopic(req);
+    } else if (sendOption == 'tokens') {
+      req['tokens'] = tokens.text;
+      data = await SendPushNotificationService.instance.sendToToken(req);
+    } else if (sendOption == 'uids') {
+      req['uids'] = uids.text;
+      data = await SendPushNotificationService.instance.sendToUsers(req);
     }
+
+    String msg = '';
+    if (data['code'] == null) {
+      if (sendOption == 'tokens' || sendOption == 'uids') {
+        int s = data['success'];
+        int f = data['error'];
+        msg = "Send count $s Success, $f Fail.";
+      } else if (data['messageId'] != null) {
+        msg = 'Push send Success';
+      } else {
+        msg = 'Push send didnt return proper data';
+      }
+    } else if (data['code'] == 'error') {
+      msg = data['message'];
+    }
+
+    // print(msg);
+    // return msg;
+    showDialog(
+      context: context,
+      builder: (c) => AlertDialog(
+        title: const Text('Send Push Message'),
+        content: Text(msg),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Close'),
+          ),
+        ],
+      ),
+    );
+    // } catch (e) {
+    //   widget.onError(e);
+    // }
   }
 }

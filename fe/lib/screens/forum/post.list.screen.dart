@@ -33,7 +33,7 @@ class _PostListScreenState extends State<PostListScreen> with FirestoreMixin, Fo
         actions: [
           ForumListPushNotificationIcon(
             category,
-            onError: error,
+            // onError: error,
             onSigninRequired: () => alert(
               'Signin Required',
               'Please, sign in to subscribe this forum.',

@@ -1,4 +1,4 @@
-import 'package:extended/extended.dart';
+// import 'package:extended/extended.dart';
 import 'package:fe/service/app.service.dart';
 import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
@@ -20,7 +20,7 @@ class ReportScreen extends StatelessWidget with FirestoreMixin {
       ),
       body: ReportManagement(
         target: arguments['target'],
-        onError: error,
+        // onError: error,
         onPressed: (ReportModel report) async {
           if (report.target == 'post') {
             AppService.instance.openPostView(id: report.targetId);
