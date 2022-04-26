@@ -59,15 +59,14 @@ class AppAlertDialog extends StatelessWidget {
                       ),
                       child: const Center(
                         child: SizedBox(
-                          child: Logo(),
+                          child: ClipOval(child: Logo()),
                           width: 20,
                           height: 20,
                         ),
                       ),
                     ),
                     spaceXsm,
-                    Text(title,
-                        style: const TextStyle(fontWeight: FontWeight.w500))
+                    Text(title, style: const TextStyle(fontWeight: FontWeight.w500))
                   ],
                 ),
               ),
