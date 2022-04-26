@@ -122,6 +122,44 @@ Table of contents
   - [FileUploadButton](#fileuploadbutton)
   - [Displaying Uploaded Image](#displaying-uploaded-image)
   - [Uploaded file management](#uploaded-file-management)
+- [Widgets](#widgets)
+  - [Common widgets](#common-widgets)
+    - [DatePicker](#datepicker)
+- [Location Service](#location-service)
+- [Cloud Functions](#cloud-functions)
+  - [Unit test for Cloud Functions](#unit-test-for-cloud-functions)
+  - [Error handling](#error-handling-1)
+    - [How to send error back to client](#how-to-send-error-back-to-client)
+    - [Error handling on client end](#error-handling-on-client-end)
+  - [Cloud functions - http trigger, restful api.](#cloud-functions---http-trigger-restful-api)
+    - [Ready](#ready)
+    - [Request and data handling](#request-and-data-handling)
+    - [Post create](#post-create)
+    - [Cloud functions Sample codes](#cloud-functions-sample-codes)
+  - [Meilisearch](#meilisearch)
+  - [Re-indexing documents](#re-indexing-documents)
+- [Backup](#backup)
+  - [Firestore backup](#firestore-backup)
+- [Point](#point)
+  - [Point settings](#point-settings)
+  - [Poitn Event Logic](#poitn-event-logic)
+  - [Category point setting](#category-point-setting)
+  - [Point document](#point-document)
+  - [Displaying Point](#displaying-point)
+    - [Use point property to dispaly point.](#use-point-property-to-dispaly-point)
+    - [PointBuilder](#pointbuilder)
+    - [MyPointBuilder](#mypointbuilder)
+    - [ForumPoint](#forumpoint)
+  - [Point history](#point-history)
+  - [Displaying point history](#displaying-point-history)
+  - [Senario](#senario)
+  - [User point and level](#user-point-and-level)
+- [Extra Features](#extra-features)
+  - [Job](#job)
+- [Release mode error](#release-mode-error)
+  - [How to fix](#how-to-fix)
+
+
 - [Location Service](#location-service)
 - [Cloud Functions](#cloud-functions)
   - [Unit test for Cloud Functions](#unit-test-for-cloud-functions)
@@ -1648,6 +1686,19 @@ HttpException: Invalid statusCode: 403, uri = https://firebasestorage.googleapis
   - @todo - Firefluter does not provide the deletion funtionality for some cases like user closed the app while posting with some image uploaded. You may delete it by yourself at this time. @see https://github.com/withcenter/wonderfulkorea/issues/77
 
 
+# Widgets
+
+## Common widgets
+
+- Common widgets are some handy widgets that are not depending on fireflutter and might be used for common usage.
+
+### DatePicker
+
+- Use `DatePicker` to choose date. 
+
+```dart
+DatePicker(initialValue: 19990304, onChanged: (int newDate) => update(newDate));
+```
 
 # Location Service
 

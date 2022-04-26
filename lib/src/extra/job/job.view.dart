@@ -32,23 +32,6 @@ class _JobViewState extends State<JobView> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        // RichText(
-        //     text: TextSpan(children: [
-        //   TextSpan(
-        //       text: "Job recruitment from: ",
-        //       style: TextStyle(
-        //         fontSize: 14,
-        //         color: Colors.black,
-        //       )),
-        //   TextSpan(
-        //       text: job.companyName,
-        //       style: TextStyle(
-        //         fontSize: 14,
-        //         fontWeight: FontWeight.bold,
-        //         color: Colors.black,
-        //       )),
-        // ])),
-        // SizedBox(height: 15),
         JobViewItem(
           value: job.companyName,
           label: "Company Name",
@@ -79,8 +62,7 @@ class _JobViewState extends State<JobView> {
           label: "Detail Address",
         ),
         SizedBox(height: 15),
-        Text('Job details',
-            style: TextStyle(fontSize: 16, color: Colors.black)),
+        Text('Job details', style: TextStyle(fontSize: 16, color: Colors.black)),
         SizedBox(height: 10),
         JobViewItem(
           value: JobService.instance.categories[job.category] ?? '',
@@ -118,10 +100,6 @@ class _JobViewState extends State<JobView> {
           value: job.description,
           label: "Descriptions",
         ),
-        // JobViewItem(
-        //   value: job.requirement,
-        //   label: "Requirements",
-        // ),
         JobViewItem(
           key: UniqueKey(),
           value: job.requirement,

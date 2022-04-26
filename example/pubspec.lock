@@ -50,6 +50,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.0-rc.1"
+  auto_size_text:
+    dependency: transitive
+    description:
+      name: auto_size_text
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "3.0.0"
   badges:
     dependency: transitive
     description:
@@ -203,7 +210,7 @@ packages:
       name: desktop_webview_auth
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.0.6"
+    version: "0.0.7"
   dio:
     dependency: transitive
     description:
@@ -426,6 +433,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "3.1.0"
+  flutter_holo_date_picker:
+    dependency: transitive
+    description:
+      name: flutter_holo_date_picker
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.3"
   flutter_html:
     dependency: transitive
     description:
@@ -1131,7 +1145,7 @@ packages:
       name: win32
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.5.1"
+    version: "2.5.2"
   xdg_directories:
     dependency: transitive
     description:

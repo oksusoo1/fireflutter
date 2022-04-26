@@ -6,6 +6,11 @@
 - Install fireflutter and necessary setup stated in fireflutter README.md.
 
 
+## example-setup branch
+
+- To setup the basics
+
+
 
 ## example-profile branch
 
@@ -28,4 +33,16 @@
 
 - Enable cloud functions by setting the project to paid plan (Blaze plan).
   - Enable the `Image Resize` extention as described in the README of fireflutter.
+
+
+
+## example-forum branch
+
+- Adding forum functionality
+
+
+
+## example-party branch
+
+- To make a party calendar app
 

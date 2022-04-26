@@ -71,7 +71,7 @@ dependencies:
   flutter_html: ^3.0.0-alpha.2
 
   # for post content & comment content
-  url_launcher: ^6.0.20
+  url_launcher: ^6.1.0
 
   # for post & comment
   flutter_linkify: ^5.0.2
@@ -93,6 +93,8 @@ dependencies:
   email_validator: ^2.0.1
   
 
+  # iOS style date picker
+  flutter_holo_date_picker: ^1.0.3
 
 dev_dependencies:
   flutter_test:

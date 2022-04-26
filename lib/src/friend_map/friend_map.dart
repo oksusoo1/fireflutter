@@ -15,7 +15,6 @@ class FriendMap extends StatefulWidget {
     required this.otherUserUid,
     required this.latitude,
     required this.longitude,
-    required this.error,
     Key? key,
   }) : super(key: key);
 
@@ -23,19 +22,16 @@ class FriendMap extends StatefulWidget {
   final String otherUserUid;
   final double latitude;
   final double longitude;
-  final ErrorCallback error;
 
   @override
   _FriendMapState createState() => _FriendMapState();
 }
 
-class _FriendMapState extends State<FriendMap>
-    with WidgetsBindingObserver, DatabaseMixin {
+class _FriendMapState extends State<FriendMap> with WidgetsBindingObserver, DatabaseMixin {
   final FriendMapService service = FriendMapService.instance;
   final searchBoxController = TextEditingController();
 
-  final CameraPosition currentLocation =
-      CameraPosition(target: LatLng(0.0, 0.0));
+  final CameraPosition currentLocation = CameraPosition(target: LatLng(0.0, 0.0));
 
   StreamSubscription<Position>? currentUserPositionStream;
   StreamSubscription<DatabaseEvent>? otherUserPositionStream;
@@ -68,23 +64,19 @@ class _FriendMapState extends State<FriendMap>
   ///
   /// Zooming in and out will disable focus on current user's location.
   init() async {
-    try {
-      service.cameraFocus = CameraFocus.none;
+    service.cameraFocus = CameraFocus.none;
 
-      /// Check permission first.
-      await LocationService.instance.checkPermission();
+    /// Check permission first.
+    await LocationService.instance.checkPermission();
 
-      /// Initialize users location.
-      await service.initUsersLocations(
-        latitude: widget.latitude,
-        longitude: widget.longitude,
-      );
+    /// Initialize users location.
+    await service.initUsersLocations(
+      latitude: widget.latitude,
+      longitude: widget.longitude,
+    );
 
-      initPositionListeners();
-      setState(() {});
-    } catch (e) {
-      widget.error(e);
-    }
+    initPositionListeners();
+    setState(() {});
   }
 
   initPositionListeners() {
@@ -96,10 +88,8 @@ class _FriendMapState extends State<FriendMap>
     /// If current user clicked on their own friend map request and open friend map:
     ///  - other user's location will initially point to the current user's location then will update from coordinated value saved on the database.
     ///  - if the other user does not have a saved location on the database, it will simply ignore.
-    otherUserPositionStream = userDoc(widget.otherUserUid)
-        .child('location')
-        .onValue
-        .listen((event) async {
+    otherUserPositionStream =
+        userDoc(widget.otherUserUid).child('location').onValue.listen((event) async {
       // print('Other user ${widget.otherUserUid}, location update, ${event.snapshot.value}');
       DataSnapshot snapshot = event.snapshot;
       final loc = snapshot.value as String?;
@@ -164,8 +154,7 @@ class _FriendMapState extends State<FriendMap>
             zoomGesturesEnabled: false,
             myLocationButtonEnabled: false,
             initialCameraPosition: currentLocation,
-            onMapCreated: (GoogleMapController controller) =>
-                service.mapController = controller,
+            onMapCreated: (GoogleMapController controller) => service.mapController = controller,
             markers: Set<Marker>.from(service.markers),
             gestureRecognizers: [
               Factory<DragGestureRecognizer>(
@@ -243,14 +232,12 @@ class _FriendMapState extends State<FriendMap>
                       LocationAddress(
                           address: 'My location: ' + service.currentAddress,
                           iconColor: Colors.cyanAccent,
-                          onTap: () =>
-                              service.zoomToMarker(MarkerIds.currentLocation)),
+                          onTap: () => service.zoomToMarker(MarkerIds.currentLocation)),
                       SizedBox(height: 10),
                       LocationAddress(
                           address: 'Destination: ' + service.otherUsersAddress,
                           iconColor: Colors.redAccent,
-                          onTap: () =>
-                              service.zoomToMarker(MarkerIds.destination)),
+                          onTap: () => service.zoomToMarker(MarkerIds.destination)),
                     ],
                   )
                 : GestureDetector(
@@ -329,8 +316,7 @@ class NavigationTips extends StatelessWidget {
 }
 
 class LocationAddress extends StatelessWidget {
-  const LocationAddress(
-      {required this.address, required this.iconColor, this.onTap, Key? key})
+  const LocationAddress({required this.address, required this.iconColor, this.onTap, Key? key})
       : super(key: key);
 
   final String address;

@@ -7,13 +7,11 @@ import 'package:flutterfire_ui/firestore.dart';
 class JobListView extends StatefulWidget {
   const JobListView({
     Key? key,
-    required this.onError,
     required this.options,
     required this.onEdit,
     required this.onTap,
   }) : super(key: key);
 
-  final Function onError;
   final Function() onEdit;
   final Function(JobModel) onTap;
   final JobListOptionModel options;
@@ -52,8 +50,7 @@ class _JobListViewState extends State<JobListView> with FirestoreMixin {
     if (options.accomodation != '') {
       query = query.where('withAccomodation', isEqualTo: options.accomodation);
     }
-    if (options.salary != '')
-      query = query.where('salary', isEqualTo: options.salary);
+    if (options.salary != '') query = query.where('salary', isEqualTo: options.salary);
 
     // Only 'status=Y' jobs can be displayed.
     query = query.where('status', isEqualTo: 'Y');

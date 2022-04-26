@@ -28,7 +28,6 @@ class _FriendMapScreenState extends State<FriendMapScreen> {
         otherUserUid: widget.arguments['uid'],
         latitude: latitude,
         longitude: longitude,
-        error: error,
       ),
     );
   }
