@@ -30,3 +30,7 @@ const hintStyle = TextStyle(
   fontSize: xsm,
   color: Color(0xFF6f6f6f),
 );
+
+const titleStyle = TextStyle(
+  color: Color(0xFF000000),
+);

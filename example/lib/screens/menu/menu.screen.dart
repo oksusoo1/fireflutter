@@ -1,5 +1,6 @@
 import 'package:example/services/global.dart';
 import 'package:example/widgets/layout/layout.dart';
+import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -24,9 +25,9 @@ class MenuScreen extends StatelessWidget {
             },
             child: Text('Sign-out'),
           ),
-          TextButton(
-              onPressed: service.router.openTest, child: Text('Test screen')),
-          Text('body'),
+          if (UserService.instance.isAdmin)
+            ElevatedButton(onPressed: service.router.openAdmin, child: Text('Admin')),
+          ElevatedButton(onPressed: service.router.openSettings, child: Text('Settings'))
         ],
       ),
     );

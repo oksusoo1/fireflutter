@@ -1,6 +1,9 @@
 import 'package:example/screens/home/home.auth.dart';
+import 'package:example/screens/home/home.categories.dart';
 import 'package:example/screens/home/home.menu.dart';
+import 'package:example/services/global.dart';
 import 'package:example/widgets/layout/layout.dart';
+import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -42,16 +45,26 @@ class _HomeScreenState extends State<HomeScreen> {
       body: Padding(
         padding: EdgeInsets.all(16),
         child: HomeAuth(
-          child: ListView.builder(
-            itemCount: 100,
-            itemBuilder: (c, i) {
-              final child = Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text(i.toString()),
-              );
-
-              return child;
-            },
+          child: Column(
+            children: [
+              MyDoc(builder: (my) {
+                return Column(
+                  children: [
+                    Text('Welcome, ${my.firstName}'),
+                    my.isAdmin
+                        ? TextButton(
+                            onPressed: service.router.openAdmin,
+                            child: Text(
+                              'You are an ADMIN !!',
+                              style: TextStyle(color: Colors.red),
+                            ),
+                          )
+                        : Text('You are not an admin'),
+                  ],
+                );
+              }),
+              HomeCategories(),
+            ],
           ),
         ),
       ),

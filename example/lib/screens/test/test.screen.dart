@@ -1,11 +1,23 @@
+import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:example/widgets/layout/layout.dart';
 
-class TestScreen extends StatelessWidget {
+class TestScreen extends StatefulWidget {
   const TestScreen({Key? key}) : super(key: key);
 
   static const String routeName = '/test';
+
+  @override
+  State<TestScreen> createState() => _TestScreenState();
+}
+
+class _TestScreenState extends State<TestScreen> {
+  @override
+  void initState() {
+    super.initState();
+    UserService.instance.updateAdminStatus();
+  }
 
   @override
   Widget build(BuildContext context) {
