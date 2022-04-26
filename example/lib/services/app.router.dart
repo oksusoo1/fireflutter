@@ -62,10 +62,16 @@ class AppRouter extends NavigatorObserver {
   }
 
   BuildContext get context => globalNavigatorKey.currentContext!;
+  static Map<String, Route> routeStack = {};
 
   /// Connect this to onGenerateRoute of MaterialApp
   static Route<dynamic> onGenerateRoute(settings) {
     final String name = settings.name;
+
+    if (routeStack[name] != null) {
+      Navigator.of(globalNavigatorKey.currentContext!).removeRoute(routeStack[name]!);
+      routeStack.remove(name);
+    }
 
     /// 그리고, MaterialApp 의 onGenerateRoute() 의 결과로 리턴 할 route 작성
     final route = NoAnimationMaterialPageRoute(
@@ -82,8 +88,20 @@ class AppRouter extends NavigatorObserver {
       settings: settings,
     );
 
+    routeStack[name] = route;
+    debugPrint('push screen; -- $name');
+    debugPrint(routeStack.keys.toString());
+
     ///
     return route;
+  }
+
+  @override
+  void didPop(Route<dynamic> route, Route<dynamic>? previousRoute) {
+    String routeName = route.settings.name ?? '';
+    AppRouter.routeStack.remove(routeName);
+    debugPrint('pop screen; -- $routeName');
+    debugPrint(routeStack.keys.toString());
   }
 
   /// Open a screen.
@@ -102,26 +120,18 @@ class AppRouter extends NavigatorObserver {
   //   }
   // }
 
-  /// If [pop] is set to true, then it will pop current page
-  ///   (which has name, Not drawer, and not limited to dialogs)
-  ///   and put a new screen.
   /// If [popAll] is true, then it will remove all screen in route stack and put a new screen.
   ///   Use [popAll] when the app goes to home screen.
   Future<dynamic> open(
     String routeName, {
     Map? arguments,
-    bool pop = false,
     bool popAll = false,
     bool preventDuplicate = true,
   }) {
     AudioPlayer().play(AssetSource('click.mp3'));
 
-    if (pop) {
-      return Navigator.of(context).popAndPushNamed(
-        routeName,
-        arguments: arguments,
-      );
-    } else if (popAll) {
+    if (popAll) {
+      AppRouter.routeStack = {};
       return Navigator.of(context).pushNamedAndRemoveUntil(
         routeName,
         (Route<dynamic> route) => false,

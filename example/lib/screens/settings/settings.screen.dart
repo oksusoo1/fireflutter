@@ -1,6 +1,5 @@
 import 'package:example/services/global.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:example/widgets/layout/layout.dart';
 
 class SettingsScreen extends StatefulWidget {

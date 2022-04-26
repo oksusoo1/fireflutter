@@ -59,6 +59,7 @@ class _ExampleAppState extends State<ExampleApp> {
       theme: ThemeData(primarySwatch: Colors.blue),
       initialRoute: HomeScreen.routeName,
       onGenerateRoute: AppRouter.onGenerateRoute,
+      navigatorObservers: [service.router],
     );
   }
 }
