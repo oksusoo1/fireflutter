@@ -67,16 +67,17 @@ class _FriendMapState extends State<FriendMap> with WidgetsBindingObserver, Data
     service.cameraFocus = CameraFocus.none;
 
     /// Check permission first.
-    await LocationService.instance.checkPermission();
+    LocationService.instance.checkPermission().then((isEnabled) async {
+      if (!isEnabled) return;
 
-    /// Initialize users location.
-    await service.initUsersLocations(
-      latitude: widget.latitude,
-      longitude: widget.longitude,
-    );
+      /// Initialize users location.
+      await service.initUsersLocations(
+        latitude: widget.latitude,
+        longitude: widget.longitude,
+      );
 
-    initPositionListeners();
-    setState(() {});
+      initPositionListeners();
+    }).whenComplete(() => setState(() {}));
   }
 
   initPositionListeners() {
@@ -135,11 +136,13 @@ class _FriendMapState extends State<FriendMap> with WidgetsBindingObserver, Data
   }
 
   @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
+  void didChangeAppLifecycleState(AppLifecycleState state) async {
     super.didChangeAppLifecycleState(state);
     // print('state $state');
 
-    service.refreshMap();
+    if (state == AppLifecycleState.resumed) {
+      init();
+    }
   }
 
   @override

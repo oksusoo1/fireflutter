@@ -2,8 +2,7 @@ import '../../../../fireflutter.dart';
 import 'package:flutter/material.dart';
 
 class JobSeekerListOptions extends StatefulWidget {
-  const JobSeekerListOptions({Key? key, required this.change})
-      : super(key: key);
+  const JobSeekerListOptions({Key? key, required this.change}) : super(key: key);
 
   final Function(JobSeekerListOptionsModel) change;
 
@@ -11,8 +10,7 @@ class JobSeekerListOptions extends StatefulWidget {
   State<JobSeekerListOptions> createState() => _JobSeekerListOptionsState();
 }
 
-class _JobSeekerListOptionsState extends State<JobSeekerListOptions>
-    with FirestoreMixin {
+class _JobSeekerListOptionsState extends State<JobSeekerListOptions> with FirestoreMixin {
   final options = JobSeekerListOptionsModel();
 
   @override
@@ -51,7 +49,7 @@ class _JobSeekerListOptionsState extends State<JobSeekerListOptions>
                   },
                 ),
               ),
-              if (options.siNm.isNotEmpty) ...[
+              if (options.siNm.isNotEmpty && options.siNm != 'Sejong') ...[
                 SizedBox(width: 10),
                 Expanded(
                   child: DropdownButton<String>(
@@ -59,8 +57,7 @@ class _JobSeekerListOptionsState extends State<JobSeekerListOptions>
                     value: options.sggNm,
                     items: [
                       DropdownMenuItem(
-                        child:
-                            Text('Select city/county/gu', style: optionStyle),
+                        child: Text('Select city/county/gu', style: optionStyle),
                         value: '',
                       ),
                       for (final name

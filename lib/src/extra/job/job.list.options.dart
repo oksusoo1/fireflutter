@@ -48,7 +48,7 @@ class _JobListOptionsState extends State<JobListOptions> with FirestoreMixin {
                     flex: 3,
                     child: DropdownButton<String>(
                       isExpanded: true,
-                      value: options.jobCategory,
+                      value: options.category,
                       items: [
                         DropdownMenuItem(
                           child: Text('Industry', style: optionStyle),
@@ -63,7 +63,7 @@ class _JobListOptionsState extends State<JobListOptions> with FirestoreMixin {
                       ],
                       onChanged: (v) {
                         setState(() {
-                          options.jobCategory = v ?? '';
+                          options.category = v ?? '';
                         });
                         widget.change(options);
                       },
@@ -138,8 +138,7 @@ class _JobListOptionsState extends State<JobListOptions> with FirestoreMixin {
                         value: options.sggNm,
                         items: [
                           DropdownMenuItem(
-                            child: Text('Select city/county/gu',
-                                style: optionStyle),
+                            child: Text('Select city/county/gu', style: optionStyle),
                             value: '',
                           ),
                           for (final name
