@@ -134,20 +134,16 @@ mixin ForumMixin {
     );
 
     if (re == null) return;
-    try {
-      await postOrComment.report(input.text);
-      alert('Report success', 'You have reported this post.');
-    } catch (e) {
-      error(e);
-    }
+
+    await postOrComment.report(input.text);
+    alert('Report success', 'You have reported this post.');
   }
 
   onImageTapped(BuildContext ctx, int initialIndex, List<String> files) {
     // return alert('Display original image', 'TODO: display original images with a scaffold.');
     return showDialog(
       context: ctx,
-      builder: (context) =>
-          Dialog(child: ImageViewer(files, initialIndex: initialIndex)),
+      builder: (context) => Dialog(child: ImageViewer(files, initialIndex: initialIndex)),
     );
   }
 }

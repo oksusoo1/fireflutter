@@ -101,7 +101,7 @@ void main() {
         log("--> FlutterError.onError : from (the inside of) Flutter framework.");
         log("------------------------------------------------------------------");
         FlutterError.dumpErrorToConsole(details);
-        error(details.exception);
+        AppService.instance.error(details.exception);
       };
       runApp(MainApp(
         initialLink: await DynamicLinkService.instance.initialLink,
@@ -114,7 +114,7 @@ void main() {
       log("--> runtimeType: ${e.runtimeType}");
       log("Dart Error :  $e");
       debugPrintStack(stackTrace: stackTrace);
-      error(e);
+      AppService.instance.error(e);
     },
   );
 }

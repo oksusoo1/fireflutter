@@ -1,11 +1,17 @@
 import 'dart:developer';
 
 import 'package:extended/extended.dart';
+import 'package:fe/service/config.dart';
 import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 
+/// Custom unit tests for fireflutter.
+///
+/// It will first prepqre the test accounts, test category, and test post.
+/// To sign-in a user A, B, C, just call `await signIn(a)`, `await signIn(b)`, `await signIn(c)`.
+///
 class UnitTestScreen extends StatefulWidget {
   const UnitTestScreen({Key? key}) : super(key: key);
 
@@ -18,8 +24,30 @@ class UnitTestScreen extends StatefulWidget {
 class _UnitTestScreenState extends State<UnitTestScreen> with DatabaseMixin, FirestoreMixin {
   late User user;
   late PostModel post;
+  late UserModel a;
+  late UserModel b;
+  late UserModel c;
+  late UserModel d;
+
   List<String> logTexts = [];
   bool waiting = false;
+  String waitingMessage = '';
+
+  @override
+  void initState() {
+    super.initState();
+    init();
+  }
+
+  init() async {
+    a = UserModel(uid: Config.testUsers['apple']!['uid']!);
+    await a.load();
+    b = UserModel(uid: Config.testUsers['banana']!['uid']!);
+    await b.load();
+    c = UserModel(uid: Config.testUsers['cherry']!['uid']!);
+    await c.load();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -37,7 +65,11 @@ class _UnitTestScreenState extends State<UnitTestScreen> with DatabaseMixin, Fir
                     child: Text('Start Unit Testing'),
                   ),
                   spaceXs,
-                  if (waiting) CircularProgressIndicator.adaptive()
+                  if (waiting) ...[
+                    CircularProgressIndicator.adaptive(),
+                    spaceXxs,
+                    Text(waitingMessage),
+                  ],
                 ],
               ),
               ...logTexts
@@ -61,61 +93,68 @@ class _UnitTestScreenState extends State<UnitTestScreen> with DatabaseMixin, Fir
 
   /// Prepares the test
   ///
-  /// 1. Create a test user account
+  /// 1. Check user accounts of apple, banana, cherry.
   /// 2. Check if QnA category exists.
   /// 3. Create a test post
   /// 4. Create a test comment
   prepareTest() async {
-    /// Create a user
-    String stamp = DateTime.now().millisecondsSinceEpoch.toString();
-    String email = "unit-test-user-$stamp@test.com";
-    String password = "$email$stamp";
-    final cred = await FirebaseAuth.instance
-        .createUserWithEmailAndPassword(email: email, password: password);
-    user = cred.user!;
-
-    check(cred.user != null, 'Test user created.');
-
-    await wait(1000);
-    await userDoc(user.uid).update({
-      'email': email,
-      'firstName': 'firstName',
-      'lastName': 'lastName',
-      'nickname': 'firstName + lastName',
-      'birthday': 19731010,
-      'gender': 'M',
-      'photoUrl': 'https://philgo.com/test.jpg',
-      'profileReady': 80000000000000,
-      'registeredAt': ServerValue.timestamp,
-      'updatedAt': ServerValue.timestamp,
-    });
+    print('a; $a');
 
     final categories = await CategoryService.instance.getCategories();
     final qnaExists = categories.indexWhere((element) => element.id == 'qna') != -1;
     check(qnaExists, "QnA category must exists!");
+
+    await signIn(a);
 
     post = await PostApi.instance.create(category: 'qna');
 
     log(post.toString());
   }
 
+  Future signIn(UserModel u) async {
+    final e = Config.testUsers.entries.firstWhere((element) => element.value['uid'] == u.uid);
+    final email = Config.testUsers[e.key]!['email']!;
+    print('signIn as; $email');
+
+    await FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: '12345a');
+
+    return wait(500, 'Sign-in as $email');
+  }
+
   reportingTest() async {
     await FirebaseAuth.instance.signOut();
     try {
       await createReport(target: 'post', targetId: post.id, reporteeUid: post.uid);
-      check(false, "Reporting without sign-in must fail.");
+      check(false, "Expect failure but succeed - Reporting without sign-in must fail.");
     } catch (e) {
-      check(true, "Reporting without sign-in must fail.");
+      check(e == ERROR_NOT_SIGN_IN,
+          "Expecting failure with ERROR_NOT_SIGN_IN - Reporting without sign-in must fail.");
+    }
+
+    await signIn(b);
+    try {
+      final id = await createReport(target: 'post', targetId: post.id, reporteeUid: post.uid);
+      check(true, "Expect success and succeed.");
+      final snapshot = await reportDoc(id).get();
+
+      check(snapshot.exists, 'Report document exists.');
+
+      final data = snapshot.data() as Map;
+      check(data['targetId']! == post.id, 'Reported target id match.');
+    } catch (e) {
+      check(false, "Expect success but failed with; $e");
     }
   }
 
-  Future wait(int ms) async {
+  Future wait(int ms, String msg) async {
     setState(() {
       waiting = true;
+      waitingMessage = msg;
     });
     await Future.delayed(Duration(milliseconds: ms));
     setState(() {
       waiting = false;
+      waitingMessage = '';
     });
   }
 

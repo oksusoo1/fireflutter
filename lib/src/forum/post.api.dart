@@ -22,7 +22,7 @@ class PostApi {
     List<String> files = const [],
     Map<String, dynamic> extra = const {},
   }) async {
-    if (UserService.instance.notSignIn) throw ERROR_NOT_SIGN_IN;
+    if (UserService.instance.notSignedIn) throw ERROR_NOT_SIGN_IN;
     if (UserService.instance.user.ready == false) throw UserService.instance.user.profileError;
 
     final data = {

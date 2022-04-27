@@ -561,6 +561,10 @@ await user.load();
 print(user);
 ```
 
+```dart
+final user = UserModel(uid: '... uid ...')..load();
+```
+
 ## UserService
 
 - The reason why we need `UserService` is to hold login user's `UserModel` and update it on user document's changes.

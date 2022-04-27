@@ -15,7 +15,7 @@ mixin FirestoreMixin {
   final FirebaseFirestore db = FirebaseFirestore.instance;
   User get _user => FirebaseAuth.instance.currentUser!;
   bool get signedIn => FirebaseAuth.instance.currentUser != null;
-  bool get notSignIn => signedIn == false;
+  bool get notSignedIn => signedIn == false;
 
   CollectionReference get userCol => db.collection('users');
   CollectionReference get categoryCol => db.collection('categories');
@@ -35,6 +35,9 @@ mixin FirestoreMixin {
 
   // Forum category menus
   DocumentReference get forumSettingDoc => settingDoc.doc('forum');
+
+  // Forum category menus
+  DocumentReference reportDoc(String id) => reportCol.doc(id);
 
   // CollectionReference commentCol(String postId) {
   //   return postDoc(postId).collection('comments');
@@ -76,12 +79,16 @@ mixin FirestoreMixin {
   /// [targetId] is the id of the object type.
   /// [reporteeUid] is the user uid of the object.
   /// [reason] is the reason why the sign-in user is reporting.
-  Future<void> createReport({
+  /// TODO - convert this method into cloud http function.
+  Future<String> createReport({
     required String target,
     required String targetId,
     required String reporteeUid,
     String? reason,
   }) async {
+    if (UserService.instance.notSignedIn) {
+      throw ERROR_NOT_SIGN_IN;
+    }
     final id = "$target-$targetId-${_user.uid}";
     try {
       await reportCol.doc(id).get();
@@ -95,7 +102,7 @@ mixin FirestoreMixin {
       /// Or continue ...
     }
 
-    return reportCol.doc(id).set({
+    await reportCol.doc(id).set({
       'target': target,
       'targetId': targetId,
       'reporterUid': _user.uid,
@@ -103,6 +110,7 @@ mixin FirestoreMixin {
       'reason': reason ?? '',
       'timestamp': FieldValue.serverTimestamp(),
     });
+    return id;
   }
 
   /// Like, dislike
@@ -118,7 +126,7 @@ mixin FirestoreMixin {
   /// [likeOrDisliek] can be one of 'like' or 'dislike'.
   ///
   Future<void> feed(String targetDocPath, String likeOrDislike) async {
-    if (notSignIn) throw ERROR_SIGN_IN;
+    if (notSignedIn) throw ERROR_SIGN_IN;
 
     final targetDocRef = db.doc(targetDocPath);
 

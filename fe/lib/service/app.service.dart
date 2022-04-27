@@ -1,3 +1,4 @@
+import 'package:extended/extended.dart' as ex;
 import 'package:fe/screens/admin/admin.screen.dart';
 import 'package:fe/screens/admin/category.screen.dart';
 import 'package:fe/screens/admin/category_group.screen.dart';
@@ -22,6 +23,10 @@ class AppService {
       _instance = AppService();
     }
     return _instance!;
+  }
+
+  error(e) {
+    ex.error(TranslationService.instance.tr(e.toString()));
   }
 
   void back([dynamic data]) {
