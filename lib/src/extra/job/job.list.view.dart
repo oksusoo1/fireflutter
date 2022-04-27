@@ -40,7 +40,7 @@ class _JobListViewState extends State<JobListView> with FirestoreMixin {
       query = query.where('sggNm', isEqualTo: options.sggNm);
     }
     if (options.jobCategory != '') {
-      query = query.where('jobCategory', isEqualTo: options.jobCategory);
+      query = query.where('category', isEqualTo: options.jobCategory);
     }
     if (options.workingHours != -1)
       query = query.where('workingHours', isEqualTo: options.workingHours);
