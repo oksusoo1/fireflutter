@@ -28,7 +28,9 @@ class FriendMapService {
     this._destinationLatitude = latitude;
     this._destinationLongitude = longitude;
 
-    return refreshMap();
+    await drawDestinationLocationMarker();
+    await drawCurrentLocationMarker();
+    adjustCameraViewAndZoom();
   }
 
   /// InitialCoordinates.
@@ -233,6 +235,9 @@ class FriendMapService {
     double? lat,
     double? lon,
   }) async {
+    print("Destination lat => $_destinationLatitude");
+    print("Destination lon => $_destinationLongitude");
+
     _otherUsersAddress = await _getAddressFromCoordinates(
       lat ?? _destinationLatitude,
       lon ?? _destinationLongitude,
@@ -244,13 +249,5 @@ class FriendMapService {
       lon ?? _destinationLongitude,
       title: "Destination",
     );
-  }
-
-  /// refreshes the map to redraw markers and adjust camera view.
-  ///
-  Future<void> refreshMap() async {
-    await drawDestinationLocationMarker();
-    await drawCurrentLocationMarker();
-    adjustCameraViewAndZoom();
   }
 }
