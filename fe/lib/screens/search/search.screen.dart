@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:extended/extended.dart';
 import 'package:fe/screens/search/search.item.dart';
 import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
@@ -22,11 +21,16 @@ class _PostListScreenV2State extends State<PostListScreenV2> {
 
   final scrollController = ScrollController();
 
+  SearchOptionModel searchOptions = SearchOptionModel();
+
+  List<Map<String, dynamic>> results = [];
+
+  int hits = 0;
   bool loading = false;
+  bool noMorePosts = false;
 
   bool get atBottom {
-    return scrollController.offset >
-        (scrollController.position.maxScrollExtent - 300);
+    return scrollController.offset > (scrollController.position.maxScrollExtent - 300);
   }
 
   Timer? _debounce;
@@ -35,13 +39,13 @@ class _PostListScreenV2State extends State<PostListScreenV2> {
   void initState() {
     super.initState();
 
-    searchService.uid = widget.arguments['uid'] ?? '';
-    searchService.index = widget.arguments['index'] ?? 'posts-and-comments';
-    searchService.category = widget.arguments['category'] ?? '';
-    searchService.searchKey = widget.arguments['searchKey'] ?? '';
-    searchEditController.text = searchService.searchKey;
+    searchOptions.uid = widget.arguments['uid'] ?? '';
+    searchOptions.index = widget.arguments['index'] ?? 'posts-and-comments';
+    searchOptions.category = widget.arguments['category'] ?? '';
+    searchOptions.searchKey = widget.arguments['searchKey'] ?? '';
+    searchEditController.text = searchOptions.searchKey;
 
-    searchService.limit = 10;
+    searchOptions.limit = 10;
     search();
 
     scrollController.addListener(() {
@@ -53,8 +57,8 @@ class _PostListScreenV2State extends State<PostListScreenV2> {
 
   @override
   void dispose() {
-    searchService.resetFilters();
-    searchService.resetListAndPagination(limit: 4);
+    // searchService.resetFilters();
+    // searchService.resetListAndPagination(limit: 4);
     scrollController.dispose();
     _debounce?.cancel();
     super.dispose();
@@ -86,67 +90,56 @@ class _PostListScreenV2State extends State<PostListScreenV2> {
               children: [
                 DropdownButton<String>(
                   hint: Text('Select Index'),
-                  value: searchService.index,
+                  value: searchOptions.index,
                   items: [
-                    DropdownMenuItem(
-                        child: Text('All'), value: 'posts-and-comments'),
+                    DropdownMenuItem(child: Text('All'), value: 'posts-and-comments'),
                     DropdownMenuItem(child: Text('Posts'), value: 'posts'),
-                    DropdownMenuItem(
-                        child: Text('Comments'), value: 'comments'),
+                    DropdownMenuItem(child: Text('Comments'), value: 'comments'),
                   ],
                   onChanged: (value) {
                     if (value != null) searchIndex(value);
                   },
                 ),
-                if (searchService.index != 'comments')
+                if (searchOptions.index != 'comments')
                   DropdownButton<String>(
                     hint: Text('Select Category'),
-                    value: searchService.category,
+                    value: searchOptions.category,
                     items: [
                       DropdownMenuItem(child: Text('All'), value: ''),
                       DropdownMenuItem(child: Text('QnA'), value: 'qna'),
-                      DropdownMenuItem(
-                          child: Text('Discussion'), value: 'discussion'),
+                      DropdownMenuItem(child: Text('Discussion'), value: 'discussion'),
                       DropdownMenuItem(child: Text('Job'), value: 'job'),
                     ],
                     onChanged: (value) => searchCategoryPosts(value ?? ''),
                   ),
                 DropdownButton<String>(
                   hint: Text('Select User'),
-                  value: searchService.uid,
+                  value: searchOptions.uid,
                   items: [
                     DropdownMenuItem(child: Text('All'), value: ''),
-                    DropdownMenuItem(
-                        child: Text('Current User'),
-                        value: UserService.instance.uid),
-                    DropdownMenuItem(
-                        child: Text('User A'),
-                        value: 'jAXh1SngnafzPikQM0jpzKO3yj73'),
-                    DropdownMenuItem(
-                        child: Text('User B'),
-                        value: 'Nb1NJ0d0XcQNKVEjbCj0IXN543r2'),
+                    DropdownMenuItem(child: Text('Current User'), value: UserService.instance.uid),
+                    DropdownMenuItem(child: Text('User A'), value: 'jAXh1SngnafzPikQM0jpzKO3yj73'),
+                    DropdownMenuItem(child: Text('User B'), value: 'Nb1NJ0d0XcQNKVEjbCj0IXN543r2'),
                   ],
                   onChanged: (value) => searchUserPosts(value ?? ''),
                 ),
               ],
             ),
             SizedBox(height: 16),
-            Text('No of items found: ${searchService.hits}'),
+            Text('No of items found: $hits'),
             SizedBox(height: 16),
             Expanded(
               child: ListView.builder(
                 shrinkWrap: true,
-                keyboardDismissBehavior:
-                    ScrollViewKeyboardDismissBehavior.onDrag,
-                itemCount: searchService.resultList.length,
+                keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+                itemCount: results.length,
                 controller: scrollController,
                 itemBuilder: (c, i) {
-                  return SearchItem(item: searchService.resultList[i]);
+                  return SearchItem(item: results[i]);
                 },
               ),
             ),
-            if (searchService.resultList.isEmpty && !loading)
-              Center(child: Text('NO POSTS FOUND.')),
+            if (results.isEmpty && !loading) Center(child: Text('NO POSTS FOUND.')),
             if (loading) Center(child: CircularProgressIndicator())
           ],
         ),
@@ -155,40 +148,51 @@ class _PostListScreenV2State extends State<PostListScreenV2> {
   }
 
   search() async {
-    if (loading) return;
+    if (loading || noMorePosts) return;
     if (mounted) setState(() => loading = true);
-    try {
-      await searchService.search();
-    } catch (e) {
-      error(e);
-    }
-    if (mounted) setState(() => loading = false);
+
+    searchService.search(searchOptions).then((res) {
+      if (res.hits != null) {
+        if (res.hits!.length < searchOptions.limit) noMorePosts = true;
+        results.addAll(res.hits!);
+        hits = res.nbHits!;
+
+        searchOptions.offset = searchOptions.limit * searchOptions.page;
+        searchOptions.page += 1;
+      }
+    }).whenComplete(() {
+      if (mounted) setState(() => loading = false);
+    });
   }
 
   searchUserPosts(String _uid) {
-    if (searchService.uid == _uid) return;
-    searchService.uid = _uid;
+    if (searchOptions.uid == _uid) return;
+    searchOptions.uid = _uid;
     resetAndSearch();
   }
 
   searchCategoryPosts(String _category) {
-    if (searchService.category == _category) return;
-    searchService.category = _category;
+    if (searchOptions.category == _category) return;
+    searchOptions.category = _category;
     resetAndSearch();
   }
 
   searchKeyword(String _keyword) {
-    searchService.searchKey = _keyword;
+    searchOptions.searchKey = _keyword;
     resetAndSearch();
   }
 
   searchIndex(String index) {
-    searchService.index = index;
+    searchOptions.index = index;
     resetAndSearch();
   }
 
   resetAndSearch() {
-    searchService.resetListAndPagination(limit: 4);
+    noMorePosts = false;
+    searchOptions.limit = 4;
+    searchOptions.offset = 0;
+    searchOptions.page = 1;
+    results = [];
     search();
   }
 }
