@@ -13,6 +13,7 @@ import 'package:fe/screens/phone_sign_in_ui/phone_sign_in_ui.screen.dart';
 import 'package:fe/screens/point_history/point_history.screen.dart';
 import 'package:fe/screens/reminder/reminder.edit.screen.dart';
 import 'package:fe/screens/setting/notification.setting.dart';
+import 'package:fe/screens/unit_test/unit_test.screen.dart';
 import 'package:fe/service/app.service.dart';
 import 'package:fe/service/config.dart';
 // import 'package:fe/service/global.keys.dart';
@@ -57,6 +58,10 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
+              ElevatedButton(
+                onPressed: () => AppService.instance.open(UnitTestScreen.routeName),
+                child: Text('Unit Test Screen'),
+              ),
               StreamBuilder<User?>(
                 stream: FirebaseAuth.instance.authStateChanges(),
                 builder: (context, snapshot) {

@@ -25,6 +25,7 @@ import 'package:fe/screens/job/job.view.screen.dart';
 import 'package:fe/screens/point_history/point_history.screen.dart';
 import 'package:fe/screens/search/search.screen.dart';
 import 'package:fe/screens/setting/notification.setting.dart';
+import 'package:fe/screens/unit_test/unit_test.screen.dart';
 import 'package:fe/service/app.service.dart';
 import 'package:fe/service/global.keys.dart';
 import 'package:fe/screens/chat/chat.room.screen.dart';
@@ -87,6 +88,7 @@ final Map<String, RouteFunction> routes = {
   JobSeekerProfileViewScreen.routeName: (context, arguments) =>
       JobSeekerProfileViewScreen(arguments: arguments),
   JobSeekerListScreen.routeName: (context, arguments) => JobSeekerListScreen(),
+  UnitTestScreen.routeName: (context, arguments) => UnitTestScreen(),
 };
 
 void main() {

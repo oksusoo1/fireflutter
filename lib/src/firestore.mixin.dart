@@ -70,6 +70,12 @@ mixin FirestoreMixin {
   /// These are the methods that are used in multiple places
   ///
   /// *****************************************************
+  ///
+
+  /// [target] can be one of 'post', 'commnet', 'user', or any object type.
+  /// [targetId] is the id of the object type.
+  /// [reporteeUid] is the user uid of the object.
+  /// [reason] is the reason why the sign-in user is reporting.
   Future<void> createReport({
     required String target,
     required String targetId,
