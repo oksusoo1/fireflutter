@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:extended/extended.dart';
+import 'package:fe/screens/unit_test/forum/post_unit_test.dart';
 import 'package:fe/service/config.dart';
 import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
@@ -77,6 +78,7 @@ class _UnitTestScreenState extends State<UnitTestScreen> with DatabaseMixin, Fir
                         style: TextStyle(color: e.contains('ERROR:') ? Colors.red : Colors.black),
                       ))
                   .toList(),
+              PostUnitTest(),
             ],
           ),
         ),
