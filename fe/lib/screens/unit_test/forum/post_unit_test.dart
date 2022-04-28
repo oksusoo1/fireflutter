@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:fe/screens/unit_test/unit_test.service.dart';
+import 'package:fe/service/global.keys.dart';
 import 'package:flutter/material.dart';
 
 import 'package:fireflutter/fireflutter.dart';
@@ -37,31 +40,79 @@ class _PostUnitTestState extends State<PostUnitTest> {
 
   runTests() async {
     test.logs = [];
-    await createPostNotLoggedIn();
-    await createPostLoggedIn();
+    // await createPostWithoutSignIn();
+    // await createPostSuccess();
+    await updatePostWithoutSignIn();
+    await updatePostWithDifferentUser();
   }
 
-  createPostNotLoggedIn() async {
+  createPostWithoutSignIn() async {
     setCurrentTest('Creating post without signing in');
     await FirebaseAuth.instance.signOut();
 
-    dynamic outcome = await test.getOutcome(
-      () => PostApi.instance.create(category: 'qna'),
-    );
-    test.expect(
-      outcome == ERROR_NOT_SIGN_IN,
-      'Post creation failure without signing in.',
-    );
+    // Problem : if this is implemented, other tests will not run also.
+    // test.onError = (e) {
+    //   test.expect(e == ERROR_NOT_SIGN_IN, 'Post creation failure without signing in.');
+    //   Timer(Duration(milliseconds: 200), () {
+    //     Navigator.of(globalNavigatorKey.currentContext!).pop();
+    //   });
+    // };
+
+    try {
+      await PostApi.instance.create(category: 'qna');
+      test.expect(false, 'Post creation should fail without logging in.');
+    } catch (e) {
+      test.expect(e == ERROR_NOT_SIGN_IN, 'Post creation failure without signing in.');
+    }
     endCurrentTest();
   }
 
-  createPostLoggedIn() async {
+  createPostSuccess() async {
     setCurrentTest('Creating post with signing in');
     await test.signIn(test.a);
 
-    dynamic outcome = await PostApi.instance.create(category: 'qna', title: 'AAA');
-    test.expect(outcome is PostModel, 'Post creation success.');
-    test.expect((outcome as PostModel).title == 'AAA', 'Post title matched.');
+    PostModel post = await PostApi.instance.create(category: 'qna', title: 'AAA');
+    test.expect(post.id.isNotEmpty, 'Post creation success.');
+    test.expect(post.title == 'AAA', 'Post title matched.');
+    endCurrentTest();
+  }
+
+  updatePostWithoutSignIn() async {
+    setCurrentTest('Updating post without signing in');
+    await test.signIn(test.b);
+    final orgPost = await PostApi.instance.create(category: 'qna');
+
+    await FirebaseAuth.instance.signOut();
+    try {
+      await PostApi.instance.update(
+        id: orgPost.id,
+        title: orgPost.title,
+        content: orgPost.content,
+      );
+      test.expect(false, 'Post update should fail without signing in.');
+    } catch (e) {
+      test.expect(e == ERROR_NOT_SIGN_IN, 'Post update failure without signing in.');
+    }
+    endCurrentTest();
+  }
+
+  updatePostWithDifferentUser() async {
+    setCurrentTest('Updating post without signing in');
+    await test.signIn(test.a);
+    final orgPost = await PostApi.instance.create(category: 'qna');
+
+    await FirebaseAuth.instance.signOut();
+    await test.signIn(test.b);
+    try {
+      await PostApi.instance.update(
+        id: orgPost.id,
+        title: orgPost.title,
+        content: orgPost.content,
+      );
+      test.expect(false, 'Post update should fail without signing in.');
+    } catch (e) {
+      test.expect(e == ERROR_NOT_YOUR_POST, 'Post update failure with different user.');
+    }
     endCurrentTest();
   }
 

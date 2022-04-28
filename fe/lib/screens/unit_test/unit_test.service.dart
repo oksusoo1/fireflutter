@@ -50,13 +50,4 @@ class UnitTestService {
     await FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: '12345a');
     await Future.delayed(Duration(milliseconds: 500));
   }
-
-  dynamic getOutcome(Future callback()) async {
-    try {
-      dynamic res = await callback();
-      return res;
-    } catch (e) {
-      return e;
-    }
-  }
 }
