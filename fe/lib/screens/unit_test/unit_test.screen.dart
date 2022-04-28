@@ -78,6 +78,7 @@ class _UnitTestScreenState extends State<UnitTestScreen> with DatabaseMixin, Fir
 
   runTests() async {
     logTexts = [];
+
     await prepareTest();
     await reportingTest();
     await testCreatePostError();
