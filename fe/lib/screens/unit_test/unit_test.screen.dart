@@ -2,10 +2,11 @@ import 'dart:async';
 import 'dart:developer';
 
 import 'package:extended/extended.dart';
+import 'package:fe/screens/forum/post.form.screen.dart';
 import 'package:fe/screens/unit_test/forum/post_unit_test.dart';
 import 'package:fe/screens/unit_test/unit_test.service.dart';
+import 'package:fe/service/app.service.dart';
 import 'package:fe/service/config.dart';
-import 'package:fe/service/global.keys.dart';
 import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -29,13 +30,16 @@ class _UnitTestScreenState extends State<UnitTestScreen> with DatabaseMixin, Fir
   late User user;
   late PostModel post;
 
-  List<String> logTexts = [];
+  PostUnitTestController postUnitTestController = PostUnitTestController();
+  PostFormController postFormController = PostFormController();
+
   bool waiting = false;
   String waitingMessage = '';
 
   @override
   void initState() {
     super.initState();
+    test.init(setState: (x) => setState(() {}));
   }
 
   @override
@@ -58,17 +62,23 @@ class _UnitTestScreenState extends State<UnitTestScreen> with DatabaseMixin, Fir
                   if (waiting) ...[
                     CircularProgressIndicator.adaptive(),
                     spaceXxs,
-                    Text(waitingMessage),
+                    Expanded(
+                      child: Text(
+                        waitingMessage,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
                   ],
                 ],
               ),
-              ...logTexts
+              PostUnitTest(controller: postUnitTestController),
+              ...test.logs
                   .map((e) => Text(
                         e,
                         style: TextStyle(color: e.contains('ERROR:') ? Colors.red : Colors.black),
                       ))
                   .toList(),
-              PostUnitTest(),
             ],
           ),
         ),
@@ -77,11 +87,18 @@ class _UnitTestScreenState extends State<UnitTestScreen> with DatabaseMixin, Fir
   }
 
   runTests() async {
-    logTexts = [];
+    test.logs = [];
 
     await prepareTest();
     await reportingTest();
     await testCreatePostError();
+
+    await postUnitTestController.state.runTests();
+
+    await testPostFormWithoutSignIn();
+    await testPostFormEmptyCategory();
+
+    await testPostForm();
   }
 
   /// Prepares the test
@@ -95,7 +112,7 @@ class _UnitTestScreenState extends State<UnitTestScreen> with DatabaseMixin, Fir
 
     final categories = await CategoryService.instance.getCategories();
     final qnaExists = categories.indexWhere((element) => element.id == 'qna') != -1;
-    check(qnaExists, "QnA category must exists!");
+    test.expect(qnaExists, "QnA category must exists!");
 
     await signIn(test.a);
 
@@ -114,43 +131,44 @@ class _UnitTestScreenState extends State<UnitTestScreen> with DatabaseMixin, Fir
     return wait(500, 'Sign-in as $email');
   }
 
+  Future signOut() async {
+    await FirebaseAuth.instance.signOut();
+
+    return wait(200, 'Sign-out');
+  }
+
   reportingTest() async {
     await FirebaseAuth.instance.signOut();
     try {
       await createReport(target: 'post', targetId: post.id, reporteeUid: post.uid);
-      check(false, "Expect failure but succeed - Reporting without sign-in must fail.");
+      test.expect(false, "Expect failure but succeed - Reporting without sign-in must fail.");
     } catch (e) {
-      check(e == ERROR_NOT_SIGN_IN,
+      test.expect(e == ERROR_NOT_SIGN_IN,
           "Expecting failure with ERROR_NOT_SIGN_IN - Reporting without sign-in must fail.");
     }
 
     await signIn(test.b);
     try {
       final id = await createReport(target: 'post', targetId: post.id, reporteeUid: post.uid);
-      check(true, "Expect success and succeed.");
+      test.expect(true, "Expect success and succeed.");
       final snapshot = await reportDoc(id).get();
 
-      check(snapshot.exists, 'Report document exists.');
+      test.expect(snapshot.exists, 'Report document exists.');
 
       final data = snapshot.data() as Map;
-      check(data['targetId']! == post.id, 'Reported target id match.');
+      test.expect(data['targetId']! == post.id, 'Reported target id match.');
     } catch (e) {
-      check(false, "Expect success but failed with; $e");
+      test.expect(false, "Expect success but failed with; $e");
     }
   }
 
   testCreatePostError() async {
     await signIn(test.a);
-    log('--> begin testCreatePostError();');
-    test.onError = (e) {
-      log('--> Got error; ....');
-      check(e == ERROR_CATEGORY_NOT_EXISTS, "Post creation with wrong category must failed - $e");
-      Timer(Duration(milliseconds: 200), () {
-        Navigator.of(globalNavigatorKey.currentContext!).pop();
-      });
-    };
-    await PostApi.instance.create(category: 'wrong-category');
-    check(false, "Post creation with wrong category must failed.");
+    try {
+      await PostApi.instance.create(category: 'wrong-category');
+    } catch (e) {
+      test.expect(e == ERROR_CATEGORY_NOT_EXISTS, "Post creation with wrong category must failed.");
+    }
   }
 
   Future wait(int ms, String msg) async {
@@ -165,16 +183,63 @@ class _UnitTestScreenState extends State<UnitTestScreen> with DatabaseMixin, Fir
     });
   }
 
-  check(bool re, String msg) {
-    String info;
-    if (re) {
-      info = 'SUCCESS: $msg';
-    } else {
-      info = 'ERROR: $msg';
+  Future openPostFormScreen() async {
+    AppService.instance
+        .open(PostFormScreen.routeName, arguments: {'postFormController': postFormController});
+
+    return wait(200, 'Injecting post form controller in post edit screen.');
+  }
+
+  Future comeBack() async {
+    AppService.instance.back();
+    return wait(200, 'Opening unit test screen.');
+  }
+
+  testPostFormWithoutSignIn() async {
+    await signOut();
+    await openPostFormScreen();
+    try {
+      postFormController.state.category = 'qna';
+      await postFormController.state.onSubmit();
+      test.fail('Post creation without sign-in must fail');
+    } catch (e) {
+      test.expect(e == ERROR_NOT_SIGN_IN, 'Post creation without sign-in must fail - $e');
     }
-    log(info);
-    setState(() {
-      logTexts.add(info);
-    });
+    await comeBack();
+  }
+
+  testPostFormEmptyCategory() async {
+    await openPostFormScreen();
+    postFormController.state.title.text = 'Yo';
+    try {
+      await postFormController.state.onSubmit();
+      test.fail('Post creation without category must fail');
+    } catch (e) {
+      test.expect(e == ERROR_EMPTY_CATEGORY, 'Post creation without category must fail');
+    }
+    await comeBack();
+  }
+
+  testPostForm() async {
+    await signIn(test.a);
+    await openPostFormScreen();
+    postFormController.state.category = 'qna';
+    String title = 'Test - ' + DateTime.now().millisecondsSinceEpoch.toString();
+    postFormController.state.title.text = title;
+    try {
+      PostModel created = await postFormController.state.onSubmit();
+
+      test.expect(created.title == title, 'Post create success - $title');
+
+      final snapshot = await postDoc(created.id).get();
+      test.expect(snapshot.exists, 'Post exists');
+      test.expect((snapshot.data() as Map)['title']! == title, 'Post title match.');
+
+      final id = await created.delete();
+      test.expect(id == created.id, 'Post deleted - $id');
+    } catch (e) {
+      test.fail('Post creation without category must fail - $e');
+    }
+    await comeBack();
   }
 }

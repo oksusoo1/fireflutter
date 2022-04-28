@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import '../../../../fireflutter.dart';
 
+class PostFormController {
+  late _PostFormState state;
+}
+
 class PostForm extends StatefulWidget {
   const PostForm({
     this.category,
@@ -13,8 +17,11 @@ class PostForm extends StatefulWidget {
     this.titleFieldBuilder,
     this.contentFieldBuilder,
     this.submitButtonBuilder,
+    this.controller,
     Key? key,
   }) : super(key: key);
+
+  final PostFormController? controller;
 
   final PostModel? post;
   final String? category;
@@ -45,20 +52,25 @@ class _PostFormState extends State<PostForm> {
   double uploadProgress = 0;
   bool inSubmit = false;
 
-  bool get isCreate =>
-      (widget.post == null || widget.post?.id == '') ||
-      (widget.category != null && widget.category!.isNotEmpty);
+  bool get isCreate => (widget.post == null || widget.post?.id == '') || (category != '');
   bool get isUpdate => !isCreate;
+
+  /// This is used by custom test also.
+  String category = '';
 
   @override
   void initState() {
     super.initState();
+    category = widget.category ?? '';
     setState(() {
       title.text = widget.post?.title ?? '';
       content.text = widget.post?.content ?? '';
       summary.text = widget.post?.summary ?? '';
       files = widget.post?.files ?? [];
     });
+    if (widget.controller != null) {
+      widget.controller!.state = this;
+    }
   }
 
   @override
@@ -175,46 +187,53 @@ class _PostFormState extends State<PostForm> {
     );
   }
 
-  Future<void> onSubmit() async {
+  Future<PostModel> onSubmit() async {
     if (widget.photo == true) {
       if (files.length == 0) {
         throw ERROR_NO_PHOTO_ATTACHED;
       }
     }
+    if (category == '') {
+      throw ERROR_EMPTY_CATEGORY;
+    }
     setState(() => inSubmit = true);
 
     if (isCreate) {
-      PostApi.instance
+      return PostApi.instance
           .create(
-            documentId: documentId.text,
-            category: widget.category!,
-            subcategory: widget.subcategory,
-            title: title.text,
-            content: content.text,
-            files: files,
-          )
-          .then((post) => widget.onCreate(post.id))
-          .whenComplete(
-            () => setState(() {
-              inSubmit = false;
-            }),
-          );
+        documentId: documentId.text,
+        category: category,
+        subcategory: widget.subcategory,
+        title: title.text,
+        content: content.text,
+        files: files,
+      )
+          .then((post) {
+        widget.onCreate(post.id);
+        return post;
+      }).whenComplete(
+        () => setState(() {
+          inSubmit = false;
+        }),
+      );
     } else {
       /// update
-      PostApi.instance
+      return PostApi.instance
           .update(
-            id: widget.post!.id,
-            title: title.text,
-            content: content.text,
-            files: files,
-            summary: summary.text,
-          )
-          .then((post) => widget.onUpdate(post.id))
-          .whenComplete(
-            () => setState(() {
-              inSubmit = false;
-            }),
-          );
+        id: widget.post!.id,
+        title: title.text,
+        content: content.text,
+        files: files,
+        summary: summary.text,
+      )
+          .then((post) {
+        widget.onUpdate(post.id);
+        return post;
+      }).whenComplete(
+        () => setState(() {
+          inSubmit = false;
+        }),
+      );
     }
   }
 }

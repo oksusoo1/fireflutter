@@ -4,8 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:fireflutter/fireflutter.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
+class PostUnitTestController {
+  late _PostUnitTestState state;
+}
+
 class PostUnitTest extends StatefulWidget {
-  const PostUnitTest({Key? key}) : super(key: key);
+  const PostUnitTest({Key? key, this.controller}) : super(key: key);
+  final PostUnitTestController? controller;
+
   @override
   State<PostUnitTest> createState() => _PostUnitTestState();
 }
@@ -17,6 +23,9 @@ class _PostUnitTestState extends State<PostUnitTest> {
   @override
   void initState() {
     super.initState();
+    if (widget.controller != null) {
+      widget.controller!.state = this;
+    }
   }
 
   @override
@@ -24,51 +33,36 @@ class _PostUnitTestState extends State<PostUnitTest> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        ElevatedButton(onPressed: runTests, child: Text('Run Post Unit Test')),
+        ElevatedButton(
+            onPressed: () {
+              test.logs = [];
+              runTests();
+            },
+            child: Text('Run Post Unit Test')),
         if (currentTest.isNotEmpty) Text('Task: $currentTest'),
-        Divider(),
-        ...test.logs.map(
-          (e) => Text(e, style: TextStyle(color: e.contains('ERROR:') ? Colors.red : Colors.black)),
-        )
       ],
     );
   }
 
   runTests() async {
-    test.logs = [];
     await createPostNotLoggedIn();
     await createPostLoggedIn();
   }
 
   createPostNotLoggedIn() async {
-    setCurrentTest('Creating post without signing in');
     await FirebaseAuth.instance.signOut();
 
-    dynamic outcome = await test.getOutcome(
-      () => PostApi.instance.create(category: 'qna'),
-    );
+    final re = await test.submit(PostApi.instance.create(category: 'qna'));
     test.expect(
-      outcome == ERROR_NOT_SIGN_IN,
+      re == ERROR_NOT_SIGN_IN,
       'Post creation failure without signing in.',
     );
-    endCurrentTest();
   }
 
   createPostLoggedIn() async {
-    setCurrentTest('Creating post with signing in');
     await test.signIn(test.a);
 
-    dynamic outcome = await PostApi.instance.create(category: 'qna', title: 'AAA');
-    test.expect(outcome is PostModel, 'Post creation success.');
-    test.expect((outcome as PostModel).title == 'AAA', 'Post title matched.');
-    endCurrentTest();
-  }
-
-  setCurrentTest(String task) {
-    setState(() => currentTest = task);
-  }
-
-  endCurrentTest() {
-    setState(() => currentTest = '');
+    final re = await PostApi.instance.create(category: 'qna', title: 'AAA');
+    test.expect(re.title == 'AAA', 'Post title matched.');
   }
 }

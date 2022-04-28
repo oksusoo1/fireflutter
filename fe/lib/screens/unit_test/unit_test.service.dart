@@ -16,7 +16,7 @@ class UnitTestService {
   late UserModel c;
   late UserModel d;
 
-  Function(dynamic)? onError;
+  late Function(dynamic) setState;
 
   UnitTestService() {
     () async {
@@ -29,18 +29,11 @@ class UnitTestService {
     }();
   }
 
-  List<String> logs = [];
-
-  expect(bool re, String msg) {
-    String info;
-    if (re) {
-      info = 'SUCCESS: $msg';
-    } else {
-      info = 'ERROR: $msg';
-    }
-    log(info);
-    logs.add(info);
+  init({required Function(dynamic) setState}) {
+    this.setState = setState;
   }
+
+  List<String> logs = [];
 
   Future signIn(UserModel u) async {
     final e = Config.testUsers.entries.firstWhere((element) => element.value['uid'] == u.uid);
@@ -51,12 +44,25 @@ class UnitTestService {
     await Future.delayed(Duration(milliseconds: 500));
   }
 
-  dynamic getOutcome(Future callback()) async {
+  dynamic submit(Future future) async {
     try {
-      dynamic res = await callback();
-      return res;
+      return await future;
     } catch (e) {
       return e;
     }
   }
+
+  expect(bool re, String msg) {
+    String info;
+    if (re) {
+      info = 'SUCCESS: $msg';
+    } else {
+      info = 'ERROR: $msg';
+    }
+    log(info);
+    logs.add(info);
+    setState(() {});
+  }
+
+  fail(String msg) => expect(false, '(fail) ' + msg);
 }

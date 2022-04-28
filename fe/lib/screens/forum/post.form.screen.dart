@@ -23,6 +23,7 @@ class _PostFormScreenState extends State<PostFormScreen> with FirestoreMixin {
       body: SingleChildScrollView(
         child: PagePadding(vertical: sm, children: [
           PostForm(
+            controller: widget.arguments['postFormController'],
             category: widget.arguments['category'],
             post: widget.arguments['post'],
             onCreate: (postId) {
