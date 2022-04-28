@@ -3,6 +3,7 @@ import 'dart:developer';
 
 import 'package:extended/extended.dart';
 import 'package:fe/screens/forum/post.form.screen.dart';
+import 'package:fe/screens/unit_test/forum/comment_unit_test.dart';
 import 'package:fe/screens/unit_test/forum/post_unit_test.dart';
 import 'package:fe/screens/unit_test/unit_test.service.dart';
 import 'package:fe/service/app.service.dart';
@@ -31,6 +32,7 @@ class _UnitTestScreenState extends State<UnitTestScreen> with DatabaseMixin, Fir
   late PostModel post;
 
   PostUnitTestController postUnitTestController = PostUnitTestController();
+  CommentUnitTestController commentUnitTestController = CommentUnitTestController();
   PostFormController postFormController = PostFormController();
 
   bool waiting = false;
@@ -72,7 +74,14 @@ class _UnitTestScreenState extends State<UnitTestScreen> with DatabaseMixin, Fir
                   ],
                 ],
               ),
-              PostUnitTest(controller: postUnitTestController),
+              Wrap(
+                spacing: 5,
+                runSpacing: 5,
+                children: [
+                  PostUnitTest(controller: postUnitTestController),
+                  CommentUnitTest(controller: commentUnitTestController),
+                ],
+              ),
               ...test.logs
                   .map((e) => Text(
                         e,
@@ -94,6 +103,7 @@ class _UnitTestScreenState extends State<UnitTestScreen> with DatabaseMixin, Fir
     await testCreatePostError();
 
     await postUnitTestController.state.runTests();
+    await commentUnitTestController.state.runTests();
 
     await testPostFormWithoutSignIn();
     await testPostFormEmptyCategory();
