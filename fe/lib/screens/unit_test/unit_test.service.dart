@@ -5,9 +5,33 @@ import 'package:fireflutter/fireflutter.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class UnitTestService {
-  static List<String> logTexts = [];
+  static UnitTestService? _instance;
+  static UnitTestService get instance {
+    _instance ??= UnitTestService();
+    return _instance!;
+  }
 
-  static expect(bool re, String msg) {
+  late UserModel a;
+  late UserModel b;
+  late UserModel c;
+  late UserModel d;
+
+  Function(dynamic)? onError;
+
+  UnitTestService() {
+    () async {
+      a = UserModel(uid: Config.testUsers['apple']!['uid']!);
+      await a.load();
+      b = UserModel(uid: Config.testUsers['banana']!['uid']!);
+      await b.load();
+      c = UserModel(uid: Config.testUsers['cherry']!['uid']!);
+      await c.load();
+    }();
+  }
+
+  List<String> logs = [];
+
+  expect(bool re, String msg) {
     String info;
     if (re) {
       info = 'SUCCESS: $msg';
@@ -15,10 +39,10 @@ class UnitTestService {
       info = 'ERROR: $msg';
     }
     log(info);
-    logTexts.add(info);
+    logs.add(info);
   }
 
-  static Future signIn(UserModel u) async {
+  Future signIn(UserModel u) async {
     final e = Config.testUsers.entries.firstWhere((element) => element.value['uid'] == u.uid);
     final email = Config.testUsers[e.key]!['email']!;
     print('signIn as; $email');
@@ -27,7 +51,7 @@ class UnitTestService {
     await Future.delayed(Duration(milliseconds: 500));
   }
 
-  static dynamic getOutcome(Future callback()) async {
+  dynamic getOutcome(Future callback()) async {
     try {
       dynamic res = await callback();
       return res;

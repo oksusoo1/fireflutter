@@ -1,5 +1,4 @@
 import 'package:fe/screens/unit_test/unit_test.service.dart';
-import 'package:fe/service/config.dart';
 import 'package:flutter/material.dart';
 
 import 'package:fireflutter/fireflutter.dart';
@@ -13,25 +12,12 @@ class PostUnitTest extends StatefulWidget {
 }
 
 class _PostUnitTestState extends State<PostUnitTest> {
+  final test = UnitTestService.instance;
   String currentTest = '';
-  late UserModel a;
-  late UserModel b;
-  late UserModel c;
-  late UserModel d;
 
   @override
   void initState() {
     super.initState();
-    init();
-  }
-
-  init() async {
-    a = UserModel(uid: Config.testUsers['apple']!['uid']!);
-    await a.load();
-    b = UserModel(uid: Config.testUsers['banana']!['uid']!);
-    await b.load();
-    c = UserModel(uid: Config.testUsers['cherry']!['uid']!);
-    await c.load();
   }
 
   @override
@@ -42,7 +28,7 @@ class _PostUnitTestState extends State<PostUnitTest> {
         ElevatedButton(onPressed: runTests, child: Text('Run Post Unit Test')),
         if (currentTest.isNotEmpty) Text('Task: $currentTest'),
         Divider(),
-        ...UnitTestService.logTexts.map(
+        ...test.logs.map(
           (e) => Text(e, style: TextStyle(color: e.contains('ERROR:') ? Colors.red : Colors.black)),
         )
       ],
@@ -50,7 +36,7 @@ class _PostUnitTestState extends State<PostUnitTest> {
   }
 
   runTests() async {
-    UnitTestService.logTexts = [];
+    test.logs = [];
     await createPostNotLoggedIn();
     await createPostLoggedIn();
   }
@@ -59,10 +45,10 @@ class _PostUnitTestState extends State<PostUnitTest> {
     setCurrentTest('Creating post without signing in');
     await FirebaseAuth.instance.signOut();
 
-    dynamic outcome = await UnitTestService.getOutcome(
+    dynamic outcome = await test.getOutcome(
       () => PostApi.instance.create(category: 'qna'),
     );
-    UnitTestService.expect(
+    test.expect(
       outcome == ERROR_NOT_SIGN_IN,
       'Post creation failure without signing in.',
     );
@@ -71,13 +57,11 @@ class _PostUnitTestState extends State<PostUnitTest> {
 
   createPostLoggedIn() async {
     setCurrentTest('Creating post with signing in');
-    await UnitTestService.signIn(a);
+    await test.signIn(test.a);
 
-    dynamic outcome = await UnitTestService.getOutcome(
-      () => PostApi.instance.create(category: 'qna', title: 'AAA'),
-    );
-    UnitTestService.expect(outcome is PostModel, 'Post creation success.');
-    UnitTestService.expect((outcome as PostModel).title == 'AAA', 'Post title matched.');
+    dynamic outcome = await PostApi.instance.create(category: 'qna', title: 'AAA');
+    test.expect(outcome is PostModel, 'Post creation success.');
+    test.expect((outcome as PostModel).title == 'AAA', 'Post title matched.');
     endCurrentTest();
   }
 

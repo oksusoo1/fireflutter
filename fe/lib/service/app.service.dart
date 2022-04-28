@@ -12,6 +12,7 @@ import 'package:fe/screens/forum/post.view.screen.dart';
 import 'package:fe/screens/search/search.screen.dart';
 import 'package:fe/screens/home/home.screen.dart';
 import 'package:fe/screens/profile/profile.screen.dart';
+import 'package:fe/screens/unit_test/unit_test.service.dart';
 import 'package:fe/service/global.keys.dart';
 import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
@@ -27,6 +28,9 @@ class AppService {
 
   error(e) {
     ex.error(TranslationService.instance.tr(e.toString()));
+    if (UnitTestService.instance.onError != null) {
+      UnitTestService.instance.onError!(e);
+    }
   }
 
   void back([dynamic data]) {

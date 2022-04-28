@@ -1,8 +1,11 @@
+import 'dart:async';
 import 'dart:developer';
 
 import 'package:extended/extended.dart';
 import 'package:fe/screens/unit_test/forum/post_unit_test.dart';
+import 'package:fe/screens/unit_test/unit_test.service.dart';
 import 'package:fe/service/config.dart';
+import 'package:fe/service/global.keys.dart';
 import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -22,12 +25,9 @@ class UnitTestScreen extends StatefulWidget {
 }
 
 class _UnitTestScreenState extends State<UnitTestScreen> with DatabaseMixin, FirestoreMixin {
+  final test = UnitTestService.instance;
   late User user;
   late PostModel post;
-  late UserModel a;
-  late UserModel b;
-  late UserModel c;
-  late UserModel d;
 
   List<String> logTexts = [];
   bool waiting = false;
@@ -36,16 +36,6 @@ class _UnitTestScreenState extends State<UnitTestScreen> with DatabaseMixin, Fir
   @override
   void initState() {
     super.initState();
-    init();
-  }
-
-  init() async {
-    a = UserModel(uid: Config.testUsers['apple']!['uid']!);
-    await a.load();
-    b = UserModel(uid: Config.testUsers['banana']!['uid']!);
-    await b.load();
-    c = UserModel(uid: Config.testUsers['cherry']!['uid']!);
-    await c.load();
   }
 
   @override
@@ -90,6 +80,7 @@ class _UnitTestScreenState extends State<UnitTestScreen> with DatabaseMixin, Fir
     logTexts = [];
     await prepareTest();
     await reportingTest();
+    await testCreatePostError();
   }
 
   /// Prepares the test
@@ -99,13 +90,13 @@ class _UnitTestScreenState extends State<UnitTestScreen> with DatabaseMixin, Fir
   /// 3. Create a test post
   /// 4. Create a test comment
   prepareTest() async {
-    print('a; $a');
+    print('a; ${test.a}');
 
     final categories = await CategoryService.instance.getCategories();
     final qnaExists = categories.indexWhere((element) => element.id == 'qna') != -1;
     check(qnaExists, "QnA category must exists!");
 
-    await signIn(a);
+    await signIn(test.a);
 
     post = await PostApi.instance.create(category: 'qna');
 
@@ -132,7 +123,7 @@ class _UnitTestScreenState extends State<UnitTestScreen> with DatabaseMixin, Fir
           "Expecting failure with ERROR_NOT_SIGN_IN - Reporting without sign-in must fail.");
     }
 
-    await signIn(b);
+    await signIn(test.b);
     try {
       final id = await createReport(target: 'post', targetId: post.id, reporteeUid: post.uid);
       check(true, "Expect success and succeed.");
@@ -145,6 +136,20 @@ class _UnitTestScreenState extends State<UnitTestScreen> with DatabaseMixin, Fir
     } catch (e) {
       check(false, "Expect success but failed with; $e");
     }
+  }
+
+  testCreatePostError() async {
+    await signIn(test.a);
+    log('--> begin testCreatePostError();');
+    test.onError = (e) {
+      log('--> Got error; ....');
+      check(e == ERROR_CATEGORY_NOT_EXISTS, "Post creation with wrong category must failed - $e");
+      Timer(Duration(milliseconds: 200), () {
+        Navigator.of(globalNavigatorKey.currentContext!).pop();
+      });
+    };
+    await PostApi.instance.create(category: 'wrong-category');
+    check(false, "Post creation with wrong category must failed.");
   }
 
   Future wait(int ms, String msg) async {
