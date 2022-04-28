@@ -16,7 +16,9 @@ dependencies:
 
   flutter_chat_bubble: ^2.0.0
   url_launcher: ^6.0.18
-  flutterfire_ui: ^0.3.0
+  
+
+  flutterfire_ui: ^0.4.0+4
 
   image_picker: ^0.8.4+6
 
