@@ -5,7 +5,7 @@ import '../../../fireflutter.dart';
 /// CommentModel
 ///
 /// Refer readme for details
-class CommentModel with FirestoreMixin, ForumBase {
+class CommentModel with FirestoreMixin, ForumBase implements Article {
   CommentModel({
     this.id = '',
     required this.postId,
@@ -33,9 +33,7 @@ class CommentModel with FirestoreMixin, ForumBase {
 
   String content;
   String get displayContent {
-    return deleted
-        ? TranslationService.instance.tr(COMMENT_CONTENT_DELETED)
-        : content;
+    return deleted ? TranslationService.instance.tr(COMMENT_CONTENT_DELETED) : content;
   }
 
   int like;
@@ -69,10 +67,8 @@ class CommentModel with FirestoreMixin, ForumBase {
     Timestamp createdAt;
     Timestamp updatedAt;
     if (data['createdAt'] is Map) {
-      createdAt = Timestamp(
-          data['createdAt']['_seconds'], data['createdAt']['_nanoseconds']);
-      updatedAt = Timestamp(
-          data['updatedAt']['_seconds'], data['updatedAt']['_nanoseconds']);
+      createdAt = Timestamp(data['createdAt']['_seconds'], data['createdAt']['_nanoseconds']);
+      updatedAt = Timestamp(data['updatedAt']['_seconds'], data['updatedAt']['_nanoseconds']);
     } else {
       createdAt = data['createdAt'];
       updatedAt = data['updatedAt'] ?? Timestamp.now();
@@ -183,10 +179,8 @@ class CommentModel with FirestoreMixin, ForumBase {
   }) async {
     bool signedIn = FirebaseAuth.instance.currentUser != null;
     if (signedIn == false) throw ERROR_SIGN_IN;
-    if (UserService.instance.user.exists == false)
-      throw ERROR_USER_DOCUMENT_NOT_EXISTS;
-    if (UserService.instance.user.notReady)
-      throw UserService.instance.user.profileError;
+    if (UserService.instance.user.exists == false) throw ERROR_USER_DOCUMENT_NOT_EXISTS;
+    if (UserService.instance.user.notReady) throw UserService.instance.user.profileError;
     final _ = CommentModel.empty();
     final ref = await _.commentCol.add({
       'postId': postId,
@@ -259,8 +253,7 @@ class CommentModel with FirestoreMixin, ForumBase {
   ///
   /// Use this to check if this comment has just been created.
   bool get justNow {
-    final date =
-        DateTime.fromMillisecondsSinceEpoch(createdAt.millisecondsSinceEpoch);
+    final date = DateTime.fromMillisecondsSinceEpoch(createdAt.millisecondsSinceEpoch);
     final today = DateTime.now();
     final diff = date.difference(today);
     return diff.inMinutes < 5;

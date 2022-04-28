@@ -55,7 +55,8 @@
     "test:job:edit": "mocha --timeout 20000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/job/job.edit.spec.ts",
     "test:job:input": "mocha --timeout 20000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/job/job.input.spec.ts",
     "test:job:seeker": "mocha --timeout 20000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/job/job.seeker.spec.ts",
-    "test:category": "mocha --timeout 20000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/category/category.spec.ts"
+    "test:category": "mocha --timeout 20000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/category/category.spec.ts",
+    "test:report": "mocha --timeout 20000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/report/report.spec.ts"
   },
   "engines": {
     "node": "16"

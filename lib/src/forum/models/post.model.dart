@@ -6,7 +6,7 @@ import '../../../fireflutter.dart';
 ///
 /// Post and comment are a lot similiar. So both uses the same model.
 /// Refer readme for details
-class PostModel with FirestoreMixin, ForumBase {
+class PostModel with FirestoreMixin, ForumBase implements Article {
   PostModel({
     this.id = '',
     this.category = '',
@@ -210,12 +210,17 @@ class PostModel with FirestoreMixin, ForumBase {
   }
 
   Future<void> report(String? reason) {
-    return createReport(
-      target: 'post',
+    return PostApi.instance.report(
       targetId: id,
       reporteeUid: uid,
       reason: reason,
     );
+    // return createReport(
+    //   target: 'post',
+    //   targetId: id,
+    //   reporteeUid: uid,
+    //   reason: reason,
+    // );
   }
 
   /// Create a post with extra data
