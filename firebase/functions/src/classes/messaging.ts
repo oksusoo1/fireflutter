@@ -11,6 +11,11 @@ import { Utils } from "./utils";
 
 import { UserDocument } from "../interfaces/user.interface";
 
+import axios from "axios";
+
+const serverkey =
+  "AAAAWy4G2hU:APA91bG8FpX2kNKMTRlTyiAEo3jDCg6UsiXlmVqCU-7syY0DGgpv_7VVJVpuQRoZqqzmBdUg_BWuluihF6nLwHt3yZpkfXvzzJidyp4_Ku-NgicQa0GT9Rilj_ks83HWSpAoVjaCFN7S";
+
 export class Messaging {
   /**
    * Creates(or updates) a token document with uid and do `token-update` process as decribed in README.md.
@@ -21,7 +26,7 @@ export class Messaging {
    */
   static async updateToken(data: TokenDocument): Promise<any> {
     await this.setToken(data);
-    await this.unsubscribeAllTopicOfToken();
+    await this.unsubscribeAllTopicOfToken(data.token);
     await this.resubscribeAllUserTopics();
   }
 
@@ -48,7 +53,37 @@ export class Messaging {
    *
    * @reference https://stackoverflow.com/questions/38212123/unsubscribe-from-all-topics-at-once-from-firebase-messaging
    */
-  static async unsubscribeAllTopicOfToken() {}
+  static async unsubscribeAllTopicOfToken(token: string) {
+    const topics = await this.getTokenTopics(token);
+    if (topics.length == 0) return [];
+
+    const promises: any[] = [];
+    topics.forEach((topic: string) => {
+      promises.push(admin.messaging().unsubscribeFromTopic(token, topic));
+    });
+    await Promise.all(promises);
+    // console.log(promisesRes);
+    return topics;
+  }
+
+  static async getTokenTopics(token: string) {
+    const url = "https://iid.googleapis.com/iid/info/" + token;
+    const key = "key = " + serverkey;
+
+    try {
+      const res = await axios.get(url, {
+        params: { details: true },
+        headers: { Authorization: key },
+      });
+      // console.log(res);
+      if (res.data.rel == null) return [];
+      return Object.keys(res.data.rel.topics);
+    } catch (e) {
+      // console.log("=======================");
+      // console.log((e as any).response.data.error);
+      return [];
+    }
+  }
   /**
    *
    */
@@ -245,10 +280,7 @@ export class Messaging {
     const sendToDevicePromise = [];
     for (const c of chunks) {
       // Send notifications to all tokens.
-      const newPayload: admin.messaging.MulticastMessage = Object.assign(
-        { tokens: c },
-        payload as any
-      );
+      const newPayload: admin.messaging.MulticastMessage = Object.assign({ tokens: c }, payload as any);
       sendToDevicePromise.push(admin.messaging().sendMulticast(newPayload));
     }
     const sendDevice = await Promise.all(sendToDevicePromise);
