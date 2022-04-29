@@ -15,7 +15,7 @@ class PostUnitTest extends StatefulWidget {
   State<PostUnitTest> createState() => _PostUnitTestState();
 }
 
-class _PostUnitTestState extends State<PostUnitTest> with UnitTestMixin {
+class _PostUnitTestState extends State<PostUnitTest> with UnitTestMixin, FirestoreMixin {
   // final test = UnitTestService.instance;
 
   @override
@@ -33,7 +33,7 @@ class _PostUnitTestState extends State<PostUnitTest> with UnitTestMixin {
         clearLogs();
         runTests();
       },
-      child: Text('Run Post Unit Test'),
+      child: Text('Run Vote Unit Test'),
     );
   }
 

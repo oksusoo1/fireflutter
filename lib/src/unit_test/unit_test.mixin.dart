@@ -27,12 +27,15 @@ class UnitTestModel {
 mixin UnitTestMixin {
   final model = UnitTestModel.instance;
   clearLogs() {
+    model.success = 0;
+    model.error = 0;
     model.logs = [];
   }
 
   final String a = 'test-user-a';
   final String b = 'test-user-b';
   final String c = 'test-user-c';
+  final String d = 'test-user-d';
   late PostModel post;
 
   _render() {

@@ -492,36 +492,38 @@ class _JobEditFormState extends State<JobEditForm> with FirestoreMixin {
             ElevatedButton(
               child: Text('SUBMIT'),
               style: ElevatedButton.styleFrom(elevation: 0),
-              onPressed: () async {
-                setState(() {
-                  isSubmitted = true;
-                  loading = true;
-                });
-                if (address == null || !_formKey.currentState!.validate()) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                        content: Text('Form incomplete, please check for missing information.')),
-                  );
-                  setState(() => loading = false);
-                  return;
-                }
-
-                addJobAddress(address!);
-                await job.edit().then((value) {
-                  if (job.id == '') {
-                    widget.onCreated();
-                  } else {
-                    widget.onUpdated();
-                  }
-                }).whenComplete(
-                  () => setState(() {
-                    loading = false;
-                  }),
-                );
-              },
+              onPressed: onSubmit,
             )
         ],
       ),
+    );
+  }
+
+  Future onSubmit() async {
+    setState(() {
+      isSubmitted = true;
+      loading = true;
+    });
+    if (address == null || !_formKey.currentState!.validate()) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Form incomplete, please check for missing information.')),
+      );
+      setState(() => loading = false);
+      return;
+    }
+
+    addJobAddress(address!);
+    return await job.edit().then((value) {
+      if (job.id == '') {
+        widget.onCreated();
+      } else {
+        widget.onUpdated();
+      }
+      return value;
+    }).whenComplete(
+      () => setState(() {
+        loading = false;
+      }),
     );
   }
 }

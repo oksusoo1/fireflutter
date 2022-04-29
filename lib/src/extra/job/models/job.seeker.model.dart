@@ -47,7 +47,7 @@ class JobSeekerModel {
   }
 
   Future update() async {
-    await FunctionsApi.instance.request(
+    return await FunctionsApi.instance.request(
       'jobUpdateProfile',
       data: updateMap,
       addAuth: true,
