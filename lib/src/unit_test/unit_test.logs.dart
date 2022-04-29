@@ -43,6 +43,7 @@ class _UnitTestLogsState extends State<UnitTestLogs> with UnitTestMixin {
             ),
           ],
         ),
+        Divider(),
         if (model.waiting)
           Row(
             children: [
