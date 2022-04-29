@@ -64,6 +64,10 @@ export class Ref {
     return this.rdb.ref("message-tokens");
   }
 
+  static userSettingForumTopics(uid: string) {
+    return this.userSettingTopic(uid).child("forum");
+  }
+
   static userSettings(uid: string) {
     return this.rdb.ref("user-settings").child(uid);
   }
