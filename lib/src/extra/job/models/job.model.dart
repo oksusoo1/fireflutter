@@ -150,13 +150,13 @@ class JobModel {
 
   Future edit() async {
     if (id == '') {
-      await FunctionsApi.instance.request(
+      return await FunctionsApi.instance.request(
         'jobCreate',
         data: toCreate,
         addAuth: true,
       );
     } else {
-      await FunctionsApi.instance.request(
+      return await FunctionsApi.instance.request(
         'jobUpdate',
         data: toUpdate,
         addAuth: true,

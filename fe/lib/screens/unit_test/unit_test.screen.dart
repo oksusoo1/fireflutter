@@ -5,6 +5,7 @@ import 'package:extended/extended.dart';
 import 'package:fe/screens/forum/post.form.screen.dart';
 import 'package:fe/screens/unit_test/forum/comment_unit_test.dart';
 import 'package:fe/screens/unit_test/forum/post_unit_test.dart';
+import 'package:fe/screens/unit_test/job/job_unit_test.dart';
 import 'package:fe/screens/unit_test/unit_test.service.dart';
 import 'package:fe/service/app.service.dart';
 import 'package:fe/service/config.dart';
@@ -33,6 +34,7 @@ class _UnitTestScreenState extends State<UnitTestScreen> with DatabaseMixin, Fir
 
   PostUnitTestController postUnitTestController = PostUnitTestController();
   CommentUnitTestController commentUnitTestController = CommentUnitTestController();
+  JobUnitTestController jobUnitTestController = JobUnitTestController();
   PostFormController postFormController = PostFormController();
 
   bool waiting = false;
@@ -75,11 +77,11 @@ class _UnitTestScreenState extends State<UnitTestScreen> with DatabaseMixin, Fir
                 ],
               ),
               Wrap(
-                spacing: 5,
-                runSpacing: 5,
+                spacing: 8,
                 children: [
                   PostUnitTest(controller: postUnitTestController),
                   CommentUnitTest(controller: commentUnitTestController),
+                  JobUnitTest(controller: jobUnitTestController),
                 ],
               ),
               ...test.logs

@@ -18,7 +18,6 @@ class PostUnitTest extends StatefulWidget {
 
 class _PostUnitTestState extends State<PostUnitTest> {
   final test = UnitTestService.instance;
-  String currentTest = '';
 
   @override
   void initState() {

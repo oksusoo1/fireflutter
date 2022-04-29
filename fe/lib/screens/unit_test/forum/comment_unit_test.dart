@@ -18,7 +18,6 @@ class CommentUnitTest extends StatefulWidget {
 
 class _CommentUnitTestState extends State<CommentUnitTest> {
   final test = UnitTestService.instance;
-  String currentTest = '';
 
   @override
   void initState() {

@@ -26,6 +26,8 @@ class UnitTestService {
       await b.load();
       c = UserModel(uid: Config.testUsers['cherry']!['uid']!);
       await c.load();
+      d = UserModel(uid: Config.testUsers['durian']!['uid']!);
+      await d.load();
     }();
   }
 
