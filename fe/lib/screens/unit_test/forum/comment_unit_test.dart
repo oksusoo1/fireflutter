@@ -46,6 +46,7 @@ class _CommentUnitTestState extends State<CommentUnitTest> {
     await updateNotExistingComment();
     await deleteOtherUsersComment();
     await deleteAlreadyDeletedComment();
+    await commentCRUDsuccess();
   }
 
   createCommentWithoutSignIn() async {
@@ -132,5 +133,45 @@ class _CommentUnitTestState extends State<CommentUnitTest> {
     await test.signIn(test.a);
     await comment2.delete();
     post.delete();
+  }
+
+  commentCRUDsuccess() async {
+    await test.signIn(test.a);
+    final post = await PostApi.instance.create(category: 'qna');
+
+    /// create
+    final created = await CommentApi.instance.create(
+      postId: post.id,
+      parentId: post.id,
+      content: 'Hello.',
+    );
+    test.expect(created.postId == post.id, "Comment created with correct post ID");
+    test.expect(created.parentId == post.id, "Comment created with correct parent ID");
+    test.expect(created.content == 'Hello.', "Comment created with correct content");
+
+    /// update
+    final updated = await CommentApi.instance.update(
+      id: created.id,
+      content: 'Hi Flutter.',
+    );
+    test.expect(updated.content == 'Hi Flutter', "Comment updated");
+
+    /// reply to comment
+    final reply = await CommentApi.instance.create(
+      postId: post.id,
+      parentId: created.id,
+      content: 'Reply',
+    );
+    test.expect(reply.postId == post.id, "Reply created with correct post ID");
+    test.expect(reply.parentId == created.id, "Reply created with correct parent ID");
+    test.expect(reply.content == 'Reply.', "Reply created with correct content");
+
+    /// delete reply
+    final deletedReply = await CommentApi.instance.delete(reply.id);
+    test.expect(deletedReply == reply.id, "Reply deleted.");
+
+    /// delete comment
+    final deletedComment = await CommentApi.instance.delete(created.id);
+    test.expect(deletedComment == reply.id, "Comment deleted.");
   }
 }
