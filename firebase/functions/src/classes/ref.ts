@@ -42,6 +42,7 @@ export class Ref {
   static userDoc(uid: string) {
     return this.users.child(uid);
   }
+
   /**
    * Alias of userDoc
    * @param uid uid
@@ -49,6 +50,33 @@ export class Ref {
    */
   static user(uid: string) {
     return this.users.child(uid);
+  }
+
+  /**
+   * Returns post reference
+   * @param id post id
+   * @return reference
+   */
+  static postDoc(id: string) {
+    return this.postCol.doc(id);
+  }
+  /**
+   * Returns comment reference
+   * @param id comment id
+   * @return reference
+   */
+  static commentDoc(id: string) {
+    return this.commentCol.doc(id);
+  }
+
+  /**
+   * Returns category referrence
+   *
+   * @param {*} id Category id
+   * @return reference
+   */
+  static categoryDoc(id: string) {
+    return this.categoryCol.doc(id);
   }
 
   /**
@@ -79,8 +107,8 @@ export class Ref {
     return this.point(uid).child("register");
   }
 
-  static get messageTokens() {
-    return this.rdb.ref("message-tokens");
+  static userSettingForumTopics(uid: string) {
+    return this.userSettingTopic(uid).child("forum");
   }
 
   static userSettings(uid: string) {
@@ -108,30 +136,9 @@ export class Ref {
     return this.point(uid).child("extra");
   }
 
-  /**
-   * Returns post reference
-   * @param id post id
-   * @return reference
-   */
-  static postDoc(id: string) {
-    return this.postCol.doc(id);
-  }
-  /**
-   * Returns comment reference
-   * @param id comment id
-   * @return reference
-   */
-  static commentDoc(id: string) {
-    return this.commentCol.doc(id);
-  }
+  /******************************** MESSAGING References ****************************/
 
-  /**
-   * Returns category referrence
-   *
-   * @param {*} id Category id
-   * @return reference
-   */
-  static categoryDoc(id: string) {
-    return this.categoryCol.doc(id);
+  static get messageTokens() {
+    return this.rdb.ref("message-tokens");
   }
 }

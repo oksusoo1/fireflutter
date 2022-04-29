@@ -1258,6 +1258,10 @@ class _UnitTestScreenState extends State<UnitTestScreen>
   - To login as a. You can use a, b, c.
 
 
+- Use `expect()`, `fail()` to test.
+
+- Use `UnitTestLogs()` to display test logs on screen.
+
 
 
 # Sample code
