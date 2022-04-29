@@ -62,13 +62,13 @@ class _PostUnitTestState extends State<PostUnitTest> with UnitTestMixin, Firesto
 
     re = await submit(PostApi.instance.update(id: 'someId', title: 'title', content: 'content'));
     expect(
-      re == ERROR_NOT_SIGN_IN,
+      re == ERROR_EMPTY_UID,
       'Cannot update post without signing in. - $re',
     );
 
     re = await submit(PostApi.instance.delete('someId'));
     expect(
-      re == ERROR_NOT_SIGN_IN,
+      re == ERROR_EMPTY_UID,
       'Cannot update post without signing in. - $re',
     );
   }
