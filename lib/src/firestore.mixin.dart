@@ -79,7 +79,8 @@ mixin FirestoreMixin {
   /// [targetId] is the id of the object type.
   /// [reporteeUid] is the user uid of the object.
   /// [reason] is the reason why the sign-in user is reporting.
-  /// TODO - convert this method into cloud http function.
+  ///
+  @Deprecated('Use FunctionsApi.report() for reporting')
   Future<String> createReport({
     required String target,
     required String targetId,

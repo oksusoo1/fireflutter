@@ -43,7 +43,7 @@ export 'src/email_verification/email_verification.service.dart';
 
 export 'src/dynamic_link/dynamic_link.service.dart';
 
-export 'src/report/report.service.dart';
+export 'src/report/report.api.dart';
 export 'src/report/report.post.management.dart';
 
 // export 'src/test/test.service.dart';
@@ -134,3 +134,4 @@ export 'src/extra/job/seeker/job.seeker.list.dart';
 
 export 'src/error_info.dart';
 export 'src/widgets/date_picker.dart';
+export 'src/forum/article.dart';

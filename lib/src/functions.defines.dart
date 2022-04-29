@@ -10,4 +10,4 @@ class FunctionName {
   static const String jobCreate = 'jobCreate';
   static const String jobUpdate = 'jobUpdate';
   static const String jobUpdateProfile = 'jobUpdateProfile';
-}
+  static const String report = 'report';

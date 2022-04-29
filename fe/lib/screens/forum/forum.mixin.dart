@@ -99,7 +99,7 @@ mixin ForumMixin {
     }
   }
 
-  onReport(dynamic postOrComment) async {
+  onReport(Article article) async {
     final input = TextEditingController(text: '');
     String? re = await showDialog(
       context: globalNavigatorKey.currentContext!,
@@ -135,7 +135,11 @@ mixin ForumMixin {
 
     if (re == null) return;
 
-    await postOrComment.report(input.text);
+    if (article is PostModel) {
+      await article.report(input.text);
+    } else {
+      await (article as CommentModel).report(input.text);
+    }
     alert('Report success', 'You have reported this post.');
   }
 
