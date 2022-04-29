@@ -141,4 +141,7 @@ export class Ref {
   static get messageTokens() {
     return this.rdb.ref("message-tokens");
   }
+  static token(id: string) {
+    return this.messageTokens.child(id);
+  }
 }

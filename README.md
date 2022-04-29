@@ -113,7 +113,8 @@ Table of contents
   - [PostService and PostApi](#postservice-and-postapi)
   - [PostApi](#postapi)
 - [Push notification](#push-notification)
-  - [terms](#terms)
+  - [Terms and Conditions;](#terms-and-conditions)
+  - [Logic.](#logic)
   - [How push notification wokr.](#how-push-notification-wokr)
   - [push notification logic](#push-notification-logic)
   - [Testing Push notification via terminal](#testing-push-notification-via-terminal)
@@ -1584,22 +1585,74 @@ DynamicLinksService.instance.listen((Uri? deepLink) {
 
 # Push notification
 
-- User tokens are saved under `/message-tokens/(tokenId)`
 
-  - properties;
-    - `uid` - user id or empty string if user didn't logged in.
+## Terms and Conditions;
 
-- user topic are saved under `/users/(uid)`.
-  - `{ topics: ['posts_qna', 'posts_discussion', 'comments_qna', ...] }`
+- All the user topics - the topics that the user subscribed.
+- All the user tokens - all the tokens that a user owns.
+- `unsubscribeAllTopicOfToken`
+  It can get all the topics of a token and unsubscribe the topics.
+	This unsubscribe other user topics. (if they share token).
+- `subscribeTopic`
+  - All the user token subscribe to a topic.
+- `unsubscribeTopic`
+	When a user unsubscribes a topic, all the user tokens(devices) must unsubscribe the same topic.
+- `resubscribeAllUserTopics`
+  - All the user token will subscribe all the user topics. (subscribing only. Not unsubscribe anything.)
+- `removeInvalidTokens`.
+- `tokenUpdate`
+	When a user signs-in (or token is refereshed, or when token chagnes), pass the token over to backend.
+  And backend `unsubscribeAllTopicOfToken` and `resubscribeAllUserTopics`. Just incase other phones of the user has new subscriptions or deleted some subscriptions.
 
-## terms
+- User tokens are saved under `/message-tokens/<tokenId>` with uid property. The uid may be an empty string if the user didn't sign-in.
+- user topic are saved under `/users-settings/<uid>/topics/...`.
 
 - `comment notification` is an option to get notification whenever a new comment had posted under his post or comment.
   - `comment notifyee` is a user who will get notification when there is a comment under his post or comment.
 
+## Logic.
 
+- User A has two phone P1, P2
 
+- A signs-in P1 with TokenP1
+	- Do `token-update`
+  	- database: token: /messaging-token/TokenP1 {user: A}
 
+- Then, A subscribe qna, job.
+	- Do `subscribeTopic`
+  	- subscription: [qna, job]
+
+- A signs-in P2 with TokenP2
+	- Do `token-update`
+	- database: token: /messaging-token/TokenP2 {user: A}
+	- subscription: [qna, job]
+
+- B signs-in P1 with TokenP1
+	- Do `token-update` -> TokenP1 is now freed.
+	- B subscribes discussion.
+	- database: token: /messaging-token/TokenP1 {user: B} 
+	- subscription: [discussion]
+
+- A signs-in P1 with TokenP1
+	- database: token: /messaging-token/TokenP1 {user: A}
+	- Do `token-update` -> TokenP1 & TokenP2 are subscribed to [qna, job]
+	- A subscribes discussion
+	- Do "subscribe-topic".
+		A's subscription: [qna, job, discussion] with TokenP1, TokenP2
+	- A unsubscribe job
+		- `unsubscribeTopic`
+		- A's subscription: [qna, discussion] with TokenP1, TokenP2
+
+- A signs-in again on P1 with TokenP12
+	- database: token: /messaging-token/TokenP12 {user: A} -> TokenP1 is invalid due to new token on same device.
+	- Do `token-update`
+	- A's token: Token12, Token2 ( Token1 may still exists on db. )
+
+- A sign-out
+
+- B signs-in P1 with new Token3
+	- Do `token-update`. -> Due to new token on same device, Token12 is now invalid.
+	- B's subscription: [discussion] with Token3.
 
 ## How push notification wokr.
 

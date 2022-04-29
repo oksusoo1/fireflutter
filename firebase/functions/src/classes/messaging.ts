@@ -5,7 +5,7 @@ import {
   ERROR_EMPTY_UIDS,
   ERROR_TITLE_AND_BODY_CANT_BE_BOTH_EMPTY,
 } from "../defines";
-import { MessagePayload } from "../interfaces/messaging.interface";
+import { MessagePayload, TokenDocument } from "../interfaces/messaging.interface";
 import { Ref } from "./ref";
 import { Utils } from "./utils";
 
@@ -13,15 +13,46 @@ import { UserDocument } from "../interfaces/user.interface";
 
 export class Messaging {
   /**
-   * Creates a token document with uid.
+   * Creates(or updates) a token document with uid and do `token-update` process as decribed in README.md.
    *
-   * @param uid user uid
-   * @param token token of push message
+   * @param data - data.uid is the user uid, data.token is the token of push message.
+   *
    * @returns Promise of any
    */
-  static async updateToken(uid: string, token: string): Promise<any> {
-    return Ref.messageTokens.child(token).set({ uid: uid });
+  static async updateToken(data: TokenDocument): Promise<any> {
+    await this.setToken(data);
+    await this.unsubscribeAllTopicOfToken();
+    await this.resubscribeAllUserTopics();
   }
+
+  static async setToken(data: TokenDocument) {
+    await Ref.messageTokens.child(data.token).set({ uid: data.uid });
+  }
+  static async getToken(id: string): Promise<null | TokenDocument> {
+    const snapshot = await Ref.token(id).get();
+    if (snapshot.exists()) {
+      const data = snapshot.val();
+      data.token = snapshot.key;
+      return data;
+    } else {
+      return null;
+    }
+  }
+  static async subscribeTopic(data: { uid: string; topic: string }): Promise<any> {}
+  static async unsubscribeTopic(data: { uid: string; topic: string }): Promise<any> {}
+  static async removeInvalidTokens() {}
+
+  /**
+   * This unsubscribe all the topics (including other user's topics) of the token.
+   * See README.md for details.
+   *
+   * @reference https://stackoverflow.com/questions/38212123/unsubscribe-from-all-topics-at-once-from-firebase-messaging
+   */
+  static async unsubscribeAllTopicOfToken() {}
+  /**
+   *
+   */
+  static async resubscribeAllUserTopics() {}
 
   /**
    * Returns tokens of a user.
@@ -214,7 +245,10 @@ export class Messaging {
     const sendToDevicePromise = [];
     for (const c of chunks) {
       // Send notifications to all tokens.
-      const newPayload: admin.messaging.MulticastMessage = Object.assign({ tokens: c }, payload as any);
+      const newPayload: admin.messaging.MulticastMessage = Object.assign(
+        { tokens: c },
+        payload as any
+      );
       sendToDevicePromise.push(admin.messaging().sendMulticast(newPayload));
     }
     const sendDevice = await Promise.all(sendToDevicePromise);
@@ -346,11 +380,12 @@ export class Messaging {
 
   /**
    *
+   * Unsubcribe all topics that
    * @param user
    * @param uid
    * @returns
    */
-  static async resubscribeToSubscriptions(user: UserDocument, uid: string) {
+  static async resubscribeTopics(user: UserDocument, uid: string) {
     // get user tokens
     const initialTokens = await this.getTokens(uid);
     let tokens = initialTokens;

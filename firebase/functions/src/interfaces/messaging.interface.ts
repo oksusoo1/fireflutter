@@ -1,3 +1,8 @@
+export interface TokenDocument {
+  uid: string;
+  token: string;
+}
+
 export interface MessagePayload {
   topic?: string;
   token?: string;
