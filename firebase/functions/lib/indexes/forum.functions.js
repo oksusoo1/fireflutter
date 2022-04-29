@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.sendMessageOnCommentCreate = exports.sendMessageOnPostCreate = exports.commentDelete = exports.commentUpdate = exports.commentCreate = exports.postDelete = exports.postUpdate = exports.postCreate = void 0;
+exports.report = exports.sendMessageOnCommentCreate = exports.sendMessageOnPostCreate = exports.commentDelete = exports.commentUpdate = exports.commentCreate = exports.postDelete = exports.postUpdate = exports.postCreate = void 0;
 /**
  * @file foum.functions.ts
  *
@@ -76,5 +76,12 @@ exports.sendMessageOnCommentCreate = functions
     .firestore.document("/comments/{commentId}")
     .onCreate((snapshot, context) => {
     return post_1.Post.sendMessageOnCommentCreate(snapshot.data(), context.params.commentId);
+});
+exports.report = functions
+    .region("us-central1", "asia-northeast3")
+    .https.onRequest((req, res) => {
+    ready_1.ready({ req, res, auth: true }, async (data) => {
+        res.status(200).send(await comment_1.Comment.delete(data));
+    });
 });
 //# sourceMappingURL=forum.functions.js.map

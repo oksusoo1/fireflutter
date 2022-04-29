@@ -57,12 +57,13 @@ describe("Report test", () => {
   it("Create a report", async () => {
     const data = {
       uid: "a",
-      target: "post",
+      target: "user",
       targetId: "post-id-" + Utils.getTimestamp(),
       reason: "",
     };
     const report = await Report.create(data);
     expect(report.id === Report.getReportId(data)).true;
+    expect(report.target).equal("user");
   });
 
   it("Already reported", async () => {
