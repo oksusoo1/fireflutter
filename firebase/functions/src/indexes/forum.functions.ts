@@ -87,3 +87,11 @@ export const sendMessageOnCommentCreate = functions
       context.params.commentId
     );
   });
+
+export const report = functions
+  .region("us-central1", "asia-northeast3")
+  .https.onRequest((req, res) => {
+    ready({ req, res, auth: true }, async (data) => {
+      res.status(200).send(await Comment.delete(data));
+    });
+  });
