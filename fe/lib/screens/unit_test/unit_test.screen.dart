@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:fe/screens/forum/post.form.screen.dart';
 import 'package:fe/screens/unit_test/forum/comment_unit_test.dart';
 import 'package:fe/screens/unit_test/forum/post_unit_test.dart';
+import 'package:fe/screens/unit_test/job/job_seeker_unit_test.dart';
 import 'package:fe/screens/unit_test/job/job_unit_test.dart';
 import 'package:fe/screens/unit_test/report/report.test.dart';
 import 'package:fe/service/app.service.dart';
@@ -32,6 +33,7 @@ class _UnitTestScreenState extends State<UnitTestScreen>
   PostUnitTestController postUnitTestController = PostUnitTestController();
   CommentUnitTestController commentUnitTestController = CommentUnitTestController();
   JobUnitTestController jobUnitTestController = JobUnitTestController();
+  JobSeekerUnitTestController jobSeekerUnitTestController = JobSeekerUnitTestController();
   PostFormController postFormController = PostFormController();
   ReportTestController reportTestController = ReportTestController();
 
@@ -61,6 +63,7 @@ class _UnitTestScreenState extends State<UnitTestScreen>
                   PostUnitTest(controller: postUnitTestController),
                   CommentUnitTest(controller: commentUnitTestController),
                   JobUnitTest(controller: jobUnitTestController),
+                  JobSeekerUnitTest(controller: jobSeekerUnitTestController),
                   ReportTest(controller: reportTestController),
                 ],
               ),
@@ -79,6 +82,7 @@ class _UnitTestScreenState extends State<UnitTestScreen>
 
     await postUnitTestController.state.runTests();
     await commentUnitTestController.state.runTests();
+    await jobUnitTestController.state.runTests();
 
     await testPostFormWithoutSignIn();
     await testPostFormEmptyCategory();
