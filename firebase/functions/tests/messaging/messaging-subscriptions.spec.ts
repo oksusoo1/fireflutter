@@ -43,8 +43,8 @@ describe("resubscribe test", () => {
     expect(res).to.be.equal(null);
     // add valid token
     await Messaging.updateToken(
-      a,
-      "eTb93wtfj0z4vsZEvEoPQ4:APA91bHBz3msWxf4VvaBXeRxgpord3JWaiDAkioKxQF-WxrT4FCXuzzDVlV8dXXWFefm3ANFzAti0ciYgkJDyRAXc-5Oj7T_kZXNJ5E5DockQ831RJadTtHkB54vlHey3rWijbOR_FZr"
+        a,
+        "eTb93wtfj0z4vsZEvEoPQ4:APA91bHBz3msWxf4VvaBXeRxgpord3JWaiDAkioKxQF-WxrT4FCXuzzDVlV8dXXWFefm3ANFzAti0ciYgkJDyRAXc-5Oj7T_kZXNJ5E5DockQ831RJadTtHkB54vlHey3rWijbOR_FZr"
     );
 
     await Messaging.updateToken(a, "fake-token-2");

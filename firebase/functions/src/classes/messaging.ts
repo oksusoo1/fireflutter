@@ -38,9 +38,15 @@ export class Messaging {
       return null;
     }
   }
-  static async subscribeTopic(data: { uid: string; topic: string }): Promise<any> {}
-  static async unsubscribeTopic(data: { uid: string; topic: string }): Promise<any> {}
-  static async removeInvalidTokens() {}
+  static async subscribeTopic(data: { uid: string; topic: string }): Promise<any> {
+    console.log("@fix empty", data);
+  }
+  static async unsubscribeTopic(data: { uid: string; topic: string }): Promise<any> {
+    console.log("@fix empty", data);
+  }
+  static async removeInvalidTokens() {
+    console.log("@fix empty");
+  }
 
   /**
    * This unsubscribe all the topics (including other user's topics) of the token.
@@ -48,11 +54,15 @@ export class Messaging {
    *
    * @reference https://stackoverflow.com/questions/38212123/unsubscribe-from-all-topics-at-once-from-firebase-messaging
    */
-  static async unsubscribeAllTopicOfToken() {}
+  static async unsubscribeAllTopicOfToken() {
+    console.log("@fix empty");
+  }
   /**
    *
    */
-  static async resubscribeAllUserTopics() {}
+  static async resubscribeAllUserTopics() {
+    console.log("@fix empty");
+  }
 
   /**
    * Returns tokens of a user.
@@ -231,8 +241,8 @@ export class Messaging {
   }
 
   static async sendingMessageToTokens(
-    tokens: Array<string>,
-    payload: MessagePayload
+      tokens: Array<string>,
+      payload: MessagePayload
   ): Promise<{
     success: number;
     error: number;
@@ -246,7 +256,7 @@ export class Messaging {
     for (const c of chunks) {
       // Send notifications to all tokens.
       const newPayload: admin.messaging.MulticastMessage = Object.assign(
-        { tokens: c },
+          { tokens: c },
         payload as any
       );
       sendToDevicePromise.push(admin.messaging().sendMulticast(newPayload));
@@ -346,8 +356,8 @@ export class Messaging {
   }
 
   static async subscribeToTopic(
-    tokens: string,
-    topic: string
+      tokens: string,
+      topic: string
   ): Promise<admin.messaging.MessagingTopicManagementResponse> {
     return admin.messaging().subscribeToTopic(tokens, topic);
   }

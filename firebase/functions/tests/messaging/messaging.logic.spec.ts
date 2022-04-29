@@ -13,6 +13,10 @@ describe("Messaging logic test", () => {
     console.log("doc;", doc);
     expect(doc).to.be.an("object").to.have.property("token").equal("t");
   });
-  it("unsubscribeAllTopicOfToken", async () => {});
-  it("resubscribeAllUserTopics", async () => {});
+  it("unsubscribeAllTopicOfToken", async () => {
+    console.log("@fix empty");
+  });
+  it("resubscribeAllUserTopics", async () => {
+    console.log("@fix empty");
+  });
 });
