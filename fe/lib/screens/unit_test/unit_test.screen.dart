@@ -5,6 +5,7 @@ import 'package:extended/extended.dart';
 import 'package:fe/screens/forum/post.form.screen.dart';
 import 'package:fe/screens/unit_test/forum/comment_unit_test.dart';
 import 'package:fe/screens/unit_test/forum/post_unit_test.dart';
+import 'package:fe/screens/unit_test/report/report.test.dart';
 import 'package:fe/screens/unit_test/unit_test.service.dart';
 import 'package:fe/service/app.service.dart';
 import 'package:fe/service/config.dart';
@@ -80,6 +81,7 @@ class _UnitTestScreenState extends State<UnitTestScreen> with DatabaseMixin, Fir
                 children: [
                   PostUnitTest(controller: postUnitTestController),
                   CommentUnitTest(controller: commentUnitTestController),
+                  ReportTest(),
                 ],
               ),
               ...test.logs
@@ -99,7 +101,6 @@ class _UnitTestScreenState extends State<UnitTestScreen> with DatabaseMixin, Fir
     test.logs = [];
 
     await prepareTest();
-    await reportingTest();
     await testCreatePostError();
 
     await postUnitTestController.state.runTests();
@@ -145,31 +146,6 @@ class _UnitTestScreenState extends State<UnitTestScreen> with DatabaseMixin, Fir
     await FirebaseAuth.instance.signOut();
 
     return wait(200, 'Sign-out');
-  }
-
-  reportingTest() async {
-    await FirebaseAuth.instance.signOut();
-    try {
-      await createReport(target: 'post', targetId: post.id, reporteeUid: post.uid);
-      test.expect(false, "Expect failure but succeed - Reporting without sign-in must fail.");
-    } catch (e) {
-      test.expect(e == ERROR_NOT_SIGN_IN,
-          "Expecting failure with ERROR_NOT_SIGN_IN - Reporting without sign-in must fail.");
-    }
-
-    await signIn(test.b);
-    try {
-      final id = await createReport(target: 'post', targetId: post.id, reporteeUid: post.uid);
-      test.expect(true, "Expect success and succeed.");
-      final snapshot = await reportDoc(id).get();
-
-      test.expect(snapshot.exists, 'Report document exists.');
-
-      final data = snapshot.data() as Map;
-      test.expect(data['targetId']! == post.id, 'Reported target id match.');
-    } catch (e) {
-      test.expect(false, "Expect success but failed with; $e");
-    }
   }
 
   testCreatePostError() async {

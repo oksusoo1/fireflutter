@@ -74,6 +74,7 @@ describe("Report test", () => {
       reason: "",
     };
     const report = await Report.create(data);
+    console.log(report);
     expect(report.id === Report.getReportId(data)).true;
 
     await Report.create(data).catch((e) => {

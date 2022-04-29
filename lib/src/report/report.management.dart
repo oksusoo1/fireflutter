@@ -33,25 +33,25 @@ class ReportManagement extends StatelessWidget with FirestoreMixin {
     return FirestoreListView(
       query: query,
       itemBuilder: (context, snapshot) {
-        final report = ReportModel.fromJson(snapshot.data() as Json, snapshot.reference);
+        final report = ReportModel.fromJson(snapshot.data() as Json, id: snapshot.id);
 
         return ListTile(
           title: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               UserDoc(
-                uid: report.reporterUid,
+                uid: report.uid,
                 builder: (user) {
                   return Text('Reporter: ' + (user.nickname != '' ? user.nickname : 'no_name'),
                       style: TextStyle(fontSize: 14));
                 },
               ),
-              UserDoc(
-                uid: report.reporteeUid,
-                builder: (user) {
-                  return Text('Reportee: ' + user.nickname, style: TextStyle(fontSize: 14));
-                },
-              ),
+              // UserDoc(
+              //   uid: report.reporteeUid,
+              //   builder: (user) {
+              //     return Text('Reportee: ' + user.nickname, style: TextStyle(fontSize: 14));
+              //   },
+              // ),
               if (target == null)
                 Text(
                   'Target: ' + report.target,

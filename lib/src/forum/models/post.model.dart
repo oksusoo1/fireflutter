@@ -210,9 +210,9 @@ class PostModel with FirestoreMixin, ForumBase implements Article {
   }
 
   Future<void> report(String? reason) {
-    return PostApi.instance.report(
+    return ReportApi.instance.report(
+      target: 'post',
       targetId: id,
-      reporteeUid: uid,
       reason: reason,
     );
     // return createReport(

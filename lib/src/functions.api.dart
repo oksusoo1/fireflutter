@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:dio/dio.dart';
 import '../fireflutter.dart';
 
@@ -24,11 +26,7 @@ class FunctionsApi {
 
   String get password {
     final u = UserService.instance;
-    return u.uid +
-        "-" +
-        u.user.registeredAt.toString() +
-        "-" +
-        u.user.updatedAt.toString();
+    return u.uid + "-" + u.user.registeredAt.toString() + "-" + u.user.updatedAt.toString();
   }
 
   /// Request and return the data.
@@ -49,15 +47,12 @@ class FunctionsApi {
     /// Debug URL
     Map<String, dynamic> temp = Map<String, dynamic>.from(data);
     for (final k in temp.keys) {
-      if (temp[k] != null &&
-          !(temp[k] is String) &&
-          !(temp[k] is List) &&
-          !(temp[k] is Map)) {
+      if (temp[k] != null && !(temp[k] is String) && !(temp[k] is List) && !(temp[k] is Map)) {
         temp[k] = data[k].toString();
       }
     }
-    // final httpsUri = Uri(queryParameters: temp);
-    // log(FunctionsApi.instance.serverUrl + functionName + httpsUri.toString());
+    final httpsUri = Uri(queryParameters: temp);
+    log(FunctionsApi.instance.serverUrl + functionName + httpsUri.toString());
 
     /// EO Debug URL
 
@@ -73,9 +68,7 @@ class FunctionsApi {
       } else
 
       /// If the response is an Map(object) and has a non-empty value of `code` property, then it is considered as an error.
-      if (res.data is Map &&
-          res.data['code'] != null &&
-          res.data['code'] != '') {
+      if (res.data is Map && res.data['code'] != null && res.data['code'] != '') {
         throw res.data['code'];
       } else
 

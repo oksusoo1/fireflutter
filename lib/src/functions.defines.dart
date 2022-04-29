@@ -8,5 +8,5 @@ class FunctionName {
   static const String produceErrorString = 'produceErrorString';
   static const String produceErrorObject = 'produceErrorObject';
 
-  static const String report = 'postUpdate';
+  static const String report = 'report';
 }

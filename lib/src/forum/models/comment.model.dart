@@ -233,12 +233,18 @@ class CommentModel with FirestoreMixin, ForumBase implements Article {
   }
 
   Future<void> report(String? reason) {
-    return createReport(
+    return ReportApi.instance.report(
       target: 'comment',
       targetId: id,
-      reporteeUid: uid,
       reason: reason,
     );
+
+    // return createReport(
+    //   target: 'comment',
+    //   targetId: id,
+    //   reporteeUid: uid,
+    //   reason: reason,
+    // );
   }
 
   Future feedLike() {

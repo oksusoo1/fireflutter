@@ -82,26 +82,4 @@ class PostApi {
 
     return res['id'];
   }
-
-  /// [target] can be one of 'post', 'commnet', 'user', or any object type.
-  /// [targetId] is the id of the object type.
-  /// [reporteeUid] is the user uid of the object.
-  /// [reason] is the reason why the sign-in user is reporting.
-  Future<String> report({
-    required String targetId,
-    required String reporteeUid,
-    String? reason,
-  }) async {
-    final res = await FunctionsApi.instance.request(
-      FunctionName.report,
-      data: {
-        'target': 'post',
-        'targetId': targetId,
-        'reporteeUid': reporteeUid,
-        'reason': reason ?? '',
-      },
-      addAuth: true,
-    );
-    return res['id'];
-  }
 }

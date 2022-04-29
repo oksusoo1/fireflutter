@@ -21,6 +21,7 @@ const functions = require("firebase-functions");
 const ready_1 = require("../ready");
 const post_1 = require("../classes/post");
 const comment_1 = require("../classes/comment");
+const report_1 = require("../classes/report");
 // Start writing Firebase Functions
 // https://firebase.google.com/docs/functions/typescript
 exports.postCreate = functions
@@ -81,7 +82,7 @@ exports.report = functions
     .region("us-central1", "asia-northeast3")
     .https.onRequest((req, res) => {
     ready_1.ready({ req, res, auth: true }, async (data) => {
-        res.status(200).send(await comment_1.Comment.delete(data));
+        res.status(200).send(await report_1.Report.create(data));
     });
 });
 //# sourceMappingURL=forum.functions.js.map

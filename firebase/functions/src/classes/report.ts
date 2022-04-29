@@ -8,6 +8,7 @@ import {
   ERROR_WRONG_TARGET,
 } from "../defines";
 import { Ref } from "./ref";
+import { Utils } from "./utils";
 
 // uid is the reporter id
 export interface ReportDocument {
@@ -17,6 +18,7 @@ export interface ReportDocument {
   target: string;
   targetId: string; // the document id of target.
   reason: string;
+  timestamp?: number; // unix time stamp of creation.
 }
 
 export class Report {
@@ -51,6 +53,8 @@ export class Report {
     const id = this.getReportId(data);
     const report = await this.get(id);
     if (report != null) throw ERROR_ALREADY_REPORTED;
+
+    data.timestamp = Utils.getTimestamp();
 
     await Ref.reportDoc(id).set(data);
     const doc = await this.get(id);
