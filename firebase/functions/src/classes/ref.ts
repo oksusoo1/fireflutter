@@ -107,10 +107,6 @@ export class Ref {
     return this.point(uid).child("register");
   }
 
-  static get messageTokens() {
-    return this.rdb.ref("message-tokens");
-  }
-
   static userSettingForumTopics(uid: string) {
     return this.userSettingTopic(uid).child("forum");
   }
@@ -138,5 +134,11 @@ export class Ref {
   // Point history folder for extra point events.
   static extraPointHistory(uid: string) {
     return this.point(uid).child("extra");
+  }
+
+  /******************************** MESSAGING References ****************************/
+
+  static get messageTokens() {
+    return this.rdb.ref("message-tokens");
   }
 }
