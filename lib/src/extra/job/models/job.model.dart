@@ -90,7 +90,7 @@ class JobModel {
       salary: json['salary'] ?? '',
       workingDays: _days,
       workingHours: _hours,
-      withAccomodation: json['withAccomodation'] ?? '',
+      withAccomodation: json['withAccomodation'] ?? 'N',
       roadAddr: json['roadAddr'] ?? '',
       korAddr: json['korAddr'] ?? '',
       zipNo: json['zipNo'] ?? '',

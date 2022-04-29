@@ -185,23 +185,5 @@ class _JobUnitTestState extends State<JobUnitTest> with FirestoreMixin {
       re == "ERROR_EMPTY_JOB_DUTY",
       "Cannot create job opening without duty - $re",
     );
-
-    // no accomocation
-    data.duty = 'some duties';
-    await test.signIn(test.d);
-    re = await test.submit(data.edit());
-    test.expect(
-      re == "ERROR_EMPTY_JOB_ACCOMODATION",
-      "Cannot create job opening without selecting inclusion of accomodation - $re",
-    );
-
-    // no status
-    data.withAccomodation = 'N';
-    await test.signIn(test.d);
-    re = await test.submit(data.edit());
-    test.expect(
-      re == "ERROR_WRONG_STATUS",
-      "Cannot create job opening without selecting status- $re",
-    );
   }
 }
