@@ -33,15 +33,14 @@ class _PostUnitTestState extends State<PostUnitTest> with UnitTestMixin, Firesto
         clearLogs();
         runTests();
       },
-      child: Text('Run Vote Unit Test'),
+      child: Text('Post Unit Test'),
     );
   }
 
   runTests() async {
     /// failures
-    await createPostWithoutSignIn();
+    await postCRUDWithoutSignIn();
     await createPostWithWrongCategory();
-    await updatePostWithoutSignIn();
     await updateNotExistingPost();
     await updatePostWithDifferentUser();
     await deleteNotExistingPost();
@@ -52,13 +51,25 @@ class _PostUnitTestState extends State<PostUnitTest> with UnitTestMixin, Firesto
     await postCRUDsuccess();
   }
 
-  createPostWithoutSignIn() async {
+  postCRUDWithoutSignIn() async {
     await FirebaseAuth.instance.signOut();
 
-    final re = await submit(PostApi.instance.create(category: 'qna'));
+    dynamic re = await submit(PostApi.instance.create(category: 'qna'));
     expect(
       re == ERROR_NOT_SIGN_IN,
       'Cannot create post without signing in. - $re',
+    );
+
+    re = await submit(PostApi.instance.update(id: 'someId', title: 'title', content: 'content'));
+    expect(
+      re == ERROR_NOT_SIGN_IN,
+      'Cannot update post without signing in. - $re',
+    );
+
+    re = await submit(PostApi.instance.delete('someId'));
+    expect(
+      re == ERROR_NOT_SIGN_IN,
+      'Cannot update post without signing in. - $re',
     );
   }
 
@@ -75,24 +86,6 @@ class _PostUnitTestState extends State<PostUnitTest> with UnitTestMixin, Firesto
     expect(
       re2 == ERROR_CATEGORY_NOT_EXISTS,
       'Cannot create post with wrong category- $re2',
-    );
-  }
-
-  updatePostWithoutSignIn() async {
-    await signIn(b);
-    final orgPost = await PostApi.instance.create(category: 'qna');
-
-    await FirebaseAuth.instance.signOut();
-
-    final re = await submit(PostApi.instance.update(
-      id: orgPost.id,
-      title: orgPost.title,
-      content: orgPost.content,
-    ));
-
-    expect(
-      re == ERROR_EMPTY_UID,
-      'Cannot update post without signing in - $re',
     );
   }
 
