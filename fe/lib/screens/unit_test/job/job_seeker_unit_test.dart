@@ -31,7 +31,7 @@ class _JobSeekerUnitTestState extends State<JobSeekerUnitTest> with FirestoreMix
         clearLogs();
         runTests();
       },
-      child: Text('Run Job Seeker Unit Test'),
+      child: Text('Job Seeker Unit Test'),
     );
   }
 

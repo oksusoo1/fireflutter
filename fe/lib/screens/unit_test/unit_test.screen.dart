@@ -65,9 +65,9 @@ class _UnitTestScreenState extends State<UnitTestScreen>
                 children: [
                   PostUnitTest(controller: postUnitTestController),
                   CommentUnitTest(controller: commentUnitTestController),
+                  VoteUnitTest(controller: voteUnitTestController),
                   JobUnitTest(controller: jobUnitTestController),
                   JobSeekerUnitTest(controller: jobSeekerUnitTestController),
-                  VoteUnitTest(controller: voteUnitTestController),
                   ReportTest(controller: reportTestController),
                 ],
               ),

@@ -32,7 +32,7 @@ class _VoteUnitTestState extends State<VoteUnitTest> with UnitTestMixin, Firesto
         clearLogs();
         runTests();
       },
-      child: Text('Run Voting Unit Test'),
+      child: Text('Vote Unit Test'),
     );
   }
 
