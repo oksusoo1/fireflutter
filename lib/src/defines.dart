@@ -16,6 +16,7 @@ typedef VoidMapCallback = void Function(Map<String, dynamic>);
 
 const ERROR_SIGN_IN = 'ERROR_SIGN_IN';
 const ERROR_NOT_SIGN_IN = 'ERROR_NOT_SIGN_IN';
+const ERROR_EMPTY_UID = 'ERROR_EMPTY_UID';
 
 /// User may be signed in, but the user didn't update his profile
 /// and user document under `/users` collection does not eixsts.
@@ -48,3 +49,6 @@ const ERROR_USER_ALREADY_UNBLOCKED = "ERROR_USER_ALREADY_UNBLOCKED";
 
 const ERROR_NO_PHOTO_ATTACHED = 'ERROR_NO_PHOTO_ATTACHED';
 const ERROR_NOT_YOUR_POST = 'ERROR_NOT_YOUR_POST';
+const ERROR_POST_NOT_EXIST = 'ERROR_POST_NOT_EXIST';
+const ERROR_NOT_YOUR_COMMENT = 'ERROR_NOT_YOUR_COMMENT';
+const ERROR_COMMENT_NOT_EXISTS = 'ERROR_COMMENT_NOT_EXISTS';

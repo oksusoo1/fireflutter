@@ -15,6 +15,25 @@ export class Ref {
     return this.db.collection("settings").doc("admins");
   }
 
+  static get postCol() {
+    return this.db.collection("posts");
+  }
+
+  static get commentCol() {
+    return this.db.collection("comments");
+  }
+  static get categoryCol() {
+    return this.db.collection("categories");
+  }
+
+  static get reportCol() {
+    return this.db.collection("reports");
+  }
+
+  static reportDoc(id: string) {
+    return this.reportCol.doc(id);
+  }
+
   /**
    * Returns user document reference.
    * @param uid uid
@@ -91,17 +110,6 @@ export class Ref {
   // Point history folder for extra point events.
   static extraPointHistory(uid: string) {
     return this.point(uid).child("extra");
-  }
-
-  static get postCol() {
-    return this.db.collection("posts");
-  }
-
-  static get commentCol() {
-    return this.db.collection("comments");
-  }
-  static get categoryCol() {
-    return this.db.collection("categories");
   }
 
   /**

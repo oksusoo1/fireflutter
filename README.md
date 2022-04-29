@@ -84,7 +84,7 @@ Table of contents
   - [To test user functionality](#to-test-user-functionality)
   - [Test method](#test-method)
   - [Local test on firestore security rules](#local-test-on-firestore-security-rules)
-  - [CustomTest](#customtest)
+  - [UnitTestMixin](#unittestmixin)
 - [Sample code](#sample-code)
 - [Node.js Utilities](#nodejs-utilities)
   - [User utilities](#user-utilities)
@@ -1228,11 +1228,39 @@ InformService.instance.inform(widget.room.otherUid, {
   - run `$ firebase deploy --only firestore`
 
 
-## CustomTest
+## UnitTestMixin
 
 - It's not easy to do `widget test` or `integration test` especially the app has full of backend access through restful api or socket connection.
   - The standard of flutter test requires `mock data` to test the logic but, still it is not an easy task to do.
-  - So, we developped a custom test for `unit test`, `widget test` and `integration test`. But it's not part of fireflutter. See the README.md in `<root>/fe/lib/screens/unit_test/README.md` for details.
+  - So, we developped a custom test for `unit test`, `widget test` and `integration test`.
+
+
+- `init()`
+  - Call this method first before testing and call it only one time for the runtime.
+  - Create a test account and re-use it for the next test.
+  - Check if it's ready to test.
+    - Check if `qna` category exists,
+    - Create a post for test.
+
+
+```dart
+class _UnitTestScreenState extends State<UnitTestScreen>
+  @override
+  void initState() {
+    super.initState();
+    init(
+      setState: () => setState(() => {}),
+    );
+  }
+```
+
+- `signIn(a)`
+  - To login as a. You can use a, b, c.
+
+
+- Use `expect()`, `fail()` to test.
+
+- Use `UnitTestLogs()` to display test logs on screen.
 
 
 

@@ -1,4 +1,3 @@
-import 'package:fe/screens/unit_test/unit_test.service.dart';
 import 'package:flutter/material.dart';
 
 import 'package:fireflutter/fireflutter.dart';
@@ -16,9 +15,8 @@ class PostUnitTest extends StatefulWidget {
   State<PostUnitTest> createState() => _PostUnitTestState();
 }
 
-class _PostUnitTestState extends State<PostUnitTest> {
-  final test = UnitTestService.instance;
-  String currentTest = '';
+class _PostUnitTestState extends State<PostUnitTest> with UnitTestMixin {
+  // final test = UnitTestService.instance;
 
   @override
   void initState() {
@@ -30,140 +28,146 @@ class _PostUnitTestState extends State<PostUnitTest> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        ElevatedButton(
-            onPressed: () {
-              test.logs = [];
-              runTests();
-            },
-            child: Text('Run Post Unit Test')),
-        if (currentTest.isNotEmpty) Text('Task: $currentTest'),
-      ],
+    return ElevatedButton(
+      onPressed: () {
+        clearLogs();
+        runTests();
+      },
+      child: Text('Run Post Unit Test'),
     );
   }
 
   runTests() async {
-    await createPostNotLoggedIn();
-    await createPostLoggedIn();
-  }
-
-  createPostNotLoggedIn() async {
-    await FirebaseAuth.instance.signOut();
-
-    final re = await test.submit(PostApi.instance.create(category: 'qna'));
-    test.expect(
-      re == ERROR_NOT_SIGN_IN,
-      'Post creation failure without signing in.',
-    );
-  }
-
-  createPostLoggedIn() async {
-    await test.signIn(test.a);
-
-    final re = await PostApi.instance.create(category: 'qna', title: 'AAA');
-    test.expect(re.title == 'AAA', 'Post title matched.');
-    test.logs = [];
-    // await createPostWithoutSignIn();
-    // await createPostSuccess();
+    /// failures
+    await createPostWithoutSignIn();
+    await createPostWithWrongCategory();
     await updatePostWithoutSignIn();
     await updateNotExistingPost();
     await updatePostWithDifferentUser();
+    await deleteNotExistingPost();
+    await deleteOtherUsersPost();
+    await deleteAlreadyDeletedPost();
+
+    /// successes
+    await postCRUDsuccess();
   }
 
   createPostWithoutSignIn() async {
-    setCurrentTest('Creating post without signing in');
     await FirebaseAuth.instance.signOut();
 
-    // Problem : if this is implemented, other tests will not run also.
-    // test.onError = (e) {
-    //   test.expect(e == ERROR_NOT_SIGN_IN, 'Post creation failure without signing in.');
-    //   Timer(Duration(milliseconds: 200), () {
-    //     Navigator.of(globalNavigatorKey.currentContext!).pop();
-    //   });
-    // };
-
-    try {
-      await PostApi.instance.create(category: 'qna');
-      test.expect(false, 'Post creation should fail without logging in.');
-    } catch (e) {
-      test.expect(e == ERROR_NOT_SIGN_IN, 'Post creation failure without signing in.');
-    }
-    endCurrentTest();
+    final re = await submit(PostApi.instance.create(category: 'qna'));
+    expect(
+      re == ERROR_NOT_SIGN_IN,
+      'Cannot create post without signing in. - $re',
+    );
   }
 
-  createPostSuccess() async {
-    setCurrentTest('Creating post with signing in');
-    await test.signIn(test.a);
+  createPostWithWrongCategory() async {
+    await signIn(a);
 
-    PostModel post = await PostApi.instance.create(category: 'qna', title: 'AAA');
-    test.expect(post.id.isNotEmpty, 'Post creation success.');
-    test.expect(post.title == 'AAA', 'Post title matched.');
-    endCurrentTest();
+    final re1 = await submit(PostApi.instance.create(category: ''));
+    expect(
+      re1 == ERROR_EMPTY_CATEGORY,
+      'Cannot create post without category (empty) - $re1',
+    );
+
+    final re2 = await submit(PostApi.instance.create(category: 'wrongCategory'));
+    expect(
+      re2 == ERROR_CATEGORY_NOT_EXISTS,
+      'Cannot create post with wrong category- $re2',
+    );
   }
 
   updatePostWithoutSignIn() async {
-    setCurrentTest('Updating post without signing in');
-    await test.signIn(test.b);
+    await signIn(b);
     final orgPost = await PostApi.instance.create(category: 'qna');
 
     await FirebaseAuth.instance.signOut();
-    try {
-      await PostApi.instance.update(
-        id: orgPost.id,
-        title: orgPost.title,
-        content: orgPost.content,
-      );
-      test.expect(false, 'Post update should fail without signing in.');
-    } catch (e) {
-      test.expect(e == ERROR_NOT_SIGN_IN, 'Post update failure without signing in.');
-    }
-    endCurrentTest();
+
+    final re = await submit(PostApi.instance.update(
+      id: orgPost.id,
+      title: orgPost.title,
+      content: orgPost.content,
+    ));
+
+    expect(
+      re == ERROR_EMPTY_UID,
+      'Cannot update post without signing in - $re',
+    );
   }
 
   updateNotExistingPost() async {
-    setCurrentTest('Updating post without signing in');
-    await test.signIn(test.b);
+    await signIn(b);
 
-    try {
-      await PostApi.instance.update(
-        id: 'not-existing-id----123',
-        title: 'sometitle',
-        content: 'someCOntent',
-      );
-      test.expect(false, 'Post update should fail because post does not exists.');
-    } catch (e) {
-      test.expect(e == ERROR_NOT_SIGN_IN, 'Post update failure - post does not exists.');
-    }
-    endCurrentTest();
+    final re = await submit(PostApi.instance.update(
+      id: 'not-existing-id----123',
+      title: 'sometitle',
+      content: 'someCOntent',
+    ));
+    expect(
+      re == ERROR_POST_NOT_EXIST,
+      'Cannot update non existing post - $re',
+    );
   }
 
   updatePostWithDifferentUser() async {
-    setCurrentTest('Updating post without signing in');
-    await test.signIn(test.a);
+    await signIn(a);
     final orgPost = await PostApi.instance.create(category: 'qna');
 
     await FirebaseAuth.instance.signOut();
-    await test.signIn(test.b);
-    try {
-      await PostApi.instance.update(
-        id: orgPost.id,
-        title: orgPost.title,
-        content: orgPost.content,
-      );
-      test.expect(false, 'Post update should fail without signing in.');
-    } catch (e) {
-      test.expect(e == ERROR_NOT_YOUR_POST, 'Post update failure with different user.');
-    }
-    endCurrentTest();
+    await signIn(b);
+    final re = await submit(PostApi.instance.update(
+      id: orgPost.id,
+      title: orgPost.title,
+      content: orgPost.content,
+    ));
+    expect(
+      re == ERROR_NOT_YOUR_POST,
+      'Cannot update other user\'s post- $re',
+    );
   }
 
-  setCurrentTest(String task) {
-    setState(() => currentTest = task);
+  deleteNotExistingPost() async {
+    await signIn(a);
+    final re = await submit(PostApi.instance.delete('someId'));
+    expect(re == ERROR_POST_NOT_EXIST, "Can't delete non existing post. $re");
   }
 
-  endCurrentTest() {
-    setState(() => currentTest = '');
+  deleteOtherUsersPost() async {
+    await signIn(a);
+    final post = await PostApi.instance.create(category: 'qna');
+
+    await signIn(b);
+    final re = await submit(PostApi.instance.delete(post.id));
+    expect(re == ERROR_NOT_YOUR_POST, "Can't delete other user's post. $re");
+
+    /// cleanup
+    await signIn(a);
+    await post.delete();
+  }
+
+  deleteAlreadyDeletedPost() async {
+    await signIn(a);
+    final post = await PostApi.instance.create(category: 'qna');
+    await PostApi.instance.update(id: post.id, title: '', content: '', extra: {'noOfComments': 1});
+    await post.delete();
+
+    final re = await submit(PostApi.instance.delete(post.id));
+    expect(re == ERROR_ALREADY_DELETED, "Can't delete already deleted post. $re");
+  }
+
+  postCRUDsuccess() async {
+    await signIn(a);
+
+    final created = await PostApi.instance.create(category: 'qna', title: 'AAA');
+    expect(created.title == 'AAA', 'Post created with proper title.');
+
+    final updated = await PostApi.instance.update(id: created.id, title: 'BBB', content: 'Hi MOM!');
+    expect(updated.id == created.id, 'Still the same post.');
+    expect(updated.title == 'BBB', 'Title is updated.');
+    expect(updated.content == 'Hi MOM!', 'Content is update.');
+
+    final deleted = await PostApi.instance.delete(created.id);
+    expect(deleted == created.id, 'Post is deleted.');
   }
 }

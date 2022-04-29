@@ -168,6 +168,6 @@ export class User {
    * @returns password string
    */
   static generatePassword(doc: UserDocument): string {
-    return doc.id + "-" + doc.registeredAt + "-" + doc.updatedAt;
+    return doc.id + "-" + doc.registeredAt;
   }
 }

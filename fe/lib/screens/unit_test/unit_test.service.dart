@@ -26,6 +26,8 @@ class UnitTestService {
       await b.load();
       c = UserModel(uid: Config.testUsers['cherry']!['uid']!);
       await c.load();
+      d = UserModel(uid: Config.testUsers['durian']!['uid']!);
+      await d.load();
     }();
   }
 
@@ -35,6 +37,7 @@ class UnitTestService {
 
   List<String> logs = [];
 
+  @Deprecated('Use UnitTestMixin')
   Future signIn(UserModel u) async {
     final e = Config.testUsers.entries.firstWhere((element) => element.value['uid'] == u.uid);
     final email = Config.testUsers[e.key]!['email']!;
@@ -44,6 +47,7 @@ class UnitTestService {
     await Future.delayed(Duration(milliseconds: 500));
   }
 
+  @Deprecated('Use UnitTestMixin')
   dynamic submit(Future future) async {
     try {
       return await future;
@@ -52,6 +56,7 @@ class UnitTestService {
     }
   }
 
+  @Deprecated('Use UnitTestMixin')
   expect(bool re, String msg) {
     String info;
     if (re) {
@@ -64,5 +69,6 @@ class UnitTestService {
     setState(() {});
   }
 
+  @Deprecated('Use UnitTestMixin')
   fail(String msg) => expect(false, '(fail) ' + msg);
 }

@@ -19,6 +19,7 @@ import { ready } from "../ready";
 import { Post } from "../classes/post";
 import { Comment } from "../classes/comment";
 import { CommentDocument, PostDocument } from "../interfaces/forum.interface";
+import { Report } from "../classes/report";
 
 // Start writing Firebase Functions
 // https://firebase.google.com/docs/functions/typescript
@@ -86,4 +87,12 @@ export const sendMessageOnCommentCreate = functions
       snapshot.data() as CommentDocument,
       context.params.commentId
       );
+    });
+
+export const report = functions
+    .region("us-central1", "asia-northeast3")
+    .https.onRequest((req, res) => {
+      ready({ req, res, auth: true }, async (data) => {
+        res.status(200).send(await Report.create(data));
+      });
     });

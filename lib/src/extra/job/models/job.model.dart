@@ -90,7 +90,7 @@ class JobModel {
       salary: json['salary'] ?? '',
       workingDays: _days,
       workingHours: _hours,
-      withAccomodation: json['withAccomodation'] ?? '',
+      withAccomodation: json['withAccomodation'] ?? 'N',
       roadAddr: json['roadAddr'] ?? '',
       korAddr: json['korAddr'] ?? '',
       zipNo: json['zipNo'] ?? '',
@@ -150,13 +150,13 @@ class JobModel {
 
   Future edit() async {
     if (id == '') {
-      await FunctionsApi.instance.request(
+      return await FunctionsApi.instance.request(
         'jobCreate',
         data: toCreate,
         addAuth: true,
       );
     } else {
-      await FunctionsApi.instance.request(
+      return await FunctionsApi.instance.request(
         'jobUpdate',
         data: toUpdate,
         addAuth: true,
