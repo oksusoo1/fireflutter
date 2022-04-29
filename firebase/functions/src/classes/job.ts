@@ -23,6 +23,11 @@ import {
   ERROR_NOT_YOUR_JOB,
   ERROR_EMPTY_SINM,
   ERROR_EMPTY_SGGNM,
+  ERROR_EMPTY_PROFICIENCY,
+  ERROR_EMPTY_EXPERIENCES,
+  ERROR_EMPTY_INDUSTRY,
+  ERROR_EMPTY_COMMENT,
+  ERROR_WRONG_STATUS,
 } from "../defines";
 import { JobDocument } from "../interfaces/job.interface";
 import { ExtraReason } from "../interfaces/point.interface";
@@ -107,12 +112,7 @@ export class Job {
    * @note User can only create one job. See readme for details.
    */
   static async getJobFromUid(uid: string): Promise<JobDocument | null> {
-    const snapshot = await admin
-        .firestore()
-        .collection("jobs")
-        .where("uid", "==", uid)
-        .limit(1)
-        .get();
+    const snapshot = await admin.firestore().collection("jobs").where("uid", "==", uid).limit(1).get();
     if (snapshot.size > 0) {
       return snapshot.docs[0].data() as JobDocument;
     } else {
@@ -179,6 +179,9 @@ export class Job {
     // Accomodation
     if (this.valueNotValid(data.withAccomodation)) throw ERROR_EMPTY_JOB_ACCOMODATION;
 
+    // Status
+    if (this.statusNotValid(data.status)) throw ERROR_WRONG_STATUS;
+
     return true;
   }
 
@@ -191,6 +194,12 @@ export class Job {
     return false;
   }
 
+  static statusNotValid(stat: string): boolean {
+    if (typeof stat === "undefined") return true;
+    if (typeof stat === "string" && stat.trim() == "") return true;
+    return stat != "Y" && stat != "N";
+  }
+
   // ******************** JOB SEEKER PROFILE ***************************
 
   /**
@@ -200,6 +209,14 @@ export class Job {
    * And for the second update, it will simploy update the profile.
    */
   static async updateProfile(data: any): Promise<any> {
+    if (this.valueNotValid(data.proficiency)) throw ERROR_EMPTY_PROFICIENCY;
+    if (this.valueNotValid(data.experiences)) throw ERROR_EMPTY_EXPERIENCES;
+    if (this.valueNotValid(data.industry)) throw ERROR_EMPTY_INDUSTRY;
+    if (this.valueNotValid(data.comment)) throw ERROR_EMPTY_COMMENT;
+    if (this.valueNotValid(data.siNm)) throw ERROR_EMPTY_SINM;
+    if (data.siNm != "Sejong" && this.valueNotValid(data.sggNm)) throw ERROR_EMPTY_SGGNM;
+    if (this.statusNotValid(data.status)) throw ERROR_WRONG_STATUS;
+
     const id = data.uid;
     delete data.uid;
 
