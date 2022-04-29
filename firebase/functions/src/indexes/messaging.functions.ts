@@ -4,7 +4,6 @@
  */
 import * as functions from "firebase-functions";
 import { Messaging } from "../classes/messaging";
-import { UserDocument } from "../interfaces/user.interface";
 import { ready } from "../ready";
 
 export const sendMessageToAllUsers = functions
