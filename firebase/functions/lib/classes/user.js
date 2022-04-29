@@ -153,7 +153,7 @@ class User {
      * @returns password string
      */
     static generatePassword(doc) {
-        return doc.id + "-" + doc.registeredAt + "-" + doc.updatedAt;
+        return doc.id + "-" + doc.registeredAt;
     }
 }
 exports.User = User;

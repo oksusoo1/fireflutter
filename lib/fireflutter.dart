@@ -135,3 +135,5 @@ export 'src/extra/job/seeker/job.seeker.list.dart';
 export 'src/error_info.dart';
 export 'src/widgets/date_picker.dart';
 export 'src/forum/article.dart';
+export 'src/unit_test/unit_test.mixin.dart';
+export 'src/unit_test/unit_test.logs.dart';

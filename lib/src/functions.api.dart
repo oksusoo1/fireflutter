@@ -26,7 +26,7 @@ class FunctionsApi {
 
   String get password {
     final u = UserService.instance;
-    return u.uid + "-" + u.user.registeredAt.toString() + "-" + u.user.updatedAt.toString();
+    return u.uid + "-" + u.user.registeredAt.toString();
   }
 
   /// Request and return the data.
