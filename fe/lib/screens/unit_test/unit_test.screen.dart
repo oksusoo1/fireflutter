@@ -1,7 +1,9 @@
 import 'dart:async';
+import 'package:extended/extended.dart';
 import 'package:fe/screens/forum/post.form.screen.dart';
 import 'package:fe/screens/unit_test/forum/comment_unit_test.dart';
 import 'package:fe/screens/unit_test/forum/post_unit_test.dart';
+import 'package:fe/screens/unit_test/forum/voting_unit_test.dart';
 import 'package:fe/screens/unit_test/job/job_seeker_unit_test.dart';
 import 'package:fe/screens/unit_test/job/job_unit_test.dart';
 import 'package:fe/screens/unit_test/report/report.test.dart';
@@ -32,6 +34,7 @@ class _UnitTestScreenState extends State<UnitTestScreen>
 
   PostUnitTestController postUnitTestController = PostUnitTestController();
   CommentUnitTestController commentUnitTestController = CommentUnitTestController();
+  VoteUnitTestController voteUnitTestController = VoteUnitTestController();
   JobUnitTestController jobUnitTestController = JobUnitTestController();
   JobSeekerUnitTestController jobSeekerUnitTestController = JobSeekerUnitTestController();
   PostFormController postFormController = PostFormController();
@@ -64,6 +67,7 @@ class _UnitTestScreenState extends State<UnitTestScreen>
                   CommentUnitTest(controller: commentUnitTestController),
                   JobUnitTest(controller: jobUnitTestController),
                   JobSeekerUnitTest(controller: jobSeekerUnitTestController),
+                  VoteUnitTest(controller: voteUnitTestController),
                   ReportTest(controller: reportTestController),
                 ],
               ),
@@ -82,12 +86,16 @@ class _UnitTestScreenState extends State<UnitTestScreen>
 
     await postUnitTestController.state.runTests();
     await commentUnitTestController.state.runTests();
+    await voteUnitTestController.state.runTests();
     await jobUnitTestController.state.runTests();
+    await jobSeekerUnitTestController.state.runTests();
 
     await testPostFormWithoutSignIn();
     await testPostFormEmptyCategory();
     await testPostForm();
     await reportTestController.state.runTests();
+
+    alert('Test done.', 'Test summary:\nSuccess: ${model.success}\nErrors: ${model.error}');
   }
 
   testCreatePostError() async {
