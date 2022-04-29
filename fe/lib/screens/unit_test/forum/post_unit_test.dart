@@ -51,9 +51,7 @@ class _PostUnitTestState extends State<PostUnitTest> {
     await deleteAlreadyDeletedPost();
 
     /// successes
-    await createPostSuccess();
-    await updatePostSuccess();
-    await deletePostSuccess();
+    await postCRUDsuccess();
   }
 
   createPostWithoutSignIn() async {
@@ -160,34 +158,18 @@ class _PostUnitTestState extends State<PostUnitTest> {
     test.expect(re == ERROR_ALREADY_DELETED, "Can't delete already deleted post. $re");
   }
 
-  createPostSuccess() async {
-    await test.signIn(test.a);
-
-    final post = await PostApi.instance.create(category: 'qna', title: 'AAA');
-    test.expect(post.title == 'AAA', 'Post created with proper title.');
-
-    /// cleanup
-    await post.delete();
-  }
-
-  updatePostSuccess() async {
+  postCRUDsuccess() async {
     await test.signIn(test.a);
 
     final created = await PostApi.instance.create(category: 'qna', title: 'AAA');
+    test.expect(created.title == 'AAA', 'Post created with proper title.');
+
     final updated = await PostApi.instance.update(id: created.id, title: 'BBB', content: 'Hi MOM!');
     test.expect(updated.id == created.id, 'Still the same post.');
     test.expect(updated.title == 'BBB', 'Title is updated.');
     test.expect(updated.content == 'Hi MOM!', 'Content is update.');
 
-    /// cleanup
-    await created.delete();
-  }
-
-  deletePostSuccess() async {
-    await test.signIn(test.a);
-
-    final post = await PostApi.instance.create(category: 'qna', title: 'BBB');
-    final re = await PostApi.instance.delete(post.id);
-    test.expect(re == post.id, 'Post is deleted.');
+    final deleted = await PostApi.instance.delete(created.id);
+    test.expect(deleted == created.id, 'Post is deleted.');
   }
 }

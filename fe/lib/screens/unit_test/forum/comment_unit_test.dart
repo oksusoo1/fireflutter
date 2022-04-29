@@ -79,7 +79,7 @@ class _CommentUnitTestState extends State<CommentUnitTest> {
     );
     test.expect(
       re == ERROR_COMMENT_NOT_EXISTS,
-      'Cannot update other users comment - $re',
+      'Cannot update non existing comment - $re',
     );
   }
 
@@ -154,7 +154,7 @@ class _CommentUnitTestState extends State<CommentUnitTest> {
       id: created.id,
       content: 'Hi Flutter.',
     );
-    test.expect(updated.content == 'Hi Flutter', "Comment updated");
+    test.expect(updated.content == 'Hi Flutter.', "Comment updated");
 
     /// reply to comment
     final reply = await CommentApi.instance.create(
@@ -164,7 +164,7 @@ class _CommentUnitTestState extends State<CommentUnitTest> {
     );
     test.expect(reply.postId == post.id, "Reply created with correct post ID");
     test.expect(reply.parentId == created.id, "Reply created with correct parent ID");
-    test.expect(reply.content == 'Reply.', "Reply created with correct content");
+    test.expect(reply.content == 'Reply', "Reply created with correct content");
 
     /// delete reply
     final deletedReply = await CommentApi.instance.delete(reply.id);
@@ -172,6 +172,9 @@ class _CommentUnitTestState extends State<CommentUnitTest> {
 
     /// delete comment
     final deletedComment = await CommentApi.instance.delete(created.id);
-    test.expect(deletedComment == reply.id, "Comment deleted.");
+    test.expect(deletedComment == created.id, "Comment deleted.");
+
+    /// clean up
+    await post.delete();
   }
 }
