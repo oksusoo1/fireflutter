@@ -8,6 +8,8 @@ import 'package:fe/screens/unit_test/job/job_seeker_unit_test.dart';
 import 'package:fe/screens/unit_test/job/job_unit_test.dart';
 import 'package:fe/screens/unit_test/report/report.test.dart';
 import 'package:fe/service/app.service.dart';
+import 'package:fe/service/defines.dart';
+import 'package:fe/widgets/layout.dart';
 import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -48,8 +50,12 @@ class _UnitTestScreenState extends State<UnitTestScreen>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text('Unit Testing')),
+    return Layout(
+      isHome: true,
+      title: Text(
+        'Unit Testing',
+        style: titleStyle,
+      ),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(8.0),

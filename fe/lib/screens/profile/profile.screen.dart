@@ -1,4 +1,5 @@
 import 'package:extended/extended.dart';
+import 'package:fe/widgets/layout.dart';
 import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
 
@@ -16,20 +17,16 @@ class ProfileScreenState extends State<ProfileScreen> {
   bool photoUrlLoader = false;
   bool emailLoader = false;
 
-  final nickname =
-      TextEditingController(text: UserService.instance.user.nickname);
-  final photoUrl =
-      TextEditingController(text: UserService.instance.user.photoUrl);
+  final nickname = TextEditingController(text: UserService.instance.user.nickname);
+  final photoUrl = TextEditingController(text: UserService.instance.user.photoUrl);
   final email = TextEditingController(text: UserService.instance.email);
 
   double uploadProgress = 0;
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Profile'),
-      ),
+    return Layout(
+      title: Text('Profile'),
       body: SingleChildScrollView(
         child: PagePadding(
           vertical: 16,
@@ -42,15 +39,13 @@ class ProfileScreenState extends State<ProfileScreen> {
                       : Icon(Icons.person, size: 40),
                   type: 'user',
                   onUploaded: updatePhotoUrl,
-                  onProgress: (progress) =>
-                      setState(() => uploadProgress = progress),
+                  onProgress: (progress) => setState(() => uploadProgress = progress),
                   // onError: error,
                 );
               },
             ),
             spaceSm,
-            if (uploadProgress != 0)
-              LinearProgressIndicator(value: uploadProgress),
+            if (uploadProgress != 0) LinearProgressIndicator(value: uploadProgress),
             spaceXl,
             const Text('Nickname'),
             Row(
@@ -83,8 +78,7 @@ class ProfileScreenState extends State<ProfileScreen> {
               ],
             ),
             TextField(
-              controller: TextEditingController()
-                ..text = UserService.instance.user.firstName,
+              controller: TextEditingController()..text = UserService.instance.user.firstName,
               decoration: const InputDecoration(
                 hintText: 'First name',
                 helperText: 'Input first name',
@@ -94,8 +88,7 @@ class ProfileScreenState extends State<ProfileScreen> {
                   .catchError((e) => error(e)),
             ),
             TextField(
-              controller: TextEditingController()
-                ..text = UserService.instance.user.lastName,
+              controller: TextEditingController()..text = UserService.instance.user.lastName,
               decoration: const InputDecoration(
                 hintText: 'Last name',
                 helperText: 'Input last name',
@@ -105,8 +98,7 @@ class ProfileScreenState extends State<ProfileScreen> {
                   .catchError((e) => error(e)),
             ),
             TextField(
-              controller: TextEditingController()
-                ..text = UserService.instance.user.gender,
+              controller: TextEditingController()..text = UserService.instance.user.gender,
               decoration: const InputDecoration(
                 hintText: 'Gender',
                 helperText: 'Input gender as in M or F',
@@ -135,9 +127,7 @@ class ProfileScreenState extends State<ProfileScreen> {
   updateNickname(t) {
     setState(() => nicknameLoader = true);
     bounce('nickname', 500, (s) async {
-      await UserService.instance.user
-          .updateNickname(t)
-          .catchError((e) => error(e));
+      await UserService.instance.user.updateNickname(t).catchError((e) => error(e));
       setState(() => nicknameLoader = false);
     });
   }
@@ -145,9 +135,7 @@ class ProfileScreenState extends State<ProfileScreen> {
   updateEmail(t) {
     setState(() => emailLoader = true);
     bounce('nickname', 500, (s) async {
-      await UserService.instance.user
-          .update(field: 'email', value: t)
-          .catchError((e) => error(e));
+      await UserService.instance.user.update(field: 'email', value: t).catchError((e) => error(e));
       setState(() => emailLoader = false);
     });
   }

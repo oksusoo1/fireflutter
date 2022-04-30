@@ -1,5 +1,6 @@
 // import 'package:fe/screens/chat/chat.room.screen.dart';
 
+import 'package:fe/screens/about/about.screen.dart';
 import 'package:fe/screens/admin/admin.screen.dart';
 import 'package:fe/screens/admin/admin.search_settings.screen.dart';
 import 'package:fe/screens/admin/category.screen.dart';
@@ -17,6 +18,7 @@ import 'package:fe/screens/job/job.seeker.profile.screen.dart';
 import 'package:fe/screens/job/job.seeker.list.screen.dart';
 import 'package:fe/screens/job/job.seeker.profile.view.screen.dart';
 import 'package:fe/screens/job/job.view.screen.dart';
+import 'package:fe/screens/menu/menu.screen.dart';
 import 'package:fe/screens/point_history/point_history.screen.dart';
 import 'package:fe/screens/search/search.screen.dart';
 import 'package:fe/screens/setting/notification.setting.dart';
@@ -42,6 +44,8 @@ import 'package:flutter/material.dart';
 typedef RouteFunction = Widget Function(BuildContext, Map);
 final Map<String, RouteFunction> appRoutes = {
   HomeScreen.routeName: (context, arguments) => const HomeScreen(),
+  MenuScreen.routeName: (context, arguments) => const MenuScreen(),
+  AboutScreen.routeName: (context, arguments) => const AboutScreen(),
   SignInWidget.routeName: (context, arguments) => const SignInWidget(),
   PhoneSignInScreen.routeName: (context, arguments) => const PhoneSignInScreen(),
   SmsCodeScreen.routeName: (context, arguments) => const SmsCodeScreen(),
@@ -173,6 +177,10 @@ class AppRouter extends NavigatorObserver {
     return open(HomeScreen.routeName);
   }
 
+  Future<void> openAbout() async {
+    return open(AboutScreen.routeName);
+  }
+
   Future openPostView({PostModel? post, String? id}) {
     return open(PostViewScreen.routeName, arguments: {'post': post, 'id': id});
   }
@@ -232,5 +240,13 @@ class AppRouter extends NavigatorObserver {
       'target': target,
       'id': id,
     });
+  }
+
+  Future<void> openUnitTest() async {
+    return open(UnitTestScreen.routeName);
+  }
+
+  Future<void> openMenu() async {
+    return open(MenuScreen.routeName);
   }
 }

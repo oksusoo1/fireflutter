@@ -16,6 +16,8 @@ import 'package:fe/screens/setting/notification.setting.dart';
 import 'package:fe/screens/unit_test/unit_test.screen.dart';
 import 'package:fe/service/app.service.dart';
 import 'package:fe/service/config.dart';
+import 'package:fe/service/defines.dart';
+import 'package:fe/widgets/layout.dart';
 // import 'package:fe/service/global.keys.dart';
 import 'package:fe/widgets/sign_in.widget.dart';
 import 'package:fe/widgets/test.user.dart';
@@ -49,9 +51,11 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Tr('Home'),
+    return Layout(
+      isHome: true,
+      title: Tr(
+        'Home',
+        style: titleStyle,
       ),
       body: SingleChildScrollView(
         child: Center(

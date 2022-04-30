@@ -2,17 +2,34 @@ import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
 
+/// Don't display error alert box for ErrorLevel.minor. It's just a notice or information.
+///
+enum ErrorLevel {
+  minor,
+  major,
+  critical,
+}
+
 class ErrorInfo {
   String title;
   String content;
+  ErrorLevel level;
 
-  ErrorInfo(this.title, this.content);
+  ErrorInfo(this.title, this.content, this.level);
 
   factory ErrorInfo.from(dynamic e, {String? title}) {
     String content = '';
+    ErrorLevel lv = ErrorLevel.major;
+
+    print('--> ErrorInfo.from(e); runtimeType: ${e.runtimeType}, Message: $e');
+    if (e is ArgumentError) {
+      lv = ErrorLevel.minor;
+      title ??= 'Argument Error';
+      content = e.toString();
+    }
 
     // If the error is a string, then use the string.
-    if (e is String) {
+    else if (e is String) {
       content = e;
     }
     // if the error is a PlatfromException, then display code and message.
@@ -97,10 +114,9 @@ class ErrorInfo {
       content = e.toString();
     }
 
-    return ErrorInfo(title ?? 'Error', content);
+    return ErrorInfo(title ?? 'Error', content, lv);
   }
 }
-
 
 // ErrorInfo? errorInfo(e, [String? title]) {
 //   String content = '';

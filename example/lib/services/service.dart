@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:example/services/app.router.dart';
 import 'package:example/services/click_sound.service.dart';
@@ -223,6 +224,10 @@ class Service {
     if (e.toString() == 'IMAGE_NOT_SELECTED') return;
 
     final ErrorInfo info = ErrorInfo.from(e);
+    if (info.level == ErrorLevel.minor) {
+      log('--> Ignore minor error; ${info.title}, ${info.content}');
+      return;
+    }
     alert(
       TranslationService.instance.tr(info.title),
       TranslationService.instance.tr(info.content),
