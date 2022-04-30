@@ -23,6 +23,7 @@ import 'package:fe/screens/point_history/point_history.screen.dart';
 import 'package:fe/screens/search/search.screen.dart';
 import 'package:fe/screens/setting/notification.setting.dart';
 import 'package:fe/screens/unit_test/unit_test.screen.dart';
+import 'package:fe/service/app.service.dart';
 import 'package:fe/service/global.keys.dart';
 import 'package:fe/screens/chat/chat.room.screen.dart';
 import 'package:fe/screens/chat/chat.rooms.blocked.screen.dart';
@@ -157,15 +158,31 @@ class AppRouter extends NavigatorObserver {
   }
 
   void back([dynamic data]) {
+    AppService.instance.pageTransitionSound();
     Navigator.pop(globalNavigatorKey.currentContext!, data);
   }
 
-  Future<void> open(String routeName, {Map? arguments}) {
-    return Navigator.pushNamed(
-      globalNavigatorKey.currentContext!,
-      routeName,
-      arguments: arguments,
-    );
+  Future<void> open(
+    String routeName, {
+    Map? arguments,
+    bool popAll = false,
+  }) {
+    AppService.instance.pageTransitionSound();
+
+    if (popAll) {
+      AppRouter.routeStack = {};
+      return Navigator.of(context).pushNamedAndRemoveUntil(
+        routeName,
+        (Route<dynamic> route) => false,
+        arguments: arguments,
+      );
+    } else {
+      return Navigator.pushNamed(
+        context,
+        routeName,
+        arguments: arguments,
+      );
+    }
   }
 
   Future<void> openProfile() async {

@@ -51,7 +51,6 @@ class _UnitTestScreenState extends State<UnitTestScreen>
   @override
   Widget build(BuildContext context) {
     return Layout(
-      isHome: true,
       title: Text(
         'Unit Testing',
         style: titleStyle,

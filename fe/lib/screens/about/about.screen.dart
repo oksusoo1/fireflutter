@@ -17,7 +17,6 @@ class _AboutScreenState extends State<AboutScreen> {
   @override
   Widget build(BuildContext context) {
     return Layout(
-      isHome: true,
       title: Text('About'),
       body: Column(
         children: [

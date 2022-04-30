@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:extended/extended.dart' as ex;
 import 'package:fe/service/app.router.dart';
+import 'package:fe/service/click_sound.service.dart';
 import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
 
@@ -12,6 +13,14 @@ class AppService {
       _instance = AppService();
     }
     return _instance!;
+  }
+
+  AppService() {
+    ClickSoundService.instance.init();
+  }
+
+  Future pageTransitionSound() {
+    return ClickSoundService.instance.play();
   }
 
   final router = AppRouter.instance;

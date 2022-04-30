@@ -11,7 +11,6 @@ class MenuItem {
 class Layout extends StatefulWidget {
   const Layout({
     Key? key,
-    this.isHome = false,
     required this.title,
     this.bottom,
     required this.body,
@@ -22,7 +21,6 @@ class Layout extends StatefulWidget {
     this.backButtonColor = Colors.black,
   }) : super(key: key);
 
-  final bool isHome;
   final Widget title;
   final Widget body;
   final PreferredSizeWidget? bottom;

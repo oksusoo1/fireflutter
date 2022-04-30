@@ -28,6 +28,8 @@ dependencies:
 
   fireflutter:
     path: ..
+  
+  audioplayers: ^1.0.0-rc.1
 
 dev_dependencies:
   flutter_test:
@@ -35,3 +37,6 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+
+  assets:
+    - assets/click.mp3

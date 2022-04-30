@@ -1,6 +1,8 @@
 import 'package:extended/extended.dart';
 import 'package:fe/screens/phone_sign_in/sms_code.screen.dart';
 import 'package:fe/service/app.service.dart';
+import 'package:fe/service/defines.dart';
+import 'package:fe/widgets/layout.dart';
 import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
 
@@ -16,9 +18,11 @@ class PhoneSignInScreen extends StatefulWidget {
 class _PhoneSignInScreenState extends State<PhoneSignInScreen> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Phone Sign In'),
+    return Layout(
+      backButton: true,
+      title: const Text(
+        'Phone Sign In',
+        style: titleStyle,
       ),
       body: Container(
         padding: const EdgeInsets.all(16),

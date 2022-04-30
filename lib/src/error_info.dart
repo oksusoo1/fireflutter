@@ -22,6 +22,8 @@ class ErrorInfo {
     ErrorLevel lv = ErrorLevel.major;
 
     print('--> ErrorInfo.from(e); runtimeType: ${e.runtimeType}, Message: $e');
+
+    /// Make [ArgumentError] as minor error. So, it won't be displayed user screen.
     if (e is ArgumentError) {
       lv = ErrorLevel.minor;
       title ??= 'Argument Error';

@@ -125,7 +125,6 @@ class AppRouter extends NavigatorObserver {
     String routeName, {
     Map? arguments,
     bool popAll = false,
-    bool preventDuplicate = true,
   }) {
     service.pageTransitionSound();
 
