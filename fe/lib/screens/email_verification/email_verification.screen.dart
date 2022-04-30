@@ -43,7 +43,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                       'Success',
                       re ? 'Email verfied.' : 'Email had been updated and verified.',
                     );
-                    AppService.instance.openHome();
+                    AppService.instance.router.openHome();
                   },
                   onError: error,
                   onVerificationEmailSent: (email) => alert(
@@ -63,7 +63,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                       'Login again',
                       'Your login is no longer valid. You must sign-in again.',
                     );
-                    AppService.instance.openHome();
+                    AppService.instance.router.openHome();
                   },
                   onUpdateEmail: updateEmail,
                 ),
@@ -149,7 +149,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
     try {
       /// Email updated after re-login.
       await FirebaseAuth.instance.currentUser!.updateEmail(email);
-      AppService.instance.back();
+      AppService.instance.router.back();
     } catch (e) {
       error(e);
     }

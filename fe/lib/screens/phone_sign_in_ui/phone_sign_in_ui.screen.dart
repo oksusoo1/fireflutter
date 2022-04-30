@@ -145,7 +145,7 @@ class _PhoneSignInUIScreenState extends State<PhoneSignInUIScreen> {
 
               /// [codeSent] handler will be invoked on sms verification code had
               /// been sent. You may redirect the user to sms code input screen.
-              codeSent: (id) => AppService.instance.open(SmsCodeUIScreen.routeName),
+              codeSent: (id) => AppService.instance.router.open(SmsCodeUIScreen.routeName),
 
               /// [success] handler will be invoked only on Android devices that
               /// support automatic SMS code resolution.
@@ -153,7 +153,7 @@ class _PhoneSignInUIScreenState extends State<PhoneSignInUIScreen> {
                 'Phone Sign-in Success',
                 'You have signed in',
               ).then(
-                (value) => AppService.instance.openHome(),
+                (value) => AppService.instance.router.openHome(),
               ),
               // Get.defaultDialog(
               //   middleText: 'Phone Sign In Success',
@@ -164,7 +164,7 @@ class _PhoneSignInUIScreenState extends State<PhoneSignInUIScreen> {
               // ),
 
               /// error handler
-              error: (e) => error(e), //.then((value) => AppService.instance.back()),
+              error: (e) => error(e), //.then((value) => AppService.instance.router.back()),
               // Get.defaultDialog(
               //   middleText: e.toString(),
               //   textConfirm: 'Ok',
@@ -177,7 +177,7 @@ class _PhoneSignInUIScreenState extends State<PhoneSignInUIScreen> {
                 'Timeout',
                 'Failed on sending SMS code. Please retry.',
               ).then(
-                (value) => AppService.instance.back(),
+                (value) => AppService.instance.router.back(),
               ),
 
               //  Get.defaultDialog(

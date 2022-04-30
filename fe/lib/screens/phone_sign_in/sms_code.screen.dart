@@ -30,7 +30,7 @@ class _SmsCodeScreenState extends State<SmsCodeScreen> {
                 PhoneService.instance.verifySMSCode(
                   success: () async {
                     await alert('Phone sign-in success', 'You have signed-in.');
-                    AppService.instance.openHome();
+                    AppService.instance.router.openHome();
                     // Get.defaultDialog(
                     //     middleText: 'Phone sign-in success',
                     //     textConfirm: 'Ok',
@@ -48,7 +48,7 @@ class _SmsCodeScreenState extends State<SmsCodeScreen> {
               child: const Text('Submit'),
             ),
             TextButton(
-              onPressed: AppService.instance.back,
+              onPressed: AppService.instance.router.back,
               child: const Text('Try again with different number'),
             )
           ],

@@ -59,7 +59,7 @@ class _HomeScreenState extends State<HomeScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               ElevatedButton(
-                onPressed: () => AppService.instance.open(UnitTestScreen.routeName),
+                onPressed: () => AppService.instance.router.open(UnitTestScreen.routeName),
                 child: Text('Unit Test Screen'),
               ),
               StreamBuilder<User?>(
@@ -73,7 +73,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           padding: EdgeInsets.all(sm),
                           child: TextFormField(
                             onFieldSubmitted: (text) =>
-                                AppService.instance.openSearchScreen(searchKey: text),
+                                AppService.instance.router.openSearchScreen(searchKey: text),
                             decoration: InputDecoration(hintText: 'Search ...'),
                           ),
                         ),
@@ -103,7 +103,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     color: Colors.red,
                                   ),
                                 ),
-                                onPressed: AppService.instance.openAdmin);
+                                onPressed: AppService.instance.router.openAdmin);
                           else
                             return SizedBox();
                         }),
@@ -111,12 +111,12 @@ class _HomeScreenState extends State<HomeScreen> {
                           children: [
                             const EmailButton(),
                             ElevatedButton(
-                              onPressed: AppService.instance.openProfile,
+                              onPressed: AppService.instance.router.openProfile,
                               child: const Text('Profile'),
                             ),
                             ElevatedButton(
                               onPressed: () =>
-                                  AppService.instance.open(PointHistoryScreen.routeName),
+                                  AppService.instance.router.open(PointHistoryScreen.routeName),
                               child: const Text('Point History'),
                             ),
                             ElevatedButton(
@@ -134,19 +134,19 @@ class _HomeScreenState extends State<HomeScreen> {
                         ElevatedButton(
                           child: const Text('Sign-In'),
                           onPressed: () {
-                            AppService.instance.open(SignInWidget.routeName);
+                            AppService.instance.router.open(SignInWidget.routeName);
                           },
                         ),
                         ElevatedButton(
                           child: const Text('Phone Sign-In'),
                           onPressed: () {
-                            AppService.instance.open(PhoneSignInScreen.routeName);
+                            AppService.instance.router.open(PhoneSignInScreen.routeName);
                           },
                         ),
                         ElevatedButton(
                           child: const Text('Phone Sign-In UI'),
                           onPressed: () {
-                            AppService.instance.open(PhoneSignInUIScreen.routeName);
+                            AppService.instance.router.open(PhoneSignInUIScreen.routeName);
                           },
                         ),
                       ],
@@ -173,7 +173,8 @@ class _HomeScreenState extends State<HomeScreen> {
               Wrap(
                 children: [
                   ElevatedButton(
-                      onPressed: () => AppService.instance.open(HelpScreen.routeName, arguments: {
+                      onPressed: () =>
+                          AppService.instance.router.open(HelpScreen.routeName, arguments: {
                             'when': 'Now',
                             'where': 'GimHae',
                             'who': 'Me',
@@ -181,7 +182,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           }),
                       child: const Text('Help')),
                   ElevatedButton(
-                    onPressed: () => AppService.instance.open(ChatRoomsScreen.routeName),
+                    onPressed: () => AppService.instance.router.open(ChatRoomsScreen.routeName),
                     child: const Text('Chat Room List'),
                   ),
                   TextButton(
@@ -194,7 +195,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ],
                     ),
                     onPressed: () {
-                      AppService.instance.open(ChatRoomsScreen.routeName);
+                      AppService.instance.router.open(ChatRoomsScreen.routeName);
                     },
                   ),
                   TextButton(
@@ -210,11 +211,11 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: Text('Get firestore index links'),
                   ),
                   ElevatedButton(
-                    onPressed: () => AppService.instance.open(FriendMapScreen.routeName),
+                    onPressed: () => AppService.instance.router.open(FriendMapScreen.routeName),
                     child: const Text('Friend Map'),
                   ),
                   ElevatedButton(
-                    onPressed: () => AppService.instance.open(ReminderEditScreen.routeName),
+                    onPressed: () => AppService.instance.router.open(ReminderEditScreen.routeName),
                     child: const Text('Reminder Management Screen'),
                   ),
                 ],
@@ -222,7 +223,7 @@ class _HomeScreenState extends State<HomeScreen> {
               Wrap(
                 children: [
                   ElevatedButton(
-                    onPressed: () => AppService.instance.openPostList(category: 'qna'),
+                    onPressed: () => AppService.instance.router.openPostList(category: 'qna'),
                     child: const Text('QnA'),
                   ),
                   // if (Platform.isAndroid)
@@ -238,24 +239,27 @@ class _HomeScreenState extends State<HomeScreen> {
                   //     child: const Text('Test QnA Notification'),
                   //   ),
                   ElevatedButton(
-                    onPressed: () => AppService.instance.openPostList(category: 'discussion'),
+                    onPressed: () =>
+                        AppService.instance.router.openPostList(category: 'discussion'),
                     child: const Text('Discussion'),
                   ),
                   ElevatedButton(
-                    onPressed: () => AppService.instance.openPostList(category: 'buyandsell'),
+                    onPressed: () =>
+                        AppService.instance.router.openPostList(category: 'buyandsell'),
                     child: const Text('Buy & Sell'),
                   ),
 
                   ElevatedButton(
-                    onPressed: () => AppService.instance.open(JobListScreen.routeName),
+                    onPressed: () => AppService.instance.router.open(JobListScreen.routeName),
                     child: const Text('Job'),
                   ),
                   ElevatedButton(
-                    onPressed: () => AppService.instance.open(JobSeekerProfileFormScreen.routeName),
+                    onPressed: () =>
+                        AppService.instance.router.open(JobSeekerProfileFormScreen.routeName),
                     child: const Text('Job seeker profile'),
                   ),
                   ElevatedButton(
-                    onPressed: () => AppService.instance.open(JobSeekerListScreen.routeName),
+                    onPressed: () => AppService.instance.router.open(JobSeekerListScreen.routeName),
                     child: const Text('Job seeker list'),
                   ),
                 ],
@@ -265,26 +269,27 @@ class _HomeScreenState extends State<HomeScreen> {
               Wrap(
                 children: [
                   ElevatedButton(
-                    onPressed: () =>
-                        AppService.instance.openSearchScreen(index: 'posts', category: 'qna'),
+                    onPressed: () => AppService.instance.router
+                        .openSearchScreen(index: 'posts', category: 'qna'),
                     child: const Text('QnA'),
                   ),
                   ElevatedButton(
-                    onPressed: () => AppService.instance
+                    onPressed: () => AppService.instance.router
                         .openSearchScreen(index: 'posts', category: 'discussion'),
                     child: const Text('Discussion'),
                   ),
                   ElevatedButton(
-                    onPressed: () => AppService.instance
+                    onPressed: () => AppService.instance.router
                         .openSearchScreen(index: 'posts', category: 'buyandsell'),
                     child: const Text('Buy & Sell'),
                   ),
                   ElevatedButton(
-                    onPressed: () => AppService.instance.openSearchScreen(index: 'posts'),
+                    onPressed: () => AppService.instance.router.openSearchScreen(index: 'posts'),
                     child: const Text('Search Screen'),
                   ),
                   ElevatedButton(
-                    onPressed: () => AppService.instance.open(AdminSearchSettingsScreen.routeName),
+                    onPressed: () =>
+                        AppService.instance.router.open(AdminSearchSettingsScreen.routeName),
                     child: const Text('Search Settings'),
                   ),
                 ],
@@ -292,7 +297,8 @@ class _HomeScreenState extends State<HomeScreen> {
               Wrap(
                 children: [
                   ElevatedButton(
-                    onPressed: () => AppService.instance.open(NotificationSettingScreen.routeName),
+                    onPressed: () =>
+                        AppService.instance.router.open(NotificationSettingScreen.routeName),
                     child: const Text('Notification Setting'),
                   ),
                 ],
@@ -390,7 +396,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
     // // openProfile() throws an error if user is not signed in.
     // await waitUntil(() => UserService.instance.user.signedOut);
-    // await ts.expectFailure(AppService.instance.openProfile(),
+    // await ts.expectFailure(AppService.instance.router.openProfile(),
     //     "sign in before open profile screen.");
 
     // /// user signed in
@@ -401,7 +407,7 @@ class _HomeScreenState extends State<HomeScreen> {
     // await waitUntil(() => UserService.instance.user.signedIn);
 
     // /// Open profile screen
-    // AppService.instance.openProfile();
+    // AppService.instance.router.openProfile();
 
     // /// wait
     // await Future.delayed(Duration(milliseconds: 200));
@@ -434,9 +440,9 @@ class _HomeScreenState extends State<HomeScreen> {
     // await Future.delayed(Duration(milliseconds: 300));
 
     // /// To go back to home, it must call `back()`.
-    // /// If it calls `AppService.instance.openHome();`,
+    // /// If it calls `AppService.instance.router.openHome();`,
     // /// then `Duplicate GlobalKey detected in widget tree` error will happen
-    // AppService.instance.back();
+    // AppService.instance.router.back();
   }
 
   testOnUserData() async {
@@ -540,7 +546,7 @@ class AdminButton extends StatelessWidget {
       },
       onLongPress: () {
         if (count['count']! > 3) {
-          AppService.instance.openAdmin();
+          AppService.instance.router.openAdmin();
         }
       },
       child: const Text('Admin Screen - 3 tap & long press'),
@@ -575,7 +581,7 @@ class _EmailButtonState extends State<EmailButton> {
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
-      onPressed: () => AppService.instance.open('/email-verify'),
+      onPressed: () => AppService.instance.router.open('/email-verify'),
       child: Text(
         '${verified ? 'Update' : 'Verify'} Email',
       ),

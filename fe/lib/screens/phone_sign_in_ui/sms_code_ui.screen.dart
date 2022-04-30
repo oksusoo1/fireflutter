@@ -36,7 +36,7 @@ class _SmsCodeUIScreenState extends State<SmsCodeUIScreen> {
                 'Phone sign-in success',
                 'You have signed-in.',
               ).then(
-                (value) => AppService.instance.openHome(),
+                (value) => AppService.instance.router.openHome(),
               ),
 
               //  Get.defaultDialog(
@@ -86,7 +86,7 @@ class _SmsCodeUIScreenState extends State<SmsCodeUIScreen> {
                         ),
                   const Spacer(),
                   TextButton(
-                    onPressed: AppService.instance.back,
+                    onPressed: AppService.instance.router.back,
                     child: const Text('Try again'),
                   ),
                 ],

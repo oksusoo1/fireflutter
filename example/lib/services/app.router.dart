@@ -4,7 +4,6 @@ import 'package:example/screens/admin/admin.screen.dart';
 import 'package:example/screens/settings/settings.screen.dart';
 import 'package:example/screens/test/test.screen.dart';
 import 'package:flutter/material.dart';
-import 'package:audioplayers/audioplayers.dart';
 import 'package:example/screens/about/about.screen.dart';
 import 'package:example/screens/home/home.screen.dart';
 import 'package:example/screens/menu/menu.screen.dart';
@@ -17,7 +16,7 @@ import 'package:example/services/defines.dart';
 /// Page screen (routes)
 ///
 /// Define the page screens here.
-final Map<String, RouteFunction> _routes = {
+final Map<String, RouteFunction> appRoutes = {
   HomeScreen.routeName: (context, arguments) => const HomeScreen(),
   AboutScreen.routeName: (context, arguments) => const AboutScreen(),
   MenuScreen.routeName: (context, arguments) => const MenuScreen(),
@@ -76,7 +75,7 @@ class AppRouter extends NavigatorObserver {
     /// 그리고, MaterialApp 의 onGenerateRoute() 의 결과로 리턴 할 route 작성
     final route = NoAnimationMaterialPageRoute(
       builder: (c) {
-        return _routes[name]!(
+        return appRoutes[name]!(
           c,
           ((settings.arguments ?? {}) as Map),
         );
@@ -128,7 +127,7 @@ class AppRouter extends NavigatorObserver {
     bool popAll = false,
     bool preventDuplicate = true,
   }) {
-    AudioPlayer().play(AssetSource('click.mp3'));
+    service.pageTransitionSound();
 
     if (popAll) {
       AppRouter.routeStack = {};
@@ -148,7 +147,7 @@ class AppRouter extends NavigatorObserver {
 
   /// Return to previous page
   void back([dynamic data]) {
-    AudioPlayer().play(AssetSource('click.mp3'));
+    service.pageTransitionSound();
     Navigator.pop(globalNavigatorKey.currentContext!, data);
   }
 

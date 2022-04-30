@@ -28,7 +28,7 @@ class _JobSeekerListScreenState extends State<JobSeekerListScreen> {
       ),
       body: JobSeekerList(
         options: options,
-        onTap: (seeker) => AppService.instance.open(
+        onTap: (seeker) => AppService.instance.router.open(
           JobSeekerProfileViewScreen.routeName,
           arguments: {'profile': seeker},
         ),

@@ -46,7 +46,7 @@ class _JobListScreenState extends State<JobListScreen> with FirestoreMixin, Foru
           //   },
           // ),
           IconButton(
-            onPressed: () => AppService.instance.open(JobEditScreen.routeName),
+            onPressed: () => AppService.instance.router.open(JobEditScreen.routeName),
             icon: Icon(Icons.add_circle_outline),
           ),
         ],
@@ -57,8 +57,8 @@ class _JobListScreenState extends State<JobListScreen> with FirestoreMixin, Foru
       body: JobListView(
         // onError: error,
         options: options,
-        onEdit: () => AppService.instance.open(JobEditScreen.routeName),
-        onTap: (job) => AppService.instance.open(
+        onEdit: () => AppService.instance.router.open(JobEditScreen.routeName),
+        onTap: (job) => AppService.instance.router.open(
           JobViewScreen.routeName,
           arguments: {'job': job},
         ),

@@ -31,10 +31,11 @@ class _PhoneSignInScreenState extends State<PhoneSignInScreen> {
             ElevatedButton(
               onPressed: () {
                 PhoneService.instance.verifyPhoneNumber(
-                  codeSent: (verificationId) => AppService.instance.open(SmsCodeScreen.routeName),
+                  codeSent: (verificationId) =>
+                      AppService.instance.router.open(SmsCodeScreen.routeName),
                   androidAutomaticVerificationSuccess: () {
                     alert('Phone sign-in success', 'You have signed-in.');
-                    AppService.instance.openHome();
+                    AppService.instance.router.openHome();
 
                     // Get.defaultDialog(
                     //   middleText: 'Phone sign-in success',

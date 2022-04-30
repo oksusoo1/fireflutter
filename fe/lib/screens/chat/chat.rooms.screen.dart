@@ -25,7 +25,7 @@ class ChatRoomsScreen extends StatelessWidget {
             Row(children: [
               TextButton(
                   onPressed: () {
-                    AppService.instance.open(ChatRoomsBlockedScreen.routeName);
+                    AppService.instance.router.open(ChatRoomsBlockedScreen.routeName);
                   },
                   child: const Text('Block list')),
             ]),
@@ -64,7 +64,7 @@ class _ChatRoomsUserState extends State<ChatRoomsUser> {
       uid: widget.room.otherUid,
       builder: (UserModel user) {
         return GestureDetector(
-          onTap: () => AppService.instance.open(
+          onTap: () => AppService.instance.router.open(
             ChatRoomScreen.routeName,
             arguments: {'uid': widget.room.otherUid},
           ),

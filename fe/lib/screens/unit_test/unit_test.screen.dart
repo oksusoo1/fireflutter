@@ -108,14 +108,14 @@ class _UnitTestScreenState extends State<UnitTestScreen>
   }
 
   Future openPostFormScreen() async {
-    AppService.instance
+    AppService.instance.router
         .open(PostFormScreen.routeName, arguments: {'postFormController': postFormController});
 
     return wait(200, 'Injecting post form controller in post edit screen.');
   }
 
   Future comeBack() async {
-    AppService.instance.back();
+    AppService.instance.router.back();
     return wait(200, 'Opening unit test screen.');
   }
 
