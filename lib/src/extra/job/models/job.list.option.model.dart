@@ -2,7 +2,7 @@ class JobListOptionModel {
   String companyName = '';
   String siNm = '';
   String sggNm = '';
-  String jobCategory = '';
+  String category = '';
   int workingHours = -1;
   int workingDays = -1;
   String accomodation = '';
@@ -13,7 +13,7 @@ class JobListOptionModel {
       'companyName': companyName,
       'siNm': siNm,
       'sggNm': sggNm,
-      'jobCategory': jobCategory,
+      'category': category,
       'workingHours': workingHours,
       'workingDays': workingDays,
       'accomodation': accomodation,

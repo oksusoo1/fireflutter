@@ -1,35 +1,42 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../fireflutter.dart';
 
 class ReportModel {
+  String id;
   String target;
   String targetId;
-  String reporterUid;
-  String reporteeUid;
+  String uid;
   String reason;
-  Timestamp timestamp;
-
-  DocumentReference ref;
+  int timestamp;
 
   ReportModel({
+    required this.id,
     required this.target,
     required this.targetId,
-    required this.reporterUid,
-    required this.reporteeUid,
+    required this.uid,
     required this.reason,
     required this.timestamp,
-    required this.ref,
   });
 
-  factory ReportModel.fromJson(Json json, DocumentReference reference) {
+  factory ReportModel.fromJson(Json json, {String? id}) {
     return ReportModel(
-      target: json['target'],
-      targetId: json['targetId'],
-      reporterUid: json['reporterUid'],
-      reporteeUid: json['reporteeUid'],
+      target: json['target'] ?? '',
+      targetId: json['targetId'] ?? '',
+      uid: json['uid'] ?? '',
       reason: json['reason'] ?? '',
-      timestamp: json['timestamp'],
-      ref: reference,
+      timestamp: json['timestamp'] ?? 0,
+      id: id ?? json['id'],
     );
+  }
+
+  @override
+  String toString() {
+    return '''ReportModel(
+      id: $id,
+      target: $target,
+      targetId: $targetId,
+      uid: $uid,
+      reason: $reason,
+      timestamp: $timestamp,
+    );''';
   }
 }

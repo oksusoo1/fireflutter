@@ -43,10 +43,11 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
                       if (message.isProtocol) {
                         if (message.text.contains('friendMap')) {
                           final arr = message.text.split(':').last.split(',');
-                          AppService.instance.open(FriendMapScreen.routeName, arguments: {
-                            'latitude': arr.first.trim(),
-                            'longitude': arr.last.trim(),
-                          });
+                          AppService.instance
+                            ..router.open(FriendMapScreen.routeName, arguments: {
+                              'latitude': arr.first.trim(),
+                              'longitude': arr.last.trim(),
+                            });
                         }
                       }
                     },
@@ -79,14 +80,14 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
                           ),
                           actions: [
                             TextButton(
-                              onPressed: AppService.instance.back,
+                              onPressed: AppService.instance.router.back,
                               child: const Text('Close'),
                             ),
                             TextButton(
                               onPressed: () {
                                 message
                                     .update(input.text)
-                                    .then((x) => AppService.instance.back())
+                                    .then((x) => AppService.instance.router.back())
                                     .catchError((e) => error(e));
                               },
                               child: const Text('Update'),
@@ -96,8 +97,8 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
                       );
                     } else if (result == 'open') {
                       /// Uploaded files or link typed by user.
-                      if (await canLaunch(message.text)) {
-                        launch(message.text);
+                      if (await canLaunchUrl(Uri.parse(message.text))) {
+                        launchUrl(Uri.parse(message.text));
                       } else {
                         error('Cannot launch ${message.text}');
                       }
@@ -126,7 +127,7 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
               },
 
               inputBuilder: (onSubmit) => ChatRoomMessageBox(onSend: onSubmit),
-              onError: error,
+              // onError: error,
 
               /// Send push notification here with no of new message.
               onUpdateOtherUserRoomInformation: (Map<String, dynamic> data) async {

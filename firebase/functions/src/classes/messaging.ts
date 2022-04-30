@@ -5,20 +5,63 @@ import {
   ERROR_EMPTY_UIDS,
   ERROR_TITLE_AND_BODY_CANT_BE_BOTH_EMPTY,
 } from "../defines";
-import { MessagePayload } from "../interfaces/messaging.interface";
+import { MessagePayload, TokenDocument } from "../interfaces/messaging.interface";
 import { Ref } from "./ref";
 import { Utils } from "./utils";
 
+import { UserDocument } from "../interfaces/user.interface";
+
 export class Messaging {
   /**
-   * Creates a token document with uid.
+   * Creates(or updates) a token document with uid and do `token-update` process as decribed in README.md.
    *
-   * @param uid user uid
-   * @param token token of push message
+   * @param data - data.uid is the user uid, data.token is the token of push message.
+   *
    * @returns Promise of any
    */
-  static async updateToken(uid: string, token: string): Promise<any> {
-    return Ref.messageTokens.child(token).set({ uid: uid });
+  static async updateToken(data: TokenDocument): Promise<any> {
+    await this.setToken(data);
+    await this.unsubscribeAllTopicOfToken();
+    await this.resubscribeAllUserTopics();
+  }
+
+  static async setToken(data: TokenDocument) {
+    await Ref.messageTokens.child(data.token).set({ uid: data.uid });
+  }
+  static async getToken(id: string): Promise<null | TokenDocument> {
+    const snapshot = await Ref.token(id).get();
+    if (snapshot.exists()) {
+      const data = snapshot.val();
+      data.token = snapshot.key;
+      return data;
+    } else {
+      return null;
+    }
+  }
+  static async subscribeTopic(data: { uid: string; topic: string }): Promise<any> {
+    console.log("@fix empty", data);
+  }
+  static async unsubscribeTopic(data: { uid: string; topic: string }): Promise<any> {
+    console.log("@fix empty", data);
+  }
+  static async removeInvalidTokens() {
+    console.log("@fix empty");
+  }
+
+  /**
+   * This unsubscribe all the topics (including other user's topics) of the token.
+   * See README.md for details.
+   *
+   * @reference https://stackoverflow.com/questions/38212123/unsubscribe-from-all-topics-at-once-from-firebase-messaging
+   */
+  static async unsubscribeAllTopicOfToken() {
+    console.log("@fix empty");
+  }
+  /**
+   *
+   */
+  static async resubscribeAllUserTopics() {
+    console.log("@fix empty");
   }
 
   /**
@@ -317,5 +360,99 @@ export class Messaging {
       topic: string
   ): Promise<admin.messaging.MessagingTopicManagementResponse> {
     return admin.messaging().subscribeToTopic(tokens, topic);
+  }
+
+  /**
+   * Returns user forum topics that is set to true.
+   *
+   * @param uid user uid
+   * @returns array of topic set to true
+   */
+  static async getSubscribedForum(uid: string): Promise<string[]> {
+    const snapshot = await Ref.userSettingForumTopics(uid).orderByValue().equalTo(true).get();
+    if (!snapshot.exists()) return [];
+    const val = snapshot.val();
+    return Object.keys(val);
+  }
+
+  /**
+   * Returns user forum topics.
+   *
+   * @param uid user uid
+   * @returns array of topic
+   */
+  static async getForumTopics(uid: string): Promise<string[]> {
+    const snapshot = await Ref.userSettingForumTopics(uid).get();
+    if (!snapshot.exists()) return [];
+    const val = snapshot.val();
+    return Object.keys(val);
+  }
+
+  /**
+   *
+   * Unsubcribe all topics that
+   * @param user
+   * @param uid
+   * @returns
+   */
+  static async resubscribeTopics(user: UserDocument, uid: string) {
+    // get user tokens
+    const initialTokens = await this.getTokens(uid);
+    let tokens = initialTokens;
+    if (tokens.length == 0) return null;
+
+    // get user forum topics
+    const forumTopics = await this.getForumTopics(uid);
+    if (forumTopics.length == 0) return null;
+
+    // get 1 topic first
+    const topic = forumTopics.splice(0, 1)[0];
+    // unsubscribe to 1 topic
+    const res = await admin.messaging().unsubscribeFromTopic(tokens, topic);
+
+    // if there is failure remove tokens with invalid status
+    if (res.failureCount > 0) {
+      const tokensToRemove: Promise<any>[] = [];
+      res.errors.forEach((e) => {
+        if (
+          e.error.code === "messaging/invalid-registration-token" ||
+          e.error.code === "messaging/registration-token-not-registered" ||
+          e.error.code === "messaging/invalid-argument"
+        ) {
+          tokensToRemove.push(Ref.messageTokens.child(tokens[e.index]).remove());
+        }
+      });
+      await Promise.all(tokensToRemove);
+
+      // get again the remaining tokens after removing invalid tokens
+      tokens = await this.getTokens(uid);
+      if (tokens.length == 0) return null;
+    }
+
+    const unsubscribePromises: any[] = [];
+    forumTopics.forEach((topic: string) => {
+      unsubscribePromises.push(admin.messaging().unsubscribeFromTopic(tokens, topic));
+    });
+    const unsubscribeResult = await Promise.all(unsubscribePromises);
+
+    const forumSubscription = await this.getSubscribedForum(uid);
+    if (forumSubscription.length == 0) return null;
+
+    const subscribePromises: any[] = [];
+    forumSubscription.forEach((topic: string) => {
+      subscribePromises.push(admin.messaging().subscribeToTopic(tokens, topic));
+    });
+    const subscribeResult = await Promise.all(subscribePromises);
+
+    return {
+      user: user,
+      uid: uid,
+      beforeToken: initialTokens,
+      afterTokens: tokens,
+      forumSubs: forumSubscription,
+      tokenError: res.errors,
+      subscribeResult: subscribeResult,
+      unsubscribeResult: unsubscribeResult,
+    };
   }
 }

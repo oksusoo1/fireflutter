@@ -4,9 +4,7 @@ import 'package:flutter/material.dart';
 class NotificationSetting extends StatefulWidget {
   const NotificationSetting({
     Key? key,
-    required this.onError,
   }) : super(key: key);
-  final Function onError;
 
   @override
   State<NotificationSetting> createState() => _NotificationSettingState();
@@ -33,8 +31,7 @@ class _NotificationSettingState extends State<NotificationSetting> {
       stream: UserSettingService.instance.changes.stream,
       builder: (context, snapshot) {
         if (snapshot.hasError) return Text('Error');
-        if (snapshot.connectionState == ConnectionState.waiting)
-          return SizedBox.shrink();
+        if (snapshot.connectionState == ConnectionState.waiting) return SizedBox.shrink();
         if (snapshot.hasData == false) return SizedBox.shrink();
         // print(UserSettingService.instance.settings.topics);
 
@@ -46,22 +43,16 @@ class _NotificationSettingState extends State<NotificationSetting> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             CheckboxListTile(
-              value: UserSettingService.instance
-                  .hasSubscription(commentNotification),
-              onChanged: (b) {
+              value: UserSettingService.instance.hasSubscription(commentNotification),
+              onChanged: (b) async {
                 if (b == true) {
-                  UserSettingService.instance
-                      .subscribe(commentNotification)
-                      .catchError(widget.onError);
+                  UserSettingService.instance.subscribe(commentNotification);
                 } else {
-                  UserSettingService.instance
-                      .unsubscribe(commentNotification)
-                      .catchError(widget.onError);
+                  UserSettingService.instance.unsubscribe(commentNotification);
                 }
               },
               title: Text('Comment notifications'),
-              subtitle: Text(
-                  'Receive notifications of new comments under my posts and comments'),
+              subtitle: Text('Receive notifications of new comments under my posts and comments'),
               controlAffinity: ListTileControlAffinity.leading,
             ),
             SizedBox(
@@ -107,11 +98,9 @@ class _NotificationSettingState extends State<NotificationSetting> {
             ),
             for (CategoryModel cat in categories!)
               CheckboxListTile(
-                value: UserSettingService.instance
-                    .hasSubscription('posts_${cat.id}'),
-                onChanged: (b) => MessagingService.instance
-                    .updateSubscription('posts_${cat.id}', b ?? false)
-                    .catchError(widget.onError),
+                value: UserSettingService.instance.hasSubscription('posts_${cat.id}'),
+                onChanged: (b) async =>
+                    MessagingService.instance.updateSubscription('posts_${cat.id}', b ?? false),
                 title: Text(cat.title),
                 controlAffinity: ListTileControlAffinity.leading,
               ),
@@ -130,11 +119,9 @@ class _NotificationSettingState extends State<NotificationSetting> {
             ),
             for (CategoryModel cat in categories!)
               CheckboxListTile(
-                value: UserSettingService.instance
-                    .hasSubscription('comments_${cat.id}'),
-                onChanged: (b) => MessagingService.instance
-                    .updateSubscription('comments_${cat.id}', b ?? false)
-                    .catchError(widget.onError),
+                value: UserSettingService.instance.hasSubscription('comments_${cat.id}'),
+                onChanged: (b) async =>
+                    MessagingService.instance.updateSubscription('comments_${cat.id}', b ?? false),
                 title: Text(cat.title),
                 controlAffinity: ListTileControlAffinity.leading,
               ),
@@ -144,14 +131,10 @@ class _NotificationSettingState extends State<NotificationSetting> {
     );
   }
 
-  enableOrDisableAllNotification([bool enable = true]) {
+  enableOrDisableAllNotification([bool enable = true]) async {
     for (CategoryModel cat in categories!) {
-      MessagingService.instance
-          .updateSubscription('posts_${cat.id}', enable)
-          .catchError(widget.onError);
-      MessagingService.instance
-          .updateSubscription('comments_${cat.id}', enable)
-          .catchError(widget.onError);
+      MessagingService.instance.updateSubscription('posts_${cat.id}', enable);
+      MessagingService.instance.updateSubscription('comments_${cat.id}', enable);
     }
   }
 }

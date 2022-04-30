@@ -18,8 +18,12 @@ class CategoryGroupManagement extends StatelessWidget with FirestoreMixin {
                 String categoryGroup = data['categoryGroup'] ?? '';
                 return TextField(
                   controller: TextEditingController()..text = categoryGroup,
-                  onChanged: (value) => forumSettingDoc
-                      .set({'categoryGroup': value}, SetOptions(merge: true)),
+                  onChanged: (value) => forumSettingDoc.set(
+                    {'categoryGroup': value},
+                    SetOptions(merge: true),
+                  ),
+                  decoration:
+                      InputDecoration(label: Text('Input category name like "community,news"')),
                 );
               } else {
                 return Center(

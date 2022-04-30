@@ -29,11 +29,12 @@ Table of contents
   - [Firebase Realtime Database Security Rules Installation](#firebase-realtime-database-security-rules-installation)
   - [Firebase Storage installation](#firebase-storage-installation)
   - [Firestore installation](#firestore-installation)
-    - [Setting admin on firestore security rules](#setting-admin-on-firestore-security-rules)
+    - [Admin setting](#admin-setting)
   - [Cloud functions installation](#cloud-functions-installation)
     - [Run cloud function using shell](#run-cloud-function-using-shell)
 - [Sources and packages](#sources-and-packages)
 - [Coding Guideline](#coding-guideline)
+  - [Error handling](#error-handling)
 - [Examples of fireflutter](#examples-of-fireflutter)
 - [User](#user)
   - [User installation](#user-installation)
@@ -85,6 +86,7 @@ Table of contents
   - [To test user functionality](#to-test-user-functionality)
   - [Test method](#test-method)
   - [Local test on firestore security rules](#local-test-on-firestore-security-rules)
+  - [UnitTestMixin](#unittestmixin)
 - [Sample code](#sample-code)
 - [Node.js Utilities](#nodejs-utilities)
   - [User utilities](#user-utilities)
@@ -113,7 +115,8 @@ Table of contents
   - [PostService and PostApi](#postservice-and-postapi)
   - [PostApi](#postapi)
 - [Push notification](#push-notification)
-  - [terms](#terms)
+  - [Terms and Conditions;](#terms-and-conditions)
+  - [Logic.](#logic)
   - [How push notification wokr.](#how-push-notification-wokr)
   - [push notification logic](#push-notification-logic)
   - [Testing Push notification via terminal](#testing-push-notification-via-terminal)
@@ -123,10 +126,48 @@ Table of contents
   - [FileUploadButton](#fileuploadbutton)
   - [Displaying Uploaded Image](#displaying-uploaded-image)
   - [Uploaded file management](#uploaded-file-management)
+- [Widgets](#widgets)
+  - [Common widgets](#common-widgets)
+    - [DatePicker](#datepicker)
 - [Location Service](#location-service)
 - [Cloud Functions](#cloud-functions)
   - [Unit test for Cloud Functions](#unit-test-for-cloud-functions)
-  - [Error handling](#error-handling)
+  - [Error handling](#error-handling-1)
+    - [How to send error back to client](#how-to-send-error-back-to-client)
+    - [Error handling on client end](#error-handling-on-client-end)
+  - [Cloud functions - http trigger, restful api.](#cloud-functions---http-trigger-restful-api)
+    - [Ready](#ready)
+    - [Request and data handling](#request-and-data-handling)
+    - [Post create](#post-create)
+    - [Cloud functions Sample codes](#cloud-functions-sample-codes)
+  - [Meilisearch](#meilisearch)
+  - [Re-indexing documents](#re-indexing-documents)
+- [Backup](#backup)
+  - [Firestore backup](#firestore-backup)
+- [Point](#point)
+  - [Point settings](#point-settings)
+  - [Poitn Event Logic](#poitn-event-logic)
+  - [Category point setting](#category-point-setting)
+  - [Point document](#point-document)
+  - [Displaying Point](#displaying-point)
+    - [Use point property to dispaly point.](#use-point-property-to-dispaly-point)
+    - [PointBuilder](#pointbuilder)
+    - [MyPointBuilder](#mypointbuilder)
+    - [ForumPoint](#forumpoint)
+  - [Point history](#point-history)
+  - [Displaying point history](#displaying-point-history)
+  - [Senario](#senario)
+  - [User point and level](#user-point-and-level)
+- [Extra Features](#extra-features)
+  - [Job](#job)
+- [Release mode error](#release-mode-error)
+  - [How to fix](#how-to-fix)
+
+
+- [Location Service](#location-service)
+- [Cloud Functions](#cloud-functions)
+  - [Unit test for Cloud Functions](#unit-test-for-cloud-functions)
+  - [Error handling](#error-handling-1)
     - [How to send error back to client](#how-to-send-error-back-to-client)
     - [Error handling on client end](#error-handling-on-client-end)
   - [Cloud functions - http trigger, restful api.](#cloud-functions---http-trigger-restful-api)
@@ -252,7 +293,9 @@ Table of contents
 
 ## Firebase Storage installation
 
-- Install 'Image Resize' firebase extension with the following settings;
+- If storage exception happens, check if the `Image Resize` extension and the security rules are installed properly.
+
+- Install 'Image Resize' firebase extension with the following settings for generating thumbnails.
 
   - Upgrade billing plan
   - This extension will use cloud function. It will install `generateResizedImage` function.
@@ -265,6 +308,9 @@ Table of contents
   - List of absolute paths not included for resized images: leave it empty.
   - Cache-Control header for resized images: max-age=86400
   - Convert image to preferred types: webp
+  - Output options for selected formats: leave it empty
+  - GIF and WEBP animated option: No
+  - Cloud Function memory: 1GB
     Note, that you can see the configuration in firebase extensions menu and reconfigure it.
     Note, that you can see the location in firebase cloud functions menu.
 
@@ -305,24 +351,30 @@ function checkType() {
 - Enable firestore.
 - Copy the [firestore securiy rules](https://raw.githubusercontent.com/thruthesky/fireflutter/main/firebase/firestore.rules) and update it on your firebase project.
 - To install the firestore indexes, it is recommended to run the query and click the link of it to generate the indexes.
-
-  - To do this, just call `getFirestoreIndexLinks` method and it will print the link on debug console. You just need to click the links.
-    - See example of `getFirestoreIndexLinks` in the [example home screen](https://github.com/thruthesky/fireflutter/blob/main/example/lib/screens/home/home.screen.dart).
+  - You may optionally install indexes by `firebase deploy --only firestore`.
+  - ~~To do this, just call `getFirestoreIndexLinks` method and it will print the link on debug console. You just need to click the links.~~
+    - ~~See example of `getFirestoreIndexLinks` in the [example home screen](https://github.com/thruthesky/fireflutter/blob/main/example/lib/screens/home/home.screen.dart).~~
   - See the [firestore indexes](https://raw.githubusercontent.com/thruthesky/fireflutter/main/firebase/firestore.indexes.json) and if you want to update it manually on your firebase project.
 
-- We use Firestore only for `Chat` and `Forum` features since they needs more support on query and search functionalities.
-  - All other features should go to realtime database.
+- We use Firestore for the features that needs conditional queries like `Chat` and `Forum`.
+  - If the app handles less complicated queries, then it should use firebase database.
 
 - Note that, you need to create your own composite indexes when you build functions that query on fields that are not indexed by fireflutter.
   - For instance, you make a function for getting posts that have most no of comments on this year. then, you may need to create an composite index with `noOfComments` and `year`.
 
-### Setting admin on firestore security rules
+### Admin setting
 
-- To set a user admin, Add the user's UID as field name(key) with the value of `true` in `/settings/admin`.
+- To set a user admin, Add the user's UID as field name(key) with the value of `true` in `/settings/admins`.
   - For instance, `{ "UID_AAA": true, "UID_BBB": true }`, then users whose uid is UID_AAA and UID_BBB are the admins.
 
 ![Security Rules Admin](https://raw.githubusercontent.com/thruthesky/fireflutter/main/readme/images/security-rules-admin.jpg?raw=true)
 
+
+- One thing to note is that, by adding user's UID into `/settings/admins` does not make the app to know who is the admin.
+  - Add `isAdmin` field to true on `/users/<UID>` in realtime database.
+  - Or you can call `UserModel::updateAdminStatus()` in app. But it will read firestore document onetime.
+    - So, it is also one way to run it when user signed in. It will be a good option when the app has less than 1,000 users who signs in a day. If the app has a lot more users who signs in a day, then it may costs also.
+    - Another options is that the app can call `UserModel::updateAdminStatus()` on a secret page. Like when a user long presses after 3 times of touches, the app opens a secret admin(or test) page, and there it can call the method.
 
 
 
@@ -361,6 +413,90 @@ $ npm run shell
 - All model should have `.map` property(getter) to export its model data to a map. while `.data` only contains for saving firestore, `.map` may contain other values.
 
 
+
+## Error handling
+
+- The recommended error handling in fireflutter is that,
+  - define global flutter error handler and dart error handler using `FlutterError.onError` and `runZoendGuarded`,
+  - then, handle minimum errors(exceptions) as the app needs,
+  - leave other errors(exceptions) to the global error handlers.
+
+
+- How to define global error handlers.
+```dart
+void main() {
+  runZonedGuarded(
+    () async {
+      WidgetsFlutterBinding.ensureInitialized();
+      await Firebase.initializeApp(
+        options: DefaultFirebaseOptions.currentPlatform,
+      );
+      FlutterError.onError = (FlutterErrorDetails details) {
+        /// Flutter exceptions come here.
+        log("--> FlutterError.onError : from (the inside of) Flutter framework.");
+        log("------------------------------------------------------------------");
+        FlutterError.dumpErrorToConsole(details);
+        service.error(details.exception);
+      };
+      runApp(const ExampleApp());
+    },
+    (error, stackTrace) {
+      /// Firebase exceptions and dart(outside flutter) exceptions come here.
+      log("--> runZoneGuarded() : exceptions outside flutter framework.");
+      log("------------------------------------------------------------");
+      log("--> runtimeType: ${error.runtimeType}");
+      log("Dart Error :  $error");
+      debugPrintStack(stackTrace: stackTrace);
+      service.error(error);
+    },
+  );
+}
+```
+```dart
+// server error handler
+error(e) {
+  if ( e is FirebaseException) {
+    // ...
+    alert('Firebase error; $e');
+  } else {
+    // ...
+    alert('Flutter error; $e')
+  }
+}
+```
+
+- And the following is an example of code.
+  - What it does is to create an account with email and password of the account is not exists. Or it will login.
+  - See that, it only handles firebase exception if the account is already exists. All other exceptions are left to the global error handlers.
+
+```dart
+TextButton(
+  onPressed: () async {
+    try {
+      await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: email.text,
+        password: password.text,
+      );
+      service.router.openHome();
+    } on FirebaseException catch (e) {
+      if (e.code == 'email-already-in-use') {
+        await FirebaseAuth.instance.signInWithEmailAndPassword(
+          email: email.text,
+          password: password.text,
+        );
+        service.router.openHome();
+      } else {
+        rethrow;
+      }
+    }
+  },
+  child: Text('Sign-in Or Register'),
+),
+```
+
+
+
+
 # Examples of fireflutter
 
 - We put some easy to follow sample code in branches. Here are some
@@ -369,30 +505,23 @@ $ npm run shell
 
 
 # User
-
 ## User installation
 
-- Do [Firebase installation](#firebase-installation)
-- Enable Email/Password Sign-In method to login with email and password.
-- Enable Google Sign-In method and add the following in `Info.plist` to login with Google account
 
-```xml
-<!-- Google Sign-in Section -->
-<key>CFBundleURLTypes</key>
-<array>
-	<dict>
-		<key>CFBundleTypeRole</key>
-		<string>Editor</string>
-		<key>CFBundleURLSchemes</key>
-		<array>
-			<!-- TODO Replace this value: -->
-			<!-- Copied from GoogleService-Info.plist key REVERSED_CLIENT_ID -->
-			<string>com.googleusercontent.apps.------------------------</string>
-		</array>
-	</dict>
-</array>
-<!-- End of the Google Sign-in Section -->
-```
+- To make this happen,
+  - for Android, SHA1 must be registered on debug mode.
+  - for iOS,
+    - push notification must be enabledand (URL scheme must be set on Xcode.
+      - `Open Xcode by dobule clicking on example/ios/Runner/Runner.xcworkspace`.
+      - `Add Push Notifications` under Signing & Capabilities.
+      - `Add App ID into URL Scheme` under Info. Use `app-....` format.
+    - APNs auth key should configured with FCM seeting in Firebase.
+
+- Note, when you install with `flutterfire configure`, you don't need to input `REVERSED_CLIENT_ID` and `BUNDLE_ID` for sign-in with phone number.
+
+- `UserService` needs to be called immediately after app boots to create and update user profile in realtime database.
+  - Simply call `UserService.instance.init()` in `main.dart` after Firebase has initialized.
+
 
 ## User data and user profile
 
@@ -434,6 +563,10 @@ await user.load();
 
 /// Print user properties.
 print(user);
+```
+
+```dart
+final user = UserModel(uid: '... uid ...')..load();
 ```
 
 ## UserService
@@ -755,6 +888,14 @@ UserDoc(
 ```
 
 - Note, to display if the user is online or offline, see user presence.
+- If `reset` is set to true, then it will not use cached data. Instead, it will get fresh data from database.
+  - So, it gets only one time without realtime update. It's good to be used for input text field.
+  - Use case would be that, for instance, a user is updating his profile information.
+    - Photo can be refreshed by `MyDoc`
+    - And other information may be refresh by `UserDoc(reset: true)` so, when value changes by user input, it will not connect to database to get data again.
+    - You may still use `MyDoc` for all input text field though if you give the value in `initialValue` on `TextFormField`.
+
+
 
 ## User Auth State
 
@@ -1090,6 +1231,42 @@ InformService.instance.inform(widget.room.otherUid, {
   - run `$ firebase deploy --only firestore`
 
 
+## UnitTestMixin
+
+- It's not easy to do `widget test` or `integration test` especially the app has full of backend access through restful api or socket connection.
+  - The standard of flutter test requires `mock data` to test the logic but, still it is not an easy task to do.
+  - So, we developped a custom test for `unit test`, `widget test` and `integration test`.
+
+
+- `init()`
+  - Call this method first before testing and call it only one time for the runtime.
+  - Create a test account and re-use it for the next test.
+  - Check if it's ready to test.
+    - Check if `qna` category exists,
+    - Create a post for test.
+
+
+```dart
+class _UnitTestScreenState extends State<UnitTestScreen>
+  @override
+  void initState() {
+    super.initState();
+    init(
+      setState: () => setState(() => {}),
+    );
+  }
+```
+
+- `signIn(a)`
+  - To login as a. You can use a, b, c.
+
+
+- Use `expect()`, `fail()` to test.
+
+- Use `UnitTestLogs()` to display test logs on screen.
+
+
+
 # Sample code
 
 - See all tests code.
@@ -1410,22 +1587,74 @@ DynamicLinksService.instance.listen((Uri? deepLink) {
 
 # Push notification
 
-- User tokens are saved under `/message-tokens/(tokenId)`
 
-  - properties;
-    - `uid` - user id or empty string if user didn't logged in.
+## Terms and Conditions;
 
-- user topic are saved under `/users/(uid)`.
-  - `{ topics: ['posts_qna', 'posts_discussion', 'comments_qna', ...] }`
+- All the user topics - the topics that the user subscribed.
+- All the user tokens - all the tokens that a user owns.
+- `unsubscribeAllTopicOfToken`
+  It can get all the topics of a token and unsubscribe the topics.
+	This unsubscribe other user topics. (if they share token).
+- `subscribeTopic`
+  - All the user token subscribe to a topic.
+- `unsubscribeTopic`
+	When a user unsubscribes a topic, all the user tokens(devices) must unsubscribe the same topic.
+- `resubscribeAllUserTopics`
+  - All the user token will subscribe all the user topics. (subscribing only. Not unsubscribe anything.)
+- `removeInvalidTokens`.
+- `tokenUpdate`
+	When a user signs-in (or token is refereshed, or when token chagnes), pass the token over to backend.
+  And backend `unsubscribeAllTopicOfToken` and `resubscribeAllUserTopics`. Just incase other phones of the user has new subscriptions or deleted some subscriptions.
 
-## terms
+- User tokens are saved under `/message-tokens/<tokenId>` with uid property. The uid may be an empty string if the user didn't sign-in.
+- user topic are saved under `/users-settings/<uid>/topics/...`.
 
 - `comment notification` is an option to get notification whenever a new comment had posted under his post or comment.
   - `comment notifyee` is a user who will get notification when there is a comment under his post or comment.
 
+## Logic.
 
+- User A has two phone P1, P2
 
+- A signs-in P1 with TokenP1
+	- Do `token-update`
+  	- database: token: /messaging-token/TokenP1 {user: A}
 
+- Then, A subscribe qna, job.
+	- Do `subscribeTopic`
+  	- subscription: [qna, job]
+
+- A signs-in P2 with TokenP2
+	- Do `token-update`
+	- database: token: /messaging-token/TokenP2 {user: A}
+	- subscription: [qna, job]
+
+- B signs-in P1 with TokenP1
+	- Do `token-update` -> TokenP1 is now freed.
+	- B subscribes discussion.
+	- database: token: /messaging-token/TokenP1 {user: B} 
+	- subscription: [discussion]
+
+- A signs-in P1 with TokenP1
+	- database: token: /messaging-token/TokenP1 {user: A}
+	- Do `token-update` -> TokenP1 & TokenP2 are subscribed to [qna, job]
+	- A subscribes discussion
+	- Do "subscribe-topic".
+		A's subscription: [qna, job, discussion] with TokenP1, TokenP2
+	- A unsubscribe job
+		- `unsubscribeTopic`
+		- A's subscription: [qna, discussion] with TokenP1, TokenP2
+
+- A signs-in again on P1 with TokenP12
+	- database: token: /messaging-token/TokenP12 {user: A} -> TokenP1 is invalid due to new token on same device.
+	- Do `token-update`
+	- A's token: Token12, Token2 ( Token1 may still exists on db. )
+
+- A sign-out
+
+- B signs-in P1 with new Token3
+	- Do `token-update`. -> Due to new token on same device, Token12 is now invalid.
+	- B's subscription: [discussion] with Token3.
 
 ## How push notification wokr.
 
@@ -1559,6 +1788,19 @@ HttpException: Invalid statusCode: 403, uri = https://firebasestorage.googleapis
   - @todo - Firefluter does not provide the deletion funtionality for some cases like user closed the app while posting with some image uploaded. You may delete it by yourself at this time. @see https://github.com/withcenter/wonderfulkorea/issues/77
 
 
+# Widgets
+
+## Common widgets
+
+- Common widgets are some handy widgets that are not depending on fireflutter and might be used for common usage.
+
+### DatePicker
+
+- Use `DatePicker` to choose date. 
+
+```dart
+DatePicker(initialValue: 19990304, onChanged: (int newDate) => update(newDate));
+```
 
 # Location Service
 

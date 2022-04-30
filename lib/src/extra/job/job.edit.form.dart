@@ -13,12 +13,10 @@ class JobEditForm extends StatefulWidget {
     Key? key,
     required this.onCreated,
     required this.onUpdated,
-    required this.onError,
   }) : super(key: key);
 
   final Function() onCreated;
   final Function() onUpdated;
-  final Function(dynamic) onError;
 
   @override
   State<JobEditForm> createState() => _JobEditFormState();
@@ -48,8 +46,7 @@ class _JobEditFormState extends State<JobEditForm> with FirestoreMixin {
   }
 
   init() async {
-    final snapshot =
-        await jobs.where('uid', isEqualTo: UserService.instance.uid).get();
+    final snapshot = await jobs.where('uid', isEqualTo: UserService.instance.uid).get();
     if (snapshot.size > 0) {
       job = JobModel.fromJson(
         snapshot.docs.first.data() as Map<String, dynamic>,
@@ -113,8 +110,7 @@ class _JobEditFormState extends State<JobEditForm> with FirestoreMixin {
             label: "Company name",
             initialValue: job.companyName,
             onChanged: (s) => job.companyName = s,
-            validator: (v) =>
-                validateFieldValue(v, "* Please input company name."),
+            validator: (v) => validateFieldValue(v, "* Please input company name."),
           ),
           SizedBox(height: 16),
 
@@ -122,8 +118,7 @@ class _JobEditFormState extends State<JobEditForm> with FirestoreMixin {
             label: "Mobile number",
             initialValue: job.mobileNumber,
             onChanged: (s) => job.mobileNumber = s,
-            validator: (v) =>
-                validateFieldValue(v, "* Please input company mobile number."),
+            validator: (v) => validateFieldValue(v, "* Please input company mobile number."),
             keyboardType: TextInputType.phone,
           ),
           SizedBox(height: 16),
@@ -132,8 +127,7 @@ class _JobEditFormState extends State<JobEditForm> with FirestoreMixin {
             label: 'Office phone number number',
             initialValue: job.phoneNumber,
             onChanged: (s) => job.phoneNumber = s,
-            validator: (v) => validateFieldValue(
-                v, "* Please input company office phone number."),
+            validator: (v) => validateFieldValue(v, "* Please input company office phone number."),
             keyboardType: TextInputType.phone,
           ),
           SizedBox(height: 16),
@@ -151,8 +145,7 @@ class _JobEditFormState extends State<JobEditForm> with FirestoreMixin {
             label: "About us",
             initialValue: job.aboutUs,
             onChanged: (s) => job.aboutUs = s,
-            validator: (v) => validateFieldValue(
-                v, "* Please tell something about your company."),
+            validator: (v) => validateFieldValue(v, "* Please tell something about your company."),
             maxLines: 5,
           ),
           SizedBox(height: 16),
@@ -191,8 +184,7 @@ class _JobEditFormState extends State<JobEditForm> with FirestoreMixin {
                       Spacer(),
                       Padding(
                         padding: const EdgeInsets.only(right: 8.0),
-                        child: Text('Select',
-                            style: TextStyle(fontSize: 14, color: Colors.blue)),
+                        child: Text('Select', style: TextStyle(fontSize: 14, color: Colors.blue)),
                       ),
                     ],
                   ),
@@ -245,8 +237,7 @@ class _JobEditFormState extends State<JobEditForm> with FirestoreMixin {
                   .toList(),
             ],
             onChanged: (s) => setState(() => job.category = s ?? ''),
-            validator: (s) =>
-                validateFieldValue(s, "* Please select job category."),
+            validator: (s) => validateFieldValue(s, "* Please select job category."),
           ),
 
           JobFormDropdownField<int>(
@@ -323,8 +314,7 @@ class _JobEditFormState extends State<JobEditForm> with FirestoreMixin {
               )
             ],
             onChanged: (s) => setState(() => job.salary = s ?? ""),
-            validator: (n) =>
-                validateFieldValue(n, "* Please select a salary to offer."),
+            validator: (n) => validateFieldValue(n, "* Please select a salary to offer."),
           ),
           SizedBox(height: 16),
 
@@ -344,8 +334,7 @@ class _JobEditFormState extends State<JobEditForm> with FirestoreMixin {
             label: "Job description(details of what workers will do)",
             initialValue: job.description,
             onChanged: (s) => job.description = s,
-            validator: (v) => validateFieldValue(
-                v, "* Please describe something about the job."),
+            validator: (v) => validateFieldValue(v, "* Please describe something about the job."),
             maxLines: 5,
           ),
           SizedBox(height: 16),
@@ -366,8 +355,7 @@ class _JobEditFormState extends State<JobEditForm> with FirestoreMixin {
             label: "Duties and responsibilities",
             initialValue: job.duty,
             onChanged: (s) => job.duty = s,
-            validator: (v) => validateFieldValue(
-                v, "* Please enumerate the duties of the job."),
+            validator: (v) => validateFieldValue(v, "* Please enumerate the duties of the job."),
             maxLines: 5,
           ),
           SizedBox(height: 16),
@@ -387,21 +375,17 @@ class _JobEditFormState extends State<JobEditForm> with FirestoreMixin {
               Expanded(
                 child: RadioListTile<Accomodation>(
                   value: Accomodation.Y,
-                  groupValue:
-                      Accomodation.values.asNameMap()[job.withAccomodation],
+                  groupValue: Accomodation.values.asNameMap()[job.withAccomodation],
                   title: Text('Yes'),
-                  onChanged: (Accomodation? v) =>
-                      setState(() => job.withAccomodation = v!.name),
+                  onChanged: (Accomodation? v) => setState(() => job.withAccomodation = v!.name),
                 ),
               ),
               Expanded(
                 child: RadioListTile<Accomodation>(
                   value: Accomodation.N,
-                  groupValue:
-                      Accomodation.values.asNameMap()[job.withAccomodation],
+                  groupValue: Accomodation.values.asNameMap()[job.withAccomodation],
                   title: Text('No'),
-                  onChanged: (Accomodation? v) =>
-                      setState(() => job.withAccomodation = v!.name),
+                  onChanged: (Accomodation? v) => setState(() => job.withAccomodation = v!.name),
                 ),
               ),
             ],
@@ -413,7 +397,7 @@ class _JobEditFormState extends State<JobEditForm> with FirestoreMixin {
           Divider(),
           if (uploadLimited)
             GestureDetector(
-              onTap: () => widget.onError('Image upload is limited to 5 only.'),
+              onTap: () => throw 'Image upload is limited to 5 only.',
               child: Row(
                 children: [
                   Icon(
@@ -458,7 +442,7 @@ class _JobEditFormState extends State<JobEditForm> with FirestoreMixin {
               onProgress: (progress) {
                 if (mounted) setState(() => uploadProgress = progress);
               },
-              onError: (e) => widget.onError(e),
+              // onError: (e) => widget.onError(e),
             ),
           if (uploadProgress > 0) ...[
             SizedBox(height: 8),
@@ -469,7 +453,7 @@ class _JobEditFormState extends State<JobEditForm> with FirestoreMixin {
             ImageListEdit(
               files: job.files,
               onDeleted: () => setState(() {}),
-              onError: (e) => widget.onError(e),
+              // onError: (e) => widget.onError(e),
             ),
           ],
 
@@ -483,8 +467,7 @@ class _JobEditFormState extends State<JobEditForm> with FirestoreMixin {
                   value: Status.Y,
                   groupValue: Status.values.asNameMap()[job.status],
                   title: Text('Enable'),
-                  onChanged: (Status? v) =>
-                      setState(() => job.status = v!.name),
+                  onChanged: (Status? v) => setState(() => job.status = v!.name),
                 ),
               ),
               Expanded(
@@ -492,8 +475,7 @@ class _JobEditFormState extends State<JobEditForm> with FirestoreMixin {
                   value: Status.N,
                   groupValue: Status.values.asNameMap()[job.status],
                   title: Text('Disabled'),
-                  onChanged: (Status? v) =>
-                      setState(() => job.status = v!.name),
+                  onChanged: (Status? v) => setState(() => job.status = v!.name),
                 ),
               ),
             ],
@@ -504,46 +486,44 @@ class _JobEditFormState extends State<JobEditForm> with FirestoreMixin {
           if (loading)
             Padding(
               padding: const EdgeInsets.all(16.0),
-              child: Center(
-                  child: CircularProgressIndicator.adaptive(strokeWidth: 2)),
+              child: Center(child: CircularProgressIndicator.adaptive(strokeWidth: 2)),
             )
           else
             ElevatedButton(
               child: Text('SUBMIT'),
               style: ElevatedButton.styleFrom(elevation: 0),
-              onPressed: () async {
-                setState(() {
-                  isSubmitted = true;
-                  loading = true;
-                });
-                // Validate returns true if the form is valid, or false otherwise.
-                if (_formKey.currentState!.validate() && address != null) {
-                  addJobAddress(address!);
-
-                  try {
-                    await job.edit();
-                    if (job.id == '') {
-                      widget.onCreated();
-                    } else {
-                      widget.onUpdated();
-                    }
-                  } catch (e, stacks) {
-                    debugPrintStack(stackTrace: stacks);
-                    widget.onError(e);
-                  }
-                } else {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                        content: Text(
-                      'Form incomplete, please check for missing information.',
-                    )),
-                  );
-                }
-                setState(() => loading = false);
-              },
+              onPressed: onSubmit,
             )
         ],
       ),
+    );
+  }
+
+  Future onSubmit() async {
+    setState(() {
+      isSubmitted = true;
+      loading = true;
+    });
+    if (address == null || !_formKey.currentState!.validate()) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Form incomplete, please check for missing information.')),
+      );
+      setState(() => loading = false);
+      return;
+    }
+
+    addJobAddress(address!);
+    return await job.edit().then((value) {
+      if (job.id == '') {
+        widget.onCreated();
+      } else {
+        widget.onUpdated();
+      }
+      return value;
+    }).whenComplete(
+      () => setState(() {
+        loading = false;
+      }),
     );
   }
 }

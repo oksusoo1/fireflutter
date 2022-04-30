@@ -28,7 +28,7 @@ class _JobSeekerListScreenState extends State<JobSeekerListScreen> {
       ),
       body: JobSeekerList(
         options: options,
-        onTap: (seeker) => AppService.instance.open(
+        onTap: (seeker) => AppService.instance.router.open(
           JobSeekerProfileViewScreen.routeName,
           arguments: {'profile': seeker},
         ),
@@ -49,15 +49,12 @@ class JobSeekerListTitleBottom extends StatefulWidget with PreferredSizeWidget {
   Size get preferredSize => Size.fromHeight(100);
 
   @override
-  State<JobSeekerListTitleBottom> createState() =>
-      _JobSeekerListTitleBottomState();
+  State<JobSeekerListTitleBottom> createState() => _JobSeekerListTitleBottomState();
 }
 
 class _JobSeekerListTitleBottomState extends State<JobSeekerListTitleBottom> {
   @override
   Widget build(BuildContext context) {
-    return Container(
-        color: Colors.white,
-        child: JobSeekerListOptions(change: widget.change));
+    return Container(color: Colors.white, child: JobSeekerListOptions(change: widget.change));
   }
 }

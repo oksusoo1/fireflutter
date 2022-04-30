@@ -1,13 +1,14 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:example/services/app.router.dart';
+import 'package:example/services/click_sound.service.dart';
 import 'package:example/services/defines.dart';
-import 'package:example/services/error_info.dart';
 import 'package:example/services/global.dart';
 import 'package:example/widgets/app_alert_dialog/app_alert_dialog.dart';
 import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
-import 'package:rxdart/rxdart.dart';
+// import 'package:rxdart/rxdart.dart';
 
 class Service {
   static Service? _instance;
@@ -20,53 +21,35 @@ class Service {
 
   Service() {
     init();
+
+    ClickSoundService.instance.init();
   }
 
   /// Dio may produce consecutive errors when there are network problems.
   /// It catches those consecutive erros and reduces into one.
-  PublishSubject<int> dioNoInternetError = PublishSubject();
-  PublishSubject<int> dioConnectionError = PublishSubject();
+  // PublishSubject<int> dioNoInternetError = PublishSubject();
+  // PublishSubject<int> dioConnectionError = PublishSubject();
 
   BuildContext get context => globalNavigatorKey.currentContext!;
 
   init() async {
-    /// Display toast error debounced by a second on `No Internet`
-    dioNoInternetError.debounceTime(const Duration(seconds: 1)).listen(
-          (x) => alert(
-            "No Internet", // title
-            "Oops! Your device is not connected to the Internet, or the speed of Internet is very slow. Please check internet connectivity. And see if this app allowed to use mobile data when your are using mobile data", // message
-          ),
-        );
+    // /// Display toast error debounced by a second on `No Internet`
+    // dioNoInternetError.debounceTime(const Duration(seconds: 1)).listen(
+    //       (x) => alert(
+    //         "No Internet", // title
+    //         "Oops! Your device is not connected to the Internet, or the speed of Internet is very slow. Please check internet connectivity. And see if this app allowed to use mobile data when your are using mobile data", // message
+    //       ),
+    //     );
 
-    /// Display toast error debounded by 2 seconds on `Connection error to server`.
-    /// This happens when internet is slow and the client sometimes cannot connect to server.
-    dioConnectionError.throttleTime(const Duration(seconds: 2)).listen(
-          (x) => toast(
-            'Connection Error',
-            'Please check your connection. This error may happens on slow internet connection.',
-            duration: 10,
-          ),
-        );
-
-    /// Listen to reminder
-    ///
-    /// Delay 3 seconds. This is just to display the reminder dialog 3 seconds
-    /// after the app boots. No big deal here.
-    Timer(const Duration(seconds: 3), () {
-      /// Listen to the reminder update event.
-      ReminderService.instance.init(onReminder: (reminder) {
-        /// Display the reminder using default dialog UI. You may copy the code
-        /// and customize by yourself.
-        ReminderService.instance.display(
-          /// Use the global NavigatorState to display dialog.
-          context: globalNavigatorKey.currentContext!,
-          data: reminder,
-          onLinkPressed: (page, arguments) {
-            router.open(page, arguments: arguments);
-          },
-        );
-      });
-    });
+    // /// Display toast error debounded by 2 seconds on `Connection error to server`.
+    // /// This happens when internet is slow and the client sometimes cannot connect to server.
+    // dioConnectionError.throttleTime(const Duration(seconds: 2)).listen(
+    //       (x) => toast(
+    //         'Connection Error',
+    //         'Please check your connection. This error may happens on slow internet connection.',
+    //         duration: 10,
+    //       ),
+    //     );
   }
 
   /// Open alert box
@@ -240,12 +223,18 @@ class Service {
 
     if (e.toString() == 'IMAGE_NOT_SELECTED') return;
 
-    final ErrorInfo? info = errorInfo(e);
-    if (info != null) {
-      alert(
-        TranslationService.instance.tr(info.title),
-        TranslationService.instance.tr(info.content),
-      );
+    final ErrorInfo info = ErrorInfo.from(e);
+    if (info.level == ErrorLevel.minor) {
+      log('--> Ignore minor error; ${info.title}, ${info.content}');
+      return;
     }
+    alert(
+      TranslationService.instance.tr(info.title),
+      TranslationService.instance.tr(info.content),
+    );
+  }
+
+  Future pageTransitionSound() {
+    return ClickSoundService.instance.play();
   }
 }

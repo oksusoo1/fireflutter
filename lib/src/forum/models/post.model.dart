@@ -6,7 +6,7 @@ import '../../../fireflutter.dart';
 ///
 /// Post and comment are a lot similiar. So both uses the same model.
 /// Refer readme for details
-class PostModel with FirestoreMixin, ForumBase {
+class PostModel with FirestoreMixin, ForumBase implements Article {
   PostModel({
     this.id = '',
     this.category = '',
@@ -111,10 +111,8 @@ class PostModel with FirestoreMixin, ForumBase {
     Timestamp createdAt;
     Timestamp updatedAt;
     if (data['createdAt'] is Map) {
-      createdAt = Timestamp(
-          data['createdAt']['_seconds'], data['createdAt']['_nanoseconds']);
-      updatedAt = Timestamp(
-          data['updatedAt']['_seconds'], data['updatedAt']['_nanoseconds']);
+      createdAt = Timestamp(data['createdAt']['_seconds'], data['createdAt']['_nanoseconds']);
+      updatedAt = Timestamp(data['updatedAt']['_seconds'], data['updatedAt']['_nanoseconds']);
     } else {
       createdAt = data['createdAt'];
       updatedAt = data['updatedAt'] ?? Timestamp.now();
@@ -212,12 +210,17 @@ class PostModel with FirestoreMixin, ForumBase {
   }
 
   Future<void> report(String? reason) {
-    return createReport(
+    return ReportApi.instance.report(
       target: 'post',
       targetId: id,
-      reporteeUid: uid,
       reason: reason,
     );
+    // return createReport(
+    //   target: 'post',
+    //   targetId: id,
+    //   reporteeUid: uid,
+    //   reason: reason,
+    // );
   }
 
   /// Create a post with extra data
@@ -234,7 +237,7 @@ class PostModel with FirestoreMixin, ForumBase {
   /// ```
   ///
   /// Read readme for [hasPhoto]
-  @Deprecated('Use PostApi')
+  @Deprecated('Use PostApi. This method is to be updated to call PostApi.create()')
   Future<DocumentReference<Object?>> create({
     required String category,
     required String title,
@@ -246,10 +249,8 @@ class PostModel with FirestoreMixin, ForumBase {
     Json extra = const {},
   }) {
     if (signedIn == false) throw ERROR_SIGN_IN;
-    if (UserService.instance.user.exists == false)
-      throw ERROR_USER_DOCUMENT_NOT_EXISTS;
-    if (UserService.instance.user.notReady)
-      throw UserService.instance.user.profileError;
+    if (UserService.instance.user.exists == false) throw ERROR_USER_DOCUMENT_NOT_EXISTS;
+    if (UserService.instance.user.notReady) throw UserService.instance.user.profileError;
 
     final j = Jiffy();
     int week = ((j.unix() - 345600) / 604800).floor();
@@ -273,8 +274,9 @@ class PostModel with FirestoreMixin, ForumBase {
       'updatedAt': FieldValue.serverTimestamp(),
     };
     if (documentId != null && documentId != '') {
-      return postCol.doc(documentId).set({...createData, ...extra}).then(
-          (value) => postCol.doc(documentId));
+      return postCol
+          .doc(documentId)
+          .set({...createData, ...extra}).then((value) => postCol.doc(documentId));
     } else {
       return postCol.add({...createData, ...extra});
     }
@@ -356,18 +358,14 @@ class PostModel with FirestoreMixin, ForumBase {
   /// ```dart
   /// PostModel.increaseNoOfComments(postId);
   /// ```
-  @Deprecated(
-      'Do not use this. noOfComments will be automatically adjusted by cloud funtions.')
+  @Deprecated('Do not use this. noOfComments will be automatically adjusted by cloud funtions.')
   static Future<void> increaseNoOfComments(postId) {
-    return FirestoreMixin.postDocument(postId)
-        .update({'noOfComments': FieldValue.increment(1)});
+    return FirestoreMixin.postDocument(postId).update({'noOfComments': FieldValue.increment(1)});
   }
 
-  @Deprecated(
-      'Do not use this. noOfComments will be automatically adjusted by cloud funtions.')
+  @Deprecated('Do not use this. noOfComments will be automatically adjusted by cloud funtions.')
   static Future<void> decreaseNoOfComments(postId) {
-    return FirestoreMixin.postDocument(postId)
-        .update({'noOfComments': FieldValue.increment(-1)});
+    return FirestoreMixin.postDocument(postId).update({'noOfComments': FieldValue.increment(-1)});
   }
 
   ///
@@ -400,8 +398,7 @@ class PostModel with FirestoreMixin, ForumBase {
   ///
   /// Use this to check if this post has just been created.
   bool get justNow {
-    final date =
-        DateTime.fromMillisecondsSinceEpoch(createdAt.millisecondsSinceEpoch);
+    final date = DateTime.fromMillisecondsSinceEpoch(createdAt.millisecondsSinceEpoch);
     final today = DateTime.now();
     final diff = today.difference(date);
     return diff.inMinutes < 5;

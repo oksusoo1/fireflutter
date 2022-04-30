@@ -20,6 +20,17 @@
 	<string>$(FLUTTER_BUILD_NAME)</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>app-1-649893238215-ios-393ff23050caf11dcfb5e2</string>
+			</array>
+		</dict>
+	</array>
 	<key>CFBundleVersion</key>
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
 	<key>LSRequiresIPhoneOS</key>
@@ -43,5 +54,13 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+
+	<key>NSCameraUsageDescription</key>
+	<string>This app requires access to camera to take photos and share with other users.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>This app requires access to mic record voice.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>This app requires access to photo library for uploading into the app and sharing photos with other users.</string>
+
 </dict>
 </plist>

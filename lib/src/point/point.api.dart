@@ -13,7 +13,7 @@ class PointApi {
     required int year,
     required int month,
   }) async {
-    if (UserService.instance.notSignIn) throw ERROR_NOT_SIGN_IN;
+    if (UserService.instance.notSignedIn) throw ERROR_NOT_SIGN_IN;
 
     final res = await FunctionsApi.instance.request('pointHistory',
         data: {

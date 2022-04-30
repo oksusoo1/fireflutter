@@ -7,4 +7,8 @@ class FunctionName {
   static const String commentDelete = 'commentDelete';
   static const String produceErrorString = 'produceErrorString';
   static const String produceErrorObject = 'produceErrorObject';
+  static const String jobCreate = 'jobCreate';
+  static const String jobUpdate = 'jobUpdate';
+  static const String jobUpdateProfile = 'jobUpdateProfile';
+  static const String report = 'report';
 }

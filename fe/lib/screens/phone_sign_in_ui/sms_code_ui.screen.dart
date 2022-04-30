@@ -36,7 +36,7 @@ class _SmsCodeUIScreenState extends State<SmsCodeUIScreen> {
                 'Phone sign-in success',
                 'You have signed-in.',
               ).then(
-                (value) => AppService.instance.openHome(),
+                (value) => AppService.instance.router.openHome(),
               ),
 
               //  Get.defaultDialog(
@@ -81,14 +81,12 @@ class _SmsCodeUIScreenState extends State<SmsCodeUIScreen> {
                   PhoneService.instance.verifySentProgress
                       ? const CircularProgressIndicator.adaptive()
                       : ElevatedButton(
-                          onPressed: PhoneService.instance.smsCode.length == 6
-                              ? submit
-                              : null,
+                          onPressed: PhoneService.instance.smsCode.length == 6 ? submit : null,
                           child: const Text('Submit'),
                         ),
                   const Spacer(),
                   TextButton(
-                    onPressed: AppService.instance.back,
+                    onPressed: AppService.instance.router.back,
                     child: const Text('Try again'),
                   ),
                 ],

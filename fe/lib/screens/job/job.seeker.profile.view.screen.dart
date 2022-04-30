@@ -25,7 +25,7 @@ class JobSeekerProfileViewScreen extends StatelessWidget {
           children: [
             JobSeekerProfileView(
               seeker: arguments['profile'],
-              onChat: (uid) => AppService.instance.openChatRoom(uid),
+              onChat: (uid) => AppService.instance.router.openChatRoom(uid),
             ),
             space2xl,
           ],

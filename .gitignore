@@ -2,6 +2,9 @@ fireflutter.config.ts
 *.adminKey.json
 *sdk-key.json
 
+
+google-services.json
+
 backup.json
 backup*.json
 

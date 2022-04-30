@@ -3,7 +3,6 @@ import '../../../../fireflutter.dart';
 class JobSeekerModel {
   String id;
   String proficiency;
-  // String skills;
   String experiences;
   String industry;
   String comment;
@@ -16,7 +15,6 @@ class JobSeekerModel {
   JobSeekerModel({
     this.id = '',
     this.proficiency = '',
-    // this.skills = '',
     this.experiences = '',
     this.industry = '',
     this.comment = '',
@@ -29,7 +27,6 @@ class JobSeekerModel {
     return JobSeekerModel(
       id: id,
       proficiency: json['proficiency'] ?? '',
-      // skills: json['skills'] ?? '',
       experiences: json['experiences'] ?? '',
       industry: json['industry'] ?? '',
       comment: json['comment'] ?? '',
@@ -41,7 +38,6 @@ class JobSeekerModel {
 
   copyWith(Map<String, dynamic> data) {
     proficiency = data['proficiency'] ?? '';
-    // skills = data['skills'] ?? '';
     experiences = data['experiences'] ?? '0';
     industry = data['industry'] ?? '';
     comment = data['comment'] ?? '';
@@ -50,8 +46,8 @@ class JobSeekerModel {
     status = data['status'] ?? 'Y';
   }
 
-  update() async {
-    await FunctionsApi.instance.request(
+  Future update() async {
+    return await FunctionsApi.instance.request(
       'jobUpdateProfile',
       data: updateMap,
       addAuth: true,
@@ -71,7 +67,6 @@ class JobSeekerModel {
 
   Map<String, dynamic> get updateMap => {
         'proficiency': proficiency,
-        // 'skills': skills,
         'experiences': experiences,
         'industry': industry,
         'comment': comment,

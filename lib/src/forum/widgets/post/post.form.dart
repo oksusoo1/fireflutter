@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import '../../../../fireflutter.dart';
 
+class PostFormController {
+  late _PostFormState state;
+}
+
 class PostForm extends StatefulWidget {
   const PostForm({
     this.category,
@@ -9,13 +13,15 @@ class PostForm extends StatefulWidget {
     this.post,
     required this.onCreate,
     required this.onUpdate,
-    required this.onError,
     this.heightBetween = 10.0,
     this.titleFieldBuilder,
     this.contentFieldBuilder,
     this.submitButtonBuilder,
+    this.controller,
     Key? key,
   }) : super(key: key);
+
+  final PostFormController? controller;
 
   final PostModel? post;
   final String? category;
@@ -27,7 +33,6 @@ class PostForm extends StatefulWidget {
 
   final Function(String) onCreate;
   final Function(String) onUpdate;
-  final Function(dynamic) onError;
 
   final Widget Function(TextEditingController)? titleFieldBuilder;
   final Widget Function(TextEditingController)? contentFieldBuilder;
@@ -47,20 +52,25 @@ class _PostFormState extends State<PostForm> {
   double uploadProgress = 0;
   bool inSubmit = false;
 
-  bool get isCreate =>
-      (widget.post == null || widget.post?.id == '') ||
-      (widget.category != null && widget.category!.isNotEmpty);
+  bool get isCreate => (widget.post == null || widget.post?.id == '') || (category != '');
   bool get isUpdate => !isCreate;
+
+  /// This is used by custom test also.
+  String category = '';
 
   @override
   void initState() {
     super.initState();
+    category = widget.category ?? '';
     setState(() {
       title.text = widget.post?.title ?? '';
       content.text = widget.post?.content ?? '';
       summary.text = widget.post?.summary ?? '';
       files = widget.post?.files ?? [];
     });
+    if (widget.controller != null) {
+      widget.controller!.state = this;
+    }
   }
 
   @override
@@ -122,7 +132,6 @@ class _PostFormState extends State<PostForm> {
               onProgress: (progress) {
                 if (mounted) setState(() => uploadProgress = progress);
               },
-              onError: widget.onError,
             ),
             inSubmit
                 ? Container(
@@ -146,7 +155,7 @@ class _PostFormState extends State<PostForm> {
               SizedBox(height: 8)
             ],
           ),
-        ImageListEdit(files: files, onError: widget.onError),
+        ImageListEdit(files: files),
         if (UserService.instance.user.isAdmin)
           Container(
             margin: EdgeInsets.only(top: 16),
@@ -178,45 +187,53 @@ class _PostFormState extends State<PostForm> {
     );
   }
 
-  Future<void> onSubmit() async {
+  Future<PostModel> onSubmit() async {
     if (widget.photo == true) {
       if (files.length == 0) {
-        widget.onError(ERROR_NO_PHOTO_ATTACHED);
-        return;
+        throw ERROR_NO_PHOTO_ATTACHED;
       }
     }
+    if (category == '') {
+      throw ERROR_EMPTY_CATEGORY;
+    }
     setState(() => inSubmit = true);
-    try {
-      if (isCreate) {
-        final post = await PostApi.instance.create(
-          documentId: documentId.text,
-          category: widget.category!,
-          subcategory: widget.subcategory,
-          title: title.text,
-          content: content.text,
-          files: files,
-        );
 
+    if (isCreate) {
+      return PostApi.instance
+          .create(
+        documentId: documentId.text,
+        category: category,
+        subcategory: widget.subcategory,
+        title: title.text,
+        content: content.text,
+        files: files,
+      )
+          .then((post) {
         widget.onCreate(post.id);
-      } else {
-        /// update
-        await PostApi.instance.update(
-          id: widget.post!.id,
-          title: title.text,
-          content: content.text,
-          files: files,
-          summary: summary.text,
-        );
-
-        widget.onUpdate(widget.post!.id);
-      }
-    } catch (e, stacks) {
-      debugPrint(e.toString());
-      debugPrintStack(stackTrace: stacks);
-      widget.onError(e);
-      setState(() {
-        inSubmit = false;
-      });
+        return post;
+      }).whenComplete(
+        () => setState(() {
+          inSubmit = false;
+        }),
+      );
+    } else {
+      /// update
+      return PostApi.instance
+          .update(
+        id: widget.post!.id,
+        title: title.text,
+        content: content.text,
+        files: files,
+        summary: summary.text,
+      )
+          .then((post) {
+        widget.onUpdate(post.id);
+        return post;
+      }).whenComplete(
+        () => setState(() {
+          inSubmit = false;
+        }),
+      );
     }
   }
 }

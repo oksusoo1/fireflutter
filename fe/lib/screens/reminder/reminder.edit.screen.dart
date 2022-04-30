@@ -27,7 +27,7 @@ class ReminderEditScreen extends StatelessWidget {
                 await ReminderService.instance.display(
                   context: context,
                   onLinkPressed: (String page, dynamic arguments) =>
-                      AppService.instance.open(page, arguments: arguments),
+                      AppService.instance.router.open(page, arguments: arguments),
                   data: data,
                 );
 

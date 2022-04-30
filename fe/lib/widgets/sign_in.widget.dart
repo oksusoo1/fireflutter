@@ -12,10 +12,10 @@ class SignInWidget extends StatelessWidget {
     return SignInScreen(
       actions: [
         AuthStateChangeAction<SignedIn>((context, _) {
-          AppService.instance.openHome();
+          AppService.instance.router.openHome();
         }),
         SignedOutAction((context) {
-          AppService.instance.openHome();
+          AppService.instance.router.openHome();
         }),
       ],
       providerConfigs: const [
@@ -24,7 +24,7 @@ class SignInWidget extends StatelessWidget {
       ],
       footerBuilder: (context, _) {
         return TextButton(
-          onPressed: () => AppService.instance.openHome(),
+          onPressed: () => AppService.instance.router.openHome(),
           child: const Text(
             'Back to home',
             style: TextStyle(color: Colors.grey),

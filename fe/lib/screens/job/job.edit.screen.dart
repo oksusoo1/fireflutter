@@ -26,14 +26,13 @@ class _JobEditScreenState extends State<JobEditScreen> {
         child: Column(
           children: [
             JobEditForm(
-              onError: error,
               onCreated: () async {
                 await alert('Job create', 'Job opening created!');
-                AppService.instance.back();
+                AppService.instance.router.back();
               },
               onUpdated: () async {
                 await alert('Job updated', 'Job opening updated!');
-                AppService.instance.back();
+                AppService.instance.router.back();
               },
             ),
             space2xl,

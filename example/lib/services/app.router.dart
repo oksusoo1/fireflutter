@@ -1,17 +1,36 @@
+import 'package:example/screens/admin/admin.category.screen.dart';
+import 'package:example/screens/admin/admin.category_group.screen.dart';
+import 'package:example/screens/admin/admin.screen.dart';
+import 'package:example/screens/settings/settings.screen.dart';
+import 'package:example/screens/test/test.screen.dart';
+import 'package:flutter/material.dart';
 import 'package:example/screens/about/about.screen.dart';
 import 'package:example/screens/home/home.screen.dart';
 import 'package:example/screens/menu/menu.screen.dart';
+import 'package:example/screens/profile/profile.edit.screen.dart';
+import 'package:example/screens/profile/profile.screen.dart';
+import 'package:example/screens/user/sign-in-with-email-password.screen.dart';
 import 'package:example/services/global.dart';
-import 'package:flutter/material.dart';
+import 'package:example/services/defines.dart';
 
-typedef RouteFunction = Widget Function(BuildContext, Map);
-
-final Map<String, RouteFunction> _routes = {
+/// Page screen (routes)
+///
+/// Define the page screens here.
+final Map<String, RouteFunction> appRoutes = {
   HomeScreen.routeName: (context, arguments) => const HomeScreen(),
   AboutScreen.routeName: (context, arguments) => const AboutScreen(),
   MenuScreen.routeName: (context, arguments) => const MenuScreen(),
+  ProfileScreen.routeName: (context, arguments) => const ProfileScreen(),
+  ProfileEditScreen.routeName: (context, arguments) => const ProfileEditScreen(),
+  SignInWithEmailAndPasswordScreen.routeName: (p0, p1) => const SignInWithEmailAndPasswordScreen(),
+  SettingsScreen.routeName: (context, arguments) => const SettingsScreen(),
+  TestScreen.routeName: (context, arguments) => const TestScreen(),
+  AdminScreen.routeName: (context, arguments) => const AdminScreen(),
+  AdminCategoryScreen.routeName: (p0, p1) => const AdminCategoryScreen(),
+  AdminCategoryGroupScreen.routeName: (context, arugment) => AdminCategoryGroupScreen(),
 };
 
+/// NoAnimationMaterialPageRoute is for removing page transition.
 class NoAnimationMaterialPageRoute<T> extends MaterialPageRoute<T> {
   NoAnimationMaterialPageRoute({
     required WidgetBuilder builder,
@@ -42,15 +61,21 @@ class AppRouter extends NavigatorObserver {
   }
 
   BuildContext get context => globalNavigatorKey.currentContext!;
+  static Map<String, Route> routeStack = {};
 
   /// Connect this to onGenerateRoute of MaterialApp
   static Route<dynamic> onGenerateRoute(settings) {
     final String name = settings.name;
 
+    if (routeStack[name] != null) {
+      Navigator.of(globalNavigatorKey.currentContext!).removeRoute(routeStack[name]!);
+      routeStack.remove(name);
+    }
+
     /// 그리고, MaterialApp 의 onGenerateRoute() 의 결과로 리턴 할 route 작성
     final route = NoAnimationMaterialPageRoute(
       builder: (c) {
-        return _routes[name]!(
+        return appRoutes[name]!(
           c,
           ((settings.arguments ?? {}) as Map),
         );
@@ -62,13 +87,26 @@ class AppRouter extends NavigatorObserver {
       settings: settings,
     );
 
+    routeStack[name] = route;
+    debugPrint('push screen; -- $name');
+    debugPrint(routeStack.keys.toString());
+
     ///
     return route;
   }
 
-  /// 스크린(페이지) 이동
+  @override
+  void didPop(Route<dynamic> route, Route<dynamic>? previousRoute) {
+    String routeName = route.settings.name ?? '';
+    AppRouter.routeStack.remove(routeName);
+    debugPrint('pop screen; -- $routeName');
+    debugPrint(routeStack.keys.toString());
+  }
+
+  /// Open a screen.
   ///
-  /// [popAll] 에 true 가 지정되면, nav stack 의 중간에 있는 모든 페이지를 없애고 해당 페이지로 이동.
+  /// If [popAll] is set to true, then it removes all the screen in nav stack.
+  ///
   // Future? open(String routeName,
   //     {Map<String, dynamic>? arguments, popAll = false, off = false, preventDuplicates = true}) {
   //   global.routeName.value = routeName;
@@ -81,24 +119,17 @@ class AppRouter extends NavigatorObserver {
   //   }
   // }
 
-  /// If [pop] is set to true, then it will pop current page
-  ///   (which has name, Not drawer, and not limited to dialogs)
-  ///   and put a new screen.
   /// If [popAll] is true, then it will remove all screen in route stack and put a new screen.
   ///   Use [popAll] when the app goes to home screen.
   Future<dynamic> open(
     String routeName, {
     Map? arguments,
-    bool pop = false,
     bool popAll = false,
-    bool preventDuplicate = true,
   }) {
-    if (pop) {
-      return Navigator.of(context).popAndPushNamed(
-        routeName,
-        arguments: arguments,
-      );
-    } else if (popAll) {
+    service.pageTransitionSound();
+
+    if (popAll) {
+      AppRouter.routeStack = {};
       return Navigator.of(context).pushNamedAndRemoveUntil(
         routeName,
         (Route<dynamic> route) => false,
@@ -115,6 +146,7 @@ class AppRouter extends NavigatorObserver {
 
   /// Return to previous page
   void back([dynamic data]) {
+    service.pageTransitionSound();
     Navigator.pop(globalNavigatorKey.currentContext!, data);
   }
 
@@ -128,5 +160,37 @@ class AppRouter extends NavigatorObserver {
 
   Future openMenu() {
     return open(MenuScreen.routeName, popAll: true);
+  }
+
+  Future openProfile() {
+    return open(ProfileScreen.routeName, popAll: true);
+  }
+
+  Future openProfileEdit() {
+    return open(ProfileEditScreen.routeName);
+  }
+
+  Future openSignInWithEmailAndPassword() {
+    return open(SignInWithEmailAndPasswordScreen.routeName);
+  }
+
+  Future openSettings() {
+    return open(SettingsScreen.routeName);
+  }
+
+  Future openTest() {
+    return open(TestScreen.routeName);
+  }
+
+  Future openAdmin() {
+    return open(AdminScreen.routeName);
+  }
+
+  Future openAdminCategory() {
+    return open(AdminCategoryScreen.routeName);
+  }
+
+  Future openAdminCategoryGroup() {
+    return open(AdminCategoryGroupScreen.routeName);
   }
 }

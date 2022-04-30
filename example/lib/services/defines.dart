@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+typedef RouteFunction = Widget Function(BuildContext, Map);
+
 const double xxs = 4;
 const double xs = 8;
 const double xsm = 12;
@@ -23,3 +25,12 @@ const spaceXl = SizedBox(width: xl, height: xl);
 const spaceXxl = SizedBox(width: xxl, height: xxl);
 const space2xl = spaceXxl;
 const space3xl = SizedBox(width: xxxl, height: xxxl);
+
+const hintStyle = TextStyle(
+  fontSize: xsm,
+  color: Color(0xFF6f6f6f),
+);
+
+const titleStyle = TextStyle(
+  color: Color(0xFF000000),
+);

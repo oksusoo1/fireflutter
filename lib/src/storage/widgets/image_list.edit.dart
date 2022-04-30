@@ -4,13 +4,13 @@ import '../../../fireflutter.dart';
 class ImageListEdit extends StatefulWidget {
   const ImageListEdit({
     required this.files,
-    required this.onError,
+    // required this.onError,
     this.onDeleted,
     Key? key,
   }) : super(key: key);
 
   final List<String> files;
-  final Function(dynamic) onError;
+  // final Function(dynamic) onError;
   final Function()? onDeleted;
 
   @override
@@ -73,14 +73,16 @@ class _ImageListEditState extends State<ImageListEdit> {
                       ),
                     );
                     if (re == null) return;
-                    try {
-                      await StorageService.instance.delete(fileUrl);
-                      widget.files.remove(fileUrl);
-                      if (widget.onDeleted != null) widget.onDeleted!();
-                      if (mounted) setState(() {});
-                    } catch (e) {
-                      widget.onError(e);
-                    }
+                    // try {
+
+                    await StorageService.instance.delete(fileUrl);
+                    widget.files.remove(fileUrl);
+                    if (widget.onDeleted != null) widget.onDeleted!();
+                    if (mounted) setState(() {});
+
+                    // } catch (e) {
+                    //   widget.onError(e);
+                    // }
                   },
                 ),
               )

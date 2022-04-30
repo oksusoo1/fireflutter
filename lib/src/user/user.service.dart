@@ -16,8 +16,6 @@ class UserService with FirestoreMixin, DatabaseMixin {
   }
 
   UserService() {
-    // debugPrint('UserService::constructor');
-
     initAuthChanges();
   }
 
@@ -31,6 +29,11 @@ class UserService with FirestoreMixin, DatabaseMixin {
   String get phoneNumber => currentUser?.phoneNumber ?? '';
 
   String get email => user.email;
+  String get firstName => user.firstName;
+  String get lastName => user.lastName;
+  String get middleName => user.middleName;
+
+  bool get isAdmin => user.isAdmin;
 
   // No more email verification by Apr 13, 2022.
   // String get email => currentUser?.email ?? '';
@@ -49,6 +52,9 @@ class UserService with FirestoreMixin, DatabaseMixin {
   /// This event will be posted whenever user document changes.
   // ignore: close_sinks
   BehaviorSubject<UserModel> changes = BehaviorSubject.seeded(UserModel());
+
+  /// Nothing but to instantiate `UserSerivce` object. So it will listen auth changes and update user profile.
+  init() {}
 
   /// User auth changes
   ///
@@ -170,10 +176,15 @@ class UserService with FirestoreMixin, DatabaseMixin {
   /// Use this method to get other user's doc.
   ///
   /// See readme for details.
+  ///
+  /// if [reset] is set to true, then it will get new data from database.
   Map<String, UserModel> others = {};
-  Future<UserModel> getOtherUserDoc(String uid) async {
+  Future<UserModel> getOtherUserDoc(
+    String uid, {
+    bool reset = false,
+  }) async {
     if (uid == '') return UserModel();
-    if (others[uid] != null) {
+    if (reset == false && others[uid] != null) {
       // print('--> reuse uid; $uid');
       return others[uid]!;
     }
@@ -194,8 +205,7 @@ class UserService with FirestoreMixin, DatabaseMixin {
     UserModel user = await getOtherUserDoc(uid);
     if (user.disabled) throw ERROR_USER_ALREADY_BLOCKED;
     HttpsCallable onCallDisableUser =
-        FirebaseFunctions.instanceFor(region: 'asia-northeast3')
-            .httpsCallable('disableUser');
+        FirebaseFunctions.instanceFor(region: 'asia-northeast3').httpsCallable('disableUser');
     try {
       final res = await onCallDisableUser.call({'uid': uid});
       UserModel u = UserModel.fromJson(res.data, uid);
@@ -211,8 +221,7 @@ class UserService with FirestoreMixin, DatabaseMixin {
     UserModel user = await getOtherUserDoc(uid);
     if (!user.disabled) throw ERROR_USER_ALREADY_UNBLOCKED;
     HttpsCallable onCallDisableUser =
-        FirebaseFunctions.instanceFor(region: 'asia-northeast3')
-            .httpsCallable('enableUser');
+        FirebaseFunctions.instanceFor(region: 'asia-northeast3').httpsCallable('enableUser');
     try {
       final res = await onCallDisableUser.call({'uid': uid});
       UserModel u = UserModel.fromJson(res.data, uid);

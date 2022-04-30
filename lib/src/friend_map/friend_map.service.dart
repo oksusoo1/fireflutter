@@ -21,15 +21,16 @@ class FriendMapService {
     required double longitude,
     LocationAccuracy accuracy = LocationAccuracy.bestForNavigation,
   }) async {
-    Position currentUserPosition =
-        await Geolocator.getCurrentPosition(desiredAccuracy: accuracy);
+    Position currentUserPosition = await Geolocator.getCurrentPosition(desiredAccuracy: accuracy);
 
     this._currentUserLatitude = currentUserPosition.latitude;
     this._currentUserLongitude = currentUserPosition.longitude;
     this._destinationLatitude = latitude;
     this._destinationLongitude = longitude;
 
-    return refreshMap();
+    await drawDestinationLocationMarker();
+    await drawCurrentLocationMarker();
+    adjustCameraViewAndZoom();
   }
 
   /// InitialCoordinates.
@@ -62,8 +63,7 @@ class FriendMapService {
   ///
   Set<Marker> get markers => _markers;
 
-  set mapController(GoogleMapController controller) =>
-      _mapController = controller;
+  set mapController(GoogleMapController controller) => _mapController = controller;
 
   /// Camera updates will depend on this value.
   ///
@@ -107,22 +107,14 @@ class FriendMapService {
   Future<String> _getAddressFromCoordinates(double lat, double lng) async {
     String _address = '';
 
-    try {
-      List<Placemark> p = await placemarkFromCoordinates(lat, lng);
+    List<Placemark> p = await placemarkFromCoordinates(lat, lng);
 
-      String name =
-          p[0].name != null && p[0].name!.length > 0 ? "${p[0].name!}," : '';
-      String locality = p[0].locality != null && p[0].locality!.length > 0
-          ? "${p[0].locality!},"
-          : '';
-      String country = p[0].country != null && p[0].country!.length > 0
-          ? "${p[0].country!}"
-          : '';
+    String name = p[0].name != null && p[0].name!.length > 0 ? "${p[0].name!}," : '';
+    String locality =
+        p[0].locality != null && p[0].locality!.length > 0 ? "${p[0].locality!}," : '';
+    String country = p[0].country != null && p[0].country!.length > 0 ? "${p[0].country!}" : '';
 
-      _address = "$name $locality $country";
-    } catch (e) {
-      throw e;
-    }
+    _address = "$name $locality $country";
     return _address;
   }
 
@@ -178,8 +170,7 @@ class FriendMapService {
 
     _mapController.animateCamera(
       CameraUpdate.newLatLngBounds(
-        LatLngBounds(
-            northeast: LatLng(maxy, maxx), southwest: LatLng(miny, minx)),
+        LatLngBounds(northeast: LatLng(maxy, maxx), southwest: LatLng(miny, minx)),
         155.0,
       ),
     );
@@ -212,9 +203,8 @@ class FriendMapService {
     Marker? marker = _getMarkerById(id);
     if (marker == null) return;
 
-    cameraFocus = id == MarkerIds.currentLocation
-        ? CameraFocus.currentLocation
-        : CameraFocus.destination;
+    cameraFocus =
+        id == MarkerIds.currentLocation ? CameraFocus.currentLocation : CameraFocus.destination;
     moveCameraView(marker.position.latitude, marker.position.longitude);
   }
 
@@ -235,8 +225,7 @@ class FriendMapService {
       lat ?? _currentUserLatitude,
       lon ?? _currentUserLongitude,
       title: "My Location",
-      markerType:
-          BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueCyan),
+      markerType: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueCyan),
     );
   }
 
@@ -246,6 +235,9 @@ class FriendMapService {
     double? lat,
     double? lon,
   }) async {
+    print("Destination lat => $_destinationLatitude");
+    print("Destination lon => $_destinationLongitude");
+
     _otherUsersAddress = await _getAddressFromCoordinates(
       lat ?? _destinationLatitude,
       lon ?? _destinationLongitude,
@@ -257,13 +249,5 @@ class FriendMapService {
       lon ?? _destinationLongitude,
       title: "Destination",
     );
-  }
-
-  /// refreshes the map to redraw markers and adjust camera view.
-  ///
-  Future<void> refreshMap() async {
-    await drawDestinationLocationMarker();
-    await drawCurrentLocationMarker();
-    adjustCameraViewAndZoom();
   }
 }

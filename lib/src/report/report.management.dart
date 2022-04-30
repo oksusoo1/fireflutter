@@ -7,14 +7,14 @@ class ReportManagement extends StatelessWidget with FirestoreMixin {
   ReportManagement({
     Key? key,
     this.padding = const EdgeInsets.all(0),
-    required this.onError,
+    // required this.onError,
     required this.onPressed,
     this.target,
   }) : super(key: key);
 
   final EdgeInsets padding;
   final String? target;
-  final Function(dynamic) onError;
+  // final Function(dynamic) onError;
   final Function(ReportModel) onPressed;
 
   @override
@@ -33,26 +33,16 @@ class ReportManagement extends StatelessWidget with FirestoreMixin {
     return FirestoreListView(
       query: query,
       itemBuilder: (context, snapshot) {
-        final report =
-            ReportModel.fromJson(snapshot.data() as Json, snapshot.reference);
+        final report = ReportModel.fromJson(snapshot.data() as Json, id: snapshot.id);
 
         return ListTile(
           title: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               UserDoc(
-                uid: report.reporterUid,
+                uid: report.uid,
                 builder: (user) {
-                  return Text(
-                      'Reporter: ' +
-                          (user.nickname != '' ? user.nickname : 'no_name'),
-                      style: TextStyle(fontSize: 14));
-                },
-              ),
-              UserDoc(
-                uid: report.reporteeUid,
-                builder: (user) {
-                  return Text('Reportee: ' + user.nickname,
+                  return Text('Reporter: ' + (user.nickname != '' ? user.nickname : 'no_name'),
                       style: TextStyle(fontSize: 14));
                 },
               ),
@@ -63,8 +53,7 @@ class ReportManagement extends StatelessWidget with FirestoreMixin {
                 ),
             ],
           ),
-          subtitle: Text(
-              report.reason != '' ? 'Reason: ' + report.reason : 'no_reason'),
+          subtitle: Text(report.reason != '' ? 'Reason: ' + report.reason : 'no_reason'),
           trailing: IconButton(
             onPressed: () => onPressed(report),
             icon: Icon(

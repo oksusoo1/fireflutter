@@ -15,6 +15,21 @@ class Ref {
     static get adminDoc() {
         return this.db.collection("settings").doc("admins");
     }
+    static get postCol() {
+        return this.db.collection("posts");
+    }
+    static get commentCol() {
+        return this.db.collection("comments");
+    }
+    static get categoryCol() {
+        return this.db.collection("categories");
+    }
+    static get reportCol() {
+        return this.db.collection("reports");
+    }
+    static reportDoc(id) {
+        return this.reportCol.doc(id);
+    }
     /**
      * Returns user document reference.
      * @param uid uid
@@ -30,6 +45,31 @@ class Ref {
      */
     static user(uid) {
         return this.users.child(uid);
+    }
+    /**
+     * Returns post reference
+     * @param id post id
+     * @return reference
+     */
+    static postDoc(id) {
+        return this.postCol.doc(id);
+    }
+    /**
+     * Returns comment reference
+     * @param id comment id
+     * @return reference
+     */
+    static commentDoc(id) {
+        return this.commentCol.doc(id);
+    }
+    /**
+     * Returns category referrence
+     *
+     * @param {*} id Category id
+     * @return reference
+     */
+    static categoryDoc(id) {
+        return this.categoryCol.doc(id);
     }
     /**
      * Returns user point folder reference
@@ -57,8 +97,8 @@ class Ref {
     static registerPoint(uid) {
         return this.point(uid).child("register");
     }
-    static get messageTokens() {
-        return this.rdb.ref("message-tokens");
+    static userSettingForumTopics(uid) {
+        return this.userSettingTopic(uid).child("forum");
     }
     static userSettings(uid) {
         return this.rdb.ref("user-settings").child(uid);
@@ -81,39 +121,12 @@ class Ref {
     static extraPointHistory(uid) {
         return this.point(uid).child("extra");
     }
-    static get postCol() {
-        return this.db.collection("posts");
+    /** ****************************** MESSAGING References ****************************/
+    static get messageTokens() {
+        return this.rdb.ref("message-tokens");
     }
-    static get commentCol() {
-        return this.db.collection("comments");
-    }
-    static get categoryCol() {
-        return this.db.collection("categories");
-    }
-    /**
-     * Returns post reference
-     * @param id post id
-     * @return reference
-     */
-    static postDoc(id) {
-        return this.postCol.doc(id);
-    }
-    /**
-     * Returns comment reference
-     * @param id comment id
-     * @return reference
-     */
-    static commentDoc(id) {
-        return this.commentCol.doc(id);
-    }
-    /**
-     * Returns category referrence
-     *
-     * @param {*} id Category id
-     * @return reference
-     */
-    static categoryDoc(id) {
-        return this.categoryCol.doc(id);
+    static token(id) {
+        return this.messageTokens.child(id);
     }
 }
 exports.Ref = Ref;

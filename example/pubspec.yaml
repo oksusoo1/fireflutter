@@ -1,7 +1,7 @@
 name: example
 description: A new Flutter project.
 
-publish_to: 'none'
+publish_to: "none"
 
 version: 1.0.0+1
 
@@ -17,7 +17,7 @@ dependencies:
   fireflutter:
   firebase_core: ^1.15.0
 
-
+  audioplayers: ^1.0.0-rc.1
 
 dev_dependencies:
   flutter_test:
@@ -25,12 +25,9 @@ dev_dependencies:
 
   flutter_lints: ^1.0.0
 
-
-
 flutter:
-
   uses-material-design: true
-
 
   assets:
     - assets/logo.jpg
+    - assets/click.mp3

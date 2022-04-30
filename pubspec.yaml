@@ -11,7 +11,7 @@ dependencies:
   flutter:
     sdk: flutter
 
-  # Firebase
+  # Firebase Dependencies
   firebase_core: ^1.15.0
   firebase_auth: ^3.3.15
   firebase_database: ^9.0.12
@@ -20,15 +20,15 @@ dependencies:
   firebase_storage: ^10.2.13
   firebase_messaging: ^11.2.14
   cloud_functions: ^3.2.13
+  flutterfire_ui: ^0.4.0+4
 
-  # Firebase UI.
-  flutterfire_ui: ^0.3.2
 
+  #
   rxdart: ^0.27.3
 
   # File upload
   path_provider: ^2.0.8
-  image_picker: ^0.8.4+6
+  image_picker: ^0.8.5
   flutter_image_compress: ^1.1.0
   photo_view: ^0.13.0
 
@@ -70,7 +70,7 @@ dependencies:
   flutter_html: ^3.0.0-alpha.2
 
   # for post content & comment content
-  url_launcher: ^6.0.20
+  url_launcher: ^6.1.0
 
   # for post & comment
   flutter_linkify: ^5.0.2
@@ -92,11 +92,15 @@ dependencies:
   email_validator: ^2.0.1
   
 
+  # iOS style date picker
+  flutter_holo_date_picker: ^1.0.3
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
 
 flutter:
+
+
 
 
