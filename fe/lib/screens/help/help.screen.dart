@@ -1,5 +1,5 @@
 import 'package:fe/screens/phone_sign_in/phone_sign_in.screen.dart';
-import 'package:fe/service/app.service.dart';
+import 'package:fe/services/app.service.dart';
 import 'package:flutter/material.dart';
 
 class HelpScreen extends StatefulWidget {

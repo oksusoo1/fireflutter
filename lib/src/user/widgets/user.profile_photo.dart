@@ -13,8 +13,13 @@ import '../../../fireflutter.dart';
 class UserProfilePhoto extends StatelessWidget {
   const UserProfilePhoto({
     this.uid,
+    this.emptyIcon = const Icon(
+      Icons.person,
+      color: Color.fromARGB(255, 111, 111, 111),
+      size: 24,
+    ),
+    this.emptyIconBuilder,
     this.size = 40,
-    this.iconSize = 24,
     this.onTap,
     this.boxShadow = const BoxShadow(color: Colors.white, blurRadius: 1.0, spreadRadius: 1.0),
     this.padding,
@@ -24,12 +29,13 @@ class UserProfilePhoto extends StatelessWidget {
 
   final String? uid;
   final double size;
-  final double iconSize;
   final Function()? onTap;
   final BoxShadow boxShadow;
 
   final EdgeInsets? padding;
   final EdgeInsets? margin;
+  final Widget emptyIcon;
+  final Function(UserModel)? emptyIconBuilder;
 
   @override
   Widget build(BuildContext context) {
@@ -43,11 +49,9 @@ class UserProfilePhoto extends StatelessWidget {
                     width: size,
                     height: size,
                   )
-                : Icon(
-                    Icons.person,
-                    color: Color.fromARGB(255, 111, 111, 111),
-                    size: iconSize,
-                  ),
+                : emptyIconBuilder == null
+                    ? emptyIcon
+                    : emptyIconBuilder!(user),
           ),
           constraints: BoxConstraints(
             minWidth: size,

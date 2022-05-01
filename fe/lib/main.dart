@@ -5,11 +5,11 @@ import 'dart:async';
 import 'dart:developer';
 
 import 'package:extended/extended.dart';
-import 'package:fe/service/app.router.dart';
-import 'package:fe/service/app.service.dart';
-import 'package:fe/service/global.keys.dart';
+import 'package:fe/services/app.router.dart';
+import 'package:fe/services/app.service.dart';
 import 'package:fe/screens/friend_map/friend_map.screen.dart';
 import 'package:fe/screens/home/home.screen.dart';
+import 'package:fe/services/global.dart';
 import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';

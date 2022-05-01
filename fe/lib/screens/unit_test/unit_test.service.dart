@@ -1,4 +1,4 @@
-import 'package:fe/service/app.service.dart';
+import 'package:fe/services/app.service.dart';
 import 'package:fireflutter/fireflutter.dart';
 
 class UnitTestService with UnitTestMixin {

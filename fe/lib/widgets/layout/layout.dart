@@ -1,4 +1,4 @@
-import 'package:fe/service/app.service.dart';
+import 'package:fe/services/app.service.dart';
 import 'package:flutter/material.dart';
 
 class MenuItem {

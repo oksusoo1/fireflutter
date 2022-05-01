@@ -1,10 +1,10 @@
 import 'dart:developer';
 
 import 'package:extended/extended.dart' as ex;
-import 'package:fe/service/app.router.dart';
-import 'package:fe/service/click_sound.service.dart';
+import 'package:fe/services/app.router.dart';
+import 'package:fe/services/click_sound.service.dart';
 import 'package:fireflutter/fireflutter.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 
 class AppService {
   static AppService? _instance;
@@ -26,7 +26,7 @@ class AppService {
   final router = AppRouter.instance;
 
   error(e, [StackTrace? stack]) {
-    debugPrint('===> service.error();');
+    debugPrint('===> AppService.error();');
     debugPrint(e.toString());
     if (stack != null) {
       debugPrintStack(stackTrace: stack);
@@ -36,8 +36,8 @@ class AppService {
 
     final ErrorInfo info = ErrorInfo.from(e);
     if (info.level == ErrorLevel.minor) {
-      log('--> Ignore minor error; ${info.title}, ${info.content}');
-      return;
+      log('--> --> --> [ Ignore minor error & will be ignored in release ] - ${info.title}, ${info.content}');
+      if (kReleaseMode) return;
     }
     ex.alert(
       TranslationService.instance.tr(info.title),
