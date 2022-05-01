@@ -220,6 +220,7 @@ class _MainAppState extends State<MainApp> {
       ),
       initialRoute: HomeScreen.routeName,
       onGenerateRoute: AppRouter.onGenerateRoute,
+      navigatorObservers: [AppService.instance.router],
     );
   }
 }
