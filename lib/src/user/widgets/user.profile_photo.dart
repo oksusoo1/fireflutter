@@ -16,7 +16,7 @@ class UserProfilePhoto extends StatelessWidget {
     this.emptyIcon = const Icon(
       Icons.person,
       color: Color.fromARGB(255, 111, 111, 111),
-      size: 24,
+      size: 20,
     ),
     this.emptyIconBuilder,
     this.size = 40,
