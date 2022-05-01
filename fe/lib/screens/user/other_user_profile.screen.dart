@@ -24,21 +24,23 @@ class OtherUserProfileScreen extends StatefulWidget {
 
 class _OtherUserProfileScreenState extends State<OtherUserProfileScreen> with FirestoreMixin {
   bool loading = true;
-  late UserModel user;
+  UserModel user = UserModel();
   List<PostModel> posts = [];
   List<PostModel> photos = [];
   int postCount = 0;
   int commentCount = 0;
 
+  late String uid;
   @override
   void initState() {
     super.initState();
     initUser();
   }
 
-  initUser() {
-    user = widget.arguments['user'];
-
+  initUser() async {
+    uid = widget.arguments['uid'] ?? '';
+    if (uid == '') return;
+    user = await UserService.instance.getOtherUserDoc(uid);
     setItem(() => loading = false);
 
     final Query q = postCol.where('uid', isEqualTo: user.uid);

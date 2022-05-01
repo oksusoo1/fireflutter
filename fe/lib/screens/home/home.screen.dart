@@ -30,7 +30,7 @@ class _HomeScreenState extends State<HomeScreen> {
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               spaceXs,
-              NewUsers(onTap: service.router.openOtherUserProfile),
+              NewUsers(onTap: (user) => service.router.openOtherUserProfile(user.uid)),
             ],
           ),
         ],

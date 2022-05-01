@@ -288,7 +288,7 @@ class AppRouter extends NavigatorObserver {
     return open(TestScreen.routeName);
   }
 
-  Future openOtherUserProfile(UserModel user) {
-    return open(OtherUserProfileScreen.routeName, arguments: {'user': user});
+  Future openOtherUserProfile(String uid) {
+    return open(OtherUserProfileScreen.routeName, arguments: {'uid': uid});
   }
 }
