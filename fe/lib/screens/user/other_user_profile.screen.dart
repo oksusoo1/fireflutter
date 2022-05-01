@@ -36,7 +36,7 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen> with Fi
     initUser();
   }
 
-  initUser() async {
+  initUser() {
     user = widget.arguments['user'];
 
     setItem(() => loading = false);
