@@ -40,7 +40,7 @@ mixin UnitTestMixin {
 
   _render() {
     model.render.add(true);
-    print('render added');
+    // print('render added');
   }
 
   init() async {

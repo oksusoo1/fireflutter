@@ -114,7 +114,7 @@ class AppRouter extends NavigatorObserver {
     debugPrint('--> AppRouter::constructor();');
   }
 
-  BuildContext context = globalNavigatorKey.currentContext!;
+  BuildContext get context => globalNavigatorKey.currentContext!;
 
   static Map<String, Route> routeStack = {};
   String get currentRouteName {
@@ -155,6 +155,16 @@ class AppRouter extends NavigatorObserver {
     AppRouter.routeStack.remove(routeName);
     print('pop screen; -- $routeName');
     print(routeStack.keys);
+  }
+
+  @override
+  void didRemove(Route<dynamic> route, Route<dynamic>? previousRoute) {
+    print('----> this happend didRemove');
+  }
+
+  @override
+  void didReplace({Route<dynamic>? newRoute, Route<dynamic>? oldRoute}) {
+    print('----> this happend didReplace');
   }
 
   void back([dynamic data]) {
