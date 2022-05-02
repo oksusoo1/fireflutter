@@ -30,4 +30,5 @@ export interface UserCreate {
   photoUrl?: string;
   updatedAt?: number;
   birthday?: number;
+  profileReady?: number;
 }
