@@ -13,6 +13,7 @@ class SearchOptionModel {
   int limit = 20;
   int offset = 0;
   int page = 1;
+  List<String> filter = [];
   List<String> sort = ['createdAt:desc'];
 }
 
@@ -41,7 +42,7 @@ class SearchService {
     // print('Fetching posts');
     // print('options ---> ${opts.toString()}');
 
-    List filters = [];
+    List filters = opts.filter;
     if (opts.uid.isNotEmpty) filters.add('uid = ${opts.uid}');
     if (opts.category.isNotEmpty && opts.index != 'comments')
       filters.add('category = ${opts.category}');
