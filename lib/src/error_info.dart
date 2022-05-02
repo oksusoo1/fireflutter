@@ -37,8 +37,11 @@ class ErrorInfo {
       lv = ErrorLevel.minor;
       title ??= 'Null safety';
       content = e.toString();
+    } else if (e.runtimeType.toString() == 'HttpExceptionWithStatus') {
+      lv = ErrorLevel.minor;
+      title ??= 'HttpExceptionWithStatus';
+      content = e.toString();
     }
-
     // If the error is a string, then use the string.
     else if (e is String) {
       content = e;
