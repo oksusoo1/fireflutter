@@ -1,5 +1,5 @@
 import 'package:extended/extended.dart';
-import 'package:fe/service/app.service.dart';
+import 'package:fe/services/app.service.dart';
 import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -43,7 +43,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                       'Success',
                       re ? 'Email verfied.' : 'Email had been updated and verified.',
                     );
-                    AppService.instance.openHome();
+                    AppService.instance.router.openHome();
                   },
                   onError: error,
                   onVerificationEmailSent: (email) => alert(
@@ -63,7 +63,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                       'Login again',
                       'Your login is no longer valid. You must sign-in again.',
                     );
-                    AppService.instance.openHome();
+                    AppService.instance.router.openHome();
                   },
                   onUpdateEmail: updateEmail,
                 ),
@@ -149,7 +149,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
     try {
       /// Email updated after re-login.
       await FirebaseAuth.instance.currentUser!.updateEmail(email);
-      AppService.instance.back();
+      AppService.instance.router.back();
     } catch (e) {
       error(e);
     }
@@ -164,7 +164,8 @@ class UserInfo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     User user = FirebaseAuth.instance.currentUser!;
-    return Text('''
+    return Text(
+        '''
 Uid: ${user.uid},
 Phone number: ${user.phoneNumber}
 Email: ${user.email},

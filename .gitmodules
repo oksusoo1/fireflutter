@@ -1,0 +1,3 @@
+[submodule "fe/lib/packages/font_awesome_flutter"]
+	path = fe/lib/packages/font_awesome_flutter
+	url = https://github.com/withcenter/font_awesome_pro_flutter

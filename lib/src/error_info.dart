@@ -2,17 +2,48 @@ import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
 
+/// Don't display minor error on Production mode.
+///
+enum ErrorLevel {
+  minor,
+  major,
+  critical,
+}
+
 class ErrorInfo {
   String title;
   String content;
+  ErrorLevel level;
 
-  ErrorInfo(this.title, this.content);
+  ErrorInfo(this.title, this.content, this.level);
 
   factory ErrorInfo.from(dynamic e, {String? title}) {
     String content = '';
+    ErrorLevel lv = ErrorLevel.major;
 
+    print('--> ErrorInfo.from(e); runtimeType: ${e.runtimeType}, Message: $e');
+
+    /// Make [ArgumentError] as minor error. So, it won't be displayed user screen.
+    if (e is ArgumentError) {
+      lv = ErrorLevel.minor;
+      title ??= 'Argument Error';
+      content = e.toString();
+    }
+
+    /// If it's casting error or null safety error, put it as minor error.
+    /// Because normally when 'null check operator' error appears, the app is working fine (or continue working),
+    /// But the error appears very often and users are annoyed by that.
+    else if (e.runtimeType.toString() == '_CastError') {
+      lv = ErrorLevel.minor;
+      title ??= 'Null safety';
+      content = e.toString();
+    } else if (e.runtimeType.toString() == 'HttpExceptionWithStatus') {
+      lv = ErrorLevel.minor;
+      title ??= 'HttpExceptionWithStatus';
+      content = e.toString();
+    }
     // If the error is a string, then use the string.
-    if (e is String) {
+    else if (e is String) {
       content = e;
     }
     // if the error is a PlatfromException, then display code and message.
@@ -97,10 +128,9 @@ class ErrorInfo {
       content = e.toString();
     }
 
-    return ErrorInfo(title ?? 'Error', content);
+    return ErrorInfo(title ?? 'Error', content, lv);
   }
 }
-
 
 // ErrorInfo? errorInfo(e, [String? title]) {
 //   String content = '';

@@ -1,6 +1,8 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:example/services/app.router.dart';
+import 'package:example/services/click_sound.service.dart';
 import 'package:example/services/defines.dart';
 import 'package:example/services/global.dart';
 import 'package:example/widgets/app_alert_dialog/app_alert_dialog.dart';
@@ -19,6 +21,8 @@ class Service {
 
   Service() {
     init();
+
+    ClickSoundService.instance.init();
   }
 
   /// Dio may produce consecutive errors when there are network problems.
@@ -220,9 +224,17 @@ class Service {
     if (e.toString() == 'IMAGE_NOT_SELECTED') return;
 
     final ErrorInfo info = ErrorInfo.from(e);
+    if (info.level == ErrorLevel.minor) {
+      log('--> Ignore minor error; ${info.title}, ${info.content}');
+      return;
+    }
     alert(
       TranslationService.instance.tr(info.title),
       TranslationService.instance.tr(info.content),
     );
+  }
+
+  Future pageTransitionSound() {
+    return ClickSoundService.instance.play();
   }
 }

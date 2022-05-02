@@ -58,6 +58,8 @@ Table of contents
     - [MyDoc](#mydoc)
     - [UserDoc](#userdoc)
   - [User Auth State](#user-auth-state)
+  - [UserProfilePhoto](#userprofilephoto)
+  - [NewUsers](#newusers)
 - [Chat](#chat)
   - [Chat todo;](#chat-todo)
   - [Chat structure of Firestore](#chat-structure-of-firestore)
@@ -614,9 +616,9 @@ UserSettingDoc(
 
 - `UserService` is listening user's profile change. And when user updates his profile, it sets an int value to `profileReady` and with that int value, app can order(sort) by user's registered date.
   - Logic of setting `profileReady` value.
-    - When user first registered, it sets `90000000000000` and it means, the profile is not ready, yet.
-    - When user update his profile and completes, it sets `90000000000000 - registeredAt`
-    - And when user changes his profile, user profile may be ready or not(on and off), and when it becomes not ready, it will be set back to `90000000000000`.
+    - When user first registered, it sets profileReady to `profileReadyMax` (The value of `profileReadyMax` is  `90000000000000`) and it means, the profile is not ready, yet.
+    - When user update his profile and completes, it sets `profileReadyMax - registeredAt` (To sort by newly registered when the user complete his profile.)
+    - And when user changes his profile, user profile may be ready(complete) or not, and when it becomes not ready, it will be set back to `profileReadyMax`.
     - So, it is sortable by registeredAt.
   - So, if you want to dispaly new users who completed their profile, use `.orderByChild('profileReady').limitToLast(100)`.
 
@@ -905,6 +907,38 @@ UserDoc(
    signedOut: () => Text('logged out'),
    loader: Text('loading...'),
  ),
+```
+
+
+## UserProfilePhoto
+
+- It dispalys user profile photo.
+- Use emptyIcon or emptyIconBuilder to customize when the user has no profile photo.
+
+```dart
+UserProfilePhoto(
+  key: ValueKey(user.uid),
+  margin: EdgeInsets.only(
+    left: index == 0 ? 16 : 4,
+    right: (snapshot.docs.length - 1) == index ? 16 : 4,
+  ),
+  size: 48,
+  uid: user.uid,
+  onTap: () => onTap(user),
+  emptyIconBuilder: (user) => Center(
+    child: Text(
+      (user.displayName == '' ? user.uid : user.displayName)
+          .substring(0, 1)
+          .toUpperCase(),
+    ),
+  ),
+);
+```
+
+## NewUsers
+
+```dart
+NewUsers(onTap: service.router.openOtherUserProfile),
 ```
 
 # Chat

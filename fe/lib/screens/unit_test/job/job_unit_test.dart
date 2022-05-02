@@ -31,12 +31,13 @@ class _JobUnitTestState extends State<JobUnitTest> with FirestoreMixin, UnitTest
         clearLogs();
         runTests();
       },
-      child: Text('Run Job Unit Test'),
+      child: Text('Job Unit Test'),
     );
   }
 
   runTests() async {
     await jobInputTest();
+    await jobEditSuccess();
   }
 
   jobInputTest() async {
@@ -181,5 +182,18 @@ class _JobUnitTestState extends State<JobUnitTest> with FirestoreMixin, UnitTest
       re == "ERROR_EMPTY_JOB_DUTY",
       "Cannot create job opening without duty - $re",
     );
+  }
+
+  jobEditSuccess() async {
+    final jobDocs = await jobs.where('uid', isEqualTo: UserService.instance.uid).get();
+
+    final jobOpening = JobModel.fromJson(
+      jobDocs.docs.first.data() as Map<String, dynamic>,
+      jobDocs.docs.first.id,
+    );
+    jobOpening.companyName = DateTime.now().millisecondsSinceEpoch.toString();
+    jobOpening.status = "N";
+    final re = await submit(jobOpening.edit());
+    expect(re['companyName'] == jobOpening.companyName, "Success editting job.");
   }
 }

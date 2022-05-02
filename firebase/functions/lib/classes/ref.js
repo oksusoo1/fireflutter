@@ -47,6 +47,31 @@ class Ref {
         return this.users.child(uid);
     }
     /**
+     * Returns post reference
+     * @param id post id
+     * @return reference
+     */
+    static postDoc(id) {
+        return this.postCol.doc(id);
+    }
+    /**
+     * Returns comment reference
+     * @param id comment id
+     * @return reference
+     */
+    static commentDoc(id) {
+        return this.commentCol.doc(id);
+    }
+    /**
+     * Returns category referrence
+     *
+     * @param {*} id Category id
+     * @return reference
+     */
+    static categoryDoc(id) {
+        return this.categoryCol.doc(id);
+    }
+    /**
      * Returns user point folder reference
      *
      * @param uid user uid
@@ -72,8 +97,8 @@ class Ref {
     static registerPoint(uid) {
         return this.point(uid).child("register");
     }
-    static get messageTokens() {
-        return this.rdb.ref("message-tokens");
+    static userSettingForumTopics(uid) {
+        return this.userSettingTopic(uid).child("forum");
     }
     static userSettings(uid) {
         return this.rdb.ref("user-settings").child(uid);
@@ -96,30 +121,12 @@ class Ref {
     static extraPointHistory(uid) {
         return this.point(uid).child("extra");
     }
-    /**
-     * Returns post reference
-     * @param id post id
-     * @return reference
-     */
-    static postDoc(id) {
-        return this.postCol.doc(id);
+    /** ****************************** MESSAGING References ****************************/
+    static get messageTokens() {
+        return this.rdb.ref("message-tokens");
     }
-    /**
-     * Returns comment reference
-     * @param id comment id
-     * @return reference
-     */
-    static commentDoc(id) {
-        return this.commentCol.doc(id);
-    }
-    /**
-     * Returns category referrence
-     *
-     * @param {*} id Category id
-     * @return reference
-     */
-    static categoryDoc(id) {
-        return this.categoryCol.doc(id);
+    static token(id) {
+        return this.messageTokens.child(id);
     }
 }
 exports.Ref = Ref;

@@ -1,5 +1,5 @@
 import 'package:extended/extended.dart';
-import 'package:fe/service/app.service.dart';
+import 'package:fe/services/app.service.dart';
 import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
 
@@ -27,7 +27,7 @@ class ReminderEditScreen extends StatelessWidget {
                 await ReminderService.instance.display(
                   context: context,
                   onLinkPressed: (String page, dynamic arguments) =>
-                      AppService.instance.open(page, arguments: arguments),
+                      AppService.instance.router.open(page, arguments: arguments),
                   data: data,
                 );
 

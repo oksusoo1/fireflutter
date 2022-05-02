@@ -80,7 +80,7 @@ mixin FirestoreMixin {
   /// [reporteeUid] is the user uid of the object.
   /// [reason] is the reason why the sign-in user is reporting.
   ///
-  @Deprecated('Use FunctionsApi.report() for reporting')
+  @Deprecated('Use ReportApi.report() for reporting')
   Future<String> createReport({
     required String target,
     required String targetId,
