@@ -40,8 +40,8 @@ class ChatRoomScreen extends StatelessWidget {
           UserDoc(
               uid: otherUid,
               builder: (user) {
-                return StreamBuilder<DocumentSnapshot>(
-                    stream: ChatService.instance.myRoomsBlockedCol.doc(otherUid).snapshots(),
+                return FutureBuilder<DocumentSnapshot>(
+                    future: ChatService.instance.myRoomsBlockedCol.doc(otherUid).get(),
                     builder: (c, snapshot) {
                       if (snapshot.hasData == false) return SizedBox();
                       final snapshotDoc = snapshot.data!;
