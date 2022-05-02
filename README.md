@@ -1342,7 +1342,7 @@ class _UnitTestScreenState extends State<UnitTestScreen>
 
 `Unhandled Exception: [firebase_database/permission-denied] Client doesn't have permission to access the desired data.`
 
-- If you see this error, it means you didn't set the firebase database security rules properly. Refer [Firebase Realtime Database Security Rules Installation](#firebase-realtime-database-security-rules-installation).
+- If you see this error, it means you didn't set the firebase database security rules properly. Refer [Firebsae Realtime Database Installation](#firebase-realtime-database-installation)
 
 ## Firebase realtime database is not working
 
