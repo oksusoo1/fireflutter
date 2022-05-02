@@ -295,4 +295,8 @@ class AppRouter extends NavigatorObserver {
   Future openOtherUserProfile(String uid) {
     return open(OtherUserProfileScreen.routeName, arguments: {'uid': uid});
   }
+
+  Future openChatRoomsBlocked() {
+    return open(ChatRoomsBlockedScreen.routeName);
+  }
 }
