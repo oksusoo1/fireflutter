@@ -49,13 +49,31 @@ export class Messaging {
     const tokens = await this.getTokens(data.uid);
     if (tokens.length == 0) return null;
     const res = await admin.messaging().subscribeToTopic(tokens, data.topic);
-    console.log(res);
+    // console.log(res);
     await Ref.userSettingTopic(data.uid)
       .child(data.type)
       .update({
         [data.topic]: true,
       });
-    return res;
+    const failureToken: any = {};
+    if (res.failureCount > 0) {
+      const tokensToRemove: Promise<any>[] = [];
+      res.errors.forEach((e) => {
+        if (e.error) {
+          if (this.isInvalidTokenErrorCode(e.error.code)) {
+            tokensToRemove.push(Ref.messageTokens.child(tokens[e.index]).remove());
+            failureToken[tokens[e.index]] = e.error.code;
+          }
+        }
+      });
+      await Promise.all(tokensToRemove);
+    }
+    return {
+      successCount: res.successCount,
+      failureCount: res.failureCount,
+      tokens: tokens,
+      failureToken: failureToken,
+    };
   }
 
   static async unsubscribeToTopic(data: { uid: string; topic: string; type: string }): Promise<any> {
@@ -69,16 +87,24 @@ export class Messaging {
       });
   }
 
+  /**
+   * Subscribe to default topic first then removed invalid token base on results
+   *
+   * @param uid user uid
+   * @returns
+   */
   static async removeInvalidTokens(uid: string) {
+    // get all user tokens
     const tokens = await this.getTokens(uid);
-    // subscribe to default
-    const res = await admin.messaging().unsubscribeFromTopic(tokens, this.defaultTopic);
 
-    // if there is failure remove tokens with invalid status
+    // subscribe to default
+    const res = await admin.messaging().subscribeToTopic(tokens, this.defaultTopic);
+
+    // if there is failureCount remove tokens with invalid status
     if (res.failureCount > 0) {
       const tokensToRemove: Promise<any>[] = [];
       res.errors.forEach((e) => {
-        if (this.isInvalidTokenCode(e.error.code)) {
+        if (e.error && this.isInvalidTokenErrorCode(e.error.code)) {
           tokensToRemove.push(Ref.messageTokens.child(tokens[e.index]).remove());
         }
       });
@@ -87,7 +113,24 @@ export class Messaging {
     return res;
   }
 
-  static isInvalidTokenCode(code: string) {
+  //  static async getInvalidTokenFromMessagingResult(res) {
+  //    if(res.failureCount == 0) return null;
+
+  //   const failureToken: any = {};
+  //     const tokensToRemove: Promise<any>[] = [];
+  //     res.errors.forEach((e) => {
+  //       if (e.error) {
+  //         if (this.isInvalidTokenErrorCode(e.error.code)) {
+  //           tokensToRemove.push(Ref.messageTokens.child(tokens[e.index]).remove());
+  //           failureToken[tokens[e.index]] = e.error.code;
+  //         }
+  //       }
+  //     });
+  //     await Promise.all(tokensToRemove);
+  //   return tokenstokensToRemove
+  //  }
+
+  static isInvalidTokenErrorCode(code: string) {
     if (
       code === "messaging/invalid-registration-token" ||
       code === "messaging/registration-token-not-registered" ||
@@ -102,21 +145,28 @@ export class Messaging {
    * This unsubscribe all the topics (including other user's topics) of the token.
    * See README.md for details.
    *
-   * @reference https://stackoverflow.com/questions/38212123/unsubscribe-from-all-topics-at-once-from-firebase-messaging
    */
   static async unsubscribeAllTopicOfToken(token: string) {
+    // get all topics topics
     const topics = await this.getTokenTopics(token);
     if (topics.length == 0) return [];
 
     const promises: any[] = [];
+    const res: string[] = [];
     topics.forEach((topic: string) => {
       if (topic == this.defaultTopic) return;
+      res.push(topic);
       promises.push(admin.messaging().unsubscribeFromTopic(token, topic));
     });
     await Promise.all(promises);
-    return topics;
+    return res;
   }
 
+  /**
+   * @reference https://stackoverflow.com/questions/38212123/unsubscribe-from-all-topics-at-once-from-firebase-messaging
+   * @param token
+   * @returns string[] of topics or empty [] if error or no topics
+   */
   static async getTokenTopics(token: string) {
     const url = "https://iid.googleapis.com/iid/info/" + token;
     const key = "key = " + config.serverKey;
@@ -140,26 +190,30 @@ export class Messaging {
    *
    */
   static async resubscribeAllUserTopics(uid: string) {
+    // subscribe to user forum topics
     const forum = await this.subscribeUserToSettingTopics(uid, "forum");
+    // subscribe to user job topics
     // await this.subscribeUserToSettingTopics(uid, "job" );
     return {
-      focum: forum,
+      forum: forum,
     };
   }
 
   static async subscribeUserToSettingTopics(uid: string, type: string) {
-    const subs = await this.getSettingSubscription(uid, type);
-    if (!subs) return null;
+    const userSubs = await this.getSettingSubscription(uid, type);
+    if (!userSubs) return null;
     const subscribePromises: any[] = [];
-    Object.keys(subs).forEach((topic: any) => {
-      if (subs[topic]) {
+    Object.keys(userSubs).forEach((topic: any) => {
+      if (userSubs[topic]) {
         subscribePromises.push(this.subscribeToTopic({ uid: uid, topic: topic, type: type }));
       }
       //  else {
       //   subscribePromises.push(this.unsubscribeToTopic({ uid: uid, topic: topic, type: type }));
       // }
     });
-    return Promise.all(subscribePromises);
+    const res = await Promise.all(subscribePromises);
+    console.log(res);
+    return res;
   }
 
   /**
@@ -376,11 +430,7 @@ export class Messaging {
           // console.log('error.code');
           // console.log(error.code);
           // Cleanup the tokens who are not registered anymore.
-          if (
-            error.code === "messaging/invalid-registration-token" ||
-            error.code === "messaging/registration-token-not-registered" ||
-            error.code === "messaging/invalid-argument"
-          ) {
+          if (this.isInvalidTokenErrorCode(error.code)) {
             tokensToRemove.push(Ref.messageTokens.child(chunks[i][index]).remove());
           }
         }
@@ -451,10 +501,10 @@ export class Messaging {
   }
 
   /**
-   * Returns user forum topics that is set to true.
+   * Returns user-settings/{uid}/topic/type that is set to true.
    *
    * @param uid user uid
-   * @returns array of topic set to true
+   * @returns
    */
   static async getSettingSubscription(uid: string, type: string): Promise<any | null> {
     const snapshot = await Ref.userSettingTopic(uid).child(type).orderByKey().get();
