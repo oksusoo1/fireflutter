@@ -42,7 +42,7 @@ class NewUsers extends StatelessWidget with DatabaseMixin {
 
                 final user = UserModel.fromJson(doc.value, doc.key!);
 
-                // print('i; $index');
+                print('user; $index, profileReady: ${user.profileReady}');
 
                 return UserProfilePhoto(
                   key: ValueKey(user.uid),

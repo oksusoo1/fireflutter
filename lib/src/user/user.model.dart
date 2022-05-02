@@ -22,7 +22,7 @@ class UserModel with FirestoreMixin, DatabaseMixin {
     this.birthday = 0,
     this.gender = '',
     this.point = 0,
-    this.profileReady = 90000000000000,
+    this.profileReady = profileReadyMax,
     this.isAdmin = false,
     this.disabled = false,
     this.registeredAt = 0,
@@ -134,7 +134,7 @@ class UserModel with FirestoreMixin, DatabaseMixin {
 
   /// It becomes int when the user's profile is ready.
   int profileReady;
-  bool get ready => profileReady < 90000000000000;
+  bool get ready => profileReady < profileReadyMax;
   bool get notReady => ready == false;
 
   bool get signedIn => FirebaseAuth.instance.currentUser != null;
@@ -156,8 +156,11 @@ class UserModel with FirestoreMixin, DatabaseMixin {
       lastName: data['lastName'] ?? '',
       nickname: data['nickname'] ?? '',
       photoUrl: data['photoUrl'] ?? '',
-      birthday:
-          (data['birthday'] is int) ? data['birthday'] : (int.tryParse(data['birthday'] ?? '0')),
+      birthday: (data['birthday'] == null || data['birthday'] == "")
+          ? 0
+          : (data['birthday'] is int)
+              ? data['birthday']
+              : (int.tryParse(data['birthday'] ?? '0')),
       gender: data['gender'] ?? '',
       point: data['point'] ?? 0,
       level: data['level'] ?? 0,
@@ -202,7 +205,7 @@ class UserModel with FirestoreMixin, DatabaseMixin {
     return _userDoc.update({
       'registeredAt': ServerValue.timestamp,
       'updatedAt': ServerValue.timestamp,
-      'profileReady': 90000000000000,
+      'profileReady': profileReadyMax,
       'lastSignInAt': ServerValue.timestamp,
     });
   }
@@ -259,21 +262,22 @@ class UserModel with FirestoreMixin, DatabaseMixin {
   /// * Note that, this only updates when the value changes. If the value does not change, then it does not update.
   /// ! To prevent perpetual update.
   /// * Note, this code is written in client app. Meaning, this won't work on web.
+  /// ! Attention - setting profile ready should done by cloud functions.
   Future<void> updateProfileReady() async {
     /// If there is no error on profile,
     if (profileError == '') {
       /// But the profile is set to false on database, then set it true.
-      if (profileReady == 90000000000000) {
+      if (profileReady == profileReadyMax) {
         /// It does +1 here to block perpetual running. This may happens somehow when registeredAt is 0.
-        return update(field: 'profileReady', value: 90000000000000 - registeredAt + 1);
+        return update(field: 'profileReady', value: profileReadyMax - registeredAt + 1);
       }
     }
 
     /// If there is error on profile,
     else {
       // And the profile is set to true on database, then set it false.
-      if (profileReady != 90000000000000) {
-        return update(field: 'profileReady', value: 90000000000000);
+      if (profileReady != profileReadyMax) {
+        return update(field: 'profileReady', value: profileReadyMax);
       }
     }
   }
