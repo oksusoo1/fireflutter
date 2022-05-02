@@ -70,7 +70,7 @@
       "flutterMode": "release"
     },
     {
-      "name": "Emulator - Pixel3a - A",
+      "name": "Emulator - 5554 - fe",
       "cwd": "fe",
       "program": "lib/main.dart",
       "request": "launch",

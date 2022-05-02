@@ -166,13 +166,16 @@ class StorageService {
 
   /// Returns thumbnail url.
   ///
-  /// [url] is the original url.
+  /// [url] is the original url and if the url is not an image from 'firebase storage', it will simply return the original url.
   /// Refer readme for details.
   ///
   /// ```dart
   /// Image.network(StorageService.instance.getThumbnailUrl(photo!.files[0]))
   /// ```
   getThumbnailUrl(String url) {
+    if (url.contains('firebasestorage.googleapis.com') == false) {
+      return url;
+    }
     String _tempUrl = url;
     if (_tempUrl.indexOf('?') > 0) {
       _tempUrl = _tempUrl.split('?').first;

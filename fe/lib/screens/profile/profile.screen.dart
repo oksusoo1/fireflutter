@@ -1,5 +1,5 @@
 import 'package:extended/extended.dart';
-import 'package:fe/widgets/layout.dart';
+import 'package:fe/widgets/layout/layout.dart';
 import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
 

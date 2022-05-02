@@ -32,6 +32,13 @@ dependencies:
   audioplayers: ^1.0.0-rc.1
 
 
+  font_awesome_flutter:
+    path: ./lib/packages/font_awesome_flutter
+
+dependency_overrides:
+  font_awesome_flutter:
+    path: ./lib/packages/font_awesome_flutter
+    
 dev_dependencies:
   flutter_test:
     sdk: flutter

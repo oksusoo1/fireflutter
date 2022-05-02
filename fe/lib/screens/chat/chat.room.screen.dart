@@ -2,7 +2,7 @@ import 'package:extended/extended.dart';
 import 'package:fe/screens/chat/widgets/chat_room.message.dart';
 import 'package:fe/screens/chat/widgets/chat_room.message_box.dart';
 import 'package:fe/screens/friend_map/friend_map.screen.dart';
-import 'package:fe/service/app.service.dart';
+import 'package:fe/services/app.service.dart';
 import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';

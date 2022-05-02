@@ -1,7 +1,7 @@
 import 'package:extended/extended.dart';
 import 'package:fe/screens/admin/send.push.notification.dart';
 import 'package:fe/screens/forum/forum.mixin.dart';
-import 'package:fe/service/app.service.dart';
+import 'package:fe/services/app.service.dart';
 import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterfire_ui/firestore.dart';

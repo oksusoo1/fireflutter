@@ -1,6 +1,4 @@
-import 'dart:async';
 import 'package:extended/extended.dart';
-import 'package:fe/screens/forum/post.form.screen.dart';
 import 'package:fe/screens/unit_test/forum/comment_unit_test.dart';
 import 'package:fe/screens/unit_test/forum/post_screen.test.dart';
 import 'package:fe/screens/unit_test/forum/post_unit_test.dart';
@@ -9,9 +7,8 @@ import 'package:fe/screens/unit_test/job/job_seeker_unit_test.dart';
 import 'package:fe/screens/unit_test/job/job_unit_test.dart';
 import 'package:fe/screens/unit_test/report/report.test.dart';
 import 'package:fe/screens/unit_test/unit_test.service.dart';
-import 'package:fe/service/app.service.dart';
-import 'package:fe/service/defines.dart';
-import 'package:fe/widgets/layout.dart';
+import 'package:fe/services/defines.dart';
+import 'package:fe/widgets/layout/layout.dart';
 import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';

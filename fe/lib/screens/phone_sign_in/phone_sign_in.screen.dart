@@ -1,8 +1,8 @@
 import 'package:extended/extended.dart';
 import 'package:fe/screens/phone_sign_in/sms_code.screen.dart';
-import 'package:fe/service/app.service.dart';
-import 'package:fe/service/defines.dart';
-import 'package:fe/widgets/layout.dart';
+import 'package:fe/services/app.service.dart';
+import 'package:fe/services/defines.dart';
+import 'package:fe/widgets/layout/layout.dart';
 import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
 

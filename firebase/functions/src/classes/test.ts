@@ -33,6 +33,8 @@ export class Test {
       firstName: "firstName" + timestamp,
       lastName: "lastName" + timestamp,
       registeredAt: timestamp,
+      updatedAt: timestamp,
+      profileReady: 90000000000001,
     };
 
     if (data !== null) {

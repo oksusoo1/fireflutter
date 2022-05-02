@@ -22,9 +22,10 @@ import 'package:fe/screens/menu/menu.screen.dart';
 import 'package:fe/screens/point_history/point_history.screen.dart';
 import 'package:fe/screens/search/search.screen.dart';
 import 'package:fe/screens/setting/notification.setting.dart';
+import 'package:fe/screens/test/test.screen.dart';
 import 'package:fe/screens/unit_test/unit_test.screen.dart';
-import 'package:fe/service/app.service.dart';
-import 'package:fe/service/global.keys.dart';
+import 'package:fe/screens/user/other_user_profile.screen.dart';
+import 'package:fe/services/app.service.dart';
 import 'package:fe/screens/chat/chat.room.screen.dart';
 import 'package:fe/screens/chat/chat.rooms.blocked.screen.dart';
 import 'package:fe/screens/chat/chat.rooms.screen.dart';
@@ -38,6 +39,7 @@ import 'package:fe/screens/phone_sign_in_ui/phone_sign_in_ui.screen.dart';
 import 'package:fe/screens/phone_sign_in_ui/sms_code_ui.screen.dart';
 import 'package:fe/screens/profile/profile.screen.dart';
 import 'package:fe/screens/reminder/reminder.edit.screen.dart';
+import 'package:fe/services/global.dart';
 import 'package:fe/widgets/sign_in.widget.dart';
 import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
@@ -84,6 +86,11 @@ final Map<String, RouteFunction> appRoutes = {
       JobSeekerProfileViewScreen(arguments: arguments),
   JobSeekerListScreen.routeName: (context, arguments) => JobSeekerListScreen(),
   UnitTestScreen.routeName: (context, arguments) => UnitTestScreen(),
+  TestScreen.routeName: (context, arguments) => TestScreen(),
+
+  /// --- new refactoring
+  OtherUserProfileScreen.routeName: (context, arguments) =>
+      OtherUserProfileScreen(arguments: arguments),
 };
 
 /// NoAnimationMaterialPageRoute is for removing page transition.
@@ -275,5 +282,13 @@ class AppRouter extends NavigatorObserver {
 
   Future<void> openMenu() async {
     return open(MenuScreen.routeName);
+  }
+
+  Future openTest() async {
+    return open(TestScreen.routeName);
+  }
+
+  Future openOtherUserProfile(String uid) {
+    return open(OtherUserProfileScreen.routeName, arguments: {'uid': uid});
   }
 }

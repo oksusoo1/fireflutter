@@ -2,7 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
 
-/// Don't display error alert box for ErrorLevel.minor. It's just a notice or information.
+/// Don't display minor error on Production mode.
 ///
 enum ErrorLevel {
   minor,
@@ -30,6 +30,18 @@ class ErrorInfo {
       content = e.toString();
     }
 
+    /// If it's casting error or null safety error, put it as minor error.
+    /// Because normally when 'null check operator' error appears, the app is working fine (or continue working),
+    /// But the error appears very often and users are annoyed by that.
+    else if (e.runtimeType.toString() == '_CastError') {
+      lv = ErrorLevel.minor;
+      title ??= 'Null safety';
+      content = e.toString();
+    } else if (e.runtimeType.toString() == 'HttpExceptionWithStatus') {
+      lv = ErrorLevel.minor;
+      title ??= 'HttpExceptionWithStatus';
+      content = e.toString();
+    }
     // If the error is a string, then use the string.
     else if (e is String) {
       content = e;
