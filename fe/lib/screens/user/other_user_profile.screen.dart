@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fe/services/global.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:extended/extended.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -99,6 +100,7 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen> with Fi
               child: Column(
                 children: [
                   spaceXl,
+                  if (kDebugMode) Text('[DEBUG] UID: ${user.uid}'),
                   userReady(
                     builder: () => Column(children: [
                       Avatar(url: user.photoUrl, size: 100),

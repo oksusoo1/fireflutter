@@ -26,7 +26,7 @@ async function updateProfileReady() {
   const docs = snapshot.val();
   for (let key in docs) {
     console.log("user: ", key, ", profileReady: ", docs[key].profileReady);
-    if (docs[key].profileReady) {
+    if (docs[key].profileReady && docs[key].photoUrl && docs[key].photoUrl.indexOf("storage") > 0) {
       let registeredAt = 0;
       if (docs[key].registeredAt) registeredAt = docs[key].registeredAt;
       rdb
