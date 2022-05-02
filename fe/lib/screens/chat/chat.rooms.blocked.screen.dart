@@ -1,6 +1,6 @@
 import 'package:fe/screens/chat/chat.room.screen.dart';
 import 'package:fe/screens/chat/widgets/chat.rooms.empty.dart';
-import 'package:fe/service/app.service.dart';
+import 'package:fe/services/app.service.dart';
 import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
 import 'package:extended/extended.dart';
@@ -24,7 +24,7 @@ class ChatRoomsBlockedScreen extends StatelessWidget {
             Row(children: [
               TextButton(
                   onPressed: () {
-                    AppService.instance.open(ChatRoomScreen.routeName);
+                    AppService.instance.router.open(ChatRoomScreen.routeName);
                   },
                   child: const Text('Room list')),
             ]),
@@ -62,7 +62,7 @@ class _ChatRoomsBlockUserState extends State<ChatRoomsBlockUser> {
       uid: otherUid,
       builder: (UserModel user) {
         return GestureDetector(
-          onTap: () => AppService.instance.open(
+          onTap: () => AppService.instance.router.open(
             ChatRoomScreen.routeName,
             arguments: {'uid': otherUid},
           ),

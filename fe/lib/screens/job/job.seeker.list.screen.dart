@@ -1,5 +1,5 @@
 import 'package:fe/screens/job/job.seeker.profile.view.screen.dart';
-import 'package:fe/service/app.service.dart';
+import 'package:fe/services/app.service.dart';
 import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
 
@@ -28,7 +28,7 @@ class _JobSeekerListScreenState extends State<JobSeekerListScreen> {
       ),
       body: JobSeekerList(
         options: options,
-        onTap: (seeker) => AppService.instance.open(
+        onTap: (seeker) => AppService.instance.router.open(
           JobSeekerProfileViewScreen.routeName,
           arguments: {'profile': seeker},
         ),

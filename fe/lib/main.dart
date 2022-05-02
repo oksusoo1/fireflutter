@@ -5,91 +5,17 @@ import 'dart:async';
 import 'dart:developer';
 
 import 'package:extended/extended.dart';
-import 'package:fe/screens/admin/admin.screen.dart';
-import 'package:fe/screens/admin/admin.search_settings.screen.dart';
-import 'package:fe/screens/admin/category.screen.dart';
-import 'package:fe/screens/admin/category_group.screen.dart';
-import 'package:fe/screens/admin/report.post.management.screen.dart';
-import 'package:fe/screens/admin/report.screen.dart';
-import 'package:fe/screens/admin/send.push.notification.dart';
-import 'package:fe/screens/admin/translatoins.screen.dart';
-import 'package:fe/screens/forum/post.list.screen.dart';
-import 'package:fe/screens/forum/post.form.screen.dart';
-import 'package:fe/screens/forum/post.view.screen.dart';
-import 'package:fe/screens/job/job.edit.screen.dart';
-import 'package:fe/screens/job/job.list.screen.dart';
-import 'package:fe/screens/job/job.seeker.profile.screen.dart';
-import 'package:fe/screens/job/job.seeker.list.screen.dart';
-import 'package:fe/screens/job/job.seeker.profile.view.screen.dart';
-import 'package:fe/screens/job/job.view.screen.dart';
-import 'package:fe/screens/point_history/point_history.screen.dart';
-import 'package:fe/screens/search/search.screen.dart';
-import 'package:fe/screens/setting/notification.setting.dart';
-import 'package:fe/screens/unit_test/unit_test.screen.dart';
-import 'package:fe/service/app.service.dart';
-import 'package:fe/service/global.keys.dart';
-import 'package:fe/screens/chat/chat.room.screen.dart';
-import 'package:fe/screens/chat/chat.rooms.blocked.screen.dart';
-import 'package:fe/screens/chat/chat.rooms.screen.dart';
-import 'package:fe/screens/email_verification/email_verification.screen.dart';
+import 'package:fe/services/app.router.dart';
+import 'package:fe/services/app.service.dart';
 import 'package:fe/screens/friend_map/friend_map.screen.dart';
-import 'package:fe/screens/help/help.screen.dart';
 import 'package:fe/screens/home/home.screen.dart';
-import 'package:fe/screens/phone_sign_in/phone_sign_in.screen.dart';
-import 'package:fe/screens/phone_sign_in/sms_code.screen.dart';
-import 'package:fe/screens/phone_sign_in_ui/phone_sign_in_ui.screen.dart';
-import 'package:fe/screens/phone_sign_in_ui/sms_code_ui.screen.dart';
-import 'package:fe/screens/profile/profile.screen.dart';
-import 'package:fe/screens/reminder/reminder.edit.screen.dart';
-import 'package:fe/widgets/sign_in.widget.dart';
+import 'package:fe/services/global.dart';
 import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_app_badger/flutter_app_badger.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
-
-typedef RouteFunction = Widget Function(BuildContext, Map);
-final Map<String, RouteFunction> routes = {
-  HomeScreen.routeName: (context, arguments) => const HomeScreen(),
-  SignInWidget.routeName: (context, arguments) => const SignInWidget(),
-  PhoneSignInScreen.routeName: (context, arguments) => const PhoneSignInScreen(),
-  SmsCodeScreen.routeName: (context, arguments) => const SmsCodeScreen(),
-  PhoneSignInUIScreen.routeName: (context, arguments) => const PhoneSignInUIScreen(),
-  SmsCodeUIScreen.routeName: (context, arguments) => const SmsCodeUIScreen(),
-  HelpScreen.routeName: (context, arguments) => HelpScreen(arguments: arguments),
-  ProfileScreen.routeName: (context, arguments) => ProfileScreen(key: profileScreenKey),
-  PostListScreen.routeName: (context, arguments) => PostListScreen(arguments: arguments),
-  PostFormScreen.routeName: (context, arguments) => PostFormScreen(arguments: arguments),
-  AdminScreen.routeName: (context, arguments) => AdminScreen(),
-  NotificationSettingScreen.routeName: (context, arguments) => NotificationSettingScreen(),
-  ReportPostManagementScreen.routeName: (context, arguments) =>
-      ReportPostManagementScreen(arguments: arguments),
-  CategoryScreen.routeName: (context, arguments) => CategoryScreen(),
-  ChatRoomScreen.routeName: (context, arguments) => ChatRoomScreen(arguments: arguments),
-  ChatRoomsScreen.routeName: (context, arguments) => ChatRoomsScreen(),
-  ChatRoomsBlockedScreen.routeName: (context, arguments) => ChatRoomsBlockedScreen(),
-  FriendMapScreen.routeName: (context, arguments) => FriendMapScreen(arguments: arguments),
-  ReminderEditScreen.routeName: (context, arguments) => ReminderEditScreen(),
-  ReportScreen.routeName: (context, arguments) => ReportScreen(arguments: arguments),
-  EmailVerificationScreen.routeName: (context, arguments) => EmailVerificationScreen(),
-  TranslationsScreen.routeName: (context, arguments) => TranslationsScreen(),
-  PostListScreenV2.routeName: (context, arguments) => PostListScreenV2(arguments: arguments),
-  AdminSearchSettingsScreen.routeName: (context, arguments) => AdminSearchSettingsScreen(),
-  PushNotificationScreen.routeName: (context, arguments) =>
-      PushNotificationScreen(arguments: arguments),
-  PostViewScreen.routeName: (context, arguments) => PostViewScreen(arguments: arguments),
-  JobListScreen.routeName: (context, arguments) => JobListScreen(arguments: arguments),
-  JobEditScreen.routeName: (context, arguments) => JobEditScreen(arguments: arguments),
-  JobViewScreen.routeName: (context, arguments) => JobViewScreen(arguments: arguments),
-  PointHistoryScreen.routeName: (context, arguments) => PointHistoryScreen(),
-  CategoryGroupScreen.routeName: (context, arguments) => CategoryGroupScreen(),
-  JobSeekerProfileFormScreen.routeName: (context, arguments) => JobSeekerProfileFormScreen(),
-  JobSeekerProfileViewScreen.routeName: (context, arguments) =>
-      JobSeekerProfileViewScreen(arguments: arguments),
-  JobSeekerListScreen.routeName: (context, arguments) => JobSeekerListScreen(),
-  UnitTestScreen.routeName: (context, arguments) => UnitTestScreen(),
-};
 
 void main() {
   runZonedGuarded(
@@ -158,14 +84,14 @@ class _MainAppState extends State<MainApp> {
     // Timer(const Duration(milliseconds: 200), AppController.of.openCategory);
     // Timer(
     //   const Duration(milliseconds: 200),
-    //   () => AppService.instance.open(PostListScreen.routeName, arguments: {
+    //   () => AppService.instance.router.open(PostListScreen.routeName, arguments: {
     //     'category': 'qna',
     //   }),
     // );
     // Timer(const Duration(milliseconds: 200),
-    //     () => AppService.instance.open(TranslationsScreen.routeName));
+    //     () => AppService.instance.router.open(TranslationsScreen.routeName));
     // Timer(
-    //     const Duration(milliseconds: 200), () => AppService.instance.open(JobEditScreen.routeName));
+    //     const Duration(milliseconds: 200), () => AppService.instance.router.open(JobEditScreen.routeName));
 
     // Open qna & open first post
     // Timer(const Duration(milliseconds: 100), () async {
@@ -201,7 +127,7 @@ class _MainAppState extends State<MainApp> {
         InformService.instance.init(callback: (data) {
           if (data['type'] == 'FriendMap') {
             /// If it's a freind map request, then open friend map screen.
-            AppService.instance.open(FriendMapScreen.routeName, arguments: {
+            AppRouter.instance.open(FriendMapScreen.routeName, arguments: {
               'latitude': data['latitude'],
               'longitude': data['longitude'],
             });
@@ -227,7 +153,7 @@ class _MainAppState extends State<MainApp> {
           context: globalNavigatorKey.currentContext!,
           data: reminder,
           onLinkPressed: (page, arguments) {
-            AppService.instance.open(page, arguments: arguments);
+            AppRouter.instance.open(page, arguments: arguments);
           },
         );
       });
@@ -293,11 +219,8 @@ class _MainAppState extends State<MainApp> {
         primarySwatch: Colors.blue,
       ),
       initialRoute: HomeScreen.routeName,
-      onGenerateRoute: (settings) {
-        return MaterialPageRoute(
-          builder: (c) => routes[settings.name]!(c, (settings.arguments ?? {}) as Map),
-        );
-      },
+      onGenerateRoute: AppRouter.onGenerateRoute,
+      navigatorObservers: [AppService.instance.router],
     );
   }
 }

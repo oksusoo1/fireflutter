@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:fireflutter/fireflutter.dart';
+import '../../fireflutter.dart';
 import 'package:flutter/material.dart';
 
 class UnitTestLogs extends StatefulWidget {

@@ -1,5 +1,5 @@
 import 'package:extended/extended.dart';
-import 'package:fe/service/app.service.dart';
+import 'package:fe/services/app.service.dart';
 import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
 
@@ -28,11 +28,11 @@ class _JobEditScreenState extends State<JobEditScreen> {
             JobEditForm(
               onCreated: () async {
                 await alert('Job create', 'Job opening created!');
-                AppService.instance.back();
+                AppService.instance.router.back();
               },
               onUpdated: () async {
                 await alert('Job updated', 'Job opening updated!');
-                AppService.instance.back();
+                AppService.instance.router.back();
               },
             ),
             space2xl,

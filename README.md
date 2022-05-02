@@ -58,6 +58,8 @@ Table of contents
     - [MyDoc](#mydoc)
     - [UserDoc](#userdoc)
   - [User Auth State](#user-auth-state)
+  - [UserProfilePhoto](#userprofilephoto)
+  - [NewUsers](#newusers)
 - [Chat](#chat)
   - [Chat todo;](#chat-todo)
   - [Chat structure of Firestore](#chat-structure-of-firestore)
@@ -905,6 +907,38 @@ UserDoc(
    signedOut: () => Text('logged out'),
    loader: Text('loading...'),
  ),
+```
+
+
+## UserProfilePhoto
+
+- It dispalys user profile photo.
+- Use emptyIcon or emptyIconBuilder to customize when the user has no profile photo.
+
+```dart
+UserProfilePhoto(
+  key: ValueKey(user.uid),
+  margin: EdgeInsets.only(
+    left: index == 0 ? 16 : 4,
+    right: (snapshot.docs.length - 1) == index ? 16 : 4,
+  ),
+  size: 48,
+  uid: user.uid,
+  onTap: () => onTap(user),
+  emptyIconBuilder: (user) => Center(
+    child: Text(
+      (user.displayName == '' ? user.uid : user.displayName)
+          .substring(0, 1)
+          .toUpperCase(),
+    ),
+  ),
+);
+```
+
+## NewUsers
+
+```dart
+NewUsers(onTap: service.router.openOtherUserProfile),
 ```
 
 # Chat

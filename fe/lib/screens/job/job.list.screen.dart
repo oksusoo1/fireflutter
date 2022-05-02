@@ -1,7 +1,7 @@
 import 'package:fe/screens/forum/forum.mixin.dart';
 import 'package:fe/screens/job/job.edit.screen.dart';
 import 'package:fe/screens/job/job.view.screen.dart';
-import 'package:fe/service/app.service.dart';
+import 'package:fe/services/app.service.dart';
 import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
 
@@ -46,7 +46,7 @@ class _JobListScreenState extends State<JobListScreen> with FirestoreMixin, Foru
           //   },
           // ),
           IconButton(
-            onPressed: () => AppService.instance.open(JobEditScreen.routeName),
+            onPressed: () => AppService.instance.router.open(JobEditScreen.routeName),
             icon: Icon(Icons.add_circle_outline),
           ),
         ],
@@ -57,8 +57,8 @@ class _JobListScreenState extends State<JobListScreen> with FirestoreMixin, Foru
       body: JobListView(
         // onError: error,
         options: options,
-        onEdit: () => AppService.instance.open(JobEditScreen.routeName),
-        onTap: (job) => AppService.instance.open(
+        onEdit: () => AppService.instance.router.open(JobEditScreen.routeName),
+        onTap: (job) => AppService.instance.router.open(
           JobViewScreen.routeName,
           arguments: {'job': job},
         ),

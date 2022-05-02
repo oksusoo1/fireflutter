@@ -136,7 +136,7 @@ export class Ref {
     return this.point(uid).child("extra");
   }
 
-  /******************************** MESSAGING References ****************************/
+  /** ****************************** MESSAGING References ****************************/
 
   static get messageTokens() {
     return this.rdb.ref("message-tokens");

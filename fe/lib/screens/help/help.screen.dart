@@ -1,5 +1,5 @@
 import 'package:fe/screens/phone_sign_in/phone_sign_in.screen.dart';
-import 'package:fe/service/app.service.dart';
+import 'package:fe/services/app.service.dart';
 import 'package:flutter/material.dart';
 
 class HelpScreen extends StatefulWidget {
@@ -29,7 +29,7 @@ class _HelpScreenState extends State<HelpScreen> {
           Text('who; ' + widget.arguments['who']),
           Text('what; ' + widget.arguments['what']),
           ElevatedButton(
-            onPressed: () => AppService.instance.open(PhoneSignInScreen.routeName),
+            onPressed: () => AppService.instance.router.open(PhoneSignInScreen.routeName),
             child: const Text('Phone Sign-In'),
           ),
         ],

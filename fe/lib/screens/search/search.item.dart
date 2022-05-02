@@ -1,5 +1,5 @@
 import 'package:extended/extended.dart';
-import 'package:fe/service/app.service.dart';
+import 'package:fe/services/app.service.dart';
 import 'package:flutter/material.dart';
 
 class SearchItem extends StatelessWidget {
@@ -27,8 +27,8 @@ class SearchItem extends StatelessWidget {
 
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
-      onTap: () => AppService.instance
-          .openPostView(id: isComment ? item['postId'] : item['id']),
+      onTap: () =>
+          AppService.instance.router.openPostView(id: isComment ? item['postId'] : item['id']),
       child: Container(
         margin: EdgeInsets.only(bottom: xsm),
         padding: EdgeInsets.all(xs),

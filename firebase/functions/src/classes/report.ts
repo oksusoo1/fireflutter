@@ -22,7 +22,7 @@ export interface ReportDocument {
 }
 
 export class Report {
-  static targets = ["post", "comment", "user"];
+  static targets = ["post", "comment", "user", "chat"];
 
   /**
    * Check the input data and throw execption if there is any error.

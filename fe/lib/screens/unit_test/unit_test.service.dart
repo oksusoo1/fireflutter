@@ -1,74 +1,12 @@
-import 'dart:developer';
-
-import 'package:fe/service/config.dart';
+import 'package:fe/services/app.service.dart';
 import 'package:fireflutter/fireflutter.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
-class UnitTestService {
+class UnitTestService with UnitTestMixin {
   static UnitTestService? _instance;
-  static UnitTestService get instance {
-    _instance ??= UnitTestService();
-    return _instance!;
+  static UnitTestService get instance => _instance ?? (_instance ??= UnitTestService());
+
+  Future comeBack() async {
+    AppService.instance.router.back();
+    return wait(200, 'Opening unit test screen.');
   }
-
-  late UserModel a;
-  late UserModel b;
-  late UserModel c;
-  late UserModel d;
-
-  late Function(dynamic) setState;
-
-  UnitTestService() {
-    () async {
-      a = UserModel(uid: Config.testUsers['apple']!['uid']!);
-      await a.load();
-      b = UserModel(uid: Config.testUsers['banana']!['uid']!);
-      await b.load();
-      c = UserModel(uid: Config.testUsers['cherry']!['uid']!);
-      await c.load();
-      d = UserModel(uid: Config.testUsers['durian']!['uid']!);
-      await d.load();
-    }();
-  }
-
-  init({required Function(dynamic) setState}) {
-    this.setState = setState;
-  }
-
-  List<String> logs = [];
-
-  @Deprecated('Use UnitTestMixin')
-  Future signIn(UserModel u) async {
-    final e = Config.testUsers.entries.firstWhere((element) => element.value['uid'] == u.uid);
-    final email = Config.testUsers[e.key]!['email']!;
-    print('signIn as; $email');
-
-    await FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: '12345a');
-    await Future.delayed(Duration(milliseconds: 500));
-  }
-
-  @Deprecated('Use UnitTestMixin')
-  dynamic submit(Future future) async {
-    try {
-      return await future;
-    } catch (e) {
-      return e;
-    }
-  }
-
-  @Deprecated('Use UnitTestMixin')
-  expect(bool re, String msg) {
-    String info;
-    if (re) {
-      info = 'SUCCESS: $msg';
-    } else {
-      info = 'ERROR: $msg';
-    }
-    log(info);
-    logs.add(info);
-    setState(() {});
-  }
-
-  @Deprecated('Use UnitTestMixin')
-  fail(String msg) => expect(false, '(fail) ' + msg);
 }

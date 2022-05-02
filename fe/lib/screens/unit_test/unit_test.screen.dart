@@ -1,13 +1,14 @@
-import 'dart:async';
 import 'package:extended/extended.dart';
-import 'package:fe/screens/forum/post.form.screen.dart';
 import 'package:fe/screens/unit_test/forum/comment_unit_test.dart';
+import 'package:fe/screens/unit_test/forum/post_screen.test.dart';
 import 'package:fe/screens/unit_test/forum/post_unit_test.dart';
 import 'package:fe/screens/unit_test/forum/voting_unit_test.dart';
 import 'package:fe/screens/unit_test/job/job_seeker_unit_test.dart';
 import 'package:fe/screens/unit_test/job/job_unit_test.dart';
 import 'package:fe/screens/unit_test/report/report.test.dart';
-import 'package:fe/service/app.service.dart';
+import 'package:fe/screens/unit_test/unit_test.service.dart';
+import 'package:fe/services/defines.dart';
+import 'package:fe/widgets/layout/layout.dart';
 import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -32,13 +33,15 @@ class _UnitTestScreenState extends State<UnitTestScreen>
   late User user;
   late PostModel post;
 
+  final ut = UnitTestService.instance;
+
   PostUnitTestController postUnitTestController = PostUnitTestController();
   CommentUnitTestController commentUnitTestController = CommentUnitTestController();
   VoteUnitTestController voteUnitTestController = VoteUnitTestController();
   JobUnitTestController jobUnitTestController = JobUnitTestController();
   JobSeekerUnitTestController jobSeekerUnitTestController = JobSeekerUnitTestController();
-  PostFormController postFormController = PostFormController();
   ReportTestController reportTestController = ReportTestController();
+  PostScreenTestController postScreenTestController = PostScreenTestController();
 
   @override
   void initState() {
@@ -48,8 +51,11 @@ class _UnitTestScreenState extends State<UnitTestScreen>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text('Unit Testing')),
+    return Layout(
+      title: Text(
+        'Unit Testing',
+        style: titleStyle,
+      ),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(8.0),
@@ -75,6 +81,9 @@ class _UnitTestScreenState extends State<UnitTestScreen>
                   JobUnitTest(controller: jobUnitTestController),
                   JobSeekerUnitTest(controller: jobSeekerUnitTestController),
                   ReportTest(controller: reportTestController),
+                  PostScreenTest(
+                    controller: postScreenTestController,
+                  ),
                 ],
               ),
               UnitTestLogs()
@@ -99,10 +108,8 @@ class _UnitTestScreenState extends State<UnitTestScreen>
     await jobUnitTestController.state.runTests();
     await jobSeekerUnitTestController.state.runTests();
 
-    await testPostFormWithoutSignIn();
-    await testPostFormEmptyCategory();
-    await testPostForm();
     await reportTestController.state.runTests();
+    await postScreenTestController.state.runTests();
 
     alert('Test done.', 'Test summary:\nSuccess: ${model.success}\nErrors: ${model.error}');
   }
@@ -114,66 +121,6 @@ class _UnitTestScreenState extends State<UnitTestScreen>
     } catch (e) {
       expect(e == ERROR_CATEGORY_NOT_EXISTS, "Post creation with wrong category must failed.");
     }
-  }
-
-  Future openPostFormScreen() async {
-    AppService.instance
-        .open(PostFormScreen.routeName, arguments: {'postFormController': postFormController});
-
-    return wait(200, 'Injecting post form controller in post edit screen.');
-  }
-
-  Future comeBack() async {
-    AppService.instance.back();
-    return wait(200, 'Opening unit test screen.');
-  }
-
-  testPostFormWithoutSignIn() async {
-    await signOut();
-    await openPostFormScreen();
-    try {
-      postFormController.state.category = 'qna';
-      await postFormController.state.onSubmit();
-      fail('Post creation without sign-in must fail');
-    } catch (e) {
-      expect(e == ERROR_NOT_SIGN_IN, 'Post creation without sign-in must fail - $e');
-    }
-    await comeBack();
-  }
-
-  testPostFormEmptyCategory() async {
-    await openPostFormScreen();
-    postFormController.state.title.text = 'Yo';
-    try {
-      await postFormController.state.onSubmit();
-      fail('Post creation without category must fail');
-    } catch (e) {
-      expect(e == ERROR_EMPTY_CATEGORY, 'Post creation without category must fail');
-    }
-    await comeBack();
-  }
-
-  testPostForm() async {
-    await signIn(a);
-    await openPostFormScreen();
-    postFormController.state.category = 'qna';
-    String title = 'Test - ' + DateTime.now().millisecondsSinceEpoch.toString();
-    postFormController.state.title.text = title;
-    try {
-      PostModel created = await postFormController.state.onSubmit();
-
-      expect(created.title == title, 'Post create success - $title');
-
-      final snapshot = await postDoc(created.id).get();
-      expect(snapshot.exists, 'Post exists');
-      expect((snapshot.data() as Map)['title']! == title, 'Post title match.');
-
-      final id = await created.delete();
-      expect(id == created.id, 'Post deleted - $id');
-    } catch (e) {
-      fail('Post creation without category must fail - $e');
-    }
-    await comeBack();
   }
 
   commentSearchTest() async {

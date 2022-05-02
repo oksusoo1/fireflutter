@@ -1,5 +1,5 @@
 import 'package:extended/extended.dart';
-import 'package:fe/service/app.service.dart';
+import 'package:fe/services/app.service.dart';
 import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
 
@@ -43,38 +43,38 @@ class _AdminScreenState extends State<AdminScreen> {
             Wrap(
               children: [
                 ElevatedButton(
-                  onPressed: AppService.instance.openCategoryGroup,
+                  onPressed: AppService.instance.router.openCategoryGroup,
                   child: Text('Category Group'),
                 ),
                 spaceXxs,
                 ElevatedButton(
-                  onPressed: AppService.instance.openCategory,
+                  onPressed: AppService.instance.router.openCategory,
                   child: const Text('Category'),
                 ),
               ],
             ),
             Divider(),
             ElevatedButton(
-                onPressed: AppService.instance.openTranslations,
+                onPressed: AppService.instance.router.openTranslations,
                 child: Text('Update Translations')),
             Divider(),
             Text('Report Management'),
             Wrap(
               children: [
                 ElevatedButton(
-                  onPressed: AppService.instance.openReport,
+                  onPressed: AppService.instance.router.openReport,
                   child: const Text('All'),
                 ),
                 ElevatedButton(
-                  onPressed: () => AppService.instance.openReport('post'),
+                  onPressed: () => AppService.instance.router.openReport('post'),
                   child: const Text('Posts'),
                 ),
                 ElevatedButton(
-                  onPressed: () => AppService.instance.openReport('comment'),
+                  onPressed: () => AppService.instance.router.openReport('comment'),
                   child: const Text('Comments'),
                 ),
                 ElevatedButton(
-                  onPressed: () => AppService.instance.openReport('user'),
+                  onPressed: () => AppService.instance.router.openReport('user'),
                   child: const Text('Users'),
                 ),
               ],
@@ -83,11 +83,11 @@ class _AdminScreenState extends State<AdminScreen> {
             Wrap(
               children: [
                 ElevatedButton(
-                  onPressed: () => AppService.instance.open('/pushNotification'),
+                  onPressed: () => AppService.instance.router.open('/pushNotification'),
                   child: const Text('Push Notification'),
                 ),
                 ElevatedButton(
-                  onPressed: () => AppService.instance
+                  onPressed: () => AppService.instance.router
                       .open('/pushNotification', arguments: {'postId': '0EWGGe64ckjBtiU1LeB1'}),
                   child: const Text('Push Notification with postId'),
                 )
