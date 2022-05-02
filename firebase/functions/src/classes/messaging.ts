@@ -12,6 +12,11 @@ import { Utils } from "./utils";
 import axios from "axios";
 
 import { config } from "../fireflutter.config";
+import { MessagingTopicManagementResponse } from "firebase-admin/lib/messaging/messaging-api";
+
+interface MapStringString {
+  [key: string]: string;
+}
 
 export class Messaging {
   static defaultTopic = "defaultTopic";
@@ -66,6 +71,7 @@ export class Messaging {
           }
         }
       });
+
       await Promise.all(tokensToRemove);
     }
     return {
@@ -76,7 +82,11 @@ export class Messaging {
     };
   }
 
-  static async unsubscribeToTopic(data: { uid: string; topic: string; type: string }): Promise<any> {
+  static async unsubscribeToTopic(data: {
+    uid: string;
+    topic: string;
+    type: string;
+  }): Promise<any> {
     const tokens = await this.getTokens(data.uid);
     if (tokens.length == 0) return null;
     await admin.messaging().unsubscribeFromTopic(tokens, data.topic);
@@ -88,7 +98,11 @@ export class Messaging {
   }
 
   /**
-   * Subscribe to default topic first then removed invalid token base on results
+   * Removes invalid tokens.
+   *
+   * It subscribes the default topic on every token update on app starts(or user logs in).
+   * We found it is more efficient than removing invalid token on every subscription(or unsubscription) or sending messages.
+   *
    *
    * @param uid user uid
    * @returns
@@ -100,35 +114,39 @@ export class Messaging {
     // subscribe to default
     const res = await admin.messaging().subscribeToTopic(tokens, this.defaultTopic);
 
-    // if there is failureCount remove tokens with invalid status
-    if (res.failureCount > 0) {
-      const tokensToRemove: Promise<any>[] = [];
-      res.errors.forEach((e) => {
-        if (e.error && this.isInvalidTokenErrorCode(e.error.code)) {
-          tokensToRemove.push(Ref.messageTokens.child(tokens[e.index]).remove());
-        }
-      });
-      await Promise.all(tokensToRemove);
-    }
+    await this.removeInvalidTokensFromResponse(tokens, res);
+
     return res;
   }
 
-  //  static async getInvalidTokenFromMessagingResult(res) {
-  //    if(res.failureCount == 0) return null;
+  /**
+   * Remove invalid tokens.
+   *
+   * This may be used to remove invalid tokens after sending messages or (un)subscribing topic.
+   *
+   * @param tokens token list that matches the `res` of sending massage or subscribing(unsubscribing) topics.
+   * @param res response(result) of sending messages or subscribing topic.
+   * @returns Map of result.
+   */
+  static async removeInvalidTokensFromResponse(
+    tokens: Array<string>,
+    res: MessagingTopicManagementResponse
+  ): Promise<MapStringString> {
+    if (res.failureCount == 0) return {};
 
-  //   const failureToken: any = {};
-  //     const tokensToRemove: Promise<any>[] = [];
-  //     res.errors.forEach((e) => {
-  //       if (e.error) {
-  //         if (this.isInvalidTokenErrorCode(e.error.code)) {
-  //           tokensToRemove.push(Ref.messageTokens.child(tokens[e.index]).remove());
-  //           failureToken[tokens[e.index]] = e.error.code;
-  //         }
-  //       }
-  //     });
-  //     await Promise.all(tokensToRemove);
-  //   return tokenstokensToRemove
-  //  }
+    const failureToken: MapStringString = {};
+    const tokensToRemove: Promise<any>[] = [];
+    res.errors.forEach((e) => {
+      if (e.error) {
+        if (this.isInvalidTokenErrorCode(e.error.code)) {
+          tokensToRemove.push(Ref.messageTokens.child(tokens[e.index]).remove());
+          failureToken[tokens[e.index]] = e.error.code;
+        }
+      }
+    });
+    await Promise.all(tokensToRemove);
+    return failureToken;
+  }
 
   static isInvalidTokenErrorCode(code: string) {
     if (
@@ -199,6 +217,12 @@ export class Messaging {
     };
   }
 
+  /**
+   *
+   * @param uid
+   * @param type The child topic folder name under `/user-settings/<uid>/topics/<folder-name>`.
+   * @returns
+   */
   static async subscribeUserToSettingTopics(uid: string, type: string) {
     const userSubs = await this.getSettingSubscription(uid, type);
     if (!userSubs) return null;
@@ -407,7 +431,10 @@ export class Messaging {
     const sendToDevicePromise = [];
     for (const c of chunks) {
       // Send notifications to all tokens.
-      const newPayload: admin.messaging.MulticastMessage = Object.assign({ tokens: c }, payload as any);
+      const newPayload: admin.messaging.MulticastMessage = Object.assign(
+        { tokens: c },
+        payload as any
+      );
       sendToDevicePromise.push(admin.messaging().sendMulticast(newPayload));
     }
     const sendDevice = await Promise.all(sendToDevicePromise);
@@ -504,7 +531,8 @@ export class Messaging {
    * Returns user-settings/{uid}/topic/type that is set to true.
    *
    * @param uid user uid
-   * @returns
+   * @param type The child topic folder name under `/user-settings/<uid>/topics/<folder-name>`.
+   * @returns The documents of topic folder name that have the topic liste with boolean value.
    */
   static async getSettingSubscription(uid: string, type: string): Promise<any | null> {
     const snapshot = await Ref.userSettingTopic(uid).child(type).orderByKey().get();
