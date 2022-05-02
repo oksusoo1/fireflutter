@@ -9,14 +9,13 @@ import { MessagePayload, TokenDocument } from "../interfaces/messaging.interface
 import { Ref } from "./ref";
 import { Utils } from "./utils";
 
-import { UserDocument } from "../interfaces/user.interface";
-
 import axios from "axios";
 
-const serverkey =
-  "AAAAWy4G2hU:APA91bG8FpX2kNKMTRlTyiAEo3jDCg6UsiXlmVqCU-7syY0DGgpv_7VVJVpuQRoZqqzmBdUg_BWuluihF6nLwHt3yZpkfXvzzJidyp4_Ku-NgicQa0GT9Rilj_ks83HWSpAoVjaCFN7S";
+import { config } from "../fireflutter.config";
 
 export class Messaging {
+  static defaultTopic = "defaultTopic";
+
   /**
    * Creates(or updates) a token document with uid and do `token-update` process as decribed in README.md.
    *
@@ -26,13 +25,15 @@ export class Messaging {
    */
   static async updateToken(data: TokenDocument): Promise<any> {
     await this.setToken(data);
+    await this.removeInvalidTokens(data.uid);
     await this.unsubscribeAllTopicOfToken(data.token);
-    await this.resubscribeAllUserTopics();
+    await this.resubscribeAllUserTopics(data.uid);
   }
 
   static async setToken(data: TokenDocument) {
     await Ref.messageTokens.child(data.token).set({ uid: data.uid });
   }
+
   static async getToken(id: string): Promise<null | TokenDocument> {
     const snapshot = await Ref.token(id).get();
     if (snapshot.exists()) {
@@ -43,9 +44,59 @@ export class Messaging {
       return null;
     }
   }
-  static async subscribeTopic(data: { uid: string; topic: string }): Promise<any> {}
-  static async unsubscribeTopic(data: { uid: string; topic: string }): Promise<any> {}
-  static async removeInvalidTokens() {}
+
+  static async subscribeToTopic(data: { uid: string; topic: string; type: string }): Promise<any> {
+    const tokens = await this.getTokens(data.uid);
+    if (tokens.length == 0) return null;
+    const res = await admin.messaging().subscribeToTopic(tokens, data.topic);
+    console.log(res);
+    await Ref.userSettingTopic(data.uid)
+      .child(data.type)
+      .update({
+        [data.topic]: true,
+      });
+    return res;
+  }
+
+  static async unsubscribeToTopic(data: { uid: string; topic: string; type: string }): Promise<any> {
+    const tokens = await this.getTokens(data.uid);
+    if (tokens.length == 0) return null;
+    await admin.messaging().unsubscribeFromTopic(tokens, data.topic);
+    await Ref.userSettingTopic(data.uid)
+      .child(data.type)
+      .update({
+        [data.topic]: false,
+      });
+  }
+
+  static async removeInvalidTokens(uid: string) {
+    const tokens = await this.getTokens(uid);
+    // subscribe to default
+    const res = await admin.messaging().unsubscribeFromTopic(tokens, this.defaultTopic);
+
+    // if there is failure remove tokens with invalid status
+    if (res.failureCount > 0) {
+      const tokensToRemove: Promise<any>[] = [];
+      res.errors.forEach((e) => {
+        if (this.isInvalidTokenCode(e.error.code)) {
+          tokensToRemove.push(Ref.messageTokens.child(tokens[e.index]).remove());
+        }
+      });
+      await Promise.all(tokensToRemove);
+    }
+    return res;
+  }
+
+  static isInvalidTokenCode(code: string) {
+    if (
+      code === "messaging/invalid-registration-token" ||
+      code === "messaging/registration-token-not-registered" ||
+      code === "messaging/invalid-argument"
+    ) {
+      return true;
+    }
+    return false;
+  }
 
   /**
    * This unsubscribe all the topics (including other user's topics) of the token.
@@ -59,16 +110,16 @@ export class Messaging {
 
     const promises: any[] = [];
     topics.forEach((topic: string) => {
+      if (topic == this.defaultTopic) return;
       promises.push(admin.messaging().unsubscribeFromTopic(token, topic));
     });
     await Promise.all(promises);
-    // console.log(promisesRes);
     return topics;
   }
 
   static async getTokenTopics(token: string) {
     const url = "https://iid.googleapis.com/iid/info/" + token;
-    const key = "key = " + serverkey;
+    const key = "key = " + config.serverKey;
 
     try {
       const res = await axios.get(url, {
@@ -77,6 +128,7 @@ export class Messaging {
       });
       // console.log(res);
       if (res.data.rel == null) return [];
+      if (res.data.rel.topics == null) return [];
       return Object.keys(res.data.rel.topics);
     } catch (e) {
       // console.log("=======================");
@@ -87,7 +139,28 @@ export class Messaging {
   /**
    *
    */
-  static async resubscribeAllUserTopics() {}
+  static async resubscribeAllUserTopics(uid: string) {
+    const forum = await this.subscribeUserToSettingTopics(uid, "forum");
+    // await this.subscribeUserToSettingTopics(uid, "job" );
+    return {
+      focum: forum,
+    };
+  }
+
+  static async subscribeUserToSettingTopics(uid: string, type: string) {
+    const subs = await this.getSettingSubscription(uid, type);
+    if (!subs) return null;
+    const subscribePromises: any[] = [];
+    Object.keys(subs).forEach((topic: any) => {
+      if (subs[topic]) {
+        subscribePromises.push(this.subscribeToTopic({ uid: uid, topic: topic, type: type }));
+      }
+      //  else {
+      //   subscribePromises.push(this.unsubscribeToTopic({ uid: uid, topic: topic, type: type }));
+      // }
+    });
+    return Promise.all(subscribePromises);
+  }
 
   /**
    * Returns tokens of a user.
@@ -377,104 +450,97 @@ export class Messaging {
     return re;
   }
 
-  static async subscribeToTopic(
-    tokens: string,
-    topic: string
-  ): Promise<admin.messaging.MessagingTopicManagementResponse> {
-    return admin.messaging().subscribeToTopic(tokens, topic);
-  }
-
   /**
    * Returns user forum topics that is set to true.
    *
    * @param uid user uid
    * @returns array of topic set to true
    */
-  static async getSubscribedForum(uid: string): Promise<string[]> {
-    const snapshot = await Ref.userSettingForumTopics(uid).orderByValue().equalTo(true).get();
-    if (!snapshot.exists()) return [];
+  static async getSettingSubscription(uid: string, type: string): Promise<any | null> {
+    const snapshot = await Ref.userSettingTopic(uid).child(type).orderByKey().get();
+    if (!snapshot.exists()) return null;
     const val = snapshot.val();
-    return Object.keys(val);
+    return val;
   }
 
-  /**
-   * Returns user forum topics.
-   *
-   * @param uid user uid
-   * @returns array of topic
-   */
-  static async getForumTopics(uid: string): Promise<string[]> {
-    const snapshot = await Ref.userSettingForumTopics(uid).get();
-    if (!snapshot.exists()) return [];
-    const val = snapshot.val();
-    return Object.keys(val);
-  }
+  // /**
+  //  * Returns user forum topics.
+  //  *
+  //  * @param uid user uid
+  //  * @returns array of topic
+  //  */
+  // static async getForumTopics(uid: string): Promise<string[]> {
+  //   const snapshot = await Ref.userSettingForumTopics(uid).get();
+  //   if (!snapshot.exists()) return [];
+  //   const val = snapshot.val();
+  //   return Object.keys(val);
+  // }
 
-  /**
-   *
-   * Unsubcribe all topics that
-   * @param user
-   * @param uid
-   * @returns
-   */
-  static async resubscribeTopics(user: UserDocument, uid: string) {
-    // get user tokens
-    const initialTokens = await this.getTokens(uid);
-    let tokens = initialTokens;
-    if (tokens.length == 0) return null;
+  // /**
+  //  *
+  //  * Unsubcribe all topics that
+  //  * @param user
+  //  * @param uid
+  //  * @returns
+  //  */
+  // static async resubscribeTopics(user: UserDocument, uid: string) {
+  //   // get user tokens
+  //   const initialTokens = await this.getTokens(uid);
+  //   let tokens = initialTokens;
+  //   if (tokens.length == 0) return null;
 
-    // get user forum topics
-    const forumTopics = await this.getForumTopics(uid);
-    if (forumTopics.length == 0) return null;
+  //   // get user forum topics
+  //   const forumTopics = await this.getForumTopics(uid);
+  //   if (forumTopics.length == 0) return null;
 
-    // get 1 topic first
-    const topic = forumTopics.splice(0, 1)[0];
-    // unsubscribe to 1 topic
-    const res = await admin.messaging().unsubscribeFromTopic(tokens, topic);
+  //   // get 1 topic first
+  //   const topic = forumTopics.splice(0, 1)[0];
+  //   // unsubscribe to 1 topic
+  //   const res = await admin.messaging().unsubscribeFromTopic(tokens, topic);
 
-    // if there is failure remove tokens with invalid status
-    if (res.failureCount > 0) {
-      const tokensToRemove: Promise<any>[] = [];
-      res.errors.forEach((e) => {
-        if (
-          e.error.code === "messaging/invalid-registration-token" ||
-          e.error.code === "messaging/registration-token-not-registered" ||
-          e.error.code === "messaging/invalid-argument"
-        ) {
-          tokensToRemove.push(Ref.messageTokens.child(tokens[e.index]).remove());
-        }
-      });
-      await Promise.all(tokensToRemove);
+  //   // if there is failure remove tokens with invalid status
+  //   if (res.failureCount > 0) {
+  //     const tokensToRemove: Promise<any>[] = [];
+  //     res.errors.forEach((e) => {
+  //       if (
+  //         e.error.code === "messaging/invalid-registration-token" ||
+  //         e.error.code === "messaging/registration-token-not-registered" ||
+  //         e.error.code === "messaging/invalid-argument"
+  //       ) {
+  //         tokensToRemove.push(Ref.messageTokens.child(tokens[e.index]).remove());
+  //       }
+  //     });
+  //     await Promise.all(tokensToRemove);
 
-      // get again the remaining tokens after removing invalid tokens
-      tokens = await this.getTokens(uid);
-      if (tokens.length == 0) return null;
-    }
+  //     // get again the remaining tokens after removing invalid tokens
+  //     tokens = await this.getTokens(uid);
+  //     if (tokens.length == 0) return null;
+  //   }
 
-    const unsubscribePromises: any[] = [];
-    forumTopics.forEach((topic: string) => {
-      unsubscribePromises.push(admin.messaging().unsubscribeFromTopic(tokens, topic));
-    });
-    const unsubscribeResult = await Promise.all(unsubscribePromises);
+  //   const unsubscribePromises: any[] = [];
+  //   forumTopics.forEach((topic: string) => {
+  //     unsubscribePromises.push(admin.messaging().unsubscribeFromTopic(tokens, topic));
+  //   });
+  //   const unsubscribeResult = await Promise.all(unsubscribePromises);
 
-    const forumSubscription = await this.getSubscribedForum(uid);
-    if (forumSubscription.length == 0) return null;
+  //   const forumSubscription = await this.getSubscribedForum(uid);
+  //   if (forumSubscription.length == 0) return null;
 
-    const subscribePromises: any[] = [];
-    forumSubscription.forEach((topic: string) => {
-      subscribePromises.push(admin.messaging().subscribeToTopic(tokens, topic));
-    });
-    const subscribeResult = await Promise.all(subscribePromises);
+  //   const subscribePromises: any[] = [];
+  //   forumSubscription.forEach((topic: string) => {
+  //     subscribePromises.push(admin.messaging().subscribeToTopic(tokens, topic));
+  //   });
+  //   const subscribeResult = await Promise.all(subscribePromises);
 
-    return {
-      user: user,
-      uid: uid,
-      beforeToken: initialTokens,
-      afterTokens: tokens,
-      forumSubs: forumSubscription,
-      tokenError: res.errors,
-      subscribeResult: subscribeResult,
-      unsubscribeResult: unsubscribeResult,
-    };
-  }
+  //   return {
+  //     user: user,
+  //     uid: uid,
+  //     beforeToken: initialTokens,
+  //     afterTokens: tokens,
+  //     forumSubs: forumSubscription,
+  //     tokenError: res.errors,
+  //     subscribeResult: subscribeResult,
+  //     unsubscribeResult: unsubscribeResult,
+  //   };
+  // }
 }
