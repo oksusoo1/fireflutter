@@ -2,7 +2,7 @@ import 'package:extended/extended.dart';
 import 'package:fe/screens/chat/widgets/chat_room.message.dart';
 import 'package:fe/screens/chat/widgets/chat_room.message_box.dart';
 import 'package:fe/screens/friend_map/friend_map.screen.dart';
-import 'package:fe/service/app.service.dart';
+import 'package:fe/services/app.service.dart';
 import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -43,10 +43,11 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
                       if (message.isProtocol) {
                         if (message.text.contains('friendMap')) {
                           final arr = message.text.split(':').last.split(',');
-                          AppService.instance.open(FriendMapScreen.routeName, arguments: {
-                            'latitude': arr.first.trim(),
-                            'longitude': arr.last.trim(),
-                          });
+                          AppService.instance
+                            ..router.open(FriendMapScreen.routeName, arguments: {
+                              'latitude': arr.first.trim(),
+                              'longitude': arr.last.trim(),
+                            });
                         }
                       }
                     },
@@ -79,14 +80,14 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
                           ),
                           actions: [
                             TextButton(
-                              onPressed: AppService.instance.back,
+                              onPressed: AppService.instance.router.back,
                               child: const Text('Close'),
                             ),
                             TextButton(
                               onPressed: () {
                                 message
                                     .update(input.text)
-                                    .then((x) => AppService.instance.back())
+                                    .then((x) => AppService.instance.router.back())
                                     .catchError((e) => error(e));
                               },
                               child: const Text('Update'),

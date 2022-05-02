@@ -46,12 +46,6 @@ class ReportManagement extends StatelessWidget with FirestoreMixin {
                       style: TextStyle(fontSize: 14));
                 },
               ),
-              // UserDoc(
-              //   uid: report.reporteeUid,
-              //   builder: (user) {
-              //     return Text('Reportee: ' + user.nickname, style: TextStyle(fontSize: 14));
-              //   },
-              // ),
               if (target == null)
                 Text(
                   'Target: ' + report.target,

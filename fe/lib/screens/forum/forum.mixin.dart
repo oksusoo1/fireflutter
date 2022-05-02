@@ -1,6 +1,6 @@
 import 'package:extended/extended.dart';
-import 'package:fe/service/app.service.dart';
-import 'package:fe/service/global.keys.dart';
+import 'package:fe/services/app.service.dart';
+import 'package:fe/services/global.dart';
 import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
 
@@ -12,7 +12,7 @@ mixin ForumMixin {
       context: context,
       builder: (_) {
         return CommentEditDialog(
-          onCancel: AppService.instance.back,
+          onCancel: AppService.instance.router.back,
           // onError: error,
           onSubmit: (Json form, progress) async {
             try {
@@ -23,7 +23,7 @@ mixin ForumMixin {
                 content: form['content'],
                 files: form['files'],
               );
-              AppService.instance.back();
+              AppService.instance.router.back();
             } catch (e) {
               error(e);
               progress(false);
@@ -41,7 +41,7 @@ mixin ForumMixin {
       builder: (_) {
         return CommentEditDialog(
           comment: comment,
-          onCancel: AppService.instance.back,
+          onCancel: AppService.instance.router.back,
           // onError: error,
           onSubmit: (Json form, progress) async {
             try {
@@ -56,7 +56,7 @@ mixin ForumMixin {
               //   content: form['content'],
               //   files: form['files'],
               // );
-              AppService.instance.back();
+              AppService.instance.router.back();
             } catch (e) {
               error(e);
               progress(false);
@@ -119,13 +119,13 @@ mixin ForumMixin {
         actions: [
           TextButton(
             onPressed: () {
-              AppService.instance.back();
+              AppService.instance.router.back();
             },
             child: Text('close'),
           ),
           TextButton(
             onPressed: () async {
-              AppService.instance.back(input.text);
+              AppService.instance.router.back(input.text);
             },
             child: Text('submit'),
           ),

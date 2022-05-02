@@ -19,11 +19,11 @@ class ReportModel {
 
   factory ReportModel.fromJson(Json json, {String? id}) {
     return ReportModel(
-      target: json['target'],
-      targetId: json['targetId'],
-      uid: json['uid'],
+      target: json['target'] ?? '',
+      targetId: json['targetId'] ?? '',
+      uid: json['uid'] ?? '',
       reason: json['reason'] ?? '',
-      timestamp: json['timestamp'],
+      timestamp: json['timestamp'] ?? 0,
       id: id ?? json['id'],
     );
   }

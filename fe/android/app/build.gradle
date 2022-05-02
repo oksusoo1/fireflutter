@@ -37,6 +37,7 @@ android {
         jvmTarget = '1.8'
     }
 
+
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
     }
@@ -44,7 +45,7 @@ android {
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId "com.withcenter.test"
-        minSdkVersion localProperties.getProperty('flutter.minSdkVersion')
+        minSdkVersion 20
         targetSdkVersion localProperties.getProperty('flutter.targetSdkVersion')
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName

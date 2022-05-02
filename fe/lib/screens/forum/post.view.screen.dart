@@ -1,7 +1,7 @@
 import 'package:extended/extended.dart';
 import 'package:fe/screens/admin/send.push.notification.dart';
 import 'package:fe/screens/forum/forum.mixin.dart';
-import 'package:fe/service/app.service.dart';
+import 'package:fe/services/app.service.dart';
 import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
 
@@ -61,15 +61,15 @@ class _PostViewScreenState extends State<PostViewScreen> with FirestoreMixin, Fo
               onReply: (post) => onReply(context, post),
               onReport: onReport,
               onImageTap: (i, files) => onImageTapped(context, i, files),
-              onEdit: (post) => AppService.instance.openPostForm(post: post),
+              onEdit: (post) => AppService.instance.router.openPostForm(post: post),
               onDelete: (post) => PostApi.instance.delete(post.id).catchError((e) {
                 error(e);
               }),
               onLike: onLike,
               onDislike: onDislike,
               onHide: () {},
-              onChat: (post) => AppService.instance.openChatRoom(post.uid),
-              onSendPushNotification: (post) => AppService.instance
+              onChat: (post) => AppService.instance.router.openChatRoom(post.uid),
+              onSendPushNotification: (post) => AppService.instance.router
                   .open(PushNotificationScreen.routeName, arguments: {'postId': post.id}),
             ),
             Divider(color: Colors.red),

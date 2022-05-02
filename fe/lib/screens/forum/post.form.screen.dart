@@ -1,5 +1,5 @@
 import 'package:extended/extended.dart';
-import 'package:fe/service/app.service.dart';
+import 'package:fe/services/app.service.dart';
 import 'package:flutter/material.dart';
 import 'package:fireflutter/fireflutter.dart';
 
@@ -27,11 +27,11 @@ class _PostFormScreenState extends State<PostFormScreen> with FirestoreMixin {
             category: widget.arguments['category'],
             post: widget.arguments['post'],
             onCreate: (postId) {
-              AppService.instance.back(postId);
+              AppService.instance.router.back(postId);
               alert('Post created', 'Thank you');
             },
             onUpdate: (postId) {
-              AppService.instance.back(postId);
+              AppService.instance.router.back(postId);
             },
             // onError: error,
           ),

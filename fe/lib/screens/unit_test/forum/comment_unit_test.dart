@@ -31,13 +31,12 @@ class _CommentUnitTestState extends State<CommentUnitTest> with UnitTestMixin {
         clearLogs();
         runTests();
       },
-      child: Text('Run Comment Unit Test'),
+      child: Text('Comment Unit Test'),
     );
   }
 
   runTests() async {
-    await createCommentWithoutSignIn();
-    await updateCommentWithoutSignIn();
+    await commentCRUDWithoutSignIn();
     await updateOtherUsersComment();
     await updateNotExistingComment();
     await deleteOtherUsersComment();
@@ -45,10 +44,10 @@ class _CommentUnitTestState extends State<CommentUnitTest> with UnitTestMixin {
     await commentCRUDsuccess();
   }
 
-  createCommentWithoutSignIn() async {
+  commentCRUDWithoutSignIn() async {
     await FirebaseAuth.instance.signOut();
 
-    final re = await submit(CommentApi.instance.create(
+    dynamic re = await submit(CommentApi.instance.create(
       postId: 'testPostId',
       parentId: 'testPostId',
     ));
@@ -56,15 +55,17 @@ class _CommentUnitTestState extends State<CommentUnitTest> with UnitTestMixin {
       re == ERROR_NOT_SIGN_IN,
       'Cannot create comment without signing in - $re',
     );
-  }
 
-  updateCommentWithoutSignIn() async {
-    await FirebaseAuth.instance.signOut();
-
-    final re = await submit(CommentApi.instance.update(id: 'someId'));
+    re = await submit(CommentApi.instance.update(id: 'someId'));
     expect(
       re == ERROR_EMPTY_UID,
       'Cannot update comment without signing in - $re',
+    );
+
+    re = await submit(CommentApi.instance.delete('someId'));
+    expect(
+      re == ERROR_EMPTY_UID,
+      'Cannot delete comment without signing in - $re',
     );
   }
 

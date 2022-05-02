@@ -43,9 +43,15 @@ export class Messaging {
       return null;
     }
   }
-  static async subscribeTopic(data: { uid: string; topic: string }): Promise<any> {}
-  static async unsubscribeTopic(data: { uid: string; topic: string }): Promise<any> {}
-  static async removeInvalidTokens() {}
+  static async subscribeTopic(data: { uid: string; topic: string }): Promise<any> {
+    console.log("@fix empty", data);
+  }
+  static async unsubscribeTopic(data: { uid: string; topic: string }): Promise<any> {
+    console.log("@fix empty", data);
+  }
+  static async removeInvalidTokens() {
+    console.log("@fix empty");
+  }
 
   /**
    * This unsubscribe all the topics (including other user's topics) of the token.
@@ -87,7 +93,9 @@ export class Messaging {
   /**
    *
    */
-  static async resubscribeAllUserTopics() {}
+  static async resubscribeAllUserTopics() {
+    console.log("@fix empty");
+  }
 
   /**
    * Returns tokens of a user.

@@ -2,7 +2,7 @@ import 'dart:developer';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
-import 'package:fireflutter/fireflutter.dart';
+import '../../fireflutter.dart';
 import 'package:flutter/material.dart';
 import 'package:rxdart/subjects.dart';
 
@@ -40,7 +40,7 @@ mixin UnitTestMixin {
 
   _render() {
     model.render.add(true);
-    print('render added');
+    // print('render added');
   }
 
   init() async {
