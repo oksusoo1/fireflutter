@@ -33,7 +33,8 @@ class _HomeScreenState extends State<HomeScreen> {
               NewUsers(onTap: (user) => service.router.openOtherUserProfile(user.uid)),
               spaceXs,
               QuickMenuCategories(
-                  onTap: (category) => service.router.openPostList(category: category.id))
+                onTap: (category) => service.router.openPostList(category: category.id),
+              )
             ],
           ),
         ],
