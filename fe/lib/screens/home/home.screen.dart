@@ -31,6 +31,9 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               spaceXs,
               NewUsers(onTap: (user) => service.router.openOtherUserProfile(user.uid)),
+              spaceXs,
+              QuickMenuCategories(
+                  onTap: (category) => service.router.openPostList(category: category.id))
             ],
           ),
         ],

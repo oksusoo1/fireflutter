@@ -279,6 +279,10 @@ Table of contents
           }
         }
     },
+    "currency": {
+      ".read": true,
+      ".write": true
+    },
     "log": {
       ".read": true,
       ".write": true
