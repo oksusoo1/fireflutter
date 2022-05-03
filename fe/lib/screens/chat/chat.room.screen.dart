@@ -69,7 +69,7 @@ class ChatRoomScreen extends StatelessWidget {
                         },
                         onSelected: (v) async {
                           if (v == 'friendMap') {
-                            service.shareLocation(user);
+                            service.requestLocation(user);
                           } else if (v == 'block') {
                             final re =
                                 await service.confirm('Block', 'Do you want to block this user?');
@@ -114,7 +114,7 @@ class ChatRoomScreen extends StatelessWidget {
                   behavior: HitTestBehavior.opaque,
                   onTap: () {
                     if (message.isProtocol('location')) {
-                      final arr = message.text.split(':').last.split(',');
+                      final arr = message.protocol.split(':').last.split(',');
                       print('arr; $arr');
                       service.openNavigator(
                         context: context,

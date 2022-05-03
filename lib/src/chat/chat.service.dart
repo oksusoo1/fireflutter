@@ -95,6 +95,7 @@ class ChatService with ChatMixins {
   ///   - so, this option is only for logged in user.
   Future<Map<String, dynamic>> send({
     required String text,
+    String? protocol,
     required String otherUid,
     bool clearNewMessage: true,
     Map<String, dynamic> myOtherData = const {},
@@ -102,6 +103,7 @@ class ChatService with ChatMixins {
   }) async {
     final data = {
       'text': text,
+      if (protocol != null) 'protocol': protocol,
       'timestamp': FieldValue.serverTimestamp(),
       'from': myUid,
       'to': otherUid,

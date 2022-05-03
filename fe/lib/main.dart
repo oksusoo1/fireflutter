@@ -201,6 +201,32 @@ class _MainAppState extends State<MainApp> {
       else
         ChatService.instance.countNewMessages();
     });
+
+    FirebaseAuth.instance.authStateChanges().listen((user) {
+      if (user != null) {
+        /// Re-init for listening the login user (when account changed)
+        InformService.instance.init(callback: (data) async {
+          if (data['type'] == 'requestLocation') {
+            bool re = await service.confirm('Share location',
+                '${data['name']} wants to get your location. So, ${data['name']} can find you.\n\nDo you want to share your location?');
+
+            if (re) {
+              final pos = await LocationService.instance.currentPosition;
+              await ChatService.instance.send(
+                text: '${UserService.instance.displayName} shared location.',
+                protocol: ChatMessageModel.createProtocol(
+                  'location',
+                  "${pos.latitude},${pos.longitude}",
+                ),
+                otherUid: data['uid'],
+              );
+            }
+          }
+        });
+      } else {
+        InformService.instance.dispose();
+      }
+    });
   } // EO initState()
 
   onMessageOpenedShowMessage(message) {

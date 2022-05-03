@@ -59,6 +59,7 @@ class ChatRoomsUser extends StatefulWidget {
 
 class _ChatRoomsUserState extends State<ChatRoomsUser> {
   ChatMessageModel get room => widget.room;
+  UserModel otherUser = UserModel();
   @override
   void initState() {
     super.initState();
@@ -69,6 +70,7 @@ class _ChatRoomsUserState extends State<ChatRoomsUser> {
     return UserDoc(
       uid: widget.room.otherUid,
       builder: (UserModel user) {
+        otherUser = user;
         return GestureDetector(
           onTap: () => AppService.instance.router.open(
             ChatRoomScreen.routeName,
@@ -152,18 +154,7 @@ class _ChatRoomsUserState extends State<ChatRoomsUser> {
                   initialValue: '',
                   onSelected: (v) async {
                     if (v == 'friendMap') {
-                      final pos = await LocationService.instance.currentPosition;
-                      ChatService.instance.send(
-                        text: ChatMessageModel.createProtocol(
-                            'friendMap', '${pos.latitude},${pos.longitude}'),
-                        otherUid: widget.room.otherUid,
-                        clearNewMessage: false,
-                      );
-                      InformService.instance.inform(widget.room.otherUid, {
-                        'type': 'FriendMap',
-                        'latitude': pos.latitude,
-                        'longitude': pos.longitude,
-                      });
+                      service.requestLocation(otherUser);
                     } else if (v == 'delete') {
                       final re = await confirm('Delete', 'Do you want to delete?');
                       if (re == false) return;

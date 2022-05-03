@@ -196,7 +196,7 @@ class OtherUserProfileFriendMapButton extends StatelessWidget {
         if (UserService.instance.notSignedIn) {
           return service.error(ERROR_SIGN_IN);
         }
-        await service.shareLocation(user);
+        await service.requestLocation(user);
       },
     );
   }

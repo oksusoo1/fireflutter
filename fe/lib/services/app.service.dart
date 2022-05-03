@@ -62,7 +62,7 @@ class AppService {
     return ex.confirm(title, content);
   }
 
-  /// Send my location to the user for friendMap.
+  /// Send my location to the other user.
   ///
   /// 1. Ask the user for sharing location.
   /// 2. Get current location of signed in user
@@ -76,10 +76,23 @@ class AppService {
     if (re == false) return;
     final pos = await LocationService.instance.currentPosition;
     await ChatService.instance.send(
-      text: ChatMessageModel.createProtocol('location', "${pos.latitude},${pos.longitude}"),
+      text: 'Share location',
+      protocol: ChatMessageModel.createProtocol('location', "${pos.latitude},${pos.longitude}"),
       otherUid: user.uid,
     );
     alert('Location shared.', 'You have shared your location.');
+  }
+
+  /// Request other user's location.
+  ///
+  ///
+  Future<void> requestLocation(UserModel user) async {
+    await InformService.instance.inform(user.uid, {
+      'type': 'requestLocation',
+      'name': UserService.instance.displayName,
+      'uid': UserService.instance.uid,
+    });
+    alert('Location request', 'Location request has been sent to ${user.displayName}!');
   }
 
   Future openNavigator(

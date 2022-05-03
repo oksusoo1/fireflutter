@@ -36,7 +36,16 @@ class ChatRoomMessage extends StatelessWidget {
                       style: const TextStyle(fontSize: 16),
                     ),
                   )
-                else if (message.isProtocol('location'))
+                else if (message.isProtocol('location') && message.isMine)
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.location_on),
+                      SizedBox(width: 8),
+                      Text('You have shared your location.'),
+                    ],
+                  )
+                else if (message.isProtocol('location') && message.isMine == false)
                   Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [

@@ -1058,7 +1058,7 @@ ChatBadge(
 
 ```dart
 await ChatService.instance.send(
-  text: "protocol:friendMap:${pos.latitude},${pos.longitude}",
+  text: "...",
   otherUid: user.uid,
 );
 ```
@@ -1211,6 +1211,7 @@ FirebaseAuth.instance.authStateChanges().listen((user) {
   if (user != null) {
     /// Re-init for listening the login user (when account changed)
     InformService.instance.init(callback: (data) {
+      /// You have got a informing. Do whatever you want. You may show alert box, or move screen.
       if (data['type'] == 'FriendMap') {
         /// If it's a freind map request, then open friend map screen.
         Get.toNamed('/friend-map', arguments: {

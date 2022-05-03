@@ -9,6 +9,7 @@ import '../../fireflutter.dart';
 ///
 class ChatMessageModel with ChatMixins {
   String text;
+  String protocol;
   Timestamp timestamp;
   int newMessages;
   String to;
@@ -74,7 +75,7 @@ class ChatMessageModel with ChatMixins {
 
   /// Check if the message is a protocol.
   bool isProtocol(String name) {
-    return text.startsWith('protocol:$name:');
+    return protocol.contains('$name:');
   }
 
   /// Creates a protoceol
@@ -83,7 +84,7 @@ class ChatMessageModel with ChatMixins {
   /// ChatMessageModel.createProtocol('location', "${pos.latitude},${pos.longitude}"),
   /// ```
   static createProtocol(String name, [String data = '']) {
-    return "protocol:$name:$data";
+    return "$name:$data";
   }
 
   /// Return true if the message is not url or or image.
@@ -95,6 +96,7 @@ class ChatMessageModel with ChatMixins {
     required this.to,
     required this.from,
     required this.text,
+    required this.protocol,
     required this.timestamp,
     required this.newMessages,
     required this.ref,
@@ -105,6 +107,7 @@ class ChatMessageModel with ChatMixins {
       to: json['to'] ?? '',
       from: json['from'] ?? '',
       text: json['text'] ?? '',
+      protocol: json['protocol'] ?? '',
       timestamp: json['timestamp'] ?? Timestamp.now(), // handling exception
       newMessages: json['newMessages'] ?? 0,
       ref: ref,
@@ -116,6 +119,7 @@ class ChatMessageModel with ChatMixins {
       'to': to,
       'from': from,
       'text': text,
+      'protocol': protocol,
       'timestamp': timestamp,
       'newMessages': newMessages,
     };
