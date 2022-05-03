@@ -5,7 +5,6 @@ import 'package:fe/screens/chat/widgets/chat_room.message_box.dart';
 import 'package:fe/services/app.service.dart';
 import 'package:fe/services/defines.dart';
 import 'package:fe/services/global.dart';
-import 'package:fe/widgets/common/navigator_lancher.dart';
 import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
 import 'package:map_launcher/map_launcher.dart';

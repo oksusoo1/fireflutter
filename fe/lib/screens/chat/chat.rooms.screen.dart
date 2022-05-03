@@ -1,5 +1,4 @@
 import 'package:fe/screens/chat/chat.room.screen.dart';
-import 'package:fe/screens/chat/chat.rooms.blocked.screen.dart';
 import 'package:fe/screens/chat/widgets/chat.rooms.empty.dart';
 import 'package:fe/services/app.service.dart';
 import 'package:fe/services/defines.dart';
