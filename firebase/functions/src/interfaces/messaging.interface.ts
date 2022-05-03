@@ -1,6 +1,22 @@
+import { MapStringString } from "./common.interface";
+
 export interface TokenDocument {
   uid: string;
   token: string;
+}
+
+export interface TopicData {
+  uid: string;
+  topic: string;
+  type: string;
+}
+
+export interface SubscriptionResponse {
+  topic: string;
+  tokens: string[];
+  successCount: number;
+  failureCount: number;
+  failureToken: MapStringString;
 }
 
 export interface MessagePayload {
