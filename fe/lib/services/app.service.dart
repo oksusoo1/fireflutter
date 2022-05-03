@@ -44,4 +44,18 @@ class AppService {
       TranslationService.instance.tr(info.content),
     );
   }
+
+  /// Open alert box
+  ///
+  /// Alert box does return value.
+  /// ```dart
+  /// service.alert('Alert', 'This is an alert box')
+  /// ```
+  Future<void> alert(String title, String content) async {
+    ex.alert(title, content);
+  }
+
+  Future<bool> confirm(String title, String content) async {
+    return ex.confirm(title, content);
+  }
 }

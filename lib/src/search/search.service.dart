@@ -57,10 +57,12 @@ class SearchService {
 
   /// Returns a total count of documents a user owned in the given index.
   ///
+  /// ! Attention - move this to cloud functions.
   Future<int> count({
     required String uid,
     String index = 'posts',
   }) async {
+    uid = uid.replaceAll('@', '');
     final res = await client.index(index).search(
       '',
       filter: ['uid = ' + uid],

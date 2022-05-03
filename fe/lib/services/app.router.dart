@@ -269,6 +269,10 @@ class AppRouter extends NavigatorObserver {
     return open(ChatRoomScreen.routeName, arguments: {'uid': uid});
   }
 
+  Future<void> openChatRooms() async {
+    return open(ChatRoomsScreen.routeName);
+  }
+
   Future<void> openReportForumMangement(String target, String id) async {
     return open(ReportPostManagementScreen.routeName, arguments: {
       'target': target,
@@ -290,5 +294,9 @@ class AppRouter extends NavigatorObserver {
 
   Future openOtherUserProfile(String uid) {
     return open(OtherUserProfileScreen.routeName, arguments: {'uid': uid});
+  }
+
+  Future openChatRoomsBlocked() {
+    return open(ChatRoomsBlockedScreen.routeName);
   }
 }
