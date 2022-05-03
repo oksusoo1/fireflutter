@@ -178,43 +178,25 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen> with Fi
   }
 }
 
-class OtherUserProfileFriendMapButton extends StatefulWidget {
+class OtherUserProfileFriendMapButton extends StatelessWidget {
   OtherUserProfileFriendMapButton({required this.user, Key? key}) : super(key: key);
 
   final UserModel user;
 
-  @override
-  State<OtherUserProfileFriendMapButton> createState() => _OtherUserProfileFriendMapButtonState();
-}
-
-class _OtherUserProfileFriendMapButtonState extends State<OtherUserProfileFriendMapButton> {
-  bool sendingRequest = false;
-
-  @override
   Widget build(BuildContext context) {
     return OtherUserProfileMenuButton(
       text: 'Friend Map',
-      icon: sendingRequest
-          ? SizedBox(
-              height: 29,
-              width: 29,
-              child: CircularProgressIndicator.adaptive(strokeWidth: 2),
-            )
-          : FaDuotoneIconMenu(
-              FontAwesomeIcons.duotoneMapMarkedAlt,
-              primaryColor: red,
-              secondaryColor: blue,
-              size: 26,
-            ),
+      icon: FaDuotoneIconMenu(
+        FontAwesomeIcons.duotoneMapMarkedAlt,
+        primaryColor: red,
+        secondaryColor: blue,
+        size: 26,
+      ),
       onTap: () async {
         if (UserService.instance.notSignedIn) {
           return service.error(ERROR_SIGN_IN);
         }
-        setState(() => sendingRequest = true);
-
-        /// TODO: 프랜드맵을 여기에 연결
-        // await service.requestFriendMap(widget.user);
-        setState(() => sendingRequest = false);
+        await service.shareLocation(user);
       },
     );
   }

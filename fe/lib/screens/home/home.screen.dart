@@ -19,7 +19,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Layout(
       title: Tr(
-        'Home',
+        'Fire Flutter',
         style: titleStyle,
       ),
       body: SingleChildScrollView(

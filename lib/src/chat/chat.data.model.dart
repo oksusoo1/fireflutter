@@ -15,9 +15,7 @@ class ChatMessageModel with ChatMixins {
   String from;
 
   String get time =>
-      DateTime.fromMillisecondsSinceEpoch(timestamp.millisecondsSinceEpoch)
-          .toLocal()
-          .toString();
+      DateTime.fromMillisecondsSinceEpoch(timestamp.millisecondsSinceEpoch).toLocal().toString();
 
   /// Login user's firebase uid.
   String get myUid => FirebaseAuth.instance.currentUser!.uid;
@@ -74,10 +72,16 @@ class ChatMessageModel with ChatMixins {
     return isFirebaseStorageUrl(text);
   }
 
-  bool get isProtocol {
-    return text.startsWith('protocol:');
+  /// Check if the message is a protocol.
+  bool isProtocol(String name) {
+    return text.startsWith('protocol:$name:');
   }
 
+  /// Creates a protoceol
+  ///
+  /// ```dart
+  /// ChatMessageModel.createProtocol('location', "${pos.latitude},${pos.longitude}"),
+  /// ```
   static createProtocol(String name, [String data = '']) {
     return "protocol:$name:$data";
   }
@@ -96,8 +100,7 @@ class ChatMessageModel with ChatMixins {
     required this.ref,
   });
 
-  factory ChatMessageModel.fromJson(Map<dynamic, dynamic> json,
-      [DocumentReference? ref]) {
+  factory ChatMessageModel.fromJson(Map<dynamic, dynamic> json, [DocumentReference? ref]) {
     return ChatMessageModel(
       to: json['to'] ?? '',
       from: json['from'] ?? '',
