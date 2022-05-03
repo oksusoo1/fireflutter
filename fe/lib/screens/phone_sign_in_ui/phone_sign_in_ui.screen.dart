@@ -1,6 +1,8 @@
 import 'package:extended/extended.dart';
 import 'package:fe/screens/phone_sign_in_ui/sms_code_ui.screen.dart';
 import 'package:fe/services/app.service.dart';
+import 'package:fe/services/defines.dart';
+import 'package:fe/widgets/layout/layout.dart';
 import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
 import 'package:country_code_picker/country_code_picker.dart';
@@ -16,9 +18,10 @@ class PhoneSignInUIScreen extends StatefulWidget {
 class _PhoneSignInUIScreenState extends State<PhoneSignInUIScreen> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Phone sign in UI'),
+    return Layout(
+      title: const Text(
+        'Phone sign in UI',
+        style: titleStyle,
       ),
       body: Container(
         padding: const EdgeInsets.all(16),

@@ -191,7 +191,17 @@ class _MainAppState extends State<MainApp> {
         // print(token);
       },
     );
-  }
+
+    ChatService.instance.newMessages.listen((int newMessages) {
+      FlutterAppBadger.updateBadgeCount(newMessages);
+    });
+    FirebaseAuth.instance.authStateChanges().listen((user) {
+      if (user == null)
+        ChatService.instance.unsubscribeNewMessages();
+      else
+        ChatService.instance.countNewMessages();
+    });
+  } // EO initState()
 
   onMessageOpenedShowMessage(message) {
     // Handle the message here

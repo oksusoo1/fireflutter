@@ -25,7 +25,7 @@ class _PostListScreenState extends State<PostListScreen> with FirestoreMixin, Fo
   @override
   void initState() {
     super.initState();
-    category = widget.arguments['category'] ?? '';
+    category = widget.arguments['category'] ?? 'Forum';
   }
 
   @override
