@@ -22,6 +22,10 @@ class _MenuScreenState extends State<MenuScreen> {
       body: Column(
         children: [
           ElevatedButton(
+            onPressed: service.router.openChatRooms,
+            child: const Text('Chat Room List'),
+          ),
+          ElevatedButton(
             onPressed: () => AppService.instance.router.open(PhoneSignInScreen.routeName),
             child: const Text('Phone Sign-In'),
           ),

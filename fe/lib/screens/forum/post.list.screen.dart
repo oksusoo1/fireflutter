@@ -2,6 +2,9 @@ import 'package:extended/extended.dart';
 import 'package:fe/screens/admin/send.push.notification.dart';
 import 'package:fe/screens/forum/forum.mixin.dart';
 import 'package:fe/services/app.service.dart';
+import 'package:fe/services/defines.dart';
+import 'package:fe/services/global.dart';
+import 'package:fe/widgets/layout/layout.dart';
 import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterfire_ui/firestore.dart';
@@ -27,33 +30,36 @@ class _PostListScreenState extends State<PostListScreen> with FirestoreMixin, Fo
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(category),
-        actions: [
-          ForumListPushNotificationIcon(
-            category,
-            // onError: error,
-            onSigninRequired: () => alert(
-              'Signin Required',
-              'Please, sign in to subscribe this forum.',
-            ),
-            size: 28,
-            onChanged: (String selection, bool subscribed) {
-              alert(selection, subscribed ? 'subscribed' : 'unsubscribed');
-            },
-          ),
-          IconButton(
-            onPressed: () async {
-              newPostId = await AppService.instance.router.openPostForm(category: category);
-              if (mounted) setState(() {});
-            },
-            icon: Icon(
-              Icons.create_rounded,
-            ),
-          ),
-        ],
+    return Layout(
+      backButton: true,
+      bottomLine: true,
+      title: Text(
+        category,
+        style: titleStyle,
       ),
+      actions: [
+        ForumListPushNotificationIcon(
+          category,
+          // onError: service.error,
+          onSigninRequired: () => service.alert(
+            'Sign-in Required',
+            'Please, sign in to subscribe this forum',
+          ),
+          onChanged: (String postOrComment, bool subscribed) {
+            service.alert(
+              subscribed ? 'Subscription' : 'Unsubscription',
+              'You have ${subscribed ? 'subscribed' : 'unsubscribed'} the $category $postOrComment subscription.',
+            );
+          },
+          size: 32,
+        ),
+        IconButton(
+            onPressed: () => service.router.openPostForm(category: category),
+            icon: Icon(
+              Icons.create,
+              color: Colors.black,
+            )),
+      ],
       body: FirestoreQueryBuilder(
         key: ValueKey((newPostId ?? '') + 'FirestoreListView'),
         query: postCol.where('category', isEqualTo: category).orderBy(
@@ -69,6 +75,7 @@ class _PostListScreenState extends State<PostListScreen> with FirestoreMixin, Fo
             return Text('Something went wrong! ${snapshot.error}');
           }
           return ListView.builder(
+            padding: EdgeInsets.all(0),
             itemCount: snapshot.docs.length,
             itemBuilder: (context, index) {
               if (snapshot.hasMore && index + 1 == snapshot.docs.length) {
@@ -83,7 +90,7 @@ class _PostListScreenState extends State<PostListScreen> with FirestoreMixin, Fo
                 children: [
                   ExtendedListTile(
                     key: ValueKey(post.id),
-                    margin: EdgeInsets.only(top: index == 0 ? 16 : 0),
+                    // margin: EdgeInsets.only(top: index == 0 ? 16 : 0),
                     padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     leading: post.files.isNotEmpty
                         ? UploadedImage(

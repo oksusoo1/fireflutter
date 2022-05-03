@@ -140,3 +140,5 @@ export 'src/unit_test/unit_test.logs.dart';
 export 'src/admin/widget/admin.only.dart';
 export 'src/widgets/loader.dart';
 export 'src/user/widgets/new_users.dart';
+
+export 'src/forum/widgets/quick_menu_categories.dart';

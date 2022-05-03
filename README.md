@@ -129,6 +129,8 @@ Table of contents
 - [Widgets](#widgets)
   - [Common widgets](#common-widgets)
     - [DatePicker](#datepicker)
+  - [Forum Widgets](#forum-widgets)
+    - [QuickMenuCategories](#quickmenucategories)
 - [Location Service](#location-service)
 - [Cloud Functions](#cloud-functions)
   - [Unit test for Cloud Functions](#unit-test-for-cloud-functions)
@@ -278,6 +280,10 @@ Table of contents
             ".indexOn": "timestamp"
           }
         }
+    },
+    "currency": {
+      ".read": true,
+      ".write": true
     },
     "log": {
       ".read": true,
@@ -1833,6 +1839,20 @@ HttpException: Invalid statusCode: 403, uri = https://firebasestorage.googleapis
 ```dart
 DatePicker(initialValue: 19990304, onChanged: (int newDate) => update(newDate));
 ```
+
+
+## Forum Widgets
+
+### QuickMenuCategories
+
+- To dispaly categories, use `QuickMenuCategories`.
+
+```dart
+QuickMenuCategories(
+  onTap: (category) => service.router.openPostList(category: category.id),
+)
+```
+
 
 # Location Service
 
