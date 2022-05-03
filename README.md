@@ -61,10 +61,12 @@ Table of contents
   - [UserProfilePhoto](#userprofilephoto)
   - [NewUsers](#newusers)
 - [Chat](#chat)
-  - [Chat todo;](#chat-todo)
+  - [How to use chat feature](#how-to-use-chat-feature)
   - [Chat structure of Firestore](#chat-structure-of-firestore)
   - [Chat logic](#chat-logic)
     - [Chat logic - block](#chat-logic---block)
+  - [Chat Widgets](#chat-widgets)
+    - [ChatBadge](#chatbadge)
 - [Reminder](#reminder)
   - [Reminder code sample](#reminder-code-sample)
   - [Reminder input data & logic](#reminder-input-data--logic)
@@ -949,11 +951,33 @@ NewUsers(onTap: service.router.openOtherUserProfile),
 
 # Chat
 
-## Chat todo;
 
-- when A enters a room with B, check if they are blocked. If yes, dispaly a warning.
-- when sending message fails, check if they are block and warn properly.
-  - for instance, A request FriendMap to B, and A cannot send message to B since they are blocked. Then, display proper warning like "failed due to blocked" instead of meaning less message like "failed or permission denied."
+## How to use chat feature
+
+- First, when the user signs-in, count new messages and trigger `newMessages` event.
+
+```dart
+FirebaseAuth.instance.authStateChanges().listen((user) {
+  if (user == null)
+    ChatService.instance.unsubscribeNewMessages();
+  else
+    ChatService.instance.countNewMessages();
+});
+```
+
+- And, have some code like below on app boots to display(update) the number of new chat messages on launcher icon.
+  - `newMessages` is a `BehaviourSubjec`, so it will have the number of new message that is recently counted.
+```dart
+ChatService.instance.newMessages.listen((int newMessages) {
+  FlutterAppBadger.updateBadgeCount(newMessages);
+});
+```
+
+- Lastly, you may want to put some code for push notification alert that is trigger by a new chat message.
+
+
+
+
 
 ## Chat structure of Firestore
 
@@ -988,6 +1012,53 @@ NewUsers(onTap: service.router.openOtherUserProfile),
   - save user uid at `/chat/blocked/<my>/<other>.timestamp`.
 
 - When A blocked to B, both cannot send message to each other.
+
+
+## Chat Widgets
+
+### ChatBadge
+
+- Displays the badge number of new chat message.
+
+
+- You can simple display the number of new chat messages like below.
+
+```dart
+ChatBadge()
+```
+
+
+- You can also do some custom design with badge, especially to put the badge number on other widget.
+  - With the `ChatBadge.builder`, you can know if you have new messages or not.
+
+```dart
+ChatBadge(
+  builder: (Widget? badge) {
+    if (badge == null) {
+      return UserProfilePhoto(size: 26);
+    } else {
+      return Container(
+        width: 32,
+        child: Stack(
+          children: [
+            UserProfilePhoto(
+              size: 26,
+            ),
+            Positioned(
+              child: badge,
+              top: -3,
+              right: 0,
+            ),
+          ],
+        ),
+      );
+    }
+  },
+),
+```
+
+
+
 
 # Reminder
 
