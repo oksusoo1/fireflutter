@@ -82,6 +82,8 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen> with Fi
   @override
   Widget build(BuildContext context) {
     return Layout(
+      backButton: true,
+      bottomLine: true,
       title: Text(
         user.displayName,
         style: TextStyle(

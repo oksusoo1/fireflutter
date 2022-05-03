@@ -13,6 +13,7 @@ class Layout extends StatefulWidget {
     Key? key,
     required this.title,
     this.bottom,
+    this.bottomLine = false,
     required this.body,
     this.actions,
     this.backgroundColor = Colors.white,
@@ -24,6 +25,7 @@ class Layout extends StatefulWidget {
   final Widget title;
   final Widget body;
   final PreferredSizeWidget? bottom;
+  final bool bottomLine;
   final List<Widget>? actions;
   final Color backgroundColor;
   final Color appBarBackgroundColor;
@@ -94,6 +96,9 @@ class _LayoutState extends State<Layout> with SingleTickerProviderStateMixin {
               title: widget.title,
               bottom: widget.bottom,
               actions: widget.actions,
+              shape: widget.bottomLine
+                  ? Border(bottom: BorderSide(color: Colors.grey.shade300))
+                  : null,
             ),
           ];
         },
