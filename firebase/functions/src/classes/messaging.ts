@@ -56,10 +56,10 @@ export class Messaging {
     const res = await admin.messaging().subscribeToTopic(tokens, data.topic);
     // console.log(res);
     await Ref.userSettingTopic(data.uid)
-      .child(data.type)
-      .update({
-        [data.topic]: true,
-      });
+        .child(data.type)
+        .update({
+          [data.topic]: true,
+        });
     const failureToken: any = {};
     if (res.failureCount > 0) {
       const tokensToRemove: Promise<any>[] = [];
@@ -91,10 +91,10 @@ export class Messaging {
     if (tokens.length == 0) return null;
     await admin.messaging().unsubscribeFromTopic(tokens, data.topic);
     await Ref.userSettingTopic(data.uid)
-      .child(data.type)
-      .update({
-        [data.topic]: false,
-      });
+        .child(data.type)
+        .update({
+          [data.topic]: false,
+        });
   }
 
   /**
@@ -129,8 +129,8 @@ export class Messaging {
    * @returns Map of result.
    */
   static async removeInvalidTokensFromResponse(
-    tokens: Array<string>,
-    res: MessagingTopicManagementResponse
+      tokens: Array<string>,
+      res: MessagingTopicManagementResponse
   ): Promise<MapStringString> {
     if (res.failureCount == 0) return {};
 
@@ -417,8 +417,8 @@ export class Messaging {
   }
 
   static async sendingMessageToTokens(
-    tokens: Array<string>,
-    payload: MessagePayload
+      tokens: Array<string>,
+      payload: MessagePayload
   ): Promise<{
     success: number;
     error: number;
@@ -432,7 +432,7 @@ export class Messaging {
     for (const c of chunks) {
       // Send notifications to all tokens.
       const newPayload: admin.messaging.MulticastMessage = Object.assign(
-        { tokens: c },
+          { tokens: c },
         payload as any
       );
       sendToDevicePromise.push(admin.messaging().sendMulticast(newPayload));

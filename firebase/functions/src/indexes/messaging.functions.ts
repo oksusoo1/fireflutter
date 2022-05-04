@@ -52,7 +52,7 @@ export const subscribeTopic = functions
     .region("us-central1", "asia-northeast3")
     .https.onRequest(async (req, res) => {
       ready({ req, res, auth: true }, async (data) => {
-        res.status(200).send(await Messaging.subscribeTopic(data));
+        res.status(200).send(await Messaging.subscribeToTopic(data));
       });
     });
 
@@ -60,7 +60,7 @@ export const unsubscribeTopic = functions
     .region("us-central1", "asia-northeast3")
     .https.onRequest(async (req, res) => {
       ready({ req, res, auth: true }, async (data) => {
-        res.status(200).send(await Messaging.unsubscribeTopic(data));
+        res.status(200).send(await Messaging.unsubscribeToTopic(data));
       });
     });
 

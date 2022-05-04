@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.report = exports.sendMessageOnCommentCreate = exports.sendMessageOnPostCreate = exports.commentDelete = exports.commentUpdate = exports.commentCreate = exports.postDelete = exports.postUpdate = exports.postCreate = void 0;
+exports.report = exports.sendMessageOnCommentCreate = exports.sendMessageOnPostCreate = exports.commentDelete = exports.commentUpdate = exports.commentCreate = exports.postDelete = exports.postUpdate = exports.postCreate = exports.postList = void 0;
 /**
  * @file foum.functions.ts
  *
@@ -22,8 +22,13 @@ const ready_1 = require("../ready");
 const post_1 = require("../classes/post");
 const comment_1 = require("../classes/comment");
 const report_1 = require("../classes/report");
-// Start writing Firebase Functions
-// https://firebase.google.com/docs/functions/typescript
+exports.postList = functions
+    .region("us-central1", "asia-northeast3")
+    .https.onRequest((req, res) => {
+    ready_1.ready({ req, res }, async (data) => {
+        res.status(200).send(await post_1.Post.list(data));
+    });
+});
 exports.postCreate = functions
     .region("us-central1", "asia-northeast3")
     .https.onRequest((req, res) => {

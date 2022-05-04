@@ -17,6 +17,35 @@ class Post {
     /**
      *
      * @see README.md for details.
+     * @param options options for getting post lists
+     * @returns
+     * - list of post documents. Empty array will be returned if there is no posts by the options.
+     * - Or it will throw an exception on failing post creation.
+     * @note exception will be thrown on error.
+     */
+    static async list(options) {
+        var _a;
+        const posts = [];
+        let q = ref_1.Ref.postCol;
+        if (options.category) {
+            q = q.where("category", "==", options.category);
+        }
+        q = q.orderBy("createdAt", "desc");
+        if (options.startAfter) {
+            //
+            q = q.startAfter(options.startAfter);
+        }
+        q = q.limit((_a = options.limit) !== null && _a !== void 0 ? _a : 10);
+        const snapshot = await q.get();
+        if (snapshot.size > 0) {
+            const docs = snapshot.docs;
+            docs.forEach((doc) => posts.push(doc.data()));
+        }
+        return posts;
+    }
+    /**
+     *
+     * @see README.md for details.
      * @param data post doc data to be created. See README.md for details.
      * @returns
      * - post doc as in PostDocument interface after create. Note that, it will contain post id.
