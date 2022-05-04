@@ -24,7 +24,6 @@ describe("Post list test", () => {
         category: category.id,
         title: "test-title-" + i,
       } as any);
-      new Promise((resolve) => setTimeout(resolve, 500));
     }
   });
 
