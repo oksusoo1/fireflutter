@@ -5,6 +5,8 @@ const admin = require("firebase-admin");
 const defines_1 = require("../defines");
 const ref_1 = require("./ref");
 const utils_1 = require("./utils");
+const axios_1 = require("axios");
+const fireflutter_config_1 = require("../fireflutter.config");
 class Messaging {
     /**
      * Creates(or updates) a token document with uid and do `token-update` process as decribed in README.md.
@@ -15,14 +17,33 @@ class Messaging {
      */
     static async updateToken(data) {
         await this.setToken(data);
-        await this.unsubscribeAllTopicOfToken();
-        await this.resubscribeAllUserTopics();
+        await this.removeInvalidTokens(data.uid);
+        await this.unsubscribeAllTopicOfToken(data.token);
+        await this.resubscribeAllUserTopics(data.uid);
     }
+    /**
+     *
+     * @param data
+     *  uid - user id
+     *  token - device token or browser token
+     *
+     * @returns tokens ref
+     */
     static async setToken(data) {
+        if (data.uid == null || data.uid == "")
+            throw defines_1.ERROR_EMPTY_UID;
+        if (data.token == null || data.token == "")
+            throw defines_1.ERROR_EMPTY_TOKEN;
         await ref_1.Ref.messageTokens.child(data.token).set({ uid: data.uid });
+        return this.getToken(data.token);
     }
-    static async getToken(id) {
-        const snapshot = await ref_1.Ref.token(id).get();
+    /**
+     * Returns the token record
+     * @param token
+     * @returns
+     */
+    static async getToken(token) {
+        const snapshot = await ref_1.Ref.token(token).get();
         if (snapshot.exists()) {
             const data = snapshot.val();
             data.token = snapshot.key;
@@ -32,29 +53,299 @@ class Messaging {
             return null;
         }
     }
-    static async subscribeTopic(data) {
-        console.log("@fix empty", data);
+    /**
+     *
+     * @param data
+     * @returns SubscriptionResponse
+     *  topic - topic from request
+     *  tokens - user tokens
+     *  failureTokens - tokens with failure reason
+     *  successCount - number of subscribe success
+     *  failureCount - number of failed subscription
+     *
+     */
+    static async subscribeToTopic(data) {
+        var _a, _b;
+        // turn on topic user-settings/{uid}/topic/type(folderName)/
+        await this.topicOn(data);
+        // get user tokens
+        const tokens = await this.getTokens(data.uid);
+        // if user has no token then return;
+        if (tokens.length == 0) {
+            return {
+                topic: data.topic,
+                tokens: tokens,
+                failureTokens: {},
+                successCount: 0,
+                failureCount: 0,
+            };
+        }
+        // subscribe user tokens to topic
+        const res = await admin.messaging().subscribeToTopic(tokens, data.topic);
+        // remove invalid tokens if any
+        const failureTokens = await this.removeInvalidTokensFromResponse(tokens, res);
+        // return failuretokens tokens with failure reason and success and failure count
+        return {
+            topic: data.topic,
+            tokens: tokens,
+            failureTokens: failureTokens,
+            successCount: (_a = res === null || res === void 0 ? void 0 : res.successCount) !== null && _a !== void 0 ? _a : 0,
+            failureCount: (_b = res === null || res === void 0 ? void 0 : res.failureCount) !== null && _b !== void 0 ? _b : 0,
+        };
     }
-    static async unsubscribeTopic(data) {
-        console.log("@fix empty", data);
+    /**
+     *
+     * @param data
+     * @returns SubscriptionResponse
+     *  topic - topic from request
+     *  tokens - user tokens
+     *  failureTokens - tokens with failure reason
+     *  successCount - number of unsubscribe success
+     *  failureCount - number of failed unsubscription
+     *
+     */
+    static async unsubscribeToTopic(data) {
+        var _a, _b;
+        // turn off topic user-settings/{uid}/topic/type(folderName)/
+        await this.topicOff(data);
+        // get user tokens
+        const tokens = await this.getTokens(data.uid);
+        // return if user has no tokens
+        if (tokens.length == 0) {
+            return {
+                topic: data.topic,
+                tokens: tokens,
+                failureTokens: {},
+                successCount: 0,
+                failureCount: 0,
+            };
+        }
+        // unsubscribe user tokens to topic
+        const res = await admin.messaging().unsubscribeFromTopic(tokens, data.topic);
+        // remove invalid tokens if any
+        const failureTokens = await this.removeInvalidTokensFromResponse(tokens, res);
+        // return failuretokens tokens with failure reason and success and failure count
+        return {
+            topic: data.topic,
+            tokens: tokens,
+            failureTokens: failureTokens,
+            successCount: (_a = res === null || res === void 0 ? void 0 : res.successCount) !== null && _a !== void 0 ? _a : 0,
+            failureCount: (_b = res === null || res === void 0 ? void 0 : res.failureCount) !== null && _b !== void 0 ? _b : 0,
+        };
     }
-    static async removeInvalidTokens() {
-        console.log("@fix empty");
+    /**
+     * Check if the data is set and not empty
+     * @param data
+     *  uid - user id
+     *  topic - topic to subscribe
+     *  type - folderName
+     */
+    static checkTopicData(data) {
+        if (!data.uid)
+            throw defines_1.ERROR_EMPTY_UID;
+        if (!data.topic)
+            throw defines_1.ERROR_EMPTY_TOPIC;
+        if (!data.type)
+            throw defines_1.ERROR_EMPTY_TOPIC_TYPE;
+    }
+    /**
+     * Toggle the user topic true or false
+     * @param data
+     * @returns
+     */
+    static async topicToggle(data) {
+        this.checkTopicData(data);
+        const topic = await this.getTopic(data);
+        if (topic != null && topic[data.topic]) {
+            return this.topicOff(data);
+        }
+        else {
+            return this.topicOn(data);
+        }
+    }
+    /**
+     * Set user-settings/{uid}/topic/type(folderName)/
+     * {[topic]: true}
+     *
+     * @param data
+     * @returns
+     */
+    static async topicOn(data) {
+        this.checkTopicData(data);
+        await ref_1.Ref.userSettingTopic(data.uid)
+            .child(data.type)
+            .update({
+            [data.topic]: true,
+        });
+        return this.getTopics(data.uid, data.type);
+    }
+    /**
+     * Set user-settings/{uid}/topic/type(folderName)/
+     * {[topic]: false}
+     *
+     * @param data
+     * @returns
+     */
+    static async topicOff(data) {
+        this.checkTopicData(data);
+        await ref_1.Ref.userSettingTopic(data.uid)
+            .child(data.type)
+            .update({
+            [data.topic]: false,
+        });
+        return this.getTopics(data.uid, data.type);
+    }
+    static async getTopic(data) {
+        const snapshot = await ref_1.Ref.userSettingTopic(data.uid).child(data.type).child(data.topic).get();
+        if (snapshot.exists()) {
+            const val = snapshot.val();
+            return { [data.topic]: val };
+        }
+        return null;
+    }
+    /**
+     * Returns the topics from type(foldersName)
+     * @param uid
+     * @param type
+     * @returns {[topic]: boolean} || null
+     */
+    static async getTopics(uid, type) {
+        const snapshot = await ref_1.Ref.userSettingTopic(uid).child(type).get();
+        if (snapshot.exists()) {
+            const val = snapshot.val();
+            return val;
+        }
+        return null;
+    }
+    /**
+     * Removes invalid tokens.
+     *
+     * It subscribes the default topic on every token update on app starts(or user logs in).
+     * We found it is more efficient than removing invalid token on every subscription(or unsubscription) or sending messages.
+     *
+     *
+     * @param uid user uid
+     * @returns
+     */
+    static async removeInvalidTokens(uid) {
+        // get all user tokens
+        const tokens = await this.getTokens(uid);
+        // subscribe to default
+        const res = await admin.messaging().subscribeToTopic(tokens, this.defaultTopic);
+        // remove all invalid tokens base from the response
+        await this.removeInvalidTokensFromResponse(tokens, res);
+        return res;
+    }
+    /**
+     * Remove invalid tokens.
+     *
+     * This may be used to remove invalid tokens after sending messages or (un)subscribing topic.
+     *
+     * @param tokens token list that matches the `res` of sending massage or subscribing(unsubscribing) topics.
+     * @param res response(result) of sending messages or subscribing topic.
+     * @returns Map of result.
+     */
+    static async removeInvalidTokensFromResponse(tokens, res) {
+        if (res.failureCount == 0)
+            return {};
+        const failureToken = {};
+        const tokensToRemove = [];
+        res.errors.forEach((e) => {
+            if (e.error) {
+                if (this.isInvalidTokenErrorCode(e.error.code)) {
+                    tokensToRemove.push(ref_1.Ref.messageTokens.child(tokens[e.index]).remove());
+                    failureToken[tokens[e.index]] = e.error.code;
+                }
+            }
+        });
+        await Promise.all(tokensToRemove);
+        return failureToken;
+    }
+    static isInvalidTokenErrorCode(code) {
+        if (code === "messaging/invalid-registration-token" ||
+            code === "messaging/registration-token-not-registered" ||
+            code === "messaging/invalid-argument") {
+            return true;
+        }
+        return false;
     }
     /**
      * This unsubscribe all the topics (including other user's topics) of the token.
      * See README.md for details.
-     *
-     * @reference https://stackoverflow.com/questions/38212123/unsubscribe-from-all-topics-at-once-from-firebase-messaging
+     * @returns array of topic as string
      */
-    static async unsubscribeAllTopicOfToken() {
-        console.log("@fix empty");
+    static async unsubscribeAllTopicOfToken(token) {
+        // get all topics topics
+        const topics = await this.getTokenTopics(token);
+        if (topics.length == 0)
+            return [];
+        const promises = [];
+        const res = [];
+        topics.forEach((topic) => {
+            if (topic == this.defaultTopic)
+                return;
+            res.push(topic);
+            promises.push(admin.messaging().unsubscribeFromTopic(token, topic));
+        });
+        await Promise.all(promises);
+        return res;
+    }
+    /**
+     * @reference https://stackoverflow.com/questions/38212123/unsubscribe-from-all-topics-at-once-from-firebase-messaging
+     * @param token
+     * @returns string[] of topics or empty [] if error or no topics
+     */
+    static async getTokenTopics(token) {
+        const url = "https://iid.googleapis.com/iid/info/" + token;
+        const key = "key = " + fireflutter_config_1.config.serverKey;
+        try {
+            const res = await axios_1.default.get(url, {
+                params: { details: true },
+                headers: { Authorization: key },
+            });
+            // console.log(res);
+            if (res.data.rel == null)
+                return [];
+            if (res.data.rel.topics == null)
+                return [];
+            return Object.keys(res.data.rel.topics);
+        }
+        catch (e) {
+            // console.log("=======================");
+            // console.log((e as any).response.data.error);
+            return [];
+        }
     }
     /**
      *
      */
-    static async resubscribeAllUserTopics() {
-        console.log("@fix empty");
+    static async resubscribeAllUserTopics(uid) {
+        // subscribe to user forum topics
+        const forum = await this.subscribeUserToSettingTopics(uid, "forum");
+        // subscribe to user job topics
+        // await this.subscribeUserToSettingTopics(uid, "job" );
+        return {
+            forum: forum,
+        };
+    }
+    /**
+     *
+     * @param uid
+     * @param type The child topic folder name under `/user-settings/<uid>/topics/<folder-name>`.
+     * @returns
+     */
+    static async subscribeUserToSettingTopics(uid, type) {
+        const userSubs = await this.getSettingSubscription(uid, type);
+        if (!userSubs)
+            return null;
+        const subscribePromises = [];
+        Object.keys(userSubs).forEach((topic) => {
+            if (userSubs[topic]) {
+                subscribePromises.push(this.subscribeToTopic({ uid: uid, topic: topic, type: type }));
+            }
+        });
+        const res = await Promise.all(subscribePromises);
+        return res;
     }
     /**
      * Returns tokens of a user.
@@ -256,9 +547,7 @@ class Messaging {
                     // console.log('error.code');
                     // console.log(error.code);
                     // Cleanup the tokens who are not registered anymore.
-                    if (error.code === "messaging/invalid-registration-token" ||
-                        error.code === "messaging/registration-token-not-registered" ||
-                        error.code === "messaging/invalid-argument") {
+                    if (this.isInvalidTokenErrorCode(error.code)) {
                         tokensToRemove.push(ref_1.Ref.messageTokens.child(chunks[i][index]).remove());
                     }
                 }
@@ -330,96 +619,21 @@ class Messaging {
         }
         return re;
     }
-    static async subscribeToTopic(tokens, topic) {
-        return admin.messaging().subscribeToTopic(tokens, topic);
-    }
     /**
-     * Returns user forum topics that is set to true.
+     * Returns user-settings/{uid}/topic/type that is set to true.
      *
      * @param uid user uid
-     * @returns array of topic set to true
+     * @param type The child topic folder name under `/user-settings/<uid>/topics/<folder-name>`.
+     * @returns The documents of topic folder name that have the topic liste with boolean value.
      */
-    static async getSubscribedForum(uid) {
-        const snapshot = await ref_1.Ref.userSettingForumTopics(uid).orderByValue().equalTo(true).get();
+    static async getSettingSubscription(uid, type) {
+        const snapshot = await ref_1.Ref.userSettingTopic(uid).child(type).orderByKey().get();
         if (!snapshot.exists())
-            return [];
+            return null;
         const val = snapshot.val();
-        return Object.keys(val);
-    }
-    /**
-     * Returns user forum topics.
-     *
-     * @param uid user uid
-     * @returns array of topic
-     */
-    static async getForumTopics(uid) {
-        const snapshot = await ref_1.Ref.userSettingForumTopics(uid).get();
-        if (!snapshot.exists())
-            return [];
-        const val = snapshot.val();
-        return Object.keys(val);
-    }
-    /**
-     *
-     * Unsubcribe all topics that
-     * @param user
-     * @param uid
-     * @returns
-     */
-    static async resubscribeTopics(user, uid) {
-        // get user tokens
-        const initialTokens = await this.getTokens(uid);
-        let tokens = initialTokens;
-        if (tokens.length == 0)
-            return null;
-        // get user forum topics
-        const forumTopics = await this.getForumTopics(uid);
-        if (forumTopics.length == 0)
-            return null;
-        // get 1 topic first
-        const topic = forumTopics.splice(0, 1)[0];
-        // unsubscribe to 1 topic
-        const res = await admin.messaging().unsubscribeFromTopic(tokens, topic);
-        // if there is failure remove tokens with invalid status
-        if (res.failureCount > 0) {
-            const tokensToRemove = [];
-            res.errors.forEach((e) => {
-                if (e.error.code === "messaging/invalid-registration-token" ||
-                    e.error.code === "messaging/registration-token-not-registered" ||
-                    e.error.code === "messaging/invalid-argument") {
-                    tokensToRemove.push(ref_1.Ref.messageTokens.child(tokens[e.index]).remove());
-                }
-            });
-            await Promise.all(tokensToRemove);
-            // get again the remaining tokens after removing invalid tokens
-            tokens = await this.getTokens(uid);
-            if (tokens.length == 0)
-                return null;
-        }
-        const unsubscribePromises = [];
-        forumTopics.forEach((topic) => {
-            unsubscribePromises.push(admin.messaging().unsubscribeFromTopic(tokens, topic));
-        });
-        const unsubscribeResult = await Promise.all(unsubscribePromises);
-        const forumSubscription = await this.getSubscribedForum(uid);
-        if (forumSubscription.length == 0)
-            return null;
-        const subscribePromises = [];
-        forumSubscription.forEach((topic) => {
-            subscribePromises.push(admin.messaging().subscribeToTopic(tokens, topic));
-        });
-        const subscribeResult = await Promise.all(subscribePromises);
-        return {
-            user: user,
-            uid: uid,
-            beforeToken: initialTokens,
-            afterTokens: tokens,
-            forumSubs: forumSubscription,
-            tokenError: res.errors,
-            subscribeResult: subscribeResult,
-            unsubscribeResult: unsubscribeResult,
-        };
+        return val;
     }
 }
 exports.Messaging = Messaging;
+Messaging.defaultTopic = "defaultTopic";
 //# sourceMappingURL=messaging.js.map

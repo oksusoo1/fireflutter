@@ -73,9 +73,9 @@ class UserSettingService with DatabaseMixin {
     return _settings.data[key];
   }
 
-  Future<void> update(Json settings) async {
-    return _settings.update(settings);
-  }
+  // Future<void> update(Json settings) async {
+  //   return _settings.update(settings);
+  // }
 
   /// Get user settings doc from realtime database, instread of using [_settings].
   Future<Json> read() async {
@@ -98,12 +98,12 @@ class UserSettingService with DatabaseMixin {
     return _settings.topics[topic] == false;
   }
 
-  Future<void> subscribe(String topic) {
-    return update({'topic/$topic': true});
+  Future<void> subscribe(String topic, String type) {
+    return MessagingService.instance.subscribeTopic(topic, type);
   }
 
-  Future<void> unsubscribe(String topic) {
-    return update({'topic/$topic': false});
+  Future<void> unsubscribe(String topic, String type) {
+    return MessagingService.instance.unsubscribeTopic(topic, type);
   }
 
   Future<void> create() {

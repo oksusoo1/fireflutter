@@ -83,7 +83,7 @@ export class Messaging {
     // get user tokens
     const tokens = await this.getTokens(data.uid);
     // if user has no token then return;
-    if (tokens.length == 0)
+    if (tokens.length == 0) {
       return {
         topic: data.topic,
         tokens: tokens,
@@ -91,7 +91,8 @@ export class Messaging {
         successCount: 0,
         failureCount: 0,
       };
-    //subscribe user tokens to topic
+    }
+    // subscribe user tokens to topic
     const res: MessagingTopicManagementResponse = await admin.messaging().subscribeToTopic(tokens, data.topic);
     // remove invalid tokens if any
     const failureTokens: MapStringString = await this.removeInvalidTokensFromResponse(tokens, res);
@@ -123,7 +124,7 @@ export class Messaging {
     // get user tokens
     const tokens = await this.getTokens(data.uid);
     // return if user has no tokens
-    if (tokens.length == 0)
+    if (tokens.length == 0) {
       return {
         topic: data.topic,
         tokens: tokens,
@@ -131,6 +132,7 @@ export class Messaging {
         successCount: 0,
         failureCount: 0,
       };
+    }
 
     // unsubscribe user tokens to topic
     const res: MessagingTopicManagementResponse = await admin.messaging().unsubscribeFromTopic(tokens, data.topic);
@@ -185,10 +187,10 @@ export class Messaging {
   static async topicOn(data: TopicData) {
     this.checkTopicData(data);
     await Ref.userSettingTopic(data.uid)
-      .child(data.type)
-      .update({
-        [data.topic]: true,
-      });
+        .child(data.type)
+        .update({
+          [data.topic]: true,
+        });
     return this.getTopics(data.uid, data.type);
   }
 
@@ -202,10 +204,10 @@ export class Messaging {
   static async topicOff(data: TopicData) {
     this.checkTopicData(data);
     await Ref.userSettingTopic(data.uid)
-      .child(data.type)
-      .update({
-        [data.topic]: false,
-      });
+        .child(data.type)
+        .update({
+          [data.topic]: false,
+        });
 
     return this.getTopics(data.uid, data.type);
   }
@@ -267,8 +269,8 @@ export class Messaging {
    * @returns Map of result.
    */
   static async removeInvalidTokensFromResponse(
-    tokens: Array<string>,
-    res: MessagingTopicManagementResponse
+      tokens: Array<string>,
+      res: MessagingTopicManagementResponse
   ): Promise<MapStringString> {
     if (res.failureCount == 0) return {};
 
@@ -551,8 +553,8 @@ export class Messaging {
   }
 
   static async sendingMessageToTokens(
-    tokens: Array<string>,
-    payload: MessagePayload
+      tokens: Array<string>,
+      payload: MessagePayload
   ): Promise<{
     success: number;
     error: number;

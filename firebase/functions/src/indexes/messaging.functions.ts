@@ -7,37 +7,37 @@ import { Messaging } from "../classes/messaging";
 import { ready } from "../ready";
 
 export const sendMessageToAllUsers = functions
-  .region("us-central1", "asia-northeast3")
-  .https.onRequest(async (req, res) => {
-    ready({ req, res, auth: true }, async (data) => {
-      data["topic"] = "defaultTopic";
-      res.status(200).send(await Messaging.sendMessageToTopic(data));
+    .region("us-central1", "asia-northeast3")
+    .https.onRequest(async (req, res) => {
+      ready({ req, res, auth: true }, async (data) => {
+        data["topic"] = "defaultTopic";
+        res.status(200).send(await Messaging.sendMessageToTopic(data));
+      });
     });
-  });
 
 export const sendMessageToTopic = functions
-  .region("us-central1", "asia-northeast3")
-  .https.onRequest(async (req, res) => {
-    ready({ req, res, auth: true }, async (data) => {
-      res.status(200).send(await Messaging.sendMessageToTopic(data));
+    .region("us-central1", "asia-northeast3")
+    .https.onRequest(async (req, res) => {
+      ready({ req, res, auth: true }, async (data) => {
+        res.status(200).send(await Messaging.sendMessageToTopic(data));
+      });
     });
-  });
 
 export const sendMessageToTokens = functions
-  .region("us-central1", "asia-northeast3")
-  .https.onRequest(async (req, res) => {
-    ready({ req, res, auth: true }, async (data) => {
-      res.status(200).send(await Messaging.sendMessageToTokens(data));
+    .region("us-central1", "asia-northeast3")
+    .https.onRequest(async (req, res) => {
+      ready({ req, res, auth: true }, async (data) => {
+        res.status(200).send(await Messaging.sendMessageToTokens(data));
+      });
     });
-  });
 
 export const sendMessageToUsers = functions
-  .region("us-central1", "asia-northeast3")
-  .https.onRequest(async (req, res) => {
-    ready({ req, res, auth: true }, async (data) => {
-      res.status(200).send(await Messaging.sendMessageToUsers(data));
+    .region("us-central1", "asia-northeast3")
+    .https.onRequest(async (req, res) => {
+      ready({ req, res, auth: true }, async (data) => {
+        res.status(200).send(await Messaging.sendMessageToUsers(data));
+      });
     });
-  });
 
 // /
 export const updateToken = functions.region("us-central1", "asia-northeast3").https.onRequest(async (req, res) => {

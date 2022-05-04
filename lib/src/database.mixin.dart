@@ -10,6 +10,9 @@ mixin DatabaseMixin {
       .ref('user-settings')
       .child(FirebaseAuth.instance.currentUser!.uid);
 
+  DatabaseReference userSettingsTopicTypeDoc(String type) =>
+      userSettingsDoc.child(type);
+
   DatabaseReference get translationDoc =>
       FirebaseDatabase.instance.ref('settings').child('translations');
 

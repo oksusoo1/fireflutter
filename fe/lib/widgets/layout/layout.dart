@@ -49,7 +49,9 @@ class Layout extends StatelessWidget {
               title: title,
               bottom: bottom,
               actions: actions,
-              shape: bottomLine ? Border(bottom: BorderSide(color: Colors.grey.shade300)) : null,
+              shape: bottomLine
+                  ? Border(bottom: BorderSide(color: Colors.grey.shade300))
+                  : null,
             ),
           ];
         },
@@ -59,7 +61,8 @@ class Layout extends StatelessWidget {
         child: Container(
           height: 60,
           decoration: BoxDecoration(border: Border(top: BorderSide())),
-          child: Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
+          child:
+              Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
             LayoutMenuButton(
               label: 'Forum',
               icon: FaIcon(FontAwesomeIcons.lightCommentAlt),
@@ -73,21 +76,24 @@ class Layout extends StatelessWidget {
             LayoutMenuButton(
               label: 'Job',
               icon: FaIcon(FontAwesomeIcons.lightBriefcase),
-              onTap: () => AppService.instance.router.openPostList(popAll: true),
+              onTap: () =>
+                  AppService.instance.router.openPostList(popAll: true),
             ),
             LayoutMenuButton(
               label: 'Meetup',
               icon: FaIcon(FontAwesomeIcons.lightUsers),
-              onTap: () => AppService.instance.router.openPostList(popAll: true),
+              onTap: () =>
+                  AppService.instance.router.openPostList(popAll: true),
             ),
             LayoutMenuButton(
               label: 'Photo',
               icon: FaIcon(FontAwesomeIcons.lightCamera),
-              onTap: () => AppService.instance.router.openPostList(popAll: true),
+              onTap: () =>
+                  AppService.instance.router.openPostList(popAll: true),
             ),
             LayoutMenuProfileButton(),
             LayoutMenuButton(
-              label: 'Mneu',
+              label: 'Menue',
               icon: FaIcon(FontAwesomeIcons.lightBars),
               onTap: () => AppService.instance.router.openMenu(popAll: true),
             ),

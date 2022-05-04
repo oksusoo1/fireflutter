@@ -3,14 +3,14 @@ import { expect } from "chai";
 
 import { FirebaseAppInitializer } from "../firebase-app-initializer";
 import { Post } from "../../src/classes/post";
-import {
-  ERROR_CATEGORY_NOT_EXISTS,
-  ERROR_EMPTY_CATEGORY,
-  ERROR_EMPTY_UID,
-} from "../../src/defines";
+// import {
+//   ERROR_CATEGORY_NOT_EXISTS,
+//   ERROR_EMPTY_CATEGORY,
+//   ERROR_EMPTY_UID,
+// } from "../../src/defines";
 
 import { Test } from "../../src/classes/test";
-import { Utils } from "../../src/classes/utils";
+// import { Utils } from "../../src/classes/utils";
 import { PostDocument } from "../../src/interfaces/forum.interface";
 
 new FirebaseAppInitializer();
@@ -24,11 +24,11 @@ describe("Post list test", () => {
     const promises = [];
     for (let i = 1; i <= 31; i++) {
       promises.push(
-        Post.create({
-          uid: "test-uid",
-          category: category.id,
-          title: "test-title-" + i,
-        } as any)
+          Post.create({
+            uid: "test-uid",
+            category: category.id,
+            title: "test-title-" + i,
+          } as any)
       );
     }
     await Promise.all(promises);
@@ -38,9 +38,9 @@ describe("Post list test", () => {
     totalPosts = await Post.list({ category: undefined, limit: undefined, startAfter: undefined });
     for (let i = 1; i <= 10; i++) {
       expect(totalPosts[i - 1])
-        .to.be.an("object")
-        .to.have.property("title")
-        .equals("test-title-" + i);
+          .to.be.an("object")
+          .to.have.property("title")
+          .equals("test-title-" + i);
     }
   });
 
@@ -52,9 +52,9 @@ describe("Post list test", () => {
     });
     for (let i = 1; i <= 10; i++) {
       expect(posts[i - 1])
-        .to.be.an("object")
-        .to.have.property("title")
-        .equals("test-title-" + i);
+          .to.be.an("object")
+          .to.have.property("title")
+          .equals("test-title-" + i);
     }
     totalPosts = [...totalPosts, ...posts];
   });
@@ -63,9 +63,9 @@ describe("Post list test", () => {
     const posts = await Post.list({ category: undefined, limit: undefined, startAfter: undefined });
     for (let i = 1; i <= 10; i++) {
       expect(posts[i - 1])
-        .to.be.an("object")
-        .to.have.property("title")
-        .equals("test-title-" + i);
+          .to.be.an("object")
+          .to.have.property("title")
+          .equals("test-title-" + i);
     }
     totalPosts = [...totalPosts, ...posts];
   });
@@ -74,9 +74,9 @@ describe("Post list test", () => {
     const posts = await Post.list({ category: undefined, limit: undefined, startAfter: undefined });
     for (let i = 1; i <= 10; i++) {
       expect(posts[i - 1])
-        .to.be.an("object")
-        .to.have.property("title")
-        .equals("test-title-" + i);
+          .to.be.an("object")
+          .to.have.property("title")
+          .equals("test-title-" + i);
     }
     totalPosts = [...totalPosts, ...posts];
   });

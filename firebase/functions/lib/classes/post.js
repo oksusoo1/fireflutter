@@ -13,7 +13,37 @@ const messaging_1 = require("./messaging");
 const storage_1 = require("./storage");
 const category_1 = require("./category");
 const point_1 = require("./point");
+const utils_1 = require("./utils");
 class Post {
+    /**
+     *
+     * @see README.md for details.
+     * @param options options for getting post lists
+     * @returns
+     * - list of post documents. Empty array will be returned if there is no posts by the options.
+     * - Or it will throw an exception on failing post creation.
+     * @note exception will be thrown on error.
+     */
+    static async list(options) {
+        var _a;
+        const posts = [];
+        let q = ref_1.Ref.postCol;
+        if (options.category) {
+            q = q.where("category", "==", options.category);
+        }
+        q = q.orderBy("createdAt", "desc");
+        if (options.startAfter) {
+            //
+            q = q.startAfter(options.startAfter);
+        }
+        q = q.limit((_a = options.limit) !== null && _a !== void 0 ? _a : 10);
+        const snapshot = await q.get();
+        if (snapshot.size > 0) {
+            const docs = snapshot.docs;
+            docs.forEach((doc) => posts.push(doc.data()));
+        }
+        return posts;
+    }
     /**
      *
      * @see README.md for details.
@@ -49,8 +79,8 @@ class Post {
         doc.day = dayjs().date();
         doc.dayOfYear = dayjs().dayOfYear();
         doc.week = dayjs().week();
-        doc.createdAt = admin.firestore.FieldValue.serverTimestamp();
-        doc.updatedAt = admin.firestore.FieldValue.serverTimestamp();
+        doc.createdAt = utils_1.Utils.getTimestamp();
+        doc.updatedAt = utils_1.Utils.getTimestamp();
         // Create post
         let ref;
         // Document id to be created of. See README.md for details.
@@ -90,7 +120,7 @@ class Post {
         const id = data.id;
         delete data.id;
         // updatedAt
-        data.updatedAt = admin.firestore.FieldValue.serverTimestamp();
+        data.updatedAt = utils_1.Utils.getTimestamp();
         // hasPhoto
         data.hasPhoto = data.files && data.files.length > 0;
         await ref_1.Ref.postDoc(id).update(data);
