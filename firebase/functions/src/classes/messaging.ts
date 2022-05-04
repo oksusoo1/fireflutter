@@ -83,9 +83,9 @@ export class Messaging {
     return {
       topic: data.topic,
       tokens: tokens,
-      successCount: res.successCount,
-      failureCount: res.failureCount,
       failureToken: failureToken,
+      successCount: res?.successCount ?? 0,
+      failureCount: res?.failureCount ?? 0,
     };
   }
 
@@ -107,9 +107,9 @@ export class Messaging {
     return {
       topic: data.topic,
       tokens: tokens,
+      failureToken: failureToken,
       successCount: res?.successCount ?? 0,
       failureCount: res?.failureCount ?? 0,
-      failureToken: failureToken ?? {},
     };
   }
 
@@ -121,9 +121,9 @@ export class Messaging {
    *  type - folderName
    */
   static checkTopicData(data: TopicData) {
-    if (data.uid == null || data.uid == "") throw ERROR_EMPTY_UID;
-    if (data.topic == null || data.topic == "") throw ERROR_EMPTY_TOPIC;
-    if (data.type == null || data.type == "") throw ERROR_EMPTY_TOPIC_TYPE;
+    if (!data.uid) throw ERROR_EMPTY_UID;
+    if (!data.topic) throw ERROR_EMPTY_TOPIC;
+    if (!data.type) throw ERROR_EMPTY_TOPIC_TYPE;
   }
 
   /**
