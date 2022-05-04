@@ -29,14 +29,14 @@ describe("Post delete test", () => {
 
     post = await Post.create({
       uid: user.id,
-      category: "cat1",
+      category: "qna",
       title: "title",
       a: "apple",
       noOfComments: 1,
     } as any);
 
     expect(post).not.to.be.null;
-    expect(post!.category === "cat1").true;
+    expect(post!.category === "qna").true;
     expect(post!.title === "title").true;
     expect(post!.a === "apple").true;
   });
@@ -86,7 +86,7 @@ describe("Post delete test", () => {
 
   it("Input success mark as deleted", async () => {
     // update first to have 1 comment.
-    await Post.update({ id: post.id, uid: uid, noOfComments: 1 });
+    await Post.update({ id: post.id, uid: uid, noOfComments: 1 } as any);
 
     // will only be marked as deleted.
     const res = await Post.delete({ id: post.id!, uid: uid });
@@ -109,7 +109,7 @@ describe("Post delete test", () => {
   it("Input success completely deleted", async () => {
     const post = await Post.create({
       uid: uid,
-      category: "cat1",
+      category: "qna",
       title: "title",
       a: "apple",
     } as any);
@@ -126,7 +126,7 @@ describe("Post delete test", () => {
   it("Delete a post with image and thumbnail", async () => {
     const filename = "uploads/delete-test-" + Utils.getTimestamp();
     const file = await Storage.upload("./tests/storage/test.jpg", filename + ".jpg");
-    const post = await Post.create({ uid: uid, category: "cat", files: [file.publicUrl()] });
+    const post = await Post.create({ uid: uid, category: "qna", files: [file.publicUrl()] });
     expect(post).to.be.an("object").to.have.property("files").lengthOf(1);
 
     expect((await file.exists())[0]).true;

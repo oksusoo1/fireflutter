@@ -267,8 +267,8 @@ export class Messaging {
    * @returns Map of result.
    */
   static async removeInvalidTokensFromResponse(
-    tokens: Array<string>,
-    res: MessagingTopicManagementResponse
+      tokens: Array<string>,
+      res: MessagingTopicManagementResponse
   ): Promise<MapStringString> {
     if (res.failureCount == 0) return {};
 
@@ -551,8 +551,8 @@ export class Messaging {
   }
 
   static async sendingMessageToTokens(
-    tokens: Array<string>,
-    payload: MessagePayload
+      tokens: Array<string>,
+      payload: MessagePayload
   ): Promise<{
     success: number;
     error: number;

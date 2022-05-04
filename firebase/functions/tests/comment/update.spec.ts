@@ -6,6 +6,7 @@ import { Comment } from "../../src/classes/comment";
 import { ERROR_COMMENT_NOT_EXISTS, ERROR_EMPTY_ID, ERROR_EMPTY_UID, ERROR_NOT_YOUR_COMMENT } from "../../src/defines";
 import { Utils } from "../../src/classes/utils";
 import { CommentDocument } from "../../src/interfaces/forum.interface";
+import { Test } from "../../src/classes/test";
 
 new FirebaseAppInitializer();
 
@@ -14,10 +15,11 @@ const uid = "test-uid-" + Utils.getTimestamp();
 
 describe("comment update test", () => {
   it("Prepares to create a comment for testing", async () => {
+    const post = await Test.createPost();
     comment = await Comment.create({
       uid: uid,
-      postId: "comment-id",
-      parentId: "parent-id",
+      postId: post.id,
+      parentId: post.id,
       content: "yo",
     } as any);
   });
@@ -81,6 +83,7 @@ describe("comment update test", () => {
 
     const updateB = await Comment.update({ id: comment!.id, uid: uid, content: "World" } as any);
     expect(updateB.content).equals("World");
-    expect((updateB.updatedAt! as any)["_seconds"]).is.greaterThan((updateA.updatedAt! as any)["_seconds"]);
+    expect(updateB.updatedAt!).is.greaterThan(updateA.updatedAt!);
   });
 });
+
