@@ -6,7 +6,7 @@ import * as weekOfYear from "dayjs/plugin/weekOfYear";
 dayjs.extend(dayOfYear);
 dayjs.extend(weekOfYear);
 
-import { CommentDocument, PostDocument } from "../interfaces/forum.interface";
+import { CommentDocument, PostDocument, PostListOptions } from "../interfaces/forum.interface";
 
 import { Ref } from "./ref";
 import {
@@ -26,6 +26,43 @@ import { Category } from "./category";
 import { Point } from "./point";
 
 export class Post {
+  /**
+   *
+   * @see README.md for details.
+   * @param options options for getting post lists
+   * @returns
+   * - list of post documents. Empty array will be returned if there is no posts by the options.
+   * - Or it will throw an exception on failing post creation.
+   * @note exception will be thrown on error.
+   */
+  static async list(options: PostListOptions): Promise<Array<PostDocument>> {
+    const posts: Array<PostDocument> = [];
+
+    let q: admin.firestore.Query = Ref.postCol;
+
+    if (options.category) {
+      q = q.where("category", "==", options.category);
+    }
+
+    q = q.orderBy("createdAt", "desc");
+
+    if (options.startAfter) {
+      //
+      q = q.startAfter(options.startAfter);
+    }
+
+    q = q.limit(options.limit ?? 10);
+
+    const snapshot = await q.get();
+
+    if (snapshot.size > 0) {
+      const docs = snapshot.docs;
+      docs.forEach((doc) => posts.push(doc.data() as PostDocument));
+    }
+
+    return posts;
+  }
+
   /**
    *
    * @see README.md for details.
@@ -204,8 +241,8 @@ export class Post {
   }
 
   static async sendMessageOnCommentCreate(
-      data: CommentDocument,
-      id: string
+    data: CommentDocument,
+    id: string
   ): Promise<OnCommentCreateResponse | null> {
     const post = await this.get(data.postId);
     if (!post) return null;
@@ -234,16 +271,16 @@ export class Post {
 
     // Don't send the same message twice to topic subscribers and comment notifyees.
     const userUids = await Messaging.getCommentNotifyeeWithoutTopicSubscriber(
-        ancestorsUid.join(","),
-        topic
+      ancestorsUid.join(","),
+      topic
     );
 
     // get users tokens
     const tokens = await Messaging.getTokensFromUids(userUids.join(","));
 
     const sendToTokenRes = await Messaging.sendingMessageToTokens(
-        tokens,
-        Messaging.preMessagePayload(messageData)
+      tokens,
+      Messaging.preMessagePayload(messageData)
     );
     return {
       topicResponse: sendToTopicRes,

@@ -67,16 +67,12 @@ Table of contents
     - [Chat logic - block](#chat-logic---block)
   - [Chat Widgets](#chat-widgets)
     - [ChatBadge](#chatbadge)
+  - [Sending a chat message to other user outside of chat room](#sending-a-chat-message-to-other-user-outside-of-chat-room)
 - [Reminder](#reminder)
   - [Reminder code sample](#reminder-code-sample)
   - [Reminder input data & logic](#reminder-input-data--logic)
 - [FriendMap](#friendmap)
-  - [FriendMap installation](#friendmap-installation)
-  - [FriendMap logic](#friendmap-logic)
-    - [FriendMap informing logic](#friendmap-informing-logic)
-  - [FriendMap testing](#friendmap-testing)
 - [Inform](#inform)
-  - [Informing logic](#informing-logic)
   - [Inform data](#inform-data)
   - [Use of inform](#use-of-inform)
 - [For developer](#for-developer)
@@ -1058,6 +1054,15 @@ ChatBadge(
 ```
 
 
+## Sending a chat message to other user outside of chat room
+
+```dart
+await ChatService.instance.send(
+  text: "...",
+  otherUid: user.uid,
+);
+```
+
 
 
 # Reminder
@@ -1180,37 +1185,9 @@ controller.state.setState(() {});
 
 # FriendMap
 
-- Idea\
-  When someone is seeking someone and both of them are foreginers of the place, how would they find each other? Both of them do not understand the country's language.
-  `FriendMap` feature send a user's latitude and longitude to the other user. So the other can navigate on the map.
-
-## FriendMap installation
-
-- Follow the installation instructions in [google_maps_flutter](https://pub.dev/packages/google_maps_flutter) package.
-
-  - `Hybrid Composition` could be an option.
-
-- Follow the installation instructions in [geocoding](https://pub.dev/packages/geocoding) package.
-
-- Follow the installation in [geolocator](https://pub.dev/packages/geolocator) package.
-
-## FriendMap logic
-
-- There are two users. User `A` and `B`.
-- `A` sends his latitude and longitude to `B` on chat. (So, when `B` is offline, he will get push notification by the built in chat funciton)
-
-- `B` opens chat room.
-- `B` click the link of lat & lon to open `Friend Map`.
-- the app navigates.
-
-### FriendMap informing logic
-
-- Use `Inform` feature to inform friend request to the other user.
-
-## FriendMap testing
-
-- Simply update `/location/<A's-uid>/` and `/location/<B's-uid>` manully.
-  - To make it easy, update the location programatically.
+- FriendMap has completely changed by May 3, 2022
+- What it does is to send one user's location to the other. So, the other user can open navigator to look for the user.
+- It sends location throught chat.
 
 # Inform
 
@@ -1218,26 +1195,6 @@ controller.state.setState(() {});
   - Push notification is one option. But push notification may be delayed more than 1 hour.
   - `Inform` functionality make the communication in realtime.
 
-## Informing logic
-
-Let's say the app needs to deliver friend request from A to B.
-
-- When User `A` request FriendMap to user `B`, it's not easy to open FriendMap by clicking the chat message. what if user `B` has lots of users and having difficulty to open the chat room `A`?.
-
-  - The solution would be; when `A` request FriendMap to `B`, the app on `B` side will open `FriendMap` screen automatically.
-  - When `B` is offline and got a push message of `FriendMap` request, the device of `B` will automatically run `WonderfulKorea` app and open `FriendMap` screen automatically.
-  - Later; it may be an option to open `FriendMap` automatically or not.
-
-- To make it work
-
-  - All user must listen to `/inform/<uid>` when app starts.
-  - When `A` request FriendMap to `B`, save lat & long in `/inform/<uid>`.
-  - So, the app of `B` can open `FriendMap` with the data.
-
-- When `B` is offline, or the app is not running,
-  - `B` will open the app (by push notification or whatever),
-  - the app of `B` listens `/inform/<uid>`
-    - If there is data, then delete the doc, and open FriendMap.
 
 ## Inform data
 
@@ -1251,9 +1208,11 @@ Let's say the app needs to deliver friend request from A to B.
 
 ```dart
 FirebaseAuth.instance.authStateChanges().listen((user) {
+  InformService.instance.dispose();
   if (user != null) {
     /// Re-init for listening the login user (when account changed)
     InformService.instance.init(callback: (data) {
+      /// You have got a informing. Do whatever you want. You may show alert box, or move screen.
       if (data['type'] == 'FriendMap') {
         /// If it's a freind map request, then open friend map screen.
         Get.toNamed('/friend-map', arguments: {
@@ -1262,8 +1221,6 @@ FirebaseAuth.instance.authStateChanges().listen((user) {
         });
       }
     });
-  } else {
-    InformService.instance.dispose();
   }
 });
 ```

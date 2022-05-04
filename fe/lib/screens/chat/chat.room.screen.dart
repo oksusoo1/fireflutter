@@ -2,21 +2,23 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:extended/extended.dart';
 import 'package:fe/screens/chat/widgets/chat_room.message.dart';
 import 'package:fe/screens/chat/widgets/chat_room.message_box.dart';
-import 'package:fe/screens/friend_map/friend_map.screen.dart';
 import 'package:fe/services/app.service.dart';
 import 'package:fe/services/defines.dart';
 import 'package:fe/services/global.dart';
 import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
+import 'package:map_launcher/map_launcher.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class ChatRoomScreen extends StatelessWidget {
-  const ChatRoomScreen({required this.arguments, Key? key}) : super(key: key);
+  ChatRoomScreen({required this.arguments, Key? key}) : super(key: key);
 
   static const String routeName = '/chatRoom';
   final Map arguments;
 
   String get otherUid => arguments['uid'];
+
+  final UserModel otherUser = UserModel();
 
   @override
   Widget build(BuildContext context) {
@@ -29,6 +31,7 @@ class ChatRoomScreen extends StatelessWidget {
         title: UserDoc(
           uid: otherUid,
           builder: (UserModel user) {
+            otherUser.copyWith(user);
             return Text(user.displayName, style: titleStyle);
           },
         ),
@@ -65,8 +68,7 @@ class ChatRoomScreen extends StatelessWidget {
                         },
                         onSelected: (v) async {
                           if (v == 'friendMap') {
-                            // service.requestFriendMap(user);
-                            alert('@todo - friend map', 'friend map todo');
+                            service.requestLocation(user);
                           } else if (v == 'block') {
                             final re =
                                 await service.confirm('Block', 'Do you want to block this user?');
@@ -110,20 +112,26 @@ class ChatRoomScreen extends StatelessWidget {
                 return GestureDetector(
                   behavior: HitTestBehavior.opaque,
                   onTap: () {
-                    if (message.isProtocol) {
-                      if (message.text.contains('friendMap')) {
-                        final arr = message.text.split(':').last.split(',');
-                        AppService.instance
-                          ..router.open(FriendMapScreen.routeName, arguments: {
-                            'latitude': arr.first.trim(),
-                            'longitude': arr.last.trim(),
-                          });
-                      }
+                    if (message.isProtocol('location')) {
+                      final arr = message.protocol.split(':').last.split(',');
+                      print('arr; $arr');
+                      service.openNavigator(
+                        context: context,
+                        title: '${otherUser.displayName}',
+                        coords: Coords(
+                          toDouble(arr.first.trim()),
+                          toDouble(
+                            arr.last.trim(),
+                          ),
+                        ),
+                      );
                     }
                   },
                   child: ChatRoomMessage(message),
                 );
               }
+
+              /// My post or not a text.
               return PopupMenuButton<String>(
                 offset: message.isMine ? const Offset(1, 50) : const Offset(0, 50),
                 child: ChatRoomMessage(message),
