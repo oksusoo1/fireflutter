@@ -84,7 +84,7 @@ describe("comment delete test", () => {
 
   it("fail - already deleted", async () => {
     const created = await Test.createComment({ uid: uid });
-    const comment = await Comment.update({ id: created.id, uid: uid, deleted: true });
+    const comment = await Comment.update({ id: created.id, uid: uid, deleted: true } as any);
     try {
       await Comment.delete({ id: comment!.id, uid: uid } as any);
       expect.fail();

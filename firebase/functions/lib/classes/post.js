@@ -13,6 +13,7 @@ const messaging_1 = require("./messaging");
 const storage_1 = require("./storage");
 const category_1 = require("./category");
 const point_1 = require("./point");
+const utils_1 = require("./utils");
 class Post {
     /**
      *
@@ -78,8 +79,8 @@ class Post {
         doc.day = dayjs().date();
         doc.dayOfYear = dayjs().dayOfYear();
         doc.week = dayjs().week();
-        doc.createdAt = admin.firestore.FieldValue.serverTimestamp();
-        doc.updatedAt = admin.firestore.FieldValue.serverTimestamp();
+        doc.createdAt = utils_1.Utils.getTimestamp();
+        doc.updatedAt = utils_1.Utils.getTimestamp();
         // Create post
         let ref;
         // Document id to be created of. See README.md for details.
@@ -119,7 +120,7 @@ class Post {
         const id = data.id;
         delete data.id;
         // updatedAt
-        data.updatedAt = admin.firestore.FieldValue.serverTimestamp();
+        data.updatedAt = utils_1.Utils.getTimestamp();
         // hasPhoto
         data.hasPhoto = data.files && data.files.length > 0;
         await ref_1.Ref.postDoc(id).update(data);

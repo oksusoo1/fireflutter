@@ -31,19 +31,19 @@ describe("Post update test", () => {
 
     post = await Post.create({
       uid: user.id,
-      category: "cat1",
+      category: "qna",
       title: "title",
       a: "apple",
     } as any);
 
     expect(post).not.to.be.null;
-    expect(post!.category === "cat1").true;
+    expect(post!.category === "qna").true;
     expect(post!.title === "title").true;
     expect(post!.a === "apple").true;
   });
   it("Input test with empty object", async () => {
     try {
-      await Post.update({});
+      await Post.update({} as any);
       expect.fail();
     } catch (e) {
       expect(e).equals(ERROR_EMPTY_ID);
@@ -51,7 +51,7 @@ describe("Post update test", () => {
   });
   it("Input test with wrong id (post does not exists)", async () => {
     try {
-      await Post.update({ id: "abc" });
+      await Post.update({ id: "abc" } as any);
       expect.fail();
     } catch (e) {
       expect(e).equals(ERROR_POST_NOT_EXIST);
@@ -59,53 +59,52 @@ describe("Post update test", () => {
   });
   it("Input test with wrong uid (not my post)", async () => {
     try {
-      await Post.update({ id: post.id });
+      await Post.update({ id: post.id } as any);
       expect.fail();
     } catch (e) {
       expect(e).equals(ERROR_NOT_YOUR_POST);
     }
   });
   it("Input test with correct uid", async () => {
-    const res = await Post.update({ id: post.id, uid: post.uid });
+    const res = await Post.update({ id: post.id, uid: post.uid } as any);
     expect(res).to.be.not.null;
     expect(res.id).to.be.not.null;
   });
   it("Input test update data (title, content, noOfComments)", async () => {
     // title
     const title = "post test title - " + Utils.getTimestamp();
-    const titleUpdate = await Post.update({ id: post.id, uid: post.uid, title });
+    const titleUpdate = await Post.update({ id: post.id, uid: post.uid, title } as any);
     expect(titleUpdate.title).to.be.equals(title);
 
     // content
     const content = "post test content - " + Utils.getTimestamp();
-    const contentUpdate = await Post.update({ id: post.id, uid: post.uid, content });
+    const contentUpdate = await Post.update({ id: post.id, uid: post.uid, content } as any);
     expect(contentUpdate.content).to.be.equals(content);
 
     // number of comments
-    const noOfCommentsUpdate = await Post.update({ id: post.id, uid: post.uid, noOfComments: 5 });
+    const noOfCommentsUpdate = await Post.update({ id: post.id, uid: post.uid, noOfComments: 5 } as any);
     expect(noOfCommentsUpdate.noOfComments).to.be.equals(5);
   });
   it("Input test update files to affect hasPhoto", async () => {
-    let hasPhotoUpdate = await Post.update({ id: post.id, uid: post.uid, files: ["test"] });
+    let hasPhotoUpdate = await Post.update({ id: post.id, uid: post.uid, files: ["test"] } as any);
     expect(hasPhotoUpdate!.hasPhoto).to.be.equals(true);
 
-    hasPhotoUpdate = await Post.update({ id: post.id, uid: post.uid, files: [] });
+    hasPhotoUpdate = await Post.update({ id: post.id, uid: post.uid, files: [] } as any);
     expect(hasPhotoUpdate!.hasPhoto).to.be.equals(false);
   });
 
   it("Input test updateAt changes", async () => {
-    const updateA = await Post.update({ id: post.id, uid: post.uid, like: 2 });
+    const updateA = await Post.update({ id: post.id, uid: post.uid, like: 2 } as any);
     expect(updateA.like).to.be.not.equals(post.like);
     expect(updateA.updatedAt).to.be.not.equals(post.updatedAt);
 
     await Utils.delay(1100);
 
-    const updateB = await Post.update({ id: post.id, uid: post.uid, like: 3 });
+    const updateB = await Post.update({ id: post.id, uid: post.uid, like: 3 } as any);
     expect(updateB.like).to.be.greaterThan(updateA.like);
     expect(updateB.updatedAt).to.be.not.equals(updateA.updatedAt);
 
-    expect((updateB.updatedAt! as any)["_seconds"]).to.be.greaterThan(
-        (updateA.updatedAt! as any)["_seconds"]
-    );
+    expect(updateB.updatedAt).to.be.greaterThan(updateA.updatedAt!);
   });
 });
+

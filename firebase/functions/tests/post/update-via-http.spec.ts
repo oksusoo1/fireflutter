@@ -43,12 +43,12 @@ describe("Post update via http call", () => {
     post = await Post.create({
       uid: uid,
       password: password,
-      category: "cat1",
+      category: "qna",
       title: "title",
     } as any);
 
     expect(post).not.to.be.null;
-    expect(post.category === "cat1").true;
+    expect(post.category === "qna").true;
     expect(post.title === "title").true;
   });
 
@@ -117,7 +117,7 @@ describe("Post update via http call", () => {
     expect(updateB.data.title).is.not.equals(updateA.data.title);
     expect(updateB.data.title).is.equals("Hi mom!");
 
-    expect((updateB.data.updatedAt! as any)["_seconds"]).is.not.equals((updateA.data.updatedAt! as any)["_seconds"]);
+    expect(updateB.data.updatedAt).is.not.equals(updateA.data.updatedAt);
   });
 });
 

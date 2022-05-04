@@ -1,12 +1,12 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Comment = void 0;
-const admin = require("firebase-admin");
 const ref_1 = require("./ref");
 const defines_1 = require("../defines");
 const storage_1 = require("./storage");
 const point_1 = require("./point");
 const post_1 = require("./post");
+const utils_1 = require("./utils");
 class Comment {
     /**
      * Creates a comment
@@ -27,8 +27,8 @@ class Comment {
             files: files,
             hasPhoto: files.length > 0,
             deleted: false,
-            createdAt: admin.firestore.FieldValue.serverTimestamp(),
-            updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+            createdAt: utils_1.Utils.getTimestamp(),
+            updatedAt: utils_1.Utils.getTimestamp(),
         };
         const ref = await ref_1.Ref.commentCol.add(doc);
         await point_1.Point.commentCreatePoint(data.uid, ref.id);
@@ -57,7 +57,7 @@ class Comment {
             throw defines_1.ERROR_NOT_YOUR_COMMENT;
         delete data.id;
         // updatedAt
-        data.updatedAt = admin.firestore.FieldValue.serverTimestamp();
+        data.updatedAt = utils_1.Utils.getTimestamp();
         // hasPhoto
         if (data.files && data.files.length) {
             data.hasPhoto = true;
