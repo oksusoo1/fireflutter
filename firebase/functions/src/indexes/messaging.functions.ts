@@ -48,11 +48,23 @@ export const updateToken = functions.region("us-central1", "asia-northeast3").ht
 
 export const subscribeTopic = functions.region("us-central1", "asia-northeast3").https.onRequest(async (req, res) => {
   ready({ req, res, auth: true }, async (data) => {
-    res.status(200).send(await Messaging.topicOn(data));
+    res.status(200).send(await Messaging.subscribeToTopic(data));
   });
 });
 
 export const unsubscribeTopic = functions.region("us-central1", "asia-northeast3").https.onRequest(async (req, res) => {
+  ready({ req, res, auth: true }, async (data) => {
+    res.status(200).send(await Messaging.unsubscribeToTopic(data));
+  });
+});
+
+export const topicOn = functions.region("us-central1", "asia-northeast3").https.onRequest(async (req, res) => {
+  ready({ req, res, auth: true }, async (data) => {
+    res.status(200).send(await Messaging.topicOn(data));
+  });
+});
+
+export const topicOff = functions.region("us-central1", "asia-northeast3").https.onRequest(async (req, res) => {
   ready({ req, res, auth: true }, async (data) => {
     res.status(200).send(await Messaging.topicOff(data));
   });

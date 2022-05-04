@@ -66,48 +66,82 @@ export class Messaging {
     }
   }
 
+  /**
+   *
+   * @param data
+   * @returns SubscriptionResponse
+   *  topic - topic from request
+   *  tokens - user tokens
+   *  failureTokens - tokens with failure reason
+   *  successCount - number of subscribe success
+   *  failureCount - number of failed subscription
+   *
+   */
   static async subscribeToTopic(data: TopicData): Promise<SubscriptionResponse> {
+    // turn on topic user-settings/{uid}/topic/type(folderName)/
     await this.topicOn(data);
+    // get user tokens
     const tokens = await this.getTokens(data.uid);
+    // if user has no token then return;
     if (tokens.length == 0)
       return {
         topic: data.topic,
         tokens: tokens,
+        failureTokens: {},
         successCount: 0,
         failureCount: 0,
-        failureToken: {},
       };
+    //subscribe user tokens to topic
     const res: MessagingTopicManagementResponse = await admin.messaging().subscribeToTopic(tokens, data.topic);
-    const failureToken: MapStringString = await this.removeInvalidTokensFromResponse(tokens, res);
+    // remove invalid tokens if any
+    const failureTokens: MapStringString = await this.removeInvalidTokensFromResponse(tokens, res);
 
+    // return failuretokens tokens with failure reason and success and failure count
     return {
       topic: data.topic,
       tokens: tokens,
-      failureToken: failureToken,
+      failureTokens: failureTokens,
       successCount: res?.successCount ?? 0,
       failureCount: res?.failureCount ?? 0,
     };
   }
 
+  /**
+   *
+   * @param data
+   * @returns SubscriptionResponse
+   *  topic - topic from request
+   *  tokens - user tokens
+   *  failureTokens - tokens with failure reason
+   *  successCount - number of unsubscribe success
+   *  failureCount - number of failed unsubscription
+   *
+   */
   static async unsubscribeToTopic(data: TopicData): Promise<SubscriptionResponse> {
+    // turn off topic user-settings/{uid}/topic/type(folderName)/
     await this.topicOff(data);
+    // get user tokens
     const tokens = await this.getTokens(data.uid);
+    // return if user has no tokens
     if (tokens.length == 0)
       return {
         topic: data.topic,
         tokens: tokens,
+        failureTokens: {},
         successCount: 0,
         failureCount: 0,
-        failureToken: {},
       };
 
+    // unsubscribe user tokens to topic
     const res: MessagingTopicManagementResponse = await admin.messaging().unsubscribeFromTopic(tokens, data.topic);
-    const failureToken: MapStringString = await this.removeInvalidTokensFromResponse(tokens, res);
+    // remove invalid tokens if any
+    const failureTokens: MapStringString = await this.removeInvalidTokensFromResponse(tokens, res);
 
+    // return failuretokens tokens with failure reason and success and failure count
     return {
       topic: data.topic,
       tokens: tokens,
-      failureToken: failureToken,
+      failureTokens: failureTokens,
       successCount: res?.successCount ?? 0,
       failureCount: res?.failureCount ?? 0,
     };
@@ -141,6 +175,13 @@ export class Messaging {
     }
   }
 
+  /**
+   * Set user-settings/{uid}/topic/type(folderName)/
+   * {[topic]: true}
+   *
+   * @param data
+   * @returns
+   */
   static async topicOn(data: TopicData) {
     this.checkTopicData(data);
     await Ref.userSettingTopic(data.uid)
@@ -151,6 +192,13 @@ export class Messaging {
     return this.getTopics(data.uid, data.type);
   }
 
+  /**
+   * Set user-settings/{uid}/topic/type(folderName)/
+   * {[topic]: false}
+   *
+   * @param data
+   * @returns
+   */
   static async topicOff(data: TopicData) {
     this.checkTopicData(data);
     await Ref.userSettingTopic(data.uid)

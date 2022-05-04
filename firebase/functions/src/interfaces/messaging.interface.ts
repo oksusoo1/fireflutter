@@ -14,9 +14,9 @@ export interface TopicData {
 export interface SubscriptionResponse {
   topic: string;
   tokens: string[];
+  failureTokens: MapStringString;
   successCount: number;
   failureCount: number;
-  failureToken: MapStringString;
 }
 
 export interface MessagePayload {
