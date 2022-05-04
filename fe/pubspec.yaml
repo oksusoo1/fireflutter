@@ -16,7 +16,6 @@ dependencies:
 
   flutter_chat_bubble: ^2.0.0
   url_launcher: ^6.0.18
-  
 
   flutterfire_ui: ^0.4.0+4
 
@@ -28,20 +27,18 @@ dependencies:
 
   fireflutter:
     path: ..
-  
-  audioplayers: ^1.0.0-rc.1
 
+  audioplayers: ^1.0.0-rc.1
 
   font_awesome_flutter:
     path: ./lib/packages/font_awesome_flutter
 
   map_launcher: ^2.2.2
-  
 
 dependency_overrides:
   font_awesome_flutter:
     path: ./lib/packages/font_awesome_flutter
-    
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
