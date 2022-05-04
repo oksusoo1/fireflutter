@@ -15,13 +15,12 @@ class CommentModel with FirestoreMixin, ForumBase implements Article {
     this.dislike = 0,
     required this.uid,
     this.deleted = false,
-    createdAt,
-    updatedAt,
+    this.createdAt = 0,
+    this.updatedAt = 0,
     required this.data,
     this.files = const [],
     this.point = 0,
-  })  : createdAt = createdAt ?? Timestamp.now(),
-        updatedAt = updatedAt ?? Timestamp.now();
+  });
 
   /// data is the document data object.
   Json data;
@@ -45,8 +44,8 @@ class CommentModel with FirestoreMixin, ForumBase implements Article {
 
   List<String> files;
 
-  Timestamp updatedAt;
-  Timestamp createdAt;
+  int updatedAt;
+  int createdAt;
   int depth = 0;
 
   bool get isMine => UserService.instance.uid == uid;
@@ -62,18 +61,6 @@ class CommentModel with FirestoreMixin, ForumBase implements Article {
     Json data, {
     String? id,
   }) {
-    /// If the post is created via http, the [createdAt] and [updatedAt] have different format.
-    /// If it's a Map, then the data is coming from HTTP call.
-    Timestamp createdAt;
-    Timestamp updatedAt;
-    if (data['createdAt'] is Map) {
-      createdAt = Timestamp(data['createdAt']['_seconds'], data['createdAt']['_nanoseconds']);
-      updatedAt = Timestamp(data['updatedAt']['_seconds'], data['updatedAt']['_nanoseconds']);
-    } else {
-      createdAt = data['createdAt'];
-      updatedAt = data['updatedAt'] ?? Timestamp.now();
-    }
-
     return CommentModel(
       content: data['content'] ?? '',
       files: new List<String>.from(data['files']),
@@ -85,17 +72,14 @@ class CommentModel with FirestoreMixin, ForumBase implements Article {
       deleted: data['deleted'] ?? false,
       like: data['like'] ?? 0,
       dislike: data['dislike'] ?? 0,
-      createdAt: createdAt,
-      updatedAt: updatedAt,
+      createdAt: data['createdAt'] ?? 0,
+      updatedAt: data['updatedAt'] ?? 0,
       data: data,
     );
   }
 
   /// Get indexed document data from meilisearch of map and convert it into comment model
   factory CommentModel.fromMeili(Json data, String id) {
-    final _createdAt = data['createdAt'] ?? 0;
-    final _updatedAt = data['updatedAt'] ?? 0;
-
     return CommentModel(
       id: id,
       postId: data['postId'],
@@ -105,8 +89,8 @@ class CommentModel with FirestoreMixin, ForumBase implements Article {
       like: data['like'] ?? 0,
       dislike: data['dislike'] ?? 0,
       deleted: data.containsKey('deleted') ? data['deleted'] == 'Y' : false,
-      createdAt: Timestamp.fromMillisecondsSinceEpoch(_createdAt * 1000),
-      updatedAt: Timestamp.fromMillisecondsSinceEpoch(_updatedAt * 1000),
+      createdAt: data['createdAt'] ?? 0,
+      updatedAt: data['updatedAt'] ?? 0,
       data: data,
     );
   }
@@ -121,8 +105,8 @@ class CommentModel with FirestoreMixin, ForumBase implements Article {
       parentId: '',
       content: '',
       uid: '',
-      createdAt: Timestamp.now(),
-      updatedAt: Timestamp.now(),
+      createdAt: 0,
+      updatedAt: 0,
       data: {},
     );
   }
@@ -258,10 +242,10 @@ class CommentModel with FirestoreMixin, ForumBase implements Article {
   /// If the post was created just now (in 5 minutes), then returns true.
   ///
   /// Use this to check if this comment has just been created.
-  bool get justNow {
-    final date = DateTime.fromMillisecondsSinceEpoch(createdAt.millisecondsSinceEpoch);
-    final today = DateTime.now();
-    final diff = date.difference(today);
-    return diff.inMinutes < 5;
-  }
+  // bool get justNow {
+  //   final date = DateTime.fromMillisecondsSinceEpoch(createdAt.millisecondsSinceEpoch);
+  //   final today = DateTime.now();
+  //   final diff = date.difference(today);
+  //   return diff.inMinutes < 5;
+  // }
 }
