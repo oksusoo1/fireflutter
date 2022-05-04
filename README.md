@@ -1208,6 +1208,7 @@ controller.state.setState(() {});
 
 ```dart
 FirebaseAuth.instance.authStateChanges().listen((user) {
+  InformService.instance.dispose();
   if (user != null) {
     /// Re-init for listening the login user (when account changed)
     InformService.instance.init(callback: (data) {
@@ -1220,8 +1221,6 @@ FirebaseAuth.instance.authStateChanges().listen((user) {
         });
       }
     });
-  } else {
-    InformService.instance.dispose();
   }
 });
 ```

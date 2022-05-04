@@ -203,12 +203,15 @@ class _MainAppState extends State<MainApp> {
     });
 
     FirebaseAuth.instance.authStateChanges().listen((user) {
+      InformService.instance.dispose();
       if (user != null) {
         /// Re-init for listening the login user (when account changed)
         InformService.instance.init(callback: (data) async {
           if (data['type'] == 'requestLocation') {
-            bool re = await service.confirm('Share location',
-                '${data['name']} wants to get your location. So, ${data['name']} can find you.\n\nDo you want to share your location?');
+            bool re = await service.confirm(
+              'Share location',
+              '${data['name']} wants to get your location. So, ${data['name']} can find you.\n\nDo you want to share your location?',
+            );
 
             if (re) {
               final pos = await LocationService.instance.currentPosition;
@@ -223,8 +226,6 @@ class _MainAppState extends State<MainApp> {
             }
           }
         });
-      } else {
-        InformService.instance.dispose();
       }
     });
   } // EO initState()

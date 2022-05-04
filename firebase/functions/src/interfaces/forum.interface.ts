@@ -1,5 +1,11 @@
 import * as admin from "firebase-admin";
 
+export interface PostListOptions {
+  category?: string;
+  limit?: number;
+  startAfter?: admin.firestore.FieldValue;
+}
+
 export interface CategoryDocument {
   id?: string;
   createdAt?: number;
