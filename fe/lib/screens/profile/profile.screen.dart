@@ -33,6 +33,7 @@ class ProfileScreenState extends State<ProfileScreen> {
           children: [
             MyDoc(
               builder: (UserModel u) {
+                print('url; ${u.photoUrl}');
                 return FileUploadButton(
                   child: u.photoUrl.isNotEmpty
                       ? UploadedImage(url: u.photoUrl)

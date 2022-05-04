@@ -1,18 +1,15 @@
 import 'package:fe/services/app.service.dart';
+import 'package:fe/widgets/layout/layout.menu.button.dart';
+import 'package:fe/widgets/layout/layout.menu.profile.button.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-class MenuItem {
-  Widget icon;
-  Function() onTap;
-
-  MenuItem({required this.icon, required this.onTap});
-}
-
-class Layout extends StatefulWidget {
-  const Layout({
+class Layout extends StatelessWidget {
+  Layout({
     Key? key,
     required this.title,
     this.bottom,
+    this.bottomLine = false,
     required this.body,
     this.actions,
     this.backgroundColor = Colors.white,
@@ -24,6 +21,7 @@ class Layout extends StatefulWidget {
   final Widget title;
   final Widget body;
   final PreferredSizeWidget? bottom;
+  final bool bottomLine;
   final List<Widget>? actions;
   final Color backgroundColor;
   final Color appBarBackgroundColor;
@@ -31,103 +29,69 @@ class Layout extends StatefulWidget {
   final Color backButtonColor;
 
   @override
-  State<Layout> createState() => _LayoutState();
-}
-
-class _LayoutState extends State<Layout> with SingleTickerProviderStateMixin {
-  late Map<String, MenuItem> menus;
-
-  @override
-  void initState() {
-    super.initState();
-    menus = {
-      'Home': MenuItem(
-        icon: const Icon(Icons.home),
-        onTap: AppService.instance.router.openHome,
-      ),
-      'About': MenuItem(
-        icon: const Icon(Icons.info),
-        onTap: AppService.instance.router.openAbout,
-      ),
-      'Forum': MenuItem(
-        icon: const Icon(Icons.chat_bubble),
-        onTap: AppService.instance.router.openHome,
-      ),
-      'Meetup': MenuItem(
-        icon: const Icon(Icons.access_time),
-        onTap: AppService.instance.router.openUnitTest,
-      ),
-      'Watch': MenuItem(
-        icon: const Icon(Icons.zoom_in),
-        onTap: AppService.instance.router.openHome,
-      ),
-      'Profile': MenuItem(
-        icon: const Icon(Icons.person),
-        onTap: AppService.instance.router.openProfile,
-      ),
-      'Menu': MenuItem(
-        icon: const Icon(Icons.menu),
-        onTap: AppService.instance.router.openMenu,
-      ),
-    };
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: widget.backgroundColor,
+      backgroundColor: backgroundColor,
       body: NestedScrollView(
         floatHeaderSlivers: true,
         headerSliverBuilder: (context, innerBoxIsScrolled) {
           return [
             SliverAppBar(
-              leading: widget.backButton
+              leading: backButton
                   ? BackButton(
-                      color: widget.backButtonColor,
+                      color: backButtonColor,
                       onPressed: AppService.instance.router.back,
                     )
                   : null,
-              pinned: widget.bottom == null ? false : true,
+              pinned: bottom == null ? false : true,
               floating: true,
-              // snap: true,
-              backgroundColor: widget.appBarBackgroundColor,
-              title: widget.title,
-              bottom: widget.bottom,
-              actions: widget.actions,
+              backgroundColor: appBarBackgroundColor,
+              title: title,
+              bottom: bottom,
+              actions: actions,
+              shape: bottomLine ? Border(bottom: BorderSide(color: Colors.grey.shade300)) : null,
             ),
           ];
         },
-        body: widget.body,
+        body: body,
       ),
       bottomNavigationBar: SafeArea(
         child: Container(
           height: 60,
           decoration: BoxDecoration(border: Border(top: BorderSide())),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: menus.entries
-                .map(
-                  (e) => GestureDetector(
-                    onTap: () async {
-                      e.value.onTap();
-                    },
-                    behavior: HitTestBehavior.opaque,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        e.value.icon,
-                        Text(
-                          e.key,
-                          style: const TextStyle(
-                            fontSize: 10,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                )
-                .toList(),
-          ),
+          child: Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
+            LayoutMenuButton(
+              label: 'Forum',
+              icon: FaIcon(FontAwesomeIcons.lightCommentAlt),
+              onTap: () => AppService.instance.router.openHome(popAll: true),
+            ),
+            LayoutMenuButton(
+              label: 'Attraction',
+              icon: FaIcon(FontAwesomeIcons.lightTrees),
+              onTap: AppService.instance.router.openAbout,
+            ),
+            LayoutMenuButton(
+              label: 'Job',
+              icon: FaIcon(FontAwesomeIcons.lightBriefcase),
+              onTap: () => AppService.instance.router.openPostList(popAll: true),
+            ),
+            LayoutMenuButton(
+              label: 'Meetup',
+              icon: FaIcon(FontAwesomeIcons.lightUsers),
+              onTap: () => AppService.instance.router.openPostList(popAll: true),
+            ),
+            LayoutMenuButton(
+              label: 'Photo',
+              icon: FaIcon(FontAwesomeIcons.lightCamera),
+              onTap: () => AppService.instance.router.openPostList(popAll: true),
+            ),
+            LayoutMenuProfileButton(),
+            LayoutMenuButton(
+              label: 'Mneu',
+              icon: FaIcon(FontAwesomeIcons.lightBars),
+              onTap: () => AppService.instance.router.openMenu(popAll: true),
+            ),
+          ]),
         ),
       ),
     );

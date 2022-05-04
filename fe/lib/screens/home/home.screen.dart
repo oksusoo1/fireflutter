@@ -19,22 +19,28 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Layout(
       title: Tr(
-        'Home',
+        'Fire Flutter',
         style: titleStyle,
       ),
       body: SingleChildScrollView(
-          child: Column(
-        children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              spaceXs,
-              NewUsers(onTap: (user) => service.router.openOtherUserProfile(user.uid)),
-            ],
-          ),
-        ],
-      )),
+        child: Column(
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                spaceXs,
+                MyDoc(builder: (my) => Text('Login as ${my.displayName}, uid: ${my.uid}')),
+                NewUsers(onTap: (user) => service.router.openOtherUserProfile(user.uid)),
+                spaceXs,
+                QuickMenuCategories(
+                  onTap: (category) => service.router.openPostList(category: category.id),
+                )
+              ],
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
