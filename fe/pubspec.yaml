@@ -34,7 +34,6 @@ dependencies:
     path: ./lib/packages/font_awesome_flutter
 
   map_launcher: ^2.2.2
-  
 
 dependency_overrides:
   font_awesome_flutter:

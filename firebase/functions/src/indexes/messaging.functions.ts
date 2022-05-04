@@ -54,7 +54,7 @@ export const subscribeTopic = functions.region("us-central1", "asia-northeast3")
 
 export const unsubscribeTopic = functions.region("us-central1", "asia-northeast3").https.onRequest(async (req, res) => {
   ready({ req, res, auth: true }, async (data) => {
-    res.status(200).send(await Messaging.topicOn(data));
+    res.status(200).send(await Messaging.topicOff(data));
   });
 });
 

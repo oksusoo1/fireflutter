@@ -42,67 +42,62 @@ describe("Messaging logic test", () => {
   //   } catch (e) {
   //     expect(e).to.be.equal(ERROR_EMPTY_TOKEN);
   //   }
-
   //   await Messaging.setToken({ uid: "a", token: "t" });
   //   const doc = await Messaging.getToken("t");
   //   expect(doc).to.be.an("object").to.have.property("token").equal("t");
   // });
-
-  it("checkTopicData", async () => {
-    const data = {
-      test1: null,
-      test2: undefined,
-      test3: "",
-    };
-    expect(!data.test1).to.be.true;
-    expect(!data.test2).to.be.true;
-    expect(!data.test3).to.be.true;
-    const data2: any = {};
-    expect(!data2.test4).to.be.true;
-
-    try {
-      Messaging.checkTopicData({
-        uid: "",
-        topic: "",
-        type: "",
-      });
-      expect.fail("must throw ERROR_EMPTY_UID");
-    } catch (e) {
-      expect(e).to.be.equal(ERROR_EMPTY_UID);
-    }
-
-    try {
-      Messaging.checkTopicData({
-        uid: "a",
-        topic: "",
-        type: "",
-      });
-      expect.fail("must throw ERROR_EMPTY_TOPIC");
-    } catch (e) {
-      expect(e).to.be.equal(ERROR_EMPTY_TOPIC);
-    }
-
-    try {
-      Messaging.checkTopicData({
-        uid: "a",
-        topic: "b",
-        type: "",
-      });
-      expect.fail("must throw ERROR_EMPTY_TOPIC_TYPE");
-    } catch (e) {
-      expect(e).to.be.equal(ERROR_EMPTY_TOPIC_TYPE);
-    }
-    try {
-      Messaging.checkTopicData({
-        uid: "a",
-        topic: "b",
-        type: "c",
-      });
-      expect(true, "must not throw any");
-    } catch (e) {
-      expect.fail("must throw ERROR_EMPTY_TOPIC_TYPE");
-    }
-  });
+  // it("checkTopicData", async () => {
+  //   const data = {
+  //     test1: null,
+  //     test2: undefined,
+  //     test3: "",
+  //   };
+  //   expect(!data.test1).to.be.true;
+  //   expect(!data.test2).to.be.true;
+  //   expect(!data.test3).to.be.true;
+  //   const data2: any = {};
+  //   expect(!data2.test4).to.be.true;
+  //   try {
+  //     Messaging.checkTopicData({
+  //       uid: "",
+  //       topic: "",
+  //       type: "",
+  //     });
+  //     expect.fail("must throw ERROR_EMPTY_UID");
+  //   } catch (e) {
+  //     expect(e).to.be.equal(ERROR_EMPTY_UID);
+  //   }
+  //   try {
+  //     Messaging.checkTopicData({
+  //       uid: "a",
+  //       topic: "",
+  //       type: "",
+  //     });
+  //     expect.fail("must throw ERROR_EMPTY_TOPIC");
+  //   } catch (e) {
+  //     expect(e).to.be.equal(ERROR_EMPTY_TOPIC);
+  //   }
+  //   try {
+  //     Messaging.checkTopicData({
+  //       uid: "a",
+  //       topic: "b",
+  //       type: "",
+  //     });
+  //     expect.fail("must throw ERROR_EMPTY_TOPIC_TYPE");
+  //   } catch (e) {
+  //     expect(e).to.be.equal(ERROR_EMPTY_TOPIC_TYPE);
+  //   }
+  //   try {
+  //     Messaging.checkTopicData({
+  //       uid: "a",
+  //       topic: "b",
+  //       type: "c",
+  //     });
+  //     expect(true, "must not throw any");
+  //   } catch (e) {
+  //     expect.fail("must throw ERROR_EMPTY_TOPIC_TYPE");
+  //   }
+  // });
   // it("remove invalid tokens", async () => {
   //   const A = "removeinvalidToken-" + Utils.getTimestamp();
   //   await Test.createTestUserAndGetDoc(A);
@@ -182,7 +177,6 @@ describe("Messaging logic test", () => {
   //   const tokens2 = await Messaging.getTokens("removeInvalidTokenUser");
   //   expect(tokens2.length).equal(0);
   // });
-
   // it("topics turnOn", async () => {
   //   const T1 = "TopicOnUser-" + Utils.getTimestamp();
   //   const data = { uid: T1, type: "chat", topic: "chat_userAbc" };
@@ -196,7 +190,6 @@ describe("Messaging logic test", () => {
   //   await Messaging.topicToggle(data);
   //   res = await Messaging.getTopic(data);
   //   expect(res![data.topic]).to.be.true;
-
   //   await Messaging.topicToggle(data);
   //   res = await Messaging.getTopic(data);
   //   expect(res![data.topic]).to.be.false;
