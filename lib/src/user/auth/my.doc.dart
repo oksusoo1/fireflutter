@@ -7,8 +7,21 @@ import '../../../fireflutter.dart';
 ///
 ///
 class MyDoc extends StatefulWidget {
-  const MyDoc({required this.builder, Key? key}) : super(key: key);
+  const MyDoc(
+      {required this.builder,
+      this.loader = const Center(
+        child: SizedBox(
+          width: 10,
+          height: 10,
+          child: CircularProgressIndicator.adaptive(
+            strokeWidth: 2,
+          ),
+        ),
+      ),
+      Key? key})
+      : super(key: key);
   final Widget Function(UserModel) builder;
+  final Widget loader;
 
   @override
   State<MyDoc> createState() => _MyDocState();
@@ -36,15 +49,7 @@ class _MyDocState extends State<MyDoc> {
   @override
   Widget build(BuildContext context) {
     if (user == null) {
-      return const Center(
-        child: SizedBox(
-          width: 10,
-          height: 10,
-          child: CircularProgressIndicator.adaptive(
-            strokeWidth: 2,
-          ),
-        ),
-      );
+      return widget.loader;
     }
     return widget.builder(user!);
   }
