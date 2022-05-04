@@ -75,7 +75,7 @@ describe("comment delete test", () => {
     expect(post!.noOfComments === 1).true;
     const res = await Comment.delete({ id: comment!.id, uid: uid } as any);
     expect(res.id).equals(comment!.id);
-    const got = await Comment.get(comment!.id);
+    const got = await Comment.get(comment!.id!);
     expect(got).to.be.null;
 
     const postAfter = await Post.get(comment!.postId);
