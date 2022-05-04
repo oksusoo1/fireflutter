@@ -24,6 +24,7 @@ import { OnCommentCreateResponse } from "../interfaces/messaging.interface";
 import { Storage } from "./storage";
 import { Category } from "./category";
 import { Point } from "./point";
+import { Utils } from "./utils";
 
 export class Post {
   /**
@@ -83,7 +84,7 @@ export class Post {
     if (category === null) throw ERROR_CATEGORY_NOT_EXISTS;
 
     // get all the data from client.
-    const doc: { [key: string]: any } = data as any;
+    const doc: PostDocument = data as any;
 
     // sanitize
     if (typeof doc.files === "undefined") {
@@ -100,8 +101,8 @@ export class Post {
     doc.day = dayjs().date();
     doc.dayOfYear = dayjs().dayOfYear();
     doc.week = dayjs().week();
-    doc.createdAt = admin.firestore.FieldValue.serverTimestamp();
-    doc.updatedAt = admin.firestore.FieldValue.serverTimestamp();
+    doc.createdAt = Utils.getTimestamp();
+    doc.updatedAt = Utils.getTimestamp();
 
     // Create post
     let ref;
@@ -135,7 +136,7 @@ export class Post {
    *
    * @note it throws exceptions on error.
    */
-  static async update(data: any): Promise<PostDocument> {
+  static async update(data: PostDocument): Promise<PostDocument> {
     if (!data.id) throw ERROR_EMPTY_ID;
     const post = await this.get(data.id);
     if (post === null) throw ERROR_POST_NOT_EXIST;
@@ -145,7 +146,7 @@ export class Post {
     delete data.id;
 
     // updatedAt
-    data.updatedAt = admin.firestore.FieldValue.serverTimestamp();
+    data.updatedAt = Utils.getTimestamp();
 
     // hasPhoto
     data.hasPhoto = data.files && data.files.length > 0;

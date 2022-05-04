@@ -1,5 +1,3 @@
-import * as admin from "firebase-admin";
-
 import { Ref } from "./ref";
 import {
   ERROR_ALREADY_DELETED,
@@ -17,6 +15,7 @@ import {
 import { Storage } from "./storage";
 import { Point } from "./point";
 import { Post } from "./post";
+import { Utils } from "./utils";
 
 export class Comment {
   /**
@@ -37,8 +36,8 @@ export class Comment {
       files: files,
       hasPhoto: files.length > 0,
       deleted: false,
-      createdAt: admin.firestore.FieldValue.serverTimestamp(),
-      updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+      createdAt: Utils.getTimestamp(),
+      updatedAt: Utils.getTimestamp(),
     };
     const ref = await Ref.commentCol.add(doc);
 
@@ -60,7 +59,7 @@ export class Comment {
    * @param data comment data to update with.
    * @returns updated comment doc data.
    */
-  static async update(data: any): Promise<CommentDocument> {
+  static async update(data: CommentDocument): Promise<CommentDocument> {
     if (!data.id) throw ERROR_EMPTY_ID;
     if (!data.uid) throw ERROR_EMPTY_UID;
 
@@ -70,8 +69,9 @@ export class Comment {
     if (comment!.uid !== data.uid) throw ERROR_NOT_YOUR_COMMENT;
 
     delete data.id;
+
     // updatedAt
-    data.updatedAt = admin.firestore.FieldValue.serverTimestamp();
+    data.updatedAt = Utils.getTimestamp();
 
     // hasPhoto
     if (data.files && data.files.length) {
