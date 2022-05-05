@@ -55,47 +55,40 @@ class UploadedImage extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       behavior: HitTestBehavior.opaque,
-      child: Image.network(
-        _finalUrl,
+      child: CachedNetworkImage(
         fit: BoxFit.cover,
         height: height,
         width: width,
+        imageUrl: _finalUrl,
+        progressIndicatorBuilder: (c, s, p) =>
+            loader ??
+            Center(
+              child: Container(
+                width: 10,
+                height: 10,
+                child: CircularProgressIndicator.adaptive(
+                  strokeWidth: 2,
+                ),
+              ),
+            ),
+        errorWidget: (context, _recursiveUrl, error) {
+          /// if it is original image and there is an error, then display error widget.
+          if (useThumbnail == false) {
+            return errorWidget;
+          } else {
+            /// If it failed on displaying thumbnail image, then try to display
+            /// original image.
+            return UploadedImage(
+              url: url,
+              useThumbnail: false,
+              height: height,
+              width: width,
+              onTap: onTap,
+              errorWidget: errorWidget,
+            );
+          }
+        },
       ),
-// TODO: 메모리 테스트
-      // CachedNetworkImage(
-      //   fit: BoxFit.cover,
-      //   height: height,
-      //   width: width,
-      //   imageUrl: _finalUrl,
-      //   progressIndicatorBuilder: (c, s, p) =>
-      //       loader ??
-      //       Center(
-      //         child: Container(
-      //           width: 10,
-      //           height: 10,
-      //           child: CircularProgressIndicator.adaptive(
-      //             strokeWidth: 2,
-      //           ),
-      //         ),
-      //       ),
-      //   errorWidget: (context, _recursiveUrl, error) {
-      //     /// if it is original image and there is an error, then display error widget.
-      //     if (useThumbnail == false) {
-      //       return errorWidget;
-      //     } else {
-      //       /// If it failed on displaying thumbnail image, then try to display
-      //       /// original image.
-      //       return UploadedImage(
-      //         url: url,
-      //         useThumbnail: false,
-      //         height: height,
-      //         width: width,
-      //         onTap: onTap,
-      //         errorWidget: errorWidget,
-      //       );
-      //     }
-      //   },
-      // ),
     );
   }
 }
