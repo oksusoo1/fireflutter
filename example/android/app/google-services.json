@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "858201711473",
+    "firebase_url": "https://my-flutterfiretest-default-rtdb.asia-southeast1.firebasedatabase.app",
     "project_id": "my-flutterfiretest",
     "storage_bucket": "my-flutterfiretest.appspot.com"
   },
@@ -13,6 +14,14 @@
         }
       },
       "oauth_client": [
+        {
+          "client_id": "858201711473-oc95d602njvotgho4tadk673q1jdn114.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.example",
+            "certificate_hash": "73f8984ea1028ed72eefc2f4aa64c10002c22691"
+          }
+        },
         {
           "client_id": "858201711473-9fj4gt63t1cqgocfr71if54ip92dpie0.apps.googleusercontent.com",
           "client_type": 3
@@ -29,6 +38,13 @@
             {
               "client_id": "858201711473-9fj4gt63t1cqgocfr71if54ip92dpie0.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "858201711473-bverkekkvc8h9odis1rb0foqlacudutr.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.example"
+              }
             }
           ]
         }
