@@ -15,6 +15,7 @@ dependencies:
   cupertino_icons: ^1.0.2
 
   fireflutter:
+    path: ..
   firebase_core: ^1.15.0
 
   audioplayers: ^1.0.0-rc.1
