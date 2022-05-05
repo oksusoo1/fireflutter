@@ -48,7 +48,6 @@ export class Post {
     q = q.orderBy("createdAt", "desc");
 
     if (options.startAfter) {
-      //
       q = q.startAfter(options.startAfter);
     }
 

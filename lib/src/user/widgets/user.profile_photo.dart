@@ -48,6 +48,7 @@ class UserProfilePhoto extends StatelessWidget {
                     url: user.photoUrl,
                     width: size,
                     height: size,
+                    loader: SizedBox.shrink(),
                   )
                 : emptyIconBuilder == null
                     ? emptyIcon
@@ -67,12 +68,17 @@ class UserProfilePhoto extends StatelessWidget {
         );
 
     final child = uid == null
-        ? MyDoc(builder: builder)
+        ? MyDoc(
+            builder: builder,
+            loader: SizedBox.shrink(),
+          )
         : UserDoc(
             uid: uid!,
             builder: builder,
+            loader: SizedBox.shrink(),
           );
     if (onTap == null) return child;
+
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       onTap: onTap,

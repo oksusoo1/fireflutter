@@ -16,6 +16,7 @@ import { User } from "../../src/classes/user";
 import { Utils } from "../../src/classes/utils";
 import { CommentDocument } from "../../src/interfaces/forum.interface";
 import { Comment } from "../../src/classes/comment";
+import { Test } from "../../src/classes/test";
 
 new FirebaseAppInitializer();
 
@@ -24,17 +25,19 @@ let password: string;
 
 let comment: CommentDocument | null;
 
-const endpoint = "http://localhost:5001/withcenter-test-project/asia-northeast3/commentUpdate";
-// const endpoint = "https://asia-northeast3-withcenter-test-project.cloudfunctions.net/commentUpdate";
-describe("comment create via http test", () => {
+// const endpoint = "http://localhost:5001/withcenter-test-project/asia-northeast3/commentUpdate";
+const endpoint = "https://asia-northeast3-withcenter-test-project.cloudfunctions.net/commentUpdate";
+describe("comment update via http test", () => {
   it("Prepares the test", async () => {
     await User.create(uid, { firstName: "Unit tester" });
     const user = await User.get(uid);
     expect(user).is.not.null;
 
+    const post = await Test.createPost();
     comment = await Comment.create({
       uid: uid,
       content: "Hello",
+      postId: post.id,
     } as any);
     expect(comment).is.not.null;
     expect(comment!.uid).equals(user!.id);
@@ -96,6 +99,7 @@ describe("comment create via http test", () => {
     expect(updateB.data.content).is.not.equals(updateA.data.content);
     expect(updateB.data.content).is.equals("Hi mom!");
 
-    expect((updateB.data.updatedAt! as any)["_seconds"]).is.not.equals((updateA.data.updatedAt! as any)["_seconds"]);
+    expect(updateB.data.updatedAt).is.not.equals(updateA.data.updatedAt!);
   });
 });
+

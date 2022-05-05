@@ -6,6 +6,7 @@ import { FirebaseAppInitializer } from "../firebase-app-initializer";
 import { ERROR_EMPTY_PASSWORD, ERROR_EMPTY_UID, ERROR_USER_NOT_FOUND, ERROR_WRONG_PASSWORD } from "../../src/defines";
 import { User } from "../../src/classes/user";
 import { Utils } from "../../src/classes/utils";
+import { Test } from "../../src/classes/test";
 
 new FirebaseAppInitializer();
 
@@ -42,11 +43,13 @@ describe("comment create via http test", () => {
   });
 
   it("success - create comment", async () => {
-    const res = await axios.post(endpoint, { uid: uid, password: password });
+    const post = await Test.createPost();
+    const res = await axios.post(endpoint, { uid: uid, password: password, postId: post.id });
     expect(res.data.uid).equals(uid);
 
-    const res2 = await axios.post(endpoint, { uid: uid, password: password, content: "Hi mom!" });
+    const res2 = await axios.post(endpoint, { uid: uid, password: password, content: "Hi mom!", postId: post.id });
     expect(res2.data.uid).equals(uid);
     expect(res2.data.content).equals("Hi mom!");
   });
 });
+

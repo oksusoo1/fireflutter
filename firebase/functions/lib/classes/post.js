@@ -33,7 +33,6 @@ class Post {
         }
         q = q.orderBy("createdAt", "desc");
         if (options.startAfter) {
-            //
             q = q.startAfter(options.startAfter);
         }
         q = q.limit((_a = options.limit) !== null && _a !== void 0 ? _a : 10);

@@ -30,6 +30,7 @@ class UploadedImage extends StatelessWidget {
     this.height,
     this.width,
     this.onTap,
+    this.loader,
   }) : super(key: key);
 
   final String url;
@@ -38,6 +39,7 @@ class UploadedImage extends StatelessWidget {
   final Function()? onTap;
   final double? height;
   final double? width;
+  final Widget? loader;
 
   @override
   Widget build(BuildContext context) {
@@ -58,15 +60,17 @@ class UploadedImage extends StatelessWidget {
         height: height,
         width: width,
         imageUrl: _finalUrl,
-        progressIndicatorBuilder: (c, s, p) => Center(
-          child: Container(
-            width: 10,
-            height: 10,
-            child: CircularProgressIndicator.adaptive(
-              strokeWidth: 2,
+        progressIndicatorBuilder: (c, s, p) =>
+            loader ??
+            Center(
+              child: Container(
+                width: 10,
+                height: 10,
+                child: CircularProgressIndicator.adaptive(
+                  strokeWidth: 2,
+                ),
+              ),
             ),
-          ),
-        ),
         errorWidget: (context, _recursiveUrl, error) {
           /// if it is original image and there is an error, then display error widget.
           if (useThumbnail == false) {
