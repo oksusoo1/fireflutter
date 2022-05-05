@@ -16,19 +16,13 @@ class ForumListPushNotificationPopUpButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ClipRRect(
-      child: Align(
-        alignment: Alignment.center,
-        widthFactor: .7,
-        child: PopupMenuButton<dynamic>(
-          padding: EdgeInsets.only(left: 10),
-          itemBuilder: (context) => items,
-          icon: icon,
-          // offset: Offset(1.0, 5.0),
-          offset: Offset.fromDirection(2, 46),
-          onSelected: onSelected,
-        ),
-      ),
+    return PopupMenuButton<dynamic>(
+      padding: EdgeInsets.all(0),
+      itemBuilder: (context) => items,
+      icon: icon,
+      // offset: Offset(1.0, 5.0),
+      offset: Offset.fromDirection(2, 46),
+      onSelected: onSelected,
     );
   }
 }

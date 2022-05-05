@@ -23,8 +23,6 @@ class NewUsers extends StatelessWidget with DatabaseMixin {
 
           List<UserModel> users = snapshot.data!;
 
-          print('building new user list with: ${users.length} users');
-
           return ListView.builder(
             scrollDirection: Axis.horizontal,
             itemCount: users.length,

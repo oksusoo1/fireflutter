@@ -18,17 +18,15 @@ class ForumListPushNotificationIcon extends StatefulWidget {
   final Function onSigninRequired;
   final Function(String, bool) onChanged;
   @override
-  _ForumListPushNotificationIconState createState() =>
-      _ForumListPushNotificationIconState();
+  _ForumListPushNotificationIconState createState() => _ForumListPushNotificationIconState();
 }
 
-class _ForumListPushNotificationIconState
-    extends State<ForumListPushNotificationIcon> {
+class _ForumListPushNotificationIconState extends State<ForumListPushNotificationIcon> {
   bool get hasSubscription {
-    return UserService.instance.user.settings.hasSubscription(
-            NotificationOptions.post(widget.categoryId), 'forum') ||
-        UserService.instance.user.settings.hasSubscription(
-            NotificationOptions.comment(widget.categoryId), 'forum');
+    return UserService.instance.user.settings
+            .hasSubscription(NotificationOptions.post(widget.categoryId), 'forum') ||
+        UserService.instance.user.settings
+            .hasSubscription(NotificationOptions.comment(widget.categoryId), 'forum');
   }
 
   bool get hasPostSubscription {
@@ -37,8 +35,8 @@ class _ForumListPushNotificationIconState
   }
 
   bool get hasCommentSubscription {
-    return UserService.instance.user.settings.hasSubscription(
-        NotificationOptions.comment(widget.categoryId), 'forum');
+    return UserService.instance.user.settings
+        .hasSubscription(NotificationOptions.comment(widget.categoryId), 'forum');
   }
 
   @override
@@ -51,6 +49,12 @@ class _ForumListPushNotificationIconState
           alignment: AlignmentDirectional.center,
           children: [
             ForumListPushNotificationPopUpButton(
+              icon: Icon(
+                hasSubscription ? Icons.notifications_on : Icons.notifications_off,
+                color: hasSubscription
+                    ? Color.fromARGB(255, 74, 74, 74)
+                    : Color.fromARGB(255, 177, 177, 177),
+              ),
               items: [
                 PopupMenuItem(
                   child: Column(
@@ -69,18 +73,13 @@ class _ForumListPushNotificationIconState
                       Row(
                         children: [
                           Icon(
-                            hasPostSubscription
-                                ? Icons.notifications_on
-                                : Icons.notifications_off,
-                            color:
-                                hasPostSubscription ? Colors.blue : Colors.grey,
+                            hasPostSubscription ? Icons.notifications_on : Icons.notifications_off,
+                            color: hasPostSubscription ? Colors.blue : Colors.grey,
                           ),
                           Text(
                             ' Post' + " " + widget.categoryId,
                             style: TextStyle(
-                              color: hasPostSubscription
-                                  ? Colors.blue
-                                  : Colors.grey,
+                              color: hasPostSubscription ? Colors.blue : Colors.grey,
                             ),
                           ),
                         ],
@@ -93,18 +92,13 @@ class _ForumListPushNotificationIconState
                   child: Row(
                     children: [
                       Icon(
-                        hasCommentSubscription
-                            ? Icons.notifications_on
-                            : Icons.notifications_off,
-                        color:
-                            hasCommentSubscription ? Colors.blue : Colors.grey,
+                        hasCommentSubscription ? Icons.notifications_on : Icons.notifications_off,
+                        color: hasCommentSubscription ? Colors.blue : Colors.grey,
                       ),
                       Text(
                         ' Comment' + " " + widget.categoryId,
                         style: TextStyle(
-                          color: hasCommentSubscription
-                              ? Colors.blue
-                              : Colors.grey,
+                          color: hasCommentSubscription ? Colors.blue : Colors.grey,
                         ),
                       ),
                     ],
@@ -112,15 +106,6 @@ class _ForumListPushNotificationIconState
                   value: 'comment',
                 ),
               ],
-              icon: Icon(
-                hasSubscription
-                    ? Icons.notifications_on
-                    : Icons.notifications_off,
-                color: hasSubscription
-                    ? Color.fromARGB(255, 74, 74, 74)
-                    : Color.fromARGB(255, 177, 177, 177),
-                size: widget.size,
-              ),
               onSelected: onNotificationSelected,
             ),
             if (hasPostSubscription)

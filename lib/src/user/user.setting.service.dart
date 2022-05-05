@@ -73,9 +73,10 @@ class UserSettingService with DatabaseMixin {
     return _settings.data[key];
   }
 
-  // Future<void> update(Json settings) async {
-  //   return _settings.update(settings);
-  // }
+  /// Update user setting.
+  Future<void> update(Json settings) async {
+    return _settings.update(settings);
+  }
 
   /// Get user settings doc from realtime database, instread of using [_settings].
   Future<Json> read() async {
@@ -91,7 +92,7 @@ class UserSettingService with DatabaseMixin {
   /// If user subscribed the topic, that topic name will be saved into user meta in backend
   /// And when user profile is loaded, the subscriptions are saved into [subscriptions]
   bool hasSubscription(String topic, String type) {
-    return _settings.data[type][topic] ?? false;
+    return _settings.data['topic']?[type]?[topic] ?? false;
   }
 
   bool hasDisabledSubscription(String topic, String type) {
@@ -111,15 +112,13 @@ class UserSettingService with DatabaseMixin {
   }
 
   Future<List> unsubscribeAllTopic() async {
-    List<CategoryModel> categories = await CategoryService.instance
-        .loadCategories(categoryGroup: 'community');
+    List<CategoryModel> categories =
+        await CategoryService.instance.loadCategories(categoryGroup: 'community');
 
     List<Future> futures = [];
     for (CategoryModel cat in categories) {
-      futures.add(
-          FirebaseMessaging.instance.unsubscribeFromTopic('posts_${cat.id}'));
-      futures.add(FirebaseMessaging.instance
-          .unsubscribeFromTopic('comments_${cat.id}'));
+      futures.add(FirebaseMessaging.instance.unsubscribeFromTopic('posts_${cat.id}'));
+      futures.add(FirebaseMessaging.instance.unsubscribeFromTopic('comments_${cat.id}'));
     }
     return Future.wait(futures);
   }
