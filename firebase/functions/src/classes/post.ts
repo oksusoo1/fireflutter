@@ -57,10 +57,16 @@ export class Post {
 
     if (snapshot.size > 0) {
       const docs = snapshot.docs;
-      docs.forEach((doc) => posts.push(doc.data() as PostDocument));
+      docs.forEach((doc) => posts.push({ id: doc.id, ...doc.data() } as PostDocument));
     }
 
     return posts;
+  }
+
+  static async view(data: { id: string }): Promise<PostDocument> {
+    const post = await this.get(data.id);
+    if (post === null) throw ERROR_POST_NOT_EXIST;
+    return post;
   }
 
   /**
@@ -240,10 +246,7 @@ export class Post {
     return admin.messaging().send(payload);
   }
 
-  static async sendMessageOnCommentCreate(
-      data: CommentDocument,
-      id: string
-  ): Promise<OnCommentCreateResponse | null> {
+  static async sendMessageOnCommentCreate(data: CommentDocument, id: string): Promise<OnCommentCreateResponse | null> {
     const post = await this.get(data.postId);
     if (!post) return null;
 
@@ -270,18 +273,12 @@ export class Post {
     }
 
     // Don't send the same message twice to topic subscribers and comment notifyees.
-    const userUids = await Messaging.getCommentNotifyeeWithoutTopicSubscriber(
-        ancestorsUid.join(","),
-        topic
-    );
+    const userUids = await Messaging.getCommentNotifyeeWithoutTopicSubscriber(ancestorsUid.join(","), topic);
 
     // get users tokens
     const tokens = await Messaging.getTokensFromUids(userUids.join(","));
 
-    const sendToTokenRes = await Messaging.sendingMessageToTokens(
-        tokens,
-        Messaging.preMessagePayload(messageData)
-    );
+    const sendToTokenRes = await Messaging.sendingMessageToTokens(tokens, Messaging.preMessagePayload(messageData));
     return {
       topicResponse: sendToTopicRes,
       tokenResponse: sendToTokenRes,
@@ -304,3 +301,4 @@ export class Post {
     return uids.filter((v, i, a) => a.indexOf(v) === i); // remove duplicate
   }
 }
+

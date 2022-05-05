@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:rxdart/subjects.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import '../../fireflutter.dart';
@@ -232,4 +233,26 @@ class UserService with FirestoreMixin, DatabaseMixin {
       rethrow;
     }
   }
+
+  /// -------------- Get new users who have complete their profiles -------------
+  ///
+  /// * Use this to display new users on the screen.
+  ///
+  List<UserModel> newUsers = [];
+
+  /// Get new users and cache it for next use.
+  Future<List<UserModel>> getNewUsers() async {
+    if (newUsers.length > 0) return newUsers;
+    final DataSnapshot snapshot =
+        await usersRef.orderByChild('profileReady').limitToFirst(100).get();
+    if (snapshot.exists == false) return [];
+
+    snapshot.children
+        .forEach((element) => newUsers.add(UserModel.fromJson(element.value, element.key!)));
+
+    return newUsers;
+  }
+
+  ///
+  /// EO new users
 }

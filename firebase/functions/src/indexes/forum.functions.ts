@@ -29,6 +29,14 @@ export const postList = functions
       });
     });
 
+export const postView = functions
+    .region("us-central1", "asia-northeast3")
+    .https.onRequest((req, res) => {
+      ready({ req, res }, async (data) => {
+        res.status(200).send(await Post.view(data));
+      });
+    });
+
 export const postCreate = functions
     .region("us-central1", "asia-northeast3")
     .https.onRequest((req, res) => {
