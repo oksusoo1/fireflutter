@@ -38,14 +38,14 @@ describe("Post delete via http call", () => {
     password = User.generatePassword(user!);
     post = await Post.create({
       uid: uid,
-      category: "cat1",
+      category: "qna",
       title: "title",
       a: "apple",
       password: password,
     } as any);
 
     expect(post).not.to.be.null;
-    expect(post!.category === "cat1").true;
+    expect(post!.category === "qna").true;
     expect(post!.title === "title").true;
     expect(post!.a === "apple").true;
   });
@@ -112,13 +112,13 @@ describe("Post delete via http call", () => {
     // create
     const newPost = await Post.create({
       uid: uid,
-      category: "cat1",
+      category: "qna",
       title: "title",
       a: "apple",
       password: password,
     });
     // then update to 1 comment, so it does not get completely deleted.
-    await Post.update({ id: newPost.id, uid: uid, password: password, noOfComments: 1 });
+    await Post.update({ id: newPost.id, uid: uid, password: password, noOfComments: 1 } as any);
 
     // delete
     let res = await axios.post(endpoint, { id: newPost.id, uid: uid, password: password });

@@ -16,6 +16,7 @@ import { User } from "../../src/classes/user";
 import { Utils } from "../../src/classes/utils";
 import { CommentDocument } from "../../src/interfaces/forum.interface";
 import { Comment } from "../../src/classes/comment";
+import { Test } from "../../src/classes/test";
 
 new FirebaseAppInitializer();
 
@@ -24,17 +25,20 @@ let password: string;
 
 let comment: CommentDocument | null;
 
-const endpoint = "http://localhost:5001/withcenter-test-project/asia-northeast3/commentDelete";
-// const endpoint = "https://asia-northeast3-withcenter-test-project.cloudfunctions.net/commentDelete";
-describe("comment create via http test", () => {
+// const endpoint = "http://localhost:5001/withcenter-test-project/asia-northeast3/commentDelete";
+const endpoint = "https://asia-northeast3-withcenter-test-project.cloudfunctions.net/commentDelete";
+describe("comment delete via http test", () => {
   it("Prepares the test", async () => {
     await User.create(uid, { firstName: "Unit tester" });
     const user = await User.get(uid);
     expect(user).is.not.null;
 
+    const post = await Test.createPost();
+
     comment = await Comment.create({
       uid: uid,
       content: "Hello",
+      postId: post.id,
     } as any);
     expect(comment).is.not.null;
     expect(comment!.uid).equals(user!.id);
@@ -88,9 +92,9 @@ describe("comment create via http test", () => {
     const res = await axios.post(endpoint, { uid: uid, password: password, id: comment!.id });
     expect(res.data.id).equals(comment!.id);
 
-    // prove post is deleted
-    const commentDoc = await Comment.get(comment!.id);
-    expect(commentDoc).is.not.null;
-    expect(commentDoc!.deleted).true;
+    // prove comment is deleted
+    const commentDoc = await Comment.get(comment!.id!);
+    expect(commentDoc).is.null;
   });
 });
+
