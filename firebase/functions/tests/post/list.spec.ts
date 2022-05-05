@@ -120,4 +120,3 @@ describe("Post list test", () => {
     expect(q3.length).equals(7);
   });
 });
-

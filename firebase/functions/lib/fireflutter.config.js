@@ -29,6 +29,6 @@ exports.config = {
     },
     databaseURL: "https://withcenter-test-project-default-rtdb.asia-southeast1.firebasedatabase.app/",
     storageBucket: "withcenter-test-project.appspot.com",
-    serverKey: "",
+    serverKey: "AAAAWy4G2hU:APA91bG8FpX2kNKMTRlTyiAEo3jDCg6UsiXlmVqCU-7syY0DGgpv_7VVJVpuQRoZqqzmBdUg_BWuluihF6nLwHt3yZpkfXvzzJidyp4_Ku-NgicQa0GT9Rilj_ks83HWSpAoVjaCFN7S",
 };
 //# sourceMappingURL=fireflutter.config.js.map
