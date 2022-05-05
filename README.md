@@ -40,6 +40,7 @@ Table of contents
   - [UserModel](#usermodel)
   - [UserService](#userservice)
   - [User setting service](#user-setting-service)
+    - [SettingBox](#settingbox)
   - [Profile ready](#profile-ready)
   - [Phone number sign-in](#phone-number-sign-in)
   - [Email authentication under phone sign-in](#email-authentication-under-phone-sign-in)
@@ -612,6 +613,43 @@ UserSettingDoc(
 )
 ```
 
+
+### SettingBox
+
+- How to use setting box widget.
+
+```dart
+SettingBox(
+  name: HiveKey.homeMenuCategory,
+  defaultValue: false,
+  builder: (selected, _) {
+    return HomeMenuCustomizationChip(
+      title: 'Category',
+      selected: _.get(HiveKey.homeMenuCategory, defaultValue: false),
+      field: HiveKey.homeMenuCategory,
+      selectedBackgroundColor: Colors.blue,
+      icon: FaDuotoneIcon(
+        FontAwesomeIcons.duotoneFolderTree,
+        primaryColor: selected ? Color.fromARGB(255, 255, 234, 0) : Colors.blue,
+        secondaryColor: selected ? Color.fromARGB(255, 252, 241, 241) : Colors.black,
+        size: 11,
+      ),
+    );
+  },
+),
+```
+
+```dart
+SettingBox(
+  name: HiveKey.homeMenuCategory,
+  defaultValue: false,
+  builder: (value, _) {
+    return value
+        ? QuickMenuCategory(padding: EdgeInsets.only(top: sm, left: sm))
+        : SizedBox.shrink();
+  },
+),
+```
 
 ## Profile ready
 
