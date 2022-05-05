@@ -39,9 +39,15 @@ class Post {
         const snapshot = await q.get();
         if (snapshot.size > 0) {
             const docs = snapshot.docs;
-            docs.forEach((doc) => posts.push(doc.data()));
+            docs.forEach((doc) => posts.push(Object.assign({ id: doc.id }, doc.data())));
         }
         return posts;
+    }
+    static async view(data) {
+        const post = await this.get(data.id);
+        if (post === null)
+            throw defines_1.ERROR_POST_NOT_EXIST;
+        return post;
     }
     /**
      *
