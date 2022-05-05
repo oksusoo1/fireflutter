@@ -96,7 +96,11 @@ class UserSettingService with DatabaseMixin {
   }
 
   bool hasDisabledSubscription(String topic, String type) {
-    return _settings.data[type][topic] == false;
+    if (_settings.data['topic'] == null) return false;
+    if (_settings.data['topic'][type] == null) return false;
+    if (_settings.data['topic'][type][topic] == null) return false;
+    if (_settings.data['topic'][type][topic] == false) return true;
+    return false;
   }
 
   Future<void> subscribe(String topic, String type) {
@@ -105,6 +109,22 @@ class UserSettingService with DatabaseMixin {
 
   Future<void> unsubscribe(String topic, String type) {
     return MessagingService.instance.unsubscribeTopic(topic, type);
+  }
+
+  Future<void> topicOn(String topic, String type) {
+    return MessagingService.instance.topicOn(topic, type);
+  }
+
+  Future<void> topicOff(String topic, String type) {
+    return MessagingService.instance.topicOff(topic, type);
+  }
+
+  Future<dynamic> toggleTopic(String topic, String type, bool toggle) async {
+    if (toggle) {
+      await this.topicOn(topic, type);
+    } else {
+      await this.topicOff(topic, type);
+    }
   }
 
   Future<void> create() {

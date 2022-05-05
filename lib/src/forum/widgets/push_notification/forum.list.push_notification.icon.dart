@@ -111,7 +111,7 @@ class _ForumListPushNotificationIconState extends State<ForumListPushNotificatio
             if (hasPostSubscription)
               Positioned(
                 top: 20,
-                left: 15,
+                left: 18,
                 child: Transform(
                   transform: Matrix4.rotationY(math.pi),
                   alignment: Alignment.center,
@@ -125,7 +125,7 @@ class _ForumListPushNotificationIconState extends State<ForumListPushNotificatio
             if (hasCommentSubscription)
               Positioned(
                 top: 20,
-                right: 5,
+                right: 18,
                 child: Icon(
                   Icons.circle,
                   size: 6,

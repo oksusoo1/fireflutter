@@ -12,15 +12,13 @@ class ChatRoomPushNotificationIcon extends StatefulWidget {
   final double? size;
   // final Function onError;
   @override
-  _ChatRoomPushNotificationIconState createState() =>
-      _ChatRoomPushNotificationIconState();
+  _ChatRoomPushNotificationIconState createState() => _ChatRoomPushNotificationIconState();
 }
 
-class _ChatRoomPushNotificationIconState
-    extends State<ChatRoomPushNotificationIcon> {
+class _ChatRoomPushNotificationIconState extends State<ChatRoomPushNotificationIcon> {
   bool hasDisabledSubscription() {
     return UserService.instance.user.settings
-        .hasDisabledSubscription('chatNotify' + widget.uid, 'forum');
+        .hasDisabledSubscription('chatNotify' + widget.uid, 'chat');
   }
 
   @override
@@ -28,9 +26,7 @@ class _ChatRoomPushNotificationIconState
     return widget.uid != ''
         ? GestureDetector(
             child: Icon(
-              hasDisabledSubscription()
-                  ? Icons.notifications_off
-                  : Icons.notifications,
+              hasDisabledSubscription() ? Icons.notifications_off : Icons.notifications,
               color: Colors.black,
               size: widget.size,
             ),
@@ -52,10 +48,8 @@ class _ChatRoomPushNotificationIconState
 
     // try {
     // await MessagingService.instance.toggleSubscription('chatNotify' + widget.uid);
-    await MessagingService.instance.toggleSubscription(
-      'chatNotify' + widget.uid,
-      'chat',
-    );
+    await UserSettingService.instance
+        .toggleTopic('chatNotify' + widget.uid, 'chat', hasDisabledSubscription());
     if (mounted) setState(() {});
     // } catch (e) {
     //   widget.onError(e);

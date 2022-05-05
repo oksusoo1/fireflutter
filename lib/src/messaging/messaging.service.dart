@@ -43,8 +43,7 @@ class MessagingService with FirestoreMixin, DatabaseMixin {
     this.onMessageOpenedFromTermiated = onMessageOpenedFromTermiated;
     this.onMessageOpenedFromBackground = onMessageOpenedFromBackground;
     this.onNotificationPermissionDenied = onNotificationPermissionDenied;
-    this.onNotificationPermissionNotDetermined =
-        onNotificationPermissionNotDetermined;
+    this.onNotificationPermissionNotDetermined = onNotificationPermissionNotDetermined;
     this.onTokenUpdated = onTokenUpdated;
     _init();
   }
@@ -53,8 +52,7 @@ class MessagingService with FirestoreMixin, DatabaseMixin {
   _init() async {
     /// Permission request for iOS only. For Android, the permission is granted by default.
     if (Platform.isIOS) {
-      NotificationSettings settings =
-          await FirebaseMessaging.instance.requestPermission(
+      NotificationSettings settings = await FirebaseMessaging.instance.requestPermission(
         alert: true,
         announcement: false,
         badge: true,
@@ -70,8 +68,7 @@ class MessagingService with FirestoreMixin, DatabaseMixin {
         case AuthorizationStatus.authorized:
           break;
         case AuthorizationStatus.denied:
-          if (onNotificationPermissionDenied != null)
-            onNotificationPermissionDenied!();
+          if (onNotificationPermissionDenied != null) onNotificationPermissionDenied!();
           break;
         case AuthorizationStatus.notDetermined:
           if (onNotificationPermissionNotDetermined != null)
@@ -91,21 +88,17 @@ class MessagingService with FirestoreMixin, DatabaseMixin {
     permissionGranted.add(true);
 
     // Handler, when app is on Foreground.
-    if (onForegroundMessage != null)
-      FirebaseMessaging.onMessage.listen(onForegroundMessage!);
+    if (onForegroundMessage != null) FirebaseMessaging.onMessage.listen(onForegroundMessage!);
 
     // Check if app is opened from terminated state and get message data.
-    RemoteMessage? initialMessage =
-        await FirebaseMessaging.instance.getInitialMessage();
+    RemoteMessage? initialMessage = await FirebaseMessaging.instance.getInitialMessage();
     if (initialMessage != null) {
-      if (onMessageOpenedFromTermiated != null)
-        onMessageOpenedFromTermiated!(initialMessage);
+      if (onMessageOpenedFromTermiated != null) onMessageOpenedFromTermiated!(initialMessage);
     }
 
     // Check if the app is opened from the background state.
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-      if (onMessageOpenedFromBackground != null)
-        onMessageOpenedFromBackground!(message);
+      if (onMessageOpenedFromBackground != null) onMessageOpenedFromBackground!(message);
     });
 
     // Any time the token refreshes, store this in the database too.
@@ -150,8 +143,7 @@ class MessagingService with FirestoreMixin, DatabaseMixin {
   }
 
   /// Updates the subscriptions (subscribe or unsubscribe)
-  Future<dynamic> updateSubscription(
-      String topic, String type, bool subscribe) async {
+  Future<dynamic> updateSubscription(String topic, String type, bool subscribe) async {
     if (subscribe) {
       await UserSettingService.instance.subscribe(topic, type);
     } else {
@@ -163,38 +155,37 @@ class MessagingService with FirestoreMixin, DatabaseMixin {
     return updateSubscription(
       topic,
       type,
-      !UserSettingService.instance.hasSubscription(topic, 'forum'),
+      !UserSettingService.instance.hasSubscription(topic, type),
     );
   }
 
   updateTokenBackend(String token) async {
-    return FunctionsApi.instance
-        .request('updateToken', data: {token: token}, addAuth: true);
+    return FunctionsApi.instance.request('updateToken', data: {'token': token}, addAuth: true);
   }
 
   subscribeTopic(String topic, String type) async {
-    return FunctionsApi.instance.request('subscribeTopic',
-        data: {topic: topic, type: type}, addAuth: true);
+    return FunctionsApi.instance
+        .request('subscribeTopic', data: {'topic': topic, 'type': type}, addAuth: true);
   }
 
   unsubscribeTopic(String topic, String type) async {
-    return FunctionsApi.instance.request('unsubscribeTopic',
-        data: {topic: topic, type: type}, addAuth: true);
+    return FunctionsApi.instance
+        .request('unsubscribeTopic', data: {'topic': topic, 'type': type}, addAuth: true);
   }
 
   topicOn(String topic, String type) async {
     return FunctionsApi.instance
-        .request('topicOn', data: {topic: topic, type: type}, addAuth: true);
+        .request('topicOn', data: {'topic': topic, 'type': type}, addAuth: true);
   }
 
   topicOff(String topic, String type) async {
     return FunctionsApi.instance
-        .request('topicOff', data: {topic: topic, type: type}, addAuth: true);
+        .request('topicOff', data: {'topic': topic, 'type': type}, addAuth: true);
   }
 
   toggleTopic(String topic, String type) async {
-    return FunctionsApi.instance.request('toggleTopic',
-        data: {topic: topic, type: type}, addAuth: true);
+    return FunctionsApi.instance
+        .request('toggleTopic', data: {topic: topic, type: type}, addAuth: true);
   }
 
   sendMessage({

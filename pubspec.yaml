@@ -22,7 +22,6 @@ dependencies:
   cloud_functions: ^3.2.13
   flutterfire_ui: ^0.4.0+4
 
-
   #
   rxdart: ^0.27.3
 
@@ -87,10 +86,8 @@ dependencies:
   # file upload
   file_picker: ^4.5.1
 
-
   # email validation on user email in profile screen.
   email_validator: ^2.0.1
-  
 
   # iOS style date picker
   flutter_holo_date_picker: ^1.0.3
@@ -100,7 +97,3 @@ dev_dependencies:
     sdk: flutter
 
 flutter:
-
-
-
-

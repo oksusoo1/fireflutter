@@ -10,14 +10,21 @@ class UserSettingsModel with DatabaseMixin {
     required this.data,
   });
 
-  Map<String, bool> topics;
-
+  Map<String, dynamic> topics;
   Map<String, dynamic> data;
   factory UserSettingsModel.fromJson(dynamic data) {
     return UserSettingsModel(
-      topics: Map<String, bool>.from(data['topic'] ?? {}),
+      topics: Map<String, dynamic>.from(data['topic'] ?? {}),
       data: Map<String, dynamic>.from(data),
     );
+  }
+
+  topicsFolder(String type) {
+    return topics[type];
+  }
+
+  getTopicsFolderValue(String type, String topic) {
+    return topics[type]?[topic];
   }
 
   factory UserSettingsModel.empty() {
