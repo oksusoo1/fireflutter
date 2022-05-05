@@ -18,65 +18,58 @@ describe("Post list test", () => {
   it("Create some posts for test", async () => {
     // create 31 posts.
     category = await Test.createCategory();
-    for (let i = 1; i <= 31; i++) {
+    for (let i = 1; i <= 10; i++) {
       await Post.create({
         uid: "test-uid",
         category: category.id,
         title: "test-title-" + i,
       } as any);
+      await new Promise((resolve) => setTimeout(resolve, 1000));
     }
   });
 
   it("Get first page.", async () => {
-    totalPosts = await Post.list({});
+    totalPosts = await Post.list({
+      limit: 4,
+    });
 
     // console.log(totalPosts[0]);
-    for (let i = 0; i <= 9; i++) {
+    for (let i = 0; i <= 3; i++) {
       expect(totalPosts[i])
-          .to.be.an("object")
-          .to.have.property("title")
-          .equals("test-title-" + (31 - i));
+        .to.be.an("object")
+        .to.have.property("title")
+        .equals("test-title-" + (10 - i));
     }
   });
 
   it("Get second page.", async () => {
     const posts = await Post.list({
       startAfter: totalPosts[totalPosts.length - 1].createdAt,
+      limit: 4,
     });
-    for (let i = 0; i <= 9; i++) {
+    for (let i = 0; i <= 3; i++) {
       expect(posts[i])
-          .to.be.an("object")
-          .to.have.property("title")
-          .equals("test-title-" + (21 - i));
+        .to.be.an("object")
+        .to.have.property("title")
+        .equals("test-title-" + (6 - i));
     }
     totalPosts = [...totalPosts, ...posts];
   });
 
   it("Get third page.", async () => {
     const posts = await Post.list({
-      startAfter: totalPosts[totalPosts.length - 1].createdAt,
-    });
-    for (let i = 0; i <= 9; i++) {
-      expect(posts[i])
-          .to.be.an("object")
-          .to.have.property("title")
-          .equals("test-title-" + (11 - i));
-    }
-    totalPosts = [...totalPosts, ...posts];
-  });
-
-  it("Get fourth page.", async () => {
-    const posts = await Post.list({
       category: category.id, // without category, it will include 9 more posts.
       startAfter: totalPosts[totalPosts.length - 1].createdAt,
+      limit: 4,
     });
 
-    expect(posts.length).is.equals(1);
+    expect(posts.length).is.equals(2);
 
-    expect(posts[0]).to.be.an("object").to.have.property("title").equals("test-title-1");
+    expect(posts[0]).to.be.an("object").to.have.property("title").equals("test-title-2");
+    expect(posts[1]).to.be.an("object").to.have.property("title").equals("test-title-1");
 
     totalPosts = [...totalPosts, ...posts];
-    expect(totalPosts.length).equals(31);
+    expect(totalPosts.length).equals(10);
   });
 
   it("Gets data from unknown category.", async () => {
@@ -109,7 +102,7 @@ describe("Post list test", () => {
 
     expect(posts[0]).to.be.an("object").to.have.property("title").equals("test-title-x-2");
     expect(posts[1]).to.be.an("object").to.have.property("title").equals("test-title-x-1");
-    expect(posts[2]).to.be.an("object").to.have.property("title").equals("test-title-31");
+    expect(posts[2]).to.be.an("object").to.have.property("title").equals("test-title-10");
   });
 
   it("Gets limited number of posts", async () => {
