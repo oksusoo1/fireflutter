@@ -136,7 +136,7 @@ class FriendMapService {
   /// Returns subscribable stream of current user's location.
   ///
   Stream<Position> currentUserLocationStream({
-    int distanceFilter = 0,
+    int distanceFilter = 100,
     LocationAccuracy accuracy = LocationAccuracy.high,
   }) {
     return Geolocator.getPositionStream(
