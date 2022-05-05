@@ -73,9 +73,9 @@ class UserSettingService with DatabaseMixin {
     return _settings.data[key];
   }
 
-  Future<void> update(Json settings) async {
-    return _settings.update(settings);
-  }
+  // Future<void> update(Json settings) async {
+  //   return _settings.update(settings);
+  // }
 
   /// Get user settings doc from realtime database, instread of using [_settings].
   Future<Json> read() async {
@@ -90,20 +90,20 @@ class UserSettingService with DatabaseMixin {
   /// Returns true if the user has subscribed the topic.
   /// If user subscribed the topic, that topic name will be saved into user meta in backend
   /// And when user profile is loaded, the subscriptions are saved into [subscriptions]
-  bool hasSubscription(String topic) {
-    return _settings.topics[topic] ?? false;
+  bool hasSubscription(String topic, String type) {
+    return _settings.data[type][topic] ?? false;
   }
 
-  bool hasDisabledSubscription(String topic) {
-    return _settings.topics[topic] == false;
+  bool hasDisabledSubscription(String topic, String type) {
+    return _settings.data[type][topic] == false;
   }
 
-  Future<void> subscribe(String topic) {
-    return update({'topic/$topic': true});
+  Future<void> subscribe(String topic, String type) {
+    return MessagingService.instance.subscribeTopic(topic, type);
   }
 
-  Future<void> unsubscribe(String topic) {
-    return update({'topic/$topic': false});
+  Future<void> unsubscribe(String topic, String type) {
+    return MessagingService.instance.unsubscribeTopic(topic, type);
   }
 
   Future<void> create() {

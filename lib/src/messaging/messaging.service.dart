@@ -150,21 +150,51 @@ class MessagingService with FirestoreMixin, DatabaseMixin {
   }
 
   /// Updates the subscriptions (subscribe or unsubscribe)
-  Future<dynamic> updateSubscription(String topic, bool subscribe) async {
+  Future<dynamic> updateSubscription(
+      String topic, String type, bool subscribe) async {
     if (subscribe) {
-      await UserSettingService.instance.subscribe(topic);
-      await FirebaseMessaging.instance.subscribeToTopic(topic);
+      await UserSettingService.instance.subscribe(topic, type);
     } else {
-      await UserSettingService.instance.unsubscribe(topic);
-      await FirebaseMessaging.instance.unsubscribeFromTopic(topic);
+      await UserSettingService.instance.unsubscribe(topic, type);
     }
   }
 
-  toggleSubscription(String topic) {
+  toggleSubscription(String topic, String type) {
     return updateSubscription(
       topic,
-      !UserSettingService.instance.hasSubscription(topic),
+      type,
+      !UserSettingService.instance.hasSubscription(topic, 'forum'),
     );
+  }
+
+  updateTokenBackend(String token) async {
+    return FunctionsApi.instance
+        .request('updateToken', data: {token: token}, addAuth: true);
+  }
+
+  subscribeTopic(String topic, String type) async {
+    return FunctionsApi.instance.request('subscribeTopic',
+        data: {topic: topic, type: type}, addAuth: true);
+  }
+
+  unsubscribeTopic(String topic, String type) async {
+    return FunctionsApi.instance.request('unsubscribeTopic',
+        data: {topic: topic, type: type}, addAuth: true);
+  }
+
+  topicOn(String topic, String type) async {
+    return FunctionsApi.instance
+        .request('topicOn', data: {topic: topic, type: type}, addAuth: true);
+  }
+
+  topicOff(String topic, String type) async {
+    return FunctionsApi.instance
+        .request('topicOff', data: {topic: topic, type: type}, addAuth: true);
+  }
+
+  toggleTopic(String topic, String type) async {
+    return FunctionsApi.instance.request('toggleTopic',
+        data: {topic: topic, type: type}, addAuth: true);
   }
 
   sendMessage({
