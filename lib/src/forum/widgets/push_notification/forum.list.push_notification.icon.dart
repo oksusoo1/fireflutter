@@ -25,20 +25,20 @@ class ForumListPushNotificationIcon extends StatefulWidget {
 class _ForumListPushNotificationIconState
     extends State<ForumListPushNotificationIcon> {
   bool get hasSubscription {
-    return UserService.instance.user.settings
-            .hasSubscription(NotificationOptions.post(widget.categoryId)) ||
-        UserService.instance.user.settings
-            .hasSubscription(NotificationOptions.comment(widget.categoryId));
+    return UserService.instance.user.settings.hasSubscription(
+            NotificationOptions.post(widget.categoryId), 'forum') ||
+        UserService.instance.user.settings.hasSubscription(
+            NotificationOptions.comment(widget.categoryId), 'forum');
   }
 
   bool get hasPostSubscription {
     return UserService.instance.user.settings
-        .hasSubscription(NotificationOptions.post(widget.categoryId));
+        .hasSubscription(NotificationOptions.post(widget.categoryId), 'forum');
   }
 
   bool get hasCommentSubscription {
-    return UserService.instance.user.settings
-        .hasSubscription(NotificationOptions.comment(widget.categoryId));
+    return UserService.instance.user.settings.hasSubscription(
+        NotificationOptions.comment(widget.categoryId), 'forum');
   }
 
   @override
@@ -179,7 +179,7 @@ class _ForumListPushNotificationIconState
 
     return widget.onChanged(
       selection,
-      UserService.instance.user.settings.hasSubscription(topic),
+      UserService.instance.user.settings.hasSubscription(topic, 'forum'),
     );
 
     // String msg =

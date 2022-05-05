@@ -45,7 +45,7 @@ class _NotificationSettingState extends State<NotificationSetting> {
           children: [
             CheckboxListTile(
               value: UserSettingService.instance
-                  .hasSubscription(commentNotification),
+                  .hasSubscription(commentNotification, 'forum'),
               onChanged: (b) async {
                 if (b == true) {
                   UserSettingService.instance.subscribe(
@@ -108,7 +108,7 @@ class _NotificationSettingState extends State<NotificationSetting> {
             for (CategoryModel cat in categories!)
               CheckboxListTile(
                 value: UserSettingService.instance
-                    .hasSubscription('posts_${cat.id}'),
+                    .hasSubscription('posts_${cat.id}', 'forum'),
                 onChanged: (b) async => MessagingService.instance
                     .updateSubscription('posts_${cat.id}', 'forum', b ?? false),
                 title: Text(cat.title),
@@ -130,7 +130,7 @@ class _NotificationSettingState extends State<NotificationSetting> {
             for (CategoryModel cat in categories!)
               CheckboxListTile(
                 value: UserSettingService.instance
-                    .hasSubscription('comments_${cat.id}'),
+                    .hasSubscription('comments_${cat.id}', 'forum'),
                 onChanged: (b) async => MessagingService.instance
                     .updateSubscription(
                         'comments_${cat.id}', 'forum', b ?? false),

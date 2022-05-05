@@ -163,7 +163,7 @@ class MessagingService with FirestoreMixin, DatabaseMixin {
     return updateSubscription(
       topic,
       type,
-      !UserSettingService.instance.hasSubscription(topic),
+      !UserSettingService.instance.hasSubscription(topic, 'forum'),
     );
   }
 

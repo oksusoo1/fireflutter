@@ -90,12 +90,12 @@ class UserSettingService with DatabaseMixin {
   /// Returns true if the user has subscribed the topic.
   /// If user subscribed the topic, that topic name will be saved into user meta in backend
   /// And when user profile is loaded, the subscriptions are saved into [subscriptions]
-  bool hasSubscription(String topic) {
-    return _settings.topics[topic] ?? false;
+  bool hasSubscription(String topic, String type) {
+    return _settings.data[type][topic] ?? false;
   }
 
-  bool hasDisabledSubscription(String topic) {
-    return _settings.topics[topic] == false;
+  bool hasDisabledSubscription(String topic, String type) {
+    return _settings.data[type][topic] == false;
   }
 
   Future<void> subscribe(String topic, String type) {
