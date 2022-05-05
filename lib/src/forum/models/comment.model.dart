@@ -184,6 +184,7 @@ class CommentModel with FirestoreMixin, ForumBase implements Article {
     return ref;
   }
 
+  @Deprecated('Use CommentApi')
   Future<void> update({
     required String content,
     List<String>? files,
