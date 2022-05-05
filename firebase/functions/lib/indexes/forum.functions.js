@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.report = exports.sendMessageOnCommentCreate = exports.sendMessageOnPostCreate = exports.commentDelete = exports.commentUpdate = exports.commentCreate = exports.postDelete = exports.postUpdate = exports.postCreate = exports.postList = void 0;
+exports.report = exports.sendMessageOnCommentCreate = exports.sendMessageOnPostCreate = exports.commentDelete = exports.commentUpdate = exports.commentCreate = exports.postDelete = exports.postUpdate = exports.postCreate = exports.postView = exports.postList = void 0;
 /**
  * @file foum.functions.ts
  *
@@ -27,6 +27,13 @@ exports.postList = functions
     .https.onRequest((req, res) => {
     ready_1.ready({ req, res }, async (data) => {
         res.status(200).send(await post_1.Post.list(data));
+    });
+});
+exports.postView = functions
+    .region("us-central1", "asia-northeast3")
+    .https.onRequest((req, res) => {
+    ready_1.ready({ req, res }, async (data) => {
+        res.status(200).send(await post_1.Post.view(data));
     });
 });
 exports.postCreate = functions
