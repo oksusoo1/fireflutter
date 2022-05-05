@@ -61,7 +61,7 @@ class _PostFormState extends State<PostForm> {
   @override
   void initState() {
     super.initState();
-    category = widget.category ?? '';
+    category = widget.category ?? widget.post?.category ?? '';
     setState(() {
       title.text = widget.post?.title ?? '';
       content.text = widget.post?.content ?? '';
@@ -192,9 +192,6 @@ class _PostFormState extends State<PostForm> {
       if (files.length == 0) {
         throw ERROR_NO_PHOTO_ATTACHED;
       }
-    }
-    if (category == '') {
-      throw ERROR_EMPTY_CATEGORY;
     }
     setState(() => inSubmit = true);
 
