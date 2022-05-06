@@ -92,7 +92,7 @@ export const enableAllNotification = functions
   .region("us-central1", "asia-northeast3")
   .https.onRequest(async (req, res) => {
     ready({ req, res, auth: true }, async (data) => {
-      res.status(200).send(await Messaging.enableAllNotification(data.uid));
+      res.status(200).send(await Messaging.enableAllNotification(data));
     });
   });
 
@@ -100,6 +100,6 @@ export const disableAllNotification = functions
   .region("us-central1", "asia-northeast3")
   .https.onRequest(async (req, res) => {
     ready({ req, res, auth: true }, async (data) => {
-      res.status(200).send(await Messaging.disableAllNotification(data.uid));
+      res.status(200).send(await Messaging.disableAllNotification(data));
     });
   });

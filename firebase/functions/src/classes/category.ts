@@ -40,11 +40,10 @@ export class Category {
 
   static async gets(categoryGroup?: string): Promise<CategoryDocument[]> {
     let q: admin.firestore.Query = Ref.categoryCol;
-    let querySnapshot: FirebaseFirestore.QuerySnapshot<FirebaseFirestore.DocumentData> | null;
     if (categoryGroup != null) {
       q = q.where("categoryGroup", "==", categoryGroup);
     }
-    querySnapshot = await q.orderBy("order", "desc").get();
+    const querySnapshot = await q.orderBy("order", "desc").get();
 
     if (querySnapshot.size == 0) return [];
 

@@ -7,6 +7,7 @@ const ref_1 = require("./ref");
 const utils_1 = require("./utils");
 const axios_1 = require("axios");
 const fireflutter_config_1 = require("../fireflutter.config");
+const category_1 = require("./category");
 class Messaging {
     /**
      * Creates(or updates) a token document with uid and do `token-update` process as decribed in README.md.
@@ -81,7 +82,9 @@ class Messaging {
             };
         }
         // subscribe user tokens to topic
-        const res = await admin.messaging().subscribeToTopic(tokens, data.topic);
+        const res = await admin
+            .messaging()
+            .subscribeToTopic(tokens, data.topic);
         // remove invalid tokens if any
         const failureTokens = await this.removeInvalidTokensFromResponse(tokens, res);
         // return failuretokens tokens with failure reason and success and failure count
@@ -121,7 +124,9 @@ class Messaging {
             };
         }
         // unsubscribe user tokens to topic
-        const res = await admin.messaging().unsubscribeFromTopic(tokens, data.topic);
+        const res = await admin
+            .messaging()
+            .unsubscribeFromTopic(tokens, data.topic);
         // remove invalid tokens if any
         const failureTokens = await this.removeInvalidTokensFromResponse(tokens, res);
         // return failuretokens tokens with failure reason and success and failure count
@@ -632,6 +637,24 @@ class Messaging {
             return null;
         const val = snapshot.val();
         return val;
+    }
+    static async enableAllCommunityNotification(uid) {
+        const cats = await category_1.Category.gets("community");
+        const promises = [];
+        cats.forEach((cat) => {
+            promises.push(Messaging.subscribeToTopic({ uid: uid, topic: "posts_" + cat.id, type: "forum" }));
+            promises.push(Messaging.subscribeToTopic({ uid: uid, topic: "comments_" + cat.id, type: "forum" }));
+        });
+        return Promise.all(promises);
+    }
+    static async disableAllCommunityNotification(uid) {
+        const cats = await category_1.Category.gets("community");
+        const promises = [];
+        cats.forEach((cat) => {
+            promises.push(Messaging.unsubscribeToTopic({ uid: uid, topic: "posts_" + cat.id, type: "forum" }));
+            promises.push(Messaging.unsubscribeToTopic({ uid: uid, topic: "comments_" + cat.id, type: "forum" }));
+        });
+        return Promise.all(promises);
     }
 }
 exports.Messaging = Messaging;
