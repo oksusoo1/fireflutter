@@ -638,23 +638,55 @@ class Messaging {
         const val = snapshot.val();
         return val;
     }
-    static async enableAllCommunityNotification(uid) {
-        const cats = await category_1.Category.gets("community");
+    static async enableAllNotification(data) {
+        var _a, _b;
+        const group = (_a = data.group) !== null && _a !== void 0 ? _a : "community";
+        const type = (_b = data.type) !== null && _b !== void 0 ? _b : "forum";
+        const cats = await category_1.Category.gets(group);
         const promises = [];
         cats.forEach((cat) => {
-            promises.push(Messaging.subscribeToTopic({ uid: uid, topic: "posts_" + cat.id, type: "forum" }));
-            promises.push(Messaging.subscribeToTopic({ uid: uid, topic: "comments_" + cat.id, type: "forum" }));
+            promises.push(Messaging.subscribeToTopic({
+                uid: data.uid,
+                topic: "posts_" + cat.id,
+                type: type,
+            }));
+            promises.push(Messaging.subscribeToTopic({
+                uid: data.uid,
+                topic: "comments_" + cat.id,
+                type: type,
+            }));
         });
-        return Promise.all(promises);
+        await Promise.all(promises);
+        return {
+            group: group,
+            type: type,
+            categories: cats,
+        };
     }
-    static async disableAllCommunityNotification(uid) {
-        const cats = await category_1.Category.gets("community");
+    static async disableAllNotification(data) {
+        var _a, _b;
+        const group = (_a = data.group) !== null && _a !== void 0 ? _a : "community";
+        const type = (_b = data.type) !== null && _b !== void 0 ? _b : "forum";
+        const cats = await category_1.Category.gets(group);
         const promises = [];
         cats.forEach((cat) => {
-            promises.push(Messaging.unsubscribeToTopic({ uid: uid, topic: "posts_" + cat.id, type: "forum" }));
-            promises.push(Messaging.unsubscribeToTopic({ uid: uid, topic: "comments_" + cat.id, type: "forum" }));
+            promises.push(Messaging.unsubscribeToTopic({
+                uid: data.uid,
+                topic: "posts_" + cat.id,
+                type: type,
+            }));
+            promises.push(Messaging.unsubscribeToTopic({
+                uid: data.uid,
+                topic: "comments_" + cat.id,
+                type: type,
+            }));
         });
-        return Promise.all(promises);
+        await Promise.all(promises);
+        return {
+            group: group,
+            type: type,
+            categories: cats,
+        };
     }
 }
 exports.Messaging = Messaging;

@@ -132,9 +132,21 @@ class _NotificationSettingState extends State<NotificationSetting> {
   }
 
   enableOrDisableAllNotification([bool enable = true]) async {
-    for (CategoryModel cat in categories!) {
-      MessagingService.instance.updateSubscription('posts_${cat.id}', 'forum', enable);
-      MessagingService.instance.updateSubscription('comments_${cat.id}', 'forum', enable);
+    String content = "All Notification";
+    if (enable) {
+      final re = await MessagingService.instance.enableAllNotification();
+      print(re);
+      content = "Enable " + content;
+    } else {
+      await MessagingService.instance.disableAllNotification();
+      content = "Disable " + content;
     }
+
+    showDialog(
+        context: context,
+        builder: (c) => AlertDialog(
+              title: Text('Notification'),
+              content: Text(content),
+            ));
   }
 }

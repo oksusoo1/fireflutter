@@ -437,18 +437,13 @@ export class Messaging {
     return re;
   }
 
-  // /**
-  //  * Return true if the user didn't subscribe the topic.
-  //  * @param uid uid of a user
-  //  * @param topic topic
-  //  * @returns Promise<boolean>
-  //  */
-  // static async isUserSubscriptionOff(
-  //   uid: string,
-  //   topic: string
-  // ): Promise<boolean> {
-  //   return !this.userHasSusbscription(uid, topic);
-  // }
+  static async userSettingsField(uid: string, field: string): Promise<any> {
+    // / Get all the topics of the user
+    const snapshot = await Ref.userSettings(uid).child(field).get();
+    if (snapshot.exists() === false) return null;
+    const val = snapshot.val();
+    return val;
+  }
 
   /**
    * Returns true if the user subscribed the topic.
@@ -688,47 +683,72 @@ export class Messaging {
     return val;
   }
 
+  /**
+   * Default it returns categoryGroup: `community` and set the subscription to folder `forum`
+   * @param data
+   * @returns
+   */
   static async enableAllNotification(data: MapStringString) {
-    const cats = await Category.gets(data.group ?? "community");
+    const group = data.group ?? "community";
+    const type = data.type ?? "forum";
+    const cats = await Category.gets(group);
     const promises: Promise<any>[] = [];
     cats.forEach((cat: CategoryDocument) => {
       promises.push(
         Messaging.subscribeToTopic({
           uid: data.uid,
           topic: "posts_" + cat.id,
-          type: data.type ?? "forum",
+          type: type,
         })
       );
       promises.push(
         Messaging.subscribeToTopic({
           uid: data.uid,
           topic: "comments_" + cat.id,
-          type: data.type ?? "forum",
+          type: type,
         })
       );
     });
-    return Promise.all(promises);
+
+    await Promise.all(promises);
+    return {
+      group: group,
+      type: type,
+      categories: cats,
+    };
   }
 
+  /**
+   * Default it returns categoryGroup: `community` and set the unsubscription to folder `forum`
+   * @param data
+   * @returns
+   */
   static async disableAllNotification(data: MapStringString) {
-    const cats = await Category.gets(data.group ?? "community");
+    const group = data.group ?? "community";
+    const type = data.type ?? "forum";
+    const cats = await Category.gets(group);
     const promises: Promise<any>[] = [];
     cats.forEach((cat: CategoryDocument) => {
       promises.push(
         Messaging.unsubscribeToTopic({
           uid: data.uid,
           topic: "posts_" + cat.id,
-          type: data.type ?? "forum",
+          type: type,
         })
       );
       promises.push(
         Messaging.unsubscribeToTopic({
           uid: data.uid,
           topic: "comments_" + cat.id,
-          type: data.type ?? "forum",
+          type: type,
         })
       );
     });
-    return Promise.all(promises);
+    await Promise.all(promises);
+    return {
+      group: group,
+      type: type,
+      categories: cats,
+    };
   }
 }

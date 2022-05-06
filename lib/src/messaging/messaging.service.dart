@@ -151,6 +151,16 @@ class MessagingService with FirestoreMixin, DatabaseMixin {
     }
   }
 
+  Future<dynamic> enableAllNotification({String? group, String? type}) async {
+    return FunctionsApi.instance
+        .request('enableAllNotification', data: {'group': group, 'type': type}, addAuth: true);
+  }
+
+  Future<dynamic> disableAllNotification({String? group, String? type}) async {
+    return FunctionsApi.instance
+        .request('disableAllNotification', data: {'group': group, 'type': type}, addAuth: true);
+  }
+
   toggleSubscription(String topic, String type) {
     return updateSubscription(
       topic,
