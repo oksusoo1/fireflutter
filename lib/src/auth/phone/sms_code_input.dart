@@ -11,6 +11,8 @@ class SmsCodeInput extends StatefulWidget {
     this.smsCodeInputTextStyle = const TextStyle(),
     Key? key,
   }) : super(key: key);
+
+  /// [success] will be called after verification success.
   final VoidCallback success;
   final ErrorCallback error;
 
