@@ -8,7 +8,12 @@ import {
   ERROR_EMPTY_UIDS,
   ERROR_TITLE_AND_BODY_CANT_BE_BOTH_EMPTY,
 } from "../defines";
-import { MessagePayload, SubscriptionResponse, TokenDocument, TopicData } from "../interfaces/messaging.interface";
+import {
+  MessagePayload,
+  SubscriptionResponse,
+  TokenDocument,
+  TopicData,
+} from "../interfaces/messaging.interface";
 import { Ref } from "./ref";
 import { Utils } from "./utils";
 
@@ -17,6 +22,8 @@ import axios from "axios";
 import { config } from "../fireflutter.config";
 import { MessagingTopicManagementResponse } from "firebase-admin/lib/messaging/messaging-api";
 import { MapStringBoolean, MapStringString } from "../interfaces/common.interface";
+import { Category } from "./category";
+import { CategoryDocument } from "../interfaces/forum.interface";
 
 export class Messaging {
   static defaultTopic = "defaultTopic";
@@ -93,7 +100,9 @@ export class Messaging {
       };
     }
     // subscribe user tokens to topic
-    const res: MessagingTopicManagementResponse = await admin.messaging().subscribeToTopic(tokens, data.topic);
+    const res: MessagingTopicManagementResponse = await admin
+      .messaging()
+      .subscribeToTopic(tokens, data.topic);
     // remove invalid tokens if any
     const failureTokens: MapStringString = await this.removeInvalidTokensFromResponse(tokens, res);
 
@@ -135,7 +144,9 @@ export class Messaging {
     }
 
     // unsubscribe user tokens to topic
-    const res: MessagingTopicManagementResponse = await admin.messaging().unsubscribeFromTopic(tokens, data.topic);
+    const res: MessagingTopicManagementResponse = await admin
+      .messaging()
+      .unsubscribeFromTopic(tokens, data.topic);
     // remove invalid tokens if any
     const failureTokens: MapStringString = await this.removeInvalidTokensFromResponse(tokens, res);
 
@@ -187,10 +198,10 @@ export class Messaging {
   static async topicOn(data: TopicData) {
     this.checkTopicData(data);
     await Ref.userSettingTopic(data.uid)
-        .child(data.type)
-        .update({
-          [data.topic]: true,
-        });
+      .child(data.type)
+      .update({
+        [data.topic]: true,
+      });
     return this.getTopics(data.uid, data.type);
   }
 
@@ -204,10 +215,10 @@ export class Messaging {
   static async topicOff(data: TopicData) {
     this.checkTopicData(data);
     await Ref.userSettingTopic(data.uid)
-        .child(data.type)
-        .update({
-          [data.topic]: false,
-        });
+      .child(data.type)
+      .update({
+        [data.topic]: false,
+      });
 
     return this.getTopics(data.uid, data.type);
   }
@@ -269,8 +280,8 @@ export class Messaging {
    * @returns Map of result.
    */
   static async removeInvalidTokensFromResponse(
-      tokens: Array<string>,
-      res: MessagingTopicManagementResponse
+    tokens: Array<string>,
+    res: MessagingTopicManagementResponse
   ): Promise<MapStringString> {
     if (res.failureCount == 0) return {};
 
@@ -553,8 +564,8 @@ export class Messaging {
   }
 
   static async sendingMessageToTokens(
-      tokens: Array<string>,
-      payload: MessagePayload
+    tokens: Array<string>,
+    payload: MessagePayload
   ): Promise<{
     success: number;
     error: number;
@@ -567,7 +578,10 @@ export class Messaging {
     const sendToDevicePromise = [];
     for (const c of chunks) {
       // Send notifications to all tokens.
-      const newPayload: admin.messaging.MulticastMessage = Object.assign({ tokens: c }, payload as any);
+      const newPayload: admin.messaging.MulticastMessage = Object.assign(
+        { tokens: c },
+        payload as any
+      );
       sendToDevicePromise.push(admin.messaging().sendMulticast(newPayload));
     }
     const sendDevice = await Promise.all(sendToDevicePromise);
@@ -674,84 +688,31 @@ export class Messaging {
     return val;
   }
 
-  // /**
-  //  * Returns user forum topics.
-  //  *
-  //  * @param uid user uid
-  //  * @returns array of topic
-  //  */
-  // static async getForumTopics(uid: string): Promise<string[]> {
-  //   const snapshot = await Ref.userSettingForumTopics(uid).get();
-  //   if (!snapshot.exists()) return [];
-  //   const val = snapshot.val();
-  //   return Object.keys(val);
-  // }
+  static async enableAllCommunityNotification(uid: string) {
+    const cats = await Category.gets("community");
+    const promises: Promise<any>[] = [];
+    cats.forEach((cat: CategoryDocument) => {
+      promises.push(
+        Messaging.subscribeToTopic({ uid: uid, topic: "posts_" + cat.id, type: "forum" })
+      );
+      promises.push(
+        Messaging.subscribeToTopic({ uid: uid, topic: "comments_" + cat.id, type: "forum" })
+      );
+    });
+    return Promise.all(promises);
+  }
 
-  // /**
-  //  *
-  //  * Unsubcribe all topics that
-  //  * @param user
-  //  * @param uid
-  //  * @returns
-  //  */
-  // static async resubscribeTopics(user: UserDocument, uid: string) {
-  //   // get user tokens
-  //   const initialTokens = await this.getTokens(uid);
-  //   let tokens = initialTokens;
-  //   if (tokens.length == 0) return null;
-
-  //   // get user forum topics
-  //   const forumTopics = await this.getForumTopics(uid);
-  //   if (forumTopics.length == 0) return null;
-
-  //   // get 1 topic first
-  //   const topic = forumTopics.splice(0, 1)[0];
-  //   // unsubscribe to 1 topic
-  //   const res = await admin.messaging().unsubscribeFromTopic(tokens, topic);
-
-  //   // if there is failure remove tokens with invalid status
-  //   if (res.failureCount > 0) {
-  //     const tokensToRemove: Promise<any>[] = [];
-  //     res.errors.forEach((e) => {
-  //       if (
-  //         e.error.code === "messaging/invalid-registration-token" ||
-  //         e.error.code === "messaging/registration-token-not-registered" ||
-  //         e.error.code === "messaging/invalid-argument"
-  //       ) {
-  //         tokensToRemove.push(Ref.messageTokens.child(tokens[e.index]).remove());
-  //       }
-  //     });
-  //     await Promise.all(tokensToRemove);
-
-  //     // get again the remaining tokens after removing invalid tokens
-  //     tokens = await this.getTokens(uid);
-  //     if (tokens.length == 0) return null;
-  //   }
-
-  //   const unsubscribePromises: any[] = [];
-  //   forumTopics.forEach((topic: string) => {
-  //     unsubscribePromises.push(admin.messaging().unsubscribeFromTopic(tokens, topic));
-  //   });
-  //   const unsubscribeResult = await Promise.all(unsubscribePromises);
-
-  //   const forumSubscription = await this.getSubscribedForum(uid);
-  //   if (forumSubscription.length == 0) return null;
-
-  //   const subscribePromises: any[] = [];
-  //   forumSubscription.forEach((topic: string) => {
-  //     subscribePromises.push(admin.messaging().subscribeToTopic(tokens, topic));
-  //   });
-  //   const subscribeResult = await Promise.all(subscribePromises);
-
-  //   return {
-  //     user: user,
-  //     uid: uid,
-  //     beforeToken: initialTokens,
-  //     afterTokens: tokens,
-  //     forumSubs: forumSubscription,
-  //     tokenError: res.errors,
-  //     subscribeResult: subscribeResult,
-  //     unsubscribeResult: unsubscribeResult,
-  //   };
-  // }
+  static async disableAllCommunityNotification(uid: string) {
+    const cats = await Category.gets("community");
+    const promises: Promise<any>[] = [];
+    cats.forEach((cat: CategoryDocument) => {
+      promises.push(
+        Messaging.unsubscribeToTopic({ uid: uid, topic: "posts_" + cat.id, type: "forum" })
+      );
+      promises.push(
+        Messaging.unsubscribeToTopic({ uid: uid, topic: "comments_" + cat.id, type: "forum" })
+      );
+    });
+    return Promise.all(promises);
+  }
 }
