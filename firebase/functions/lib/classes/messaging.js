@@ -400,18 +400,14 @@ class Messaging {
         }
         return re;
     }
-    // /**
-    //  * Return true if the user didn't subscribe the topic.
-    //  * @param uid uid of a user
-    //  * @param topic topic
-    //  * @returns Promise<boolean>
-    //  */
-    // static async isUserSubscriptionOff(
-    //   uid: string,
-    //   topic: string
-    // ): Promise<boolean> {
-    //   return !this.userHasSusbscription(uid, topic);
-    // }
+    static async userSettingsField(uid, field) {
+        // / Get all the topics of the user
+        const snapshot = await ref_1.Ref.userSettings(uid).child(field).get();
+        if (snapshot.exists() === false)
+            return null;
+        const val = snapshot.val();
+        return val;
+    }
     /**
      * Returns true if the user subscribed the topic.
      * @param uid uid of a suer
@@ -638,6 +634,11 @@ class Messaging {
         const val = snapshot.val();
         return val;
     }
+    /**
+     * Default it returns categoryGroup: `community` and set the subscription to folder `forum`
+     * @param data
+     * @returns
+     */
     static async enableAllNotification(data) {
         var _a, _b;
         const group = (_a = data.group) !== null && _a !== void 0 ? _a : "community";
@@ -663,6 +664,11 @@ class Messaging {
             categories: cats,
         };
     }
+    /**
+     * Default it returns categoryGroup: `community` and set the unsubscription to folder `forum`
+     * @param data
+     * @returns
+     */
     static async disableAllNotification(data) {
         var _a, _b;
         const group = (_a = data.group) !== null && _a !== void 0 ? _a : "community";
