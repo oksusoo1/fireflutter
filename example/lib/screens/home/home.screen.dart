@@ -62,9 +62,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   ],
                 );
               }),
-
-              /// TODO: 게시판 열기
-              QuickMenuCategories(onTap: (category) => service.router.openProfile())
+              QuickMenuCategories(
+                  onTap: (category) =>
+                      service.router.openPostList(category: category.id))
             ],
           ),
         ),

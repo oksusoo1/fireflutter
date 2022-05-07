@@ -1,8 +1,11 @@
 import 'package:example/screens/admin/admin.category.screen.dart';
 import 'package:example/screens/admin/admin.category_group.screen.dart';
 import 'package:example/screens/admin/admin.screen.dart';
+import 'package:example/screens/forum/post.edit.screen.dart';
+import 'package:example/screens/forum/post.list.screen.dart';
 import 'package:example/screens/settings/settings.screen.dart';
 import 'package:example/screens/test/test.screen.dart';
+import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
 import 'package:example/screens/about/about.screen.dart';
 import 'package:example/screens/home/home.screen.dart';
@@ -21,13 +24,19 @@ final Map<String, RouteFunction> appRoutes = {
   AboutScreen.routeName: (context, arguments) => const AboutScreen(),
   MenuScreen.routeName: (context, arguments) => const MenuScreen(),
   ProfileScreen.routeName: (context, arguments) => const ProfileScreen(),
-  ProfileEditScreen.routeName: (context, arguments) => const ProfileEditScreen(),
-  SignInWithEmailAndPasswordScreen.routeName: (p0, p1) => const SignInWithEmailAndPasswordScreen(),
+  ProfileEditScreen.routeName: (context, arguments) =>
+      const ProfileEditScreen(),
+  SignInWithEmailAndPasswordScreen.routeName: (p0, p1) =>
+      const SignInWithEmailAndPasswordScreen(),
   SettingsScreen.routeName: (context, arguments) => const SettingsScreen(),
   TestScreen.routeName: (context, arguments) => const TestScreen(),
   AdminScreen.routeName: (context, arguments) => const AdminScreen(),
   AdminCategoryScreen.routeName: (p0, p1) => const AdminCategoryScreen(),
-  AdminCategoryGroupScreen.routeName: (context, arugment) => AdminCategoryGroupScreen(),
+  AdminCategoryGroupScreen.routeName: (context, arugment) =>
+      AdminCategoryGroupScreen(),
+  PostListScreen.routeName: (context, arguments) =>
+      PostListScreen(arguments: arguments),
+  PostEditScreen.routeName: (c, a) => PostEditScreen(arguments: a),
 };
 
 /// NoAnimationMaterialPageRoute is for removing page transition.
@@ -68,7 +77,8 @@ class AppRouter extends NavigatorObserver {
     final String name = settings.name;
 
     if (routeStack[name] != null) {
-      Navigator.of(globalNavigatorKey.currentContext!).removeRoute(routeStack[name]!);
+      Navigator.of(globalNavigatorKey.currentContext!)
+          .removeRoute(routeStack[name]!);
       routeStack.remove(name);
     }
 
@@ -192,5 +202,17 @@ class AppRouter extends NavigatorObserver {
 
   Future openAdminCategoryGroup() {
     return open(AdminCategoryGroupScreen.routeName);
+  }
+
+  Future openPostList({String? category}) {
+    return open(PostListScreen.routeName, arguments: {'category': category});
+  }
+
+  /// Returns post id of newly created post.
+  Future<dynamic> openPostEdit({String? category, PostModel? post}) async {
+    return open(PostEditScreen.routeName, arguments: {
+      'category': category,
+      'post': post,
+    });
   }
 }

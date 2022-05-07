@@ -50,38 +50,57 @@ final Map<String, RouteFunction> appRoutes = {
   MenuScreen.routeName: (context, arguments) => const MenuScreen(),
   AboutScreen.routeName: (context, arguments) => const AboutScreen(),
   SignInWidget.routeName: (context, arguments) => const SignInWidget(),
-  PhoneSignInScreen.routeName: (context, arguments) => const PhoneSignInScreen(),
+  PhoneSignInScreen.routeName: (context, arguments) =>
+      const PhoneSignInScreen(),
   SmsCodeScreen.routeName: (context, arguments) => const SmsCodeScreen(),
-  PhoneSignInUIScreen.routeName: (context, arguments) => const PhoneSignInUIScreen(),
+  PhoneSignInUIScreen.routeName: (context, arguments) =>
+      const PhoneSignInUIScreen(),
   SmsCodeUIScreen.routeName: (context, arguments) => const SmsCodeUIScreen(),
-  HelpScreen.routeName: (context, arguments) => HelpScreen(arguments: arguments),
-  ProfileScreen.routeName: (context, arguments) => ProfileScreen(key: profileScreenKey),
-  PostListScreen.routeName: (context, arguments) => PostListScreen(arguments: arguments),
-  PostFormScreen.routeName: (context, arguments) => PostFormScreen(arguments: arguments),
+  HelpScreen.routeName: (context, arguments) =>
+      HelpScreen(arguments: arguments),
+  ProfileScreen.routeName: (context, arguments) =>
+      ProfileScreen(key: profileScreenKey),
+  PostListScreen.routeName: (context, arguments) =>
+      PostListScreen(arguments: arguments),
+  PostFormScreen.routeName: (context, arguments) =>
+      PostFormScreen(arguments: arguments),
   AdminScreen.routeName: (context, arguments) => AdminScreen(),
-  NotificationSettingScreen.routeName: (context, arguments) => NotificationSettingScreen(),
+  NotificationSettingScreen.routeName: (context, arguments) =>
+      NotificationSettingScreen(),
   ReportPostManagementScreen.routeName: (context, arguments) =>
       ReportPostManagementScreen(arguments: arguments),
   CategoryScreen.routeName: (context, arguments) => CategoryScreen(),
-  ChatRoomScreen.routeName: (context, arguments) => ChatRoomScreen(arguments: arguments),
+  ChatRoomScreen.routeName: (context, arguments) =>
+      ChatRoomScreen(arguments: arguments),
   ChatRoomsScreen.routeName: (context, arguments) => ChatRoomsScreen(),
-  ChatRoomsBlockedScreen.routeName: (context, arguments) => ChatRoomsBlockedScreen(),
-  FriendMapScreen.routeName: (context, arguments) => FriendMapScreen(arguments: arguments),
+  ChatRoomsBlockedScreen.routeName: (context, arguments) =>
+      ChatRoomsBlockedScreen(),
+  FriendMapScreen.routeName: (context, arguments) =>
+      FriendMapScreen(arguments: arguments),
   ReminderEditScreen.routeName: (context, arguments) => ReminderEditScreen(),
-  ReportScreen.routeName: (context, arguments) => ReportScreen(arguments: arguments),
-  EmailVerificationScreen.routeName: (context, arguments) => EmailVerificationScreen(),
+  ReportScreen.routeName: (context, arguments) =>
+      ReportScreen(arguments: arguments),
+  EmailVerificationScreen.routeName: (context, arguments) =>
+      EmailVerificationScreen(),
   TranslationsScreen.routeName: (context, arguments) => TranslationsScreen(),
-  PostListScreenV2.routeName: (context, arguments) => PostListScreenV2(arguments: arguments),
-  AdminSearchSettingsScreen.routeName: (context, arguments) => AdminSearchSettingsScreen(),
+  PostListScreenV2.routeName: (context, arguments) =>
+      PostListScreenV2(arguments: arguments),
+  AdminSearchSettingsScreen.routeName: (context, arguments) =>
+      AdminSearchSettingsScreen(),
   PushNotificationScreen.routeName: (context, arguments) =>
       PushNotificationScreen(arguments: arguments),
-  PostViewScreen.routeName: (context, arguments) => PostViewScreen(arguments: arguments),
-  JobListScreen.routeName: (context, arguments) => JobListScreen(arguments: arguments),
-  JobEditScreen.routeName: (context, arguments) => JobEditScreen(arguments: arguments),
-  JobViewScreen.routeName: (context, arguments) => JobViewScreen(arguments: arguments),
+  PostViewScreen.routeName: (context, arguments) =>
+      PostViewScreen(arguments: arguments),
+  JobListScreen.routeName: (context, arguments) =>
+      JobListScreen(arguments: arguments),
+  JobEditScreen.routeName: (context, arguments) =>
+      JobEditScreen(arguments: arguments),
+  JobViewScreen.routeName: (context, arguments) =>
+      JobViewScreen(arguments: arguments),
   PointHistoryScreen.routeName: (context, arguments) => PointHistoryScreen(),
   CategoryGroupScreen.routeName: (context, arguments) => CategoryGroupScreen(),
-  JobSeekerProfileFormScreen.routeName: (context, arguments) => JobSeekerProfileFormScreen(),
+  JobSeekerProfileFormScreen.routeName: (context, arguments) =>
+      JobSeekerProfileFormScreen(),
   JobSeekerProfileViewScreen.routeName: (context, arguments) =>
       JobSeekerProfileViewScreen(arguments: arguments),
   JobSeekerListScreen.routeName: (context, arguments) => JobSeekerListScreen(),
@@ -224,7 +243,8 @@ class AppRouter extends NavigatorObserver {
   }
 
   Future<void> openPostList({String? category, popAll = false}) async {
-    return open(PostListScreen.routeName, popAll: popAll, arguments: {'category': category});
+    return open(PostListScreen.routeName,
+        popAll: popAll, arguments: {'category': category});
   }
 
   Future<void> openSearchScreen({
