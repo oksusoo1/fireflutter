@@ -11,6 +11,11 @@ export interface TopicData {
   type: string;
 }
 
+export interface SettingTokensFilter {
+  path: string;
+  excludeIfValue: any;
+}
+
 export interface SubscriptionResponse {
   topic: string;
   tokens: string[];
