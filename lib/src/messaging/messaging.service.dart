@@ -1,5 +1,6 @@
 import 'dart:io';
 // import 'package:rxdart/subjects.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../fireflutter.dart';
 // import 'package:flutter/material.dart';
@@ -23,7 +24,6 @@ class MessagingService with FirestoreMixin, DatabaseMixin {
   Function(RemoteMessage)? onMessageOpenedFromBackground;
   Function? onNotificationPermissionDenied;
   Function? onNotificationPermissionNotDetermined;
-  Function? onTokenUpdated;
   String token = '';
   String defaultTopic = 'defaultTopic';
   init({
@@ -33,7 +33,6 @@ class MessagingService with FirestoreMixin, DatabaseMixin {
     Function(RemoteMessage)? onMessageOpenedFromBackground,
     Function? onNotificationPermissionDenied,
     Function? onNotificationPermissionNotDetermined,
-    Function? onTokenUpdated,
   }) {
     if (onBackgroundMessage != null) {
       FirebaseMessaging.onBackgroundMessage(onBackgroundMessage);
@@ -44,16 +43,14 @@ class MessagingService with FirestoreMixin, DatabaseMixin {
     this.onMessageOpenedFromBackground = onMessageOpenedFromBackground;
     this.onNotificationPermissionDenied = onNotificationPermissionDenied;
     this.onNotificationPermissionNotDetermined = onNotificationPermissionNotDetermined;
-    this.onTokenUpdated = onTokenUpdated;
     _init();
-
-    // print(UserService.instance.uid);
-    // MessagingService.instance
-    //     .updateTokenToBackend(); // update token with userinfo and do the resubscription on the backend 20220509
   }
 
   /// Initialize Messaging
   _init() async {
+    ///
+    FirebaseAuth.instance.authStateChanges().listen((u) => _updateToken());
+
     /// Permission request for iOS only. For Android, the permission is granted by default.
     if (Platform.isIOS) {
       NotificationSettings settings = await FirebaseMessaging.instance.requestPermission(
@@ -106,10 +103,7 @@ class MessagingService with FirestoreMixin, DatabaseMixin {
     });
 
     // Any time the token refreshes, store this in the database too.
-    FirebaseMessaging.instance.onTokenRefresh.listen(((token) {
-      _updateToken(token);
-      updateTokenToBackend();
-    }));
+    FirebaseMessaging.instance.onTokenRefresh.listen(_updateToken);
 
     _updateToken(token);
   }
@@ -117,19 +111,13 @@ class MessagingService with FirestoreMixin, DatabaseMixin {
   /// Create or update token info
   ///
   /// User may not signed in. That is why we cannot put this code in user model.
-  _updateToken(String token) {
-    this.token = token;
-    if (this.token == '') return;
-
-    // print('token; $token');
-    subscribeToDefaultTopic();
-
-    if (onTokenUpdated != null) this.onTokenUpdated!(token);
-  }
-
   /// must be called when user signIn or when tokenRefresh
   /// skip if user is not signIn. _updateToken() will registered the device to default topic
-  updateTokenToBackend() async {
+  _updateToken([String? token]) {
+    if (token == null) token = this.token;
+    if (token == '') return;
+
+    subscribeToDefaultTopic();
     if (UserService.instance.notSignedIn) return;
     return FunctionsApi.instance.request('updateToken', data: {'token': token}, addAuth: true);
   }
