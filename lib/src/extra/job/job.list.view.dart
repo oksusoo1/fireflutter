@@ -78,6 +78,7 @@ class _JobListViewState extends State<JobListView> with FirestoreMixin {
           return Text('Something went wrong! ${snapshot.error}');
         }
         return ListView.builder(
+          padding: EdgeInsets.all(0),
           itemCount: snapshot.docs.length,
           itemBuilder: (context, index) {
             if (snapshot.hasMore && index + 1 == snapshot.docs.length) {
