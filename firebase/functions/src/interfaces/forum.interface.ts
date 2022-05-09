@@ -1,7 +1,7 @@
 export interface PostListOptions {
   category?: string;
   limit?: number;
-  startAfter?: number;
+  startAfter?: number | string;
 }
 
 export interface CategoryDocument {

@@ -51,7 +51,14 @@ export class Post {
       q = q.startAfter(options.startAfter);
     }
 
-    q = q.limit(options.limit ?? 10);
+    let limit;
+    if (typeof options.limit == "undefined") {
+      limit = 10;
+    } else {
+      limit = typeof options.limit == "string" ? parseInt(options.limit) : options.limit;
+    }
+
+    q = q.limit(limit);
 
     const snapshot = await q.get();
 
