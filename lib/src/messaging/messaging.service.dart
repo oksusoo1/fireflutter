@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'package:rxdart/subjects.dart';
+// import 'package:rxdart/subjects.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../fireflutter.dart';
 // import 'package:flutter/material.dart';
@@ -12,7 +12,7 @@ class MessagingService with FirestoreMixin, DatabaseMixin {
     return _instance!;
   }
 
-  final BehaviorSubject<bool> permissionGranted = BehaviorSubject.seeded(false);
+  // final BehaviorSubject<bool> permissionGranted = BehaviorSubject.seeded(false);
 
   MessagingService() {
     // debugPrint('MessagingService::constructor');
@@ -46,6 +46,10 @@ class MessagingService with FirestoreMixin, DatabaseMixin {
     this.onNotificationPermissionNotDetermined = onNotificationPermissionNotDetermined;
     this.onTokenUpdated = onTokenUpdated;
     _init();
+
+    // print(UserService.instance.uid);
+    // MessagingService.instance
+    //     .updateTokenToBackend(); // update token with userinfo and do the resubscription on the backend 20220509
   }
 
   /// Initialize Messaging

@@ -1,7 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:fireflutter/fireflutter.dart';
+import '../../../fireflutter.dart';
 import 'package:flutter/material.dart';
-import '../../defines.dart';
 import 'package:country_code_picker/country_code_picker.dart';
 
 class PhoneService {
@@ -89,8 +88,6 @@ class PhoneService {
       /// will happen, and firebase_auth User data has the phone number.
       /// If you want to get user's phone number, you get it there.
       success();
-      MessagingService.instance
-          .updateTokenToBackend(); // update token with userinfo and do the resubscription on the backend 20220509
     } catch (e) {
       error(e);
     }

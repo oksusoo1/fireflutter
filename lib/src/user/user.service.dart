@@ -48,7 +48,7 @@ class UserService with FirestoreMixin, DatabaseMixin {
   // DatabaseReference get _myDoc => FirebaseDatabase.instance.ref('users').child(uid);
 
   StreamSubscription? userSubscription;
-  StreamSubscription? messagingPermissionSubscription;
+  // StreamSubscription? messagingPermissionSubscription;
 
   /// This event will be posted whenever user document changes.
   // ignore: close_sinks
