@@ -4,8 +4,7 @@ import 'package:flutterfire_ui/firestore.dart';
 import '../../../../fireflutter.dart';
 
 class JobSeekerList extends StatefulWidget {
-  JobSeekerList({this.options, this.onTap, Key? key, this.padding})
-      : super(key: key);
+  JobSeekerList({this.options, this.onTap, Key? key, this.padding}) : super(key: key);
 
   final JobSeekerListOptionsModel? options;
   // final Function(String)? onTapChat;
@@ -20,8 +19,7 @@ class _JobSeekerListState extends State<JobSeekerList> with FirestoreMixin {
   Query get _query {
     Query q = jobSeekers.where('status', isEqualTo: 'Y');
 
-    JobSeekerListOptionsModel options =
-        widget.options ?? JobSeekerListOptionsModel();
+    JobSeekerListOptionsModel options = widget.options ?? JobSeekerListOptionsModel();
 
     if (options.siNm != '') {
       q = q.where('siNm', isEqualTo: options.siNm);
@@ -59,6 +57,7 @@ class _JobSeekerListState extends State<JobSeekerList> with FirestoreMixin {
         }
 
         return ListView.separated(
+          padding: EdgeInsets.all(0),
           itemCount: snapshot.docs.length,
           separatorBuilder: (context, index) => Divider(height: 32),
           itemBuilder: (context, index) {
@@ -99,8 +98,7 @@ class _JobSeekerListState extends State<JobSeekerList> with FirestoreMixin {
                             ),
                           ),
                           SizedBox(height: 4),
-                          Text(
-                              'Industry: ${JobService.instance.categories[seeker.industry]}'),
+                          Text('Industry: ${JobService.instance.categories[seeker.industry]}'),
                           SizedBox(height: 4),
                           Text(
                             'Location: ${seeker.siNm}, ${seeker.sggNm}',
