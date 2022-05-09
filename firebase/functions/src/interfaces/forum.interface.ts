@@ -1,7 +1,7 @@
 export interface PostListOptions {
   category?: string;
-  limit?: number;
-  startAfter?: number | string;
+  limit?: string;
+  startAfter?: string;
 }
 
 export interface CategoryDocument {
@@ -93,3 +93,4 @@ export interface CommentCreateRequirements {
   createdAt: number;
   updatedAt: number;
 }
+

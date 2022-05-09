@@ -32,7 +32,8 @@ class Post {
         }
         q = q.orderBy("createdAt", "desc");
         if (options.startAfter) {
-            q = q.startAfter(options.startAfter);
+            const startAfter = typeof options.startAfter == "string" ? parseInt(options.startAfter) : options.startAfter;
+            q = q.startAfter(startAfter);
         }
         let limit;
         if (typeof options.limit == "undefined") {

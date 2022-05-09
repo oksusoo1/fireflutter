@@ -48,16 +48,10 @@ export class Post {
     q = q.orderBy("createdAt", "desc");
 
     if (options.startAfter) {
-      q = q.startAfter(options.startAfter);
+      q = q.startAfter(parseInt(options.startAfter!));
     }
 
-    let limit;
-    if (typeof options.limit == "undefined") {
-      limit = 10;
-    } else {
-      limit = typeof options.limit == "string" ? parseInt(options.limit) : options.limit;
-    }
-
+    const limit = options.limit ? parseInt(options.limit) : 10;
     q = q.limit(limit);
 
     const snapshot = await q.get();
