@@ -30,50 +30,37 @@ describe("Post list test", () => {
 
   it("Get first page.", async () => {
     totalPosts = await Post.list({
-      limit: 4,
+      limit: "4",
     });
 
     // console.log(totalPosts[0]);
     for (let i = 0; i <= 3; i++) {
       expect(totalPosts[i])
-          .to.be.an("object")
-          .to.have.property("title")
-          .equals("test-title-" + (10 - i));
+        .to.be.an("object")
+        .to.have.property("title")
+        .equals("test-title-" + (10 - i));
     }
   });
 
   it("Get second page.", async () => {
     const posts = await Post.list({
-      startAfter: totalPosts[totalPosts.length - 1].createdAt,
-      limit: 4,
+      startAfter: totalPosts[totalPosts.length - 1].createdAt.toString(),
+      limit: "4",
     });
     for (let i = 0; i <= 3; i++) {
       expect(posts[i])
-          .to.be.an("object")
-          .to.have.property("title")
-          .equals("test-title-" + (6 - i));
+        .to.be.an("object")
+        .to.have.property("title")
+        .equals("test-title-" + (6 - i));
     }
     totalPosts = [...totalPosts, ...posts];
   });
 
   it("Get third page.", async () => {
     const posts = await Post.list({
-      startAfter: totalPosts[totalPosts.length - 1].createdAt,
-    });
-    for (let i = 0; i <= 9; i++) {
-      expect(posts[i])
-          .to.be.an("object")
-          .to.have.property("title")
-          .equals("test-title-" + (11 - i));
-    }
-    totalPosts = [...totalPosts, ...posts];
-  });
-
-  it("Get fourth page.", async () => {
-    const posts = await Post.list({
       category: category.id, // without category, it will include 9 more posts.
-      startAfter: totalPosts[totalPosts.length - 1].createdAt,
-      limit: 4,
+      startAfter: totalPosts[totalPosts.length - 1].createdAt.toString(),
+      limit: "4",
     });
 
     expect(posts.length).is.equals(2);
@@ -120,16 +107,17 @@ describe("Post list test", () => {
 
   it("Gets limited number of posts", async () => {
     const q1 = await Post.list({
-      limit: 5,
+      limit: "5",
     });
     expect(q1.length).equals(5);
     const q2 = await Post.list({
-      limit: 2,
+      limit: "2",
     });
     expect(q2.length).equals(2);
     const q3 = await Post.list({
-      limit: 7,
+      limit: "7",
     });
     expect(q3.length).equals(7);
   });
 });
+

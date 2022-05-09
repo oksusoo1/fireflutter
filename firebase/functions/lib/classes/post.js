@@ -25,7 +25,6 @@ class Post {
      * @note exception will be thrown on error.
      */
     static async list(options) {
-        var _a;
         const posts = [];
         let q = ref_1.Ref.postCol;
         if (options.category) {
@@ -33,9 +32,17 @@ class Post {
         }
         q = q.orderBy("createdAt", "desc");
         if (options.startAfter) {
-            q = q.startAfter(options.startAfter);
+            const startAfter = typeof options.startAfter == "string" ? parseInt(options.startAfter) : options.startAfter;
+            q = q.startAfter(startAfter);
         }
-        q = q.limit((_a = options.limit) !== null && _a !== void 0 ? _a : 10);
+        let limit;
+        if (typeof options.limit == "undefined") {
+            limit = 10;
+        }
+        else {
+            limit = typeof options.limit == "string" ? parseInt(options.limit) : options.limit;
+        }
+        q = q.limit(limit);
         const snapshot = await q.get();
         if (snapshot.size > 0) {
             const docs = snapshot.docs;
