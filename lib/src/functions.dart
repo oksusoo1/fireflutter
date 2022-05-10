@@ -117,8 +117,9 @@ String getRandomString({int len = 16}) {
   return uuid.v4();
 }
 
+/// ! Attention: Alphabet `I` is missing since it is confusing with `i` and `l`.
 String getRandomAlphabet({int len = 1}) {
-  const charset = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  const charset = 'ABCDEFGHJKLMNOPQRSTUVWXYZ';
   var t = '';
   for (var i = 0; i < len; i++) {
     t += charset[(Random().nextInt(charset.length))];
@@ -126,8 +127,9 @@ String getRandomAlphabet({int len = 1}) {
   return t;
 }
 
+/// ! Attention: Number `0` is missing since it is confusing with `O` and `o`.
 String getRandomNumber({int len = 1}) {
-  const charset = '0123456789';
+  const charset = '123456789';
   var t = '';
   for (var i = 0; i < len; i++) {
     t += charset[(Random().nextInt(charset.length))];
