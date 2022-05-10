@@ -376,6 +376,33 @@ class Messaging {
         uids.split(",").forEach((uid) => promises.push(this.getTokens(uid)));
         return (await Promise.all(promises)).flat();
     }
+    /**
+     * Returns tokens of multiple users. and filtering with setting which is set to false
+     *
+     *
+     * @param uids array of user uid
+     *        path settings path   user-settings/{uid}/{path}    -
+     *        path can be `isAdmin` or `topic/forum` or `topic/forum/posts_qna`
+     * @returns array of tokens
+     */
+    static async getTokensFromUidsFilterWithSettingFalse(uids, filter) {
+        const promises = [];
+        uids.split(",").forEach(async (uid) => {
+            promises.push(this.getTokensFromUidFilterWithSettingFalse(uid, filter));
+        });
+        return (await Promise.all(promises)).flat();
+    }
+    /** *
+     * Return user tokens if filter value is not true.
+     *
+     * Return empty array if tokens is empty or filter is truthy
+     */
+    static async getTokensFromUidFilterWithSettingFalse(uid, filter) {
+        const v = await this.userSettingsField(uid, filter.path);
+        if (filter.excludeIfValue == v)
+            return [];
+        return this.getTokens(uid);
+    }
     // check the uids if they are subscribe to topic and also want to get notification under their post/comment
     /**
      * Get ancestors who subscribed to 'comment notification' but removing those who subscribed to the topic.
@@ -400,9 +427,14 @@ class Messaging {
         }
         return re;
     }
-    static async userSettingsField(uid, field) {
-        // / Get all the topics of the user
-        const snapshot = await ref_1.Ref.userSettings(uid).child(field).get();
+    /**
+     *
+     * @param uid user id
+     * @param path can be main setting or with subsetting `isAdmin` or `topic/forum` or `topic/forum/posts_qna`
+     * @returns
+     */
+    static async userSettingsField(uid, path) {
+        const snapshot = await ref_1.Ref.userSettings(uid).child(path).get();
         if (snapshot.exists() === false)
             return null;
         const val = snapshot.val();
@@ -697,4 +729,5 @@ class Messaging {
 }
 exports.Messaging = Messaging;
 Messaging.defaultTopic = "defaultTopic";
+Messaging.commentNotificationField = "newCommentUnderMyPostOrComment";
 //# sourceMappingURL=messaging.js.map
