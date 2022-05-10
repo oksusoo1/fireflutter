@@ -10,7 +10,7 @@ import {
   ERROR_USER_DOC_NOT_FOUND,
   ERROR_SIGNIN_TOKEN_NOT_EXISTS,
 } from "../defines";
-import { SignInToken, UserCreate, UserDocument } from "../interfaces/user.interface";
+import { UserCreate, UserDocument } from "../interfaces/user.interface";
 import { Ref } from "./ref";
 import { Utils } from "./utils";
 import * as admin from "firebase-admin";
@@ -172,13 +172,13 @@ export class User {
     return doc.id + "-" + doc.registeredAt;
   }
 
-  static async getSignInToken(data: { id: string }): Promise<SignInToken> {
+  static async getSignInToken(data: { id: string }): Promise<UserDocument | null> {
     const snapshot = await Ref.signInTokenDoc(data.id).get();
 
     if (snapshot.exists()) {
-      const val = snapshot.val();
+      const val: { uid: string } = snapshot.val();
       await Ref.signInTokenDoc(data.id).remove();
-      return val;
+      return await User.get(val.uid);
     }
 
     throw ERROR_SIGNIN_TOKEN_NOT_EXISTS;

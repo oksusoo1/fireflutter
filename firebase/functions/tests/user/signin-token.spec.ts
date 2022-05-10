@@ -12,13 +12,12 @@ new FirebaseAppInitializer();
 describe("User sign-in token test", () => {
   it("Create token and read the token", async () => {
     const docId = "N123T";
-    await Ref.signInTokenDoc(docId).set({ uid: "uid321", password: "password321" });
+    const uid = "apple@test_com";
+    await Ref.signInTokenDoc(docId).set({ uid: uid });
     const doc = (await Ref.signInTokenDoc(docId).get()).val() as SignInToken;
-    expect(doc).to.be.an("object").to.have.property("uid").equal("uid321");
-    const token = await User.getSignInToken({ id: docId });
-    expect(token.uid == doc.uid).true;
-    expect(token.password == doc.password).true;
-
+    expect(doc).to.be.an("object").to.have.property("uid").equal(uid);
+    const user = await User.getSignInToken({ id: docId });
+    expect(user?.id == doc.uid).true;
     try {
       await User.getSignInToken({ id: docId });
       expect.fail("Cannot get the token twice");
