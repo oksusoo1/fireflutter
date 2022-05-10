@@ -34,6 +34,14 @@ export class Ref {
     return this.reportCol.doc(id);
   }
 
+  static get signInTokenCol() {
+    return this.rdb.ref("sign-in-token");
+  }
+
+  static signInTokenDoc(id: string) {
+    return this.signInTokenCol.child(id);
+  }
+
   /**
    * Returns user document reference.
    * @param uid uid
