@@ -96,8 +96,8 @@ export class User {
   }
 
   static async disableUser(
-    data: any,
-    context: any
+      data: any,
+      context: any
   ): Promise<
     | admin.auth.UserRecord
     | {
@@ -172,12 +172,12 @@ export class User {
     return doc.id + "-" + doc.registeredAt;
   }
 
-  static async getSignInToken(docId: string): Promise<SignInToken> {
-    const snapshot = await Ref.signInTokenDoc(docId).get();
+  static async getSignInToken(data: { id: string }): Promise<SignInToken> {
+    const snapshot = await Ref.signInTokenDoc(data.id).get();
 
     if (snapshot.exists()) {
       const val = snapshot.val();
-      await Ref.signInTokenDoc(docId).remove();
+      await Ref.signInTokenDoc(data.id).remove();
       return val;
     }
 

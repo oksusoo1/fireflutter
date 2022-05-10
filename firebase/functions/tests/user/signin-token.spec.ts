@@ -15,12 +15,12 @@ describe("User sign-in token test", () => {
     await Ref.signInTokenDoc(docId).set({ uid: "uid321", password: "password321" });
     const doc = (await Ref.signInTokenDoc(docId).get()).val() as SignInToken;
     expect(doc).to.be.an("object").to.have.property("uid").equal("uid321");
-    const token = await User.getSignInToken(docId);
+    const token = await User.getSignInToken({ id: docId });
     expect(token.uid == doc.uid).true;
     expect(token.password == doc.password).true;
 
     try {
-      await User.getSignInToken(docId);
+      await User.getSignInToken({ id: docId });
       expect.fail("Cannot get the token twice");
     } catch (e) {
       expect(e).equals(ERROR_SIGNIN_TOKEN_NOT_EXISTS);
