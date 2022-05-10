@@ -36,9 +36,9 @@ describe("Post list test", () => {
     // console.log(totalPosts[0]);
     for (let i = 0; i <= 3; i++) {
       expect(totalPosts[i])
-        .to.be.an("object")
-        .to.have.property("title")
-        .equals("test-title-" + (10 - i));
+          .to.be.an("object")
+          .to.have.property("title")
+          .equals("test-title-" + (10 - i));
     }
   });
 
@@ -49,9 +49,9 @@ describe("Post list test", () => {
     });
     for (let i = 0; i <= 3; i++) {
       expect(posts[i])
-        .to.be.an("object")
-        .to.have.property("title")
-        .equals("test-title-" + (6 - i));
+          .to.be.an("object")
+          .to.have.property("title")
+          .equals("test-title-" + (6 - i));
     }
     totalPosts = [...totalPosts, ...posts];
   });
