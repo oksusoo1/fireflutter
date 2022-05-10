@@ -46,6 +46,7 @@ Table of contents
   - [Email authentication under phone sign-in](#email-authentication-under-phone-sign-in)
     - [Email authentication under phone sign-in logic](#email-authentication-under-phone-sign-in-logic)
       - [When user has an email already](#when-user-has-an-email-already)
+  - [Do sometihng after user loaded information from realtime database](#do-sometihng-after-user-loaded-information-from-realtime-database)
 - [Admin](#admin)
   - [Admin status check & update](#admin-status-check--update)
 - [Translation](#translation)
@@ -748,6 +749,16 @@ PhoneService.instance.verifyPhoneNumber(
       - And, send verification email
       - Then, listen if email is verified.
       - If verified, alert and go home.
+
+## Do sometihng after user loaded information from realtime database
+
+```dart
+UserService.instance.signIn.listen((user) {
+  if (user.loaded) {
+    _updateToken();
+  }
+});
+```
 
 # Admin
 
