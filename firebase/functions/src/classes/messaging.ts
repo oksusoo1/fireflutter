@@ -41,7 +41,7 @@ export class Messaging {
     await this.setToken(data);
     await this.removeInvalidTokens(data.uid);
     await this.unsubscribeAllTopicOfToken(data.token);
-    await this.resubscribeAllUserTopics(data.uid);
+    return await this.resubscribeAllUserTopics(data.uid);
   }
 
   /**
@@ -423,20 +423,22 @@ export class Messaging {
    *        path can be `isAdmin` or `topic/forum` or `topic/forum/posts_qna`
    * @returns array of tokens
    */
-  static async getTokensFromUidsFilterWithSettingFalse(uids: string, filter: SettingTokensFilter) {
+  static async getTokensFromUidsFilterWithSettingValue(uids: string, filter: SettingTokensFilter) {
     const promises: Promise<string[]>[] = [];
     uids.split(",").forEach(async (uid) => {
-      promises.push(this.getTokensFromUidFilterWithSettingFalse(uid, filter));
+      promises.push(this.getTokensFromUidFilterWithSettingValue(uid, filter));
     });
     return (await Promise.all(promises)).flat();
   }
 
-  /***
+  /**
    * Return user tokens if filter value is not true.
    *
    * Return empty array if tokens is empty or filter is truthy
+   *
+   *
    */
-  static async getTokensFromUidFilterWithSettingFalse(uid: string, filter: SettingTokensFilter) {
+  static async getTokensFromUidFilterWithSettingValue(uid: string, filter: SettingTokensFilter) {
     const v = await this.userSettingsField(uid, filter.path);
     if (filter.excludeIfValue == v) return [];
     return this.getTokens(uid);

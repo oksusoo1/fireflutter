@@ -32,16 +32,9 @@ class Post {
         }
         q = q.orderBy("createdAt", "desc");
         if (options.startAfter) {
-            const startAfter = typeof options.startAfter == "string" ? parseInt(options.startAfter) : options.startAfter;
-            q = q.startAfter(startAfter);
+            q = q.startAfter(parseInt(options.startAfter));
         }
-        let limit;
-        if (typeof options.limit == "undefined") {
-            limit = 10;
-        }
-        else {
-            limit = typeof options.limit == "string" ? parseInt(options.limit) : options.limit;
-        }
+        const limit = options.limit ? parseInt(options.limit) : 10;
         q = q.limit(limit);
         const snapshot = await q.get();
         if (snapshot.size > 0) {
@@ -243,8 +236,13 @@ class Post {
         }
         // Don't send the same message twice to topic subscribers and comment notifyees.
         const userUids = await messaging_1.Messaging.getCommentNotifyeeWithoutTopicSubscriber(ancestorsUid.join(","), topic);
-        // get users tokens
-        const tokens = await messaging_1.Messaging.getTokensFromUids(userUids.join(","));
+        /**
+         * if value matches the setting value then skip the uid
+         */
+        const tokens = await messaging_1.Messaging.getTokensFromUidsFilterWithSettingFalse(userUids.join(","), {
+            path: messaging_1.Messaging.commentNotificationField,
+            excludeIfValue: false,
+        });
         const sendToTokenRes = await messaging_1.Messaging.sendingMessageToTokens(tokens, messaging_1.Messaging.preMessagePayload(messageData));
         return {
             topicResponse: sendToTopicRes,

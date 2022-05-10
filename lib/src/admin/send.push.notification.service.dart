@@ -8,10 +8,6 @@ class SendPushNotificationService {
   }
 
   sendToAll(Map<String, dynamic> data) async {
-    // return Dio().get(
-    //   _serverUrl + '/sendMessageToAll',
-    //   queryParameters: data,
-    // );
     return FunctionsApi.instance.request('sendMessageToAll', data: data, addAuth: true);
   }
 
@@ -24,10 +20,6 @@ class SendPushNotificationService {
   }
 
   sendToUsers(Map<String, dynamic> data) async {
-    final res =
-        await FunctionsApi.instance.request('sendMessageToUsers', data: data, addAuth: true);
-
-    print(res);
-    return res;
+    return FunctionsApi.instance.request('sendMessageToUsers', data: data, addAuth: true);
   }
 }

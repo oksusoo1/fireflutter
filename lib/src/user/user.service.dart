@@ -86,14 +86,6 @@ class UserService with FirestoreMixin, DatabaseMixin {
             // debugPrint(  'User sign-in as Anonymous; Warning! Fireflutter does not user anonymous account.');
             changes.add(user);
           } else {
-            // messagingPermissionSubscription?.cancel();
-            // messagingPermissionSubscription =
-            //     MessagingService.instance.permissionGranted.listen((x) {
-            //   if (x) {
-            //     MessagingService.instance.initializeSubscriptions();
-            //   }
-            // });
-
             final doc = userDoc(_user.uid);
 
             /// Put user uid first, and use the model.

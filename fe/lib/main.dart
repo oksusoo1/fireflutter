@@ -186,10 +186,10 @@ class _MainAppState extends State<MainApp> {
       onNotificationPermissionNotDetermined: () {
         // print('onNotificationPermissionNotDetermined()');
       },
-      onTokenUpdated: (token) {
-        // print('##########onTokenUpdated###########');
-        // print(token);
-      },
+      // onTokenUpdated: (token) {
+      //   // print('##########onTokenUpdated###########');
+      //   // print(token);
+      // },
     );
 
     ChatService.instance.newMessages.listen((int newMessages) {

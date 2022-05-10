@@ -285,7 +285,7 @@ export class Post {
     /**
      * if value matches the setting value then skip the uid
      */
-    const tokens = await Messaging.getTokensFromUidsFilterWithSettingFalse(userUids.join(","), {
+    const tokens = await Messaging.getTokensFromUidsFilterWithSettingValue(userUids.join(","), {
       path: Messaging.commentNotificationField,
       excludeIfValue: false,
     });

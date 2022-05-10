@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 // import 'package:rxdart/subjects.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -26,6 +27,8 @@ class MessagingService with FirestoreMixin, DatabaseMixin {
   Function? onNotificationPermissionNotDetermined;
   String token = '';
   String defaultTopic = 'defaultTopic';
+
+  // StreamSubscription? sub;
   init({
     Future<void> Function(RemoteMessage)? onBackgroundMessage,
     Function(RemoteMessage)? onForegroundMessage,
@@ -118,8 +121,18 @@ class MessagingService with FirestoreMixin, DatabaseMixin {
     if (token == '') return;
 
     subscribeToDefaultTopic();
+
     if (UserService.instance.notSignedIn) return;
-    return FunctionsApi.instance.request('updateToken', data: {'token': token}, addAuth: true);
+    FunctionsApi.instance.request('updateToken', data: {'token': token}, addAuth: true);
+
+    // sub?.cancel();
+    // sub = UserService.instance.changes.listen((user) {
+    //   print(user);
+    //   if (user.registeredAt > 0) {
+    //     FunctionsApi.instance.request('updateToken', data: {'token': token}, addAuth: true);
+    //     sub.cancel();
+    //   }
+    // });
   }
 
   // subcribe to topic only when token is created or refresh
