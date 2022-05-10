@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:path/path.dart' as p;
@@ -110,17 +112,27 @@ Future<String> getAbsoluteTemporaryFilePath(String relativePath) async {
 }
 
 /// Return UUID
-String getRandomString({int len = 16, String? prefix}) {
+String getRandomString({int len = 16}) {
   const uuid = Uuid();
   return uuid.v4();
+}
 
-  // const charset = 'abcdefghijklmnopqrstuvwxyz0123456789';
-  // var t = '';
-  // for (var i = 0; i < len; i++) {
-  //   t += charset[(Random().nextInt(charset.length))];
-  // }
-  // if (prefix != null && prefix.isNotEmpty) t = prefix + t;
-  // return t;
+String getRandomAlphabet({int len = 1}) {
+  const charset = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  var t = '';
+  for (var i = 0; i < len; i++) {
+    t += charset[(Random().nextInt(charset.length))];
+  }
+  return t;
+}
+
+String getRandomNumber({int len = 1}) {
+  const charset = '0123456789';
+  var t = '';
+  for (var i = 0; i < len; i++) {
+    t += charset[(Random().nextInt(charset.length))];
+  }
+  return t;
 }
 
 /// Returns a Color from hex string.

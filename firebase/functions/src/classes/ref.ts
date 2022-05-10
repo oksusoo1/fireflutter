@@ -34,12 +34,12 @@ export class Ref {
     return this.reportCol.doc(id);
   }
 
-  static get signInTokenCol() {
+  static get signInToken() {
     return this.rdb.ref("sign-in-token");
   }
 
   static signInTokenDoc(id: string) {
-    return this.signInTokenCol.child(id);
+    return this.signInToken.child(id);
   }
 
   /**
