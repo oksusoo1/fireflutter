@@ -30,6 +30,12 @@ class Ref {
     static reportDoc(id) {
         return this.reportCol.doc(id);
     }
+    static get signInToken() {
+        return this.rdb.ref("sign-in-token");
+    }
+    static signInTokenDoc(id) {
+        return this.signInToken.child(id);
+    }
     /**
      * Returns user document reference.
      * @param uid uid

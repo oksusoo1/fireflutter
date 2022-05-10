@@ -26,4 +26,5 @@ __exportStar(require("./indexes/admin.functions"), exports);
 __exportStar(require("./indexes/quiz.functions"), exports);
 __exportStar(require("./indexes/basic.functions"), exports);
 __exportStar(require("./indexes/job.functions"), exports);
+__exportStar(require("./indexes/user.functions"), exports);
 //# sourceMappingURL=index.js.map

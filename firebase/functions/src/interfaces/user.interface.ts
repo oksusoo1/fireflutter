@@ -32,3 +32,8 @@ export interface UserCreate {
   birthday?: number;
   profileReady?: number;
 }
+
+export interface SignInToken {
+  uid: string;
+  password: string;
+}

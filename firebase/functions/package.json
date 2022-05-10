@@ -44,7 +44,6 @@
     "test:meilisearch:user-indexing": "mocha --timeout 20000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/meilisearch/user-indexing.spec.ts",
     "test:quiz:test-answer": "mocha --timeout 20000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/quiz/test-answer.spec.ts",
     "test:messaging": "mocha --timeout 70000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/messaging/messaging.spec.ts",
-    
     "test:messaging:subscriptions": "mocha --timeout 70000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/messaging/messaging-subscriptions.spec.ts",
     "test:messaging:token": "mocha --timeout 20000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/messaging/messaging-tokens.spec.ts",
     "test:messaging:send": "mocha --timeout 70000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/messaging/messaging-send.spec.ts",
@@ -54,6 +53,7 @@
     "test:comment:oncreate:sendmessage": "mocha --timeout 20000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/comment/comment-send-message-on-create.spec.ts",
     "test:user:management": "mocha --timeout 20000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/user/user-management.spec.ts",
     "test:user:admin-search": "mocha --timeout 20000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/user/user-admin-search.spec.ts",
+    "test:user:signin-token": "mocha --timeout 20000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/user/signin-token.spec.ts",
     "test:job": "mocha --timeout 20000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/job/*.spec.ts",
     "test:job:edit": "mocha --timeout 20000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/job/job.edit.spec.ts",
     "test:job:input": "mocha --timeout 20000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/job/job.input.spec.ts",
@@ -70,7 +70,7 @@
     "axios": "^0.26.1",
     "dayjs": "^1.11.0",
     "firebase-admin": "^10.0.2",
-    "firebase-functions": "^3.20.0",
+    "firebase-functions": "^3.21.0",
     "meilisearch": "^0.25.0"
   },
   "devDependencies": {

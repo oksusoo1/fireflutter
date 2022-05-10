@@ -38,8 +38,8 @@ class _MenuScreenState extends State<MenuScreen> {
                     Container(
                       padding: EdgeInsets.all(sm),
                       child: TextFormField(
-                        onFieldSubmitted: (text) => AppService.instance.router
-                            .openSearchScreen(searchKey: text),
+                        onFieldSubmitted: (text) =>
+                            AppService.instance.router.openSearchScreen(searchKey: text),
                         decoration: InputDecoration(hintText: 'Search ...'),
                       ),
                     ),
@@ -47,8 +47,7 @@ class _MenuScreenState extends State<MenuScreen> {
                       'You have logged in as ${user.email ?? user.phoneNumber}',
                     ),
                     Text('User Email on Auth: ${user.email}'),
-                    Text(
-                        'User Email on User settings: ${UserService.instance.email}'),
+                    Text('User Email on User settings: ${UserService.instance.email}'),
                     MyDoc(
                       builder: (UserModel u) {
                         return Wrap(
@@ -60,11 +59,8 @@ class _MenuScreenState extends State<MenuScreen> {
                       },
                     ),
                     Text('UID: ${FirebaseAuth.instance.currentUser?.uid}'),
-                    Text('Token: ' +
-                        MessagingService.instance.token.substring(0, 10)),
-                    MyDoc(
-                        builder: (u) =>
-                            Text('Point: ${u.point}, Lv: ${u.level}')),
+                    Text('Token: ' + MessagingService.instance.token.substring(0, 10)),
+                    MyDoc(builder: (u) => Text('Point: ${u.point}, Lv: ${u.level}')),
                     MyDoc(builder: (_user) {
                       if (_user.isAdmin)
                         return TextButton(
@@ -86,13 +82,13 @@ class _MenuScreenState extends State<MenuScreen> {
                           child: const Text('Profile'),
                         ),
                         ElevatedButton(
-                          onPressed: () => AppService.instance.router
-                              .open(PointHistoryScreen.routeName),
+                          onPressed: () =>
+                              AppService.instance.router.open(PointHistoryScreen.routeName),
                           child: const Text('Point History'),
                         ),
                         ElevatedButton(
-                          onPressed: () => UserService.instance
-                              .signOut(), //  FirebaseAuth.instance.signOut(),
+                          onPressed: () =>
+                              UserService.instance.signOut(), //  FirebaseAuth.instance.signOut(),
                           child: const Text('Sign Out'),
                         ),
                       ],
@@ -111,15 +107,13 @@ class _MenuScreenState extends State<MenuScreen> {
                     ElevatedButton(
                       child: const Text('Phone Sign-In'),
                       onPressed: () {
-                        AppService.instance.router
-                            .open(PhoneSignInScreen.routeName);
+                        AppService.instance.router.open(PhoneSignInScreen.routeName);
                       },
                     ),
                     ElevatedButton(
                       child: const Text('Phone Sign-In UI'),
                       onPressed: () {
-                        AppService.instance.router
-                            .open(PhoneSignInUIScreen.routeName);
+                        AppService.instance.router.open(PhoneSignInUIScreen.routeName);
                       },
                     ),
                   ],
@@ -132,9 +126,12 @@ class _MenuScreenState extends State<MenuScreen> {
             child: const Text('Chat Room List'),
           ),
           ElevatedButton(
-            onPressed: () =>
-                AppService.instance.router.open(PhoneSignInScreen.routeName),
+            onPressed: () => AppService.instance.router.open(PhoneSignInScreen.routeName),
             child: const Text('Phone Sign-In'),
+          ),
+          ElevatedButton(
+            onPressed: AppService.instance.router.openWebLogin,
+            child: const Text('Web Login'),
           ),
           ElevatedButton(
             onPressed: service.router.openTest,

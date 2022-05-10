@@ -431,7 +431,7 @@ export class Messaging {
     return (await Promise.all(promises)).flat();
   }
 
-  /**
+  /** *
    * Return user tokens if filter value is not true.
    *
    * Return empty array if tokens is empty or filter is truthy
