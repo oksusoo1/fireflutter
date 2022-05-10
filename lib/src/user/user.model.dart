@@ -217,7 +217,8 @@ class UserModel with FirestoreMixin, DatabaseMixin {
     });
   }
 
-  /// Load user data into the member variables. See README for details.
+  /// Load user data(information) into the member variables. See README for details.
+  /// This is being invoked immediately after Firebase sign-in.
   Future<void> load() async {
     final snapshot = await _userDoc.get();
     final u = UserModel.fromJson(snapshot.value, uid);

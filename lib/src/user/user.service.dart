@@ -54,6 +54,10 @@ class UserService with FirestoreMixin, DatabaseMixin {
   // ignore: close_sinks
   BehaviorSubject<UserModel> changes = BehaviorSubject.seeded(UserModel());
 
+  /// This event will be posted after loading user information from database (after user signs-in).
+  // ignore: close_sinks
+  BehaviorSubject<UserModel> signIn = BehaviorSubject.seeded(UserModel());
+
   /// Nothing but to instantiate `UserSerivce` object. So it will listen auth changes and update user profile.
   init() {}
 
@@ -97,8 +101,11 @@ class UserService with FirestoreMixin, DatabaseMixin {
             if (user.docExists) {
               user.updateLastSignInAt();
             } else {
-              user.create();
+              await user.create();
             }
+
+            /// Post [signIn] event, after user sign in and load information from realtime database.
+            signIn.add(user);
 
             userSubscription = doc.onValue.listen((event) {
               /// ! Warning, Don't change user doc inside here. It will perpetually run.

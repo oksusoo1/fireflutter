@@ -51,8 +51,11 @@ class MessagingService with FirestoreMixin, DatabaseMixin {
 
   /// Initialize Messaging
   _init() async {
-    ///
-    FirebaseAuth.instance.authStateChanges().listen((u) => _updateToken());
+    /// Update token only after the app gets user information. NOT immediately after user sign-in.
+    // FirebaseAuth.instance.authStateChanges().listen((u) => _updateToken());
+    UserService.instance.signIn.listen((user) {
+      if (user.signedIn) _updateToken();
+    });
 
     /// Permission request for iOS only. For Android, the permission is granted by default.
     if (Platform.isIOS) {
@@ -124,15 +127,6 @@ class MessagingService with FirestoreMixin, DatabaseMixin {
 
     if (UserService.instance.notSignedIn) return;
     FunctionsApi.instance.request('updateToken', data: {'token': token}, addAuth: true);
-
-    // sub?.cancel();
-    // sub = UserService.instance.changes.listen((user) {
-    //   print(user);
-    //   if (user.registeredAt > 0) {
-    //     FunctionsApi.instance.request('updateToken', data: {'token': token}, addAuth: true);
-    //     sub.cancel();
-    //   }
-    // });
   }
 
   // subcribe to topic only when token is created or refresh
