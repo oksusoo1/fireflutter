@@ -14,6 +14,7 @@ const storage_1 = require("./storage");
 const category_1 = require("./category");
 const point_1 = require("./point");
 const utils_1 = require("./utils");
+const user_1 = require("./user");
 class Post {
     /**
      *
@@ -25,6 +26,7 @@ class Post {
      * @note exception will be thrown on error.
      */
     static async list(options) {
+        var _a, _b, _c, _d;
         const posts = [];
         let q = ref_1.Ref.postCol;
         if (options.category) {
@@ -39,10 +41,26 @@ class Post {
         const snapshot = await q.get();
         if (snapshot.size > 0) {
             const docs = snapshot.docs;
-            docs.forEach((doc) => posts.push(Object.assign({ id: doc.id }, doc.data())));
+            for (const doc of docs) {
+                const post = doc.data();
+                post.id = doc.id;
+                if (options.content === "N")
+                    delete post.content;
+                if (options.author !== "N") {
+                    const userData = await user_1.User.get(post.uid);
+                    post.author = `${(_a = userData === null || userData === void 0 ? void 0 : userData.firstName) !== null && _a !== void 0 ? _a : ""} ${(_b = userData === null || userData === void 0 ? void 0 : userData.lastName) !== null && _b !== void 0 ? _b : ""}`;
+                    post.authorLevel = (_c = userData === null || userData === void 0 ? void 0 : userData.level) !== null && _c !== void 0 ? _c : 0;
+                    post.authorPhotoUrl = (_d = userData === null || userData === void 0 ? void 0 : userData.photoUrl) !== null && _d !== void 0 ? _d : "";
+                }
+                posts.push(post);
+            }
         }
         return posts;
     }
+    /**
+     * Returns a post view data that includes comments and all of meta data of the comments.
+     * @param data options for post view.
+     */
     static async view(data) {
         const post = await this.get(data.id);
         if (post === null)

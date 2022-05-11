@@ -25,6 +25,7 @@ import { Storage } from "./storage";
 import { Category } from "./category";
 import { Point } from "./point";
 import { Utils } from "./utils";
+import { User } from "./user";
 
 export class Post {
   /**
@@ -58,7 +59,20 @@ export class Post {
 
     if (snapshot.size > 0) {
       const docs = snapshot.docs;
-      docs.forEach((doc) => posts.push({ id: doc.id, ...doc.data() } as PostDocument));
+      for (const doc of docs) {
+        const post = doc.data() as PostDocument;
+        post.id = doc.id;
+
+        if (options.content === "N") delete post.content;
+
+        if (options.author !== "N") {
+          const userData = await User.get(post.uid);
+          post.author = `${userData?.firstName ?? ""} ${userData?.lastName ?? ""}`;
+          post.authorLevel = userData?.level ?? 0;
+          post.authorPhotoUrl = userData?.photoUrl ?? "";
+        }
+        posts.push(post);
+      }
     }
 
     return posts;
@@ -251,10 +265,7 @@ export class Post {
     return admin.messaging().send(payload);
   }
 
-  static async sendMessageOnCommentCreate(
-    data: CommentDocument,
-    id: string
-  ): Promise<OnCommentCreateResponse | null> {
+  static async sendMessageOnCommentCreate(data: CommentDocument, id: string): Promise<OnCommentCreateResponse | null> {
     const post = await this.get(data.postId);
     if (!post) return null;
 
@@ -281,10 +292,7 @@ export class Post {
     }
 
     // Don't send the same message twice to topic subscribers and comment notifyees.
-    const userUids = await Messaging.getCommentNotifyeeWithoutTopicSubscriber(
-      ancestorsUid.join(","),
-      topic
-    );
+    const userUids = await Messaging.getCommentNotifyeeWithoutTopicSubscriber(ancestorsUid.join(","), topic);
 
     /**
      * if value matches the setting value then skip the uid
@@ -294,10 +302,7 @@ export class Post {
       excludeIfValue: false,
     });
 
-    const sendToTokenRes = await Messaging.sendingMessageToTokens(
-      tokens,
-      Messaging.preMessagePayload(messageData)
-    );
+    const sendToTokenRes = await Messaging.sendingMessageToTokens(tokens, Messaging.preMessagePayload(messageData));
     return {
       topicResponse: sendToTopicRes,
       tokenResponse: sendToTokenRes,
@@ -320,3 +325,4 @@ export class Post {
     return uids.filter((v, i, a) => a.indexOf(v) === i); // remove duplicate
   }
 }
+

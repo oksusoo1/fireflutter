@@ -6,8 +6,8 @@ export interface PostListOptions {
   category?: string;
   limit?: string;
   startAfter?: string;
-  content?: boolean;
-  author?: boolean;
+  content?: "Y" | "N";
+  author?: "Y" | "N";
 }
 
 export interface CategoryDocument {
