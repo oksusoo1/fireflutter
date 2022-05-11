@@ -71,6 +71,7 @@ export interface CommentDocument {
   createdAt?: number;
   updatedAt?: number;
   point: number;
+  [key: string]: any;
 }
 
 /**
