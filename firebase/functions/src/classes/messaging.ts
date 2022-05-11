@@ -102,8 +102,8 @@ export class Messaging {
     }
     // subscribe user tokens to topic
     const res: MessagingTopicManagementResponse = await admin
-        .messaging()
-        .subscribeToTopic(tokens, data.topic);
+      .messaging()
+      .subscribeToTopic(tokens, data.topic);
     // remove invalid tokens if any
     const failureTokens: MapStringString = await this.removeInvalidTokensFromResponse(tokens, res);
 
@@ -146,8 +146,8 @@ export class Messaging {
 
     // unsubscribe user tokens to topic
     const res: MessagingTopicManagementResponse = await admin
-        .messaging()
-        .unsubscribeFromTopic(tokens, data.topic);
+      .messaging()
+      .unsubscribeFromTopic(tokens, data.topic);
     // remove invalid tokens if any
     const failureTokens: MapStringString = await this.removeInvalidTokensFromResponse(tokens, res);
 
@@ -199,10 +199,10 @@ export class Messaging {
   static async topicOn(data: TopicData) {
     this.checkTopicData(data);
     await Ref.userSettingTopic(data.uid)
-        .child(data.type)
-        .update({
-          [data.topic]: true,
-        });
+      .child(data.type)
+      .update({
+        [data.topic]: true,
+      });
     return this.getTopics(data.uid, data.type);
   }
 
@@ -216,10 +216,10 @@ export class Messaging {
   static async topicOff(data: TopicData) {
     this.checkTopicData(data);
     await Ref.userSettingTopic(data.uid)
-        .child(data.type)
-        .update({
-          [data.topic]: false,
-        });
+      .child(data.type)
+      .update({
+        [data.topic]: false,
+      });
 
     return this.getTopics(data.uid, data.type);
   }
@@ -281,8 +281,8 @@ export class Messaging {
    * @returns Map of result.
    */
   static async removeInvalidTokensFromResponse(
-      tokens: Array<string>,
-      res: MessagingTopicManagementResponse
+    tokens: Array<string>,
+    res: MessagingTopicManagementResponse
   ): Promise<MapStringString> {
     if (res.failureCount == 0) return {};
 
@@ -473,10 +473,12 @@ export class Messaging {
   }
 
   /**
+   * Returns an array of uid that has subscribed to the topic(of the path).
+   *
    *
    * @param uids user uids
    * @param path path to user settings user-settings/{uid}/path
-   *        path can be `forum/posts_qna` or `job/accountant`
+   *        path can be `forum/posts_qna`, `job/accountant`, or `newCommentUnderMyPostOrComment`.
    * @returns uids with user subscription with truthy value
    */
   static async getUidsWithSubscription(uids: string, path: string): Promise<string[]> {
@@ -630,8 +632,8 @@ export class Messaging {
   }
 
   static async sendingMessageToTokens(
-      tokens: Array<string>,
-      payload: MessagePayload
+    tokens: Array<string>,
+    payload: MessagePayload
   ): Promise<{
     success: number;
     error: number;
@@ -645,7 +647,7 @@ export class Messaging {
     for (const c of chunks) {
       // Send notifications to all tokens.
       const newPayload: admin.messaging.MulticastMessage = Object.assign(
-          { tokens: c },
+        { tokens: c },
         payload as any
       );
       sendToDevicePromise.push(admin.messaging().sendMulticast(newPayload));
@@ -752,18 +754,18 @@ export class Messaging {
     const promises: Promise<any>[] = [];
     cats.forEach((cat: CategoryDocument) => {
       promises.push(
-          Messaging.subscribeToTopic({
-            uid: data.uid,
-            topic: "posts_" + cat.id,
-            type: type,
-          })
+        Messaging.subscribeToTopic({
+          uid: data.uid,
+          topic: "posts_" + cat.id,
+          type: type,
+        })
       );
       promises.push(
-          Messaging.subscribeToTopic({
-            uid: data.uid,
-            topic: "comments_" + cat.id,
-            type: type,
-          })
+        Messaging.subscribeToTopic({
+          uid: data.uid,
+          topic: "comments_" + cat.id,
+          type: type,
+        })
       );
     });
 
@@ -787,18 +789,18 @@ export class Messaging {
     const promises: Promise<any>[] = [];
     cats.forEach((cat: CategoryDocument) => {
       promises.push(
-          Messaging.unsubscribeToTopic({
-            uid: data.uid,
-            topic: "posts_" + cat.id,
-            type: type,
-          })
+        Messaging.unsubscribeToTopic({
+          uid: data.uid,
+          topic: "posts_" + cat.id,
+          type: type,
+        })
       );
       promises.push(
-          Messaging.unsubscribeToTopic({
-            uid: data.uid,
-            topic: "comments_" + cat.id,
-            type: type,
-          })
+        Messaging.unsubscribeToTopic({
+          uid: data.uid,
+          topic: "comments_" + cat.id,
+          type: type,
+        })
       );
     });
     await Promise.all(promises);

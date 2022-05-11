@@ -153,29 +153,14 @@ class _ForumListPushNotificationIconState extends State<ForumListPushNotificatio
       topic = NotificationOptions.comment(widget.categoryId);
       title = 'comment ' + title;
     }
-    // try {
-    await MessagingService.instance.toggleSubscription(
+
+    await UserSettingService.instance.toggleSubscription(
       topic,
       'forum',
     );
-    // } catch (e) {
-    //   widget.onError(e);
-    // }
-
     return widget.onChanged(
       selection,
       UserService.instance.user.settings.hasSubscription(topic, 'forum'),
     );
-
-    // String msg =
-    //     UserService.instance.user.settings.hasSubscription(topic) ? 'subscribed' : 'unsubscribed';
-
-    // showDialog(
-    //   context: context,
-    //   builder: (c) => AlertDialog(
-    //     title: Text(title),
-    //     content: Text(widget.categoryId + " " + msg),
-    //   ),
-    // );
   }
 }

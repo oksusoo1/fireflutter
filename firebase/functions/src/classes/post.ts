@@ -6,7 +6,7 @@ import * as weekOfYear from "dayjs/plugin/weekOfYear";
 dayjs.extend(dayOfYear);
 dayjs.extend(weekOfYear);
 
-import { CommentDocument, PostDocument, PostListOptions } from "../interfaces/forum.interface";
+import { PostDocument, PostListOptions } from "../interfaces/forum.interface";
 
 import { Ref } from "./ref";
 import {
@@ -20,7 +20,6 @@ import {
   ERROR_UPDATE_FAILED,
 } from "../defines";
 import { Messaging } from "./messaging";
-import { OnCommentCreateResponse } from "../interfaces/messaging.interface";
 import { Storage } from "./storage";
 import { Category } from "./category";
 import { Point } from "./point";
@@ -239,7 +238,7 @@ export class Post {
     return null;
   }
 
-  static async sendMessageOnPostCreate(data: PostDocument, id: string) {
+  static async sendMessageOnCreate(data: PostDocument, id: string) {
     const category = data.category;
     const payload = Messaging.topicPayload("posts_" + category, {
       title: data.title ?? "",
@@ -249,74 +248,5 @@ export class Post {
       uid: data.uid,
     });
     return admin.messaging().send(payload);
-  }
-
-  static async sendMessageOnCommentCreate(
-      data: CommentDocument,
-      id: string
-  ): Promise<OnCommentCreateResponse | null> {
-    const post = await this.get(data.postId);
-    if (!post) return null;
-
-    const messageData: any = {
-      title: post.title,
-      body: data.content,
-      postId: data.postId,
-      type: "post",
-      uid: data.uid,
-    };
-
-    // console.log(messageData);
-    const topic = "comments_" + post.category;
-
-    // send push notification to topics
-    const sendToTopicRes = await admin.messaging().send(Messaging.topicPayload(topic, messageData));
-
-    // get comment ancestors
-    const ancestorsUid = await Post.getCommentAncestorsUid(id, data.uid);
-
-    // add the post uid if the comment author is not the post author
-    if (post.uid != data.uid && !ancestorsUid.includes(post.uid)) {
-      ancestorsUid.push(post.uid);
-    }
-
-    // Don't send the same message twice to topic subscribers
-    const userUids = await Messaging.getUidsWithoutSubscription(
-        ancestorsUid.join(","),
-        "topic/forum/" + topic
-    );
-
-    // get uids with user setting commentNotification is set.
-    const commentNotifyeesUids = await Messaging.getUidsWithSubscription(
-        userUids.join(","),
-        Messaging.commentNotificationField
-    );
-
-    const tokens = await Messaging.getTokensFromUids(commentNotifyeesUids.join(","));
-
-    const sendToTokenRes = await Messaging.sendingMessageToTokens(
-        tokens,
-        Messaging.preMessagePayload(messageData)
-    );
-    return {
-      topicResponse: sendToTopicRes,
-      tokenResponse: sendToTokenRes,
-    };
-  }
-
-  // get comment ancestor by getting parent comment until it reach the root comment
-  // return the uids of the author
-  static async getCommentAncestorsUid(id: string, authorUid: string) {
-    const c = await Ref.commentDoc(id).get();
-    let comment = c.data() as CommentDocument;
-    const uids = [];
-    while (comment.postId != comment.parentId) {
-      const com = await Ref.commentDoc(comment.parentId).get();
-      if (!com.exists) continue;
-      comment = com.data() as CommentDocument;
-      if (comment.uid == authorUid) continue; // skip the author's uid.
-      uids.push(comment.uid);
-    }
-    return uids.filter((v, i, a) => a.indexOf(v) === i); // remove duplicate
   }
 }
