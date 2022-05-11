@@ -239,7 +239,7 @@ class Post {
         /**
          * if value matches the setting value then skip the uid
          */
-        const tokens = await messaging_1.Messaging.getTokensFromUidsFilterWithSettingFalse(userUids.join(","), {
+        const tokens = await messaging_1.Messaging.getTokensFromUidsFilterWithSettingValue(userUids.join(","), {
             path: messaging_1.Messaging.commentNotificationField,
             excludeIfValue: false,
         });

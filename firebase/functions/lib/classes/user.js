@@ -160,7 +160,7 @@ class User {
         if (snapshot.exists()) {
             const val = snapshot.val();
             await ref_1.Ref.signInTokenDoc(data.id).remove();
-            return val;
+            return await User.get(val.uid);
         }
         throw defines_1.ERROR_SIGNIN_TOKEN_NOT_EXISTS;
     }
