@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 // import 'package:rxdart/subjects.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+// import 'package:firebase_auth/firebase_auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../fireflutter.dart';
 // import 'package:flutter/material.dart';
@@ -29,6 +29,7 @@ class MessagingService with FirestoreMixin, DatabaseMixin {
   String defaultTopic = 'defaultTopic';
 
   // StreamSubscription? sub;
+
   init({
     Future<void> Function(RemoteMessage)? onBackgroundMessage,
     Function(RemoteMessage)? onForegroundMessage,

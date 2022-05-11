@@ -248,8 +248,8 @@ export class Post {
   }
 
   static async sendMessageOnCommentCreate(
-      data: CommentDocument,
-      id: string
+    data: CommentDocument,
+    id: string
   ): Promise<OnCommentCreateResponse | null> {
     const post = await this.get(data.postId);
     if (!post) return null;
@@ -269,30 +269,30 @@ export class Post {
     const sendToTopicRes = await admin.messaging().send(Messaging.topicPayload(topic, messageData));
 
     // get comment ancestors
-    const ancestorsUid = await Post.getCommentAncestors(id, data.uid);
+    const ancestorsUid = await Post.getCommentAncestorsUid(id, data.uid);
 
     // add the post uid if the comment author is not the post author
     if (post.uid != data.uid && !ancestorsUid.includes(post.uid)) {
       ancestorsUid.push(post.uid);
     }
 
-    // Don't send the same message twice to topic subscribers and comment notifyees.
-    const userUids = await Messaging.getCommentNotifyeeWithoutTopicSubscriber(
-        ancestorsUid.join(","),
-        topic
+    // Don't send the same message twice to topic subscribers
+    const userUids = await Messaging.getUidsWithoutSubscription(
+      ancestorsUid.join(","),
+      "topic/forum/" + topic
     );
 
-    /**
-     * if value matches the setting value then skip the uid
-     */
-    const tokens = await Messaging.getTokensFromUidsFilterWithSettingValue(userUids.join(","), {
-      path: Messaging.commentNotificationField,
-      excludeIfValue: false,
-    });
+    // get uids with user setting commentNotification is set.
+    const commentNotifyeesUid = await Messaging.getUidsWithSubscription(
+      userUids.join(","),
+      Messaging.commentNotificationField
+    );
+
+    const tokens = await Messaging.getTokensFromUids(commentNotifyeesUid.join(","));
 
     const sendToTokenRes = await Messaging.sendingMessageToTokens(
-        tokens,
-        Messaging.preMessagePayload(messageData)
+      tokens,
+      Messaging.preMessagePayload(messageData)
     );
     return {
       topicResponse: sendToTopicRes,
@@ -302,7 +302,7 @@ export class Post {
 
   // get comment ancestor by getting parent comment until it reach the root comment
   // return the uids of the author
-  static async getCommentAncestors(id: string, authorUid: string) {
+  static async getCommentAncestorsUid(id: string, authorUid: string) {
     const c = await Ref.commentDoc(id).get();
     let comment = c.data() as CommentDocument;
     const uids = [];

@@ -11,10 +11,11 @@ export interface TopicData {
   type: string;
 }
 
-export interface SettingTokensFilter {
-  path: string;
-  excludeIfValue: any;
-}
+// export interface SettingTokensFilter {
+//   path: string;
+//   value: any;
+//   mode: "include" | "exclude";
+// }
 
 export interface SubscriptionResponse {
   topic: string;
