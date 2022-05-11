@@ -240,7 +240,7 @@ class Post {
         }
         return null;
     }
-    static async sendMessageOnPostCreate(data, id) {
+    static async sendMessageOnCreate(data, id) {
         var _a, _b;
         const category = data.category;
         const payload = messaging_1.Messaging.topicPayload("posts_" + category, {
@@ -251,71 +251,6 @@ class Post {
             uid: data.uid,
         });
         return admin.messaging().send(payload);
-    }
-    static async sendMessageOnCommentCreate(data, id) {
-        const post = await this.get(data.postId);
-        if (!post)
-            return null;
-        const messageData = {
-            title: post.title,
-            body: data.content,
-            postId: data.postId,
-            type: "post",
-            uid: data.uid,
-        };
-        // console.log(messageData);
-        const topic = "comments_" + post.category;
-        // send push notification to topics
-        const sendToTopicRes = await admin.messaging().send(messaging_1.Messaging.topicPayload(topic, messageData));
-        // get comment ancestors
-        const ancestorsUid = await Post.getCommentAncestorsUid(id, data.uid);
-        // add the post uid if the comment author is not the post author
-        if (post.uid != data.uid && !ancestorsUid.includes(post.uid)) {
-            ancestorsUid.push(post.uid);
-        }
-        // Don't send the same message twice to topic subscribers
-        const userUids = await messaging_1.Messaging.getUidsWithoutSubscription(ancestorsUid.join(","), "topic/forum/" + topic);
-        // get uids with user setting commentNotification is set.
-        const commentNotifyeesUids = await messaging_1.Messaging.getUidsWithSubscription(userUids.join(","), messaging_1.Messaging.commentNotificationField);
-        const tokens = await messaging_1.Messaging.getTokensFromUids(commentNotifyeesUids.join(","));
-        const sendToTokenRes = await messaging_1.Messaging.sendingMessageToTokens(tokens, messaging_1.Messaging.preMessagePayload(messageData));
-        return {
-            topicResponse: sendToTopicRes,
-            tokenResponse: sendToTokenRes,
-        };
-    }
-    // get comment ancestor by getting parent comment until it reach the root comment
-    // return the uids of the author
-    static async getCommentAncestorsUid(id, authorUid) {
-        const c = await ref_1.Ref.commentDoc(id).get();
-        let comment = c.data();
-        const uids = [];
-        while (comment.postId != comment.parentId) {
-            const com = await ref_1.Ref.commentDoc(comment.parentId).get();
-            if (!com.exists)
-                continue;
-            comment = com.data();
-            if (comment.uid == authorUid)
-                continue; // skip the author's uid.
-            uids.push(comment.uid);
-        }
-        return uids.filter((v, i, a) => a.indexOf(v) === i); // remove duplicate
-    }
-    /**
-     * Adds author information on the document.
-     *
-     * @param postOrComment post or comment document
-     * @returns returns post with author's information included.
-     */
-    static async addAuthorMeta(postOrComment) {
-        var _a, _b, _c, _d;
-        const userData = await user_1.User.get(postOrComment.uid);
-        if (userData != null) {
-            postOrComment.author = `${(_a = userData === null || userData === void 0 ? void 0 : userData.firstName) !== null && _a !== void 0 ? _a : ""} ${(_b = userData === null || userData === void 0 ? void 0 : userData.lastName) !== null && _b !== void 0 ? _b : ""}`;
-            postOrComment.authorLevel = (_c = userData === null || userData === void 0 ? void 0 : userData.level) !== null && _c !== void 0 ? _c : 0;
-            postOrComment.authorPhotoUrl = (_d = userData === null || userData === void 0 ? void 0 : userData.photoUrl) !== null && _d !== void 0 ? _d : "";
-        }
-        return postOrComment;
     }
 }
 exports.Post = Post;

@@ -82,13 +82,13 @@ exports.sendMessageOnPostCreate = functions
     .region("asia-northeast3")
     .firestore.document("/posts/{postId}")
     .onCreate((snapshot, context) => {
-    return post_1.Post.sendMessageOnPostCreate(snapshot.data(), context.params.postId);
+    return post_1.Post.sendMessageOnCreate(snapshot.data(), context.params.postId);
 });
 exports.sendMessageOnCommentCreate = functions
     .region("asia-northeast3")
     .firestore.document("/comments/{commentId}")
     .onCreate((snapshot, context) => {
-    return post_1.Post.sendMessageOnCommentCreate(snapshot.data(), context.params.commentId);
+    return comment_1.Comment.sendMessageOnCreate(snapshot.data(), context.params.commentId);
 });
 exports.report = functions
     .region("us-central1", "asia-northeast3")
