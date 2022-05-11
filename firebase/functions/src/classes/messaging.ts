@@ -10,7 +10,6 @@ import {
 } from "../defines";
 import {
   MessagePayload,
-  SettingTokensFilter,
   SubscriptionResponse,
   TokenDocument,
   TopicData,
@@ -414,49 +413,53 @@ export class Messaging {
     return (await Promise.all(promises)).flat();
   }
 
-  /**
-   * Returns tokens of multiple users. and filtering with setting which is set to false
-   *
-   *
-   * @param uids array of user uid
-   *        path settings path   user-settings/{uid}/{path}    -
-   *        path can be `isAdmin` or `topic/forum` or `topic/forum/posts_qna`
-   * @returns array of tokens
-   */
-  static async getTokensFromUidsFilterWithSettingValue(uids: string, filter: SettingTokensFilter) {
-    const promises: Promise<string[]>[] = [];
-    uids.split(",").forEach(async (uid) => {
-      promises.push(this.getTokensFromUidFilterWithSettingValue(uid, filter));
-    });
-    return (await Promise.all(promises)).flat();
-  }
+  // /**
+  //  * Returns tokens of multiple users. and filtering with setting which is set to false
+  //  *
+  //  *
+  //  * @param uids array of user uid
+  //  *        path settings path   user-settings/{uid}/{path}    -
+  //  *        path can be `isAdmin` or `topic/forum` or `topic/forum/posts_qna`
+  //  * @returns array of tokens
+  //  */
+  // static async getTokensFromUidsFilterWithSettingValue(uids: string, filter: SettingTokensFilter) {
+  //   const promises: Promise<string[]>[] = [];
+  //   uids.split(",").forEach(async (uid) => {
+  //     promises.push(this.getTokensFromUidFilterWithSettingValue(uid, filter));
+  //   });
+  //   return (await Promise.all(promises)).flat();
+  // }
 
-  /** *
-   * Return user tokens if filter value is not true.
-   *
-   * Return empty array if tokens is empty or filter is truthy
-   *
-   *
-   */
-  static async getTokensFromUidFilterWithSettingValue(uid: string, filter: SettingTokensFilter) {
-    const v = await this.userSettingsField(uid, filter.path);
-    if (filter.excludeIfValue == v) return [];
-    return this.getTokens(uid);
-  }
+  // /** *
+  //  * Return user tokens if filter value is not true.
+  //  *
+  //  * Return empty array if tokens is empty or filter is truthy
+  //  *
+  //  *
+  //  */
+  // static async getTokensFromUidFilterWithSettingValue(uid: string, filter: SettingTokensFilter) {
+  //   const v = await this.userSettingsField(uid, filter.path);
+
+  //   if (filter.mode == "include") {
+  //     if (filter.value == v) return this.getTokens(uid);
+  //     return [];
+  //   } else if (filter.mode == "exclude") {
+  //     if (filter.value == v) return [];
+  //     return this.getTokens(uid);
+  //   } else return [];
+  // }
 
   // check the uids if they are subscribe to topic and also want to get notification under their post/comment
   /**
    * Get ancestors who subscribed to 'comment notification' but removing those who subscribed to the topic.
    * @param {*} uids ancestors
-   * @param {*} topic topic
+   * @param {*} path user setting topic path
    * @returns UIDs of ancestors.
    */
-  static async getCommentNotifyeeWithoutTopicSubscriber(uids: string, topic: string) {
-    const _uids = uids.split(",");
-    const promises: Promise<boolean>[] = [];
-    _uids.forEach((uid) => promises.push(this.userHasSusbscription(uid, topic)));
-    const result = await Promise.all(promises);
+  static async getUidsWithoutSubscription(uids: string, path: string) {
+    const result = await this.usersHasSubscription(uids, path);
     const re = [];
+    const _uids = uids.split(",");
     for (const i in result) {
       // / Get anscestors who subscribed to 'comment notification' and didn't subscribe to the topic.
       if (result[i]) {
@@ -466,6 +469,26 @@ export class Messaging {
       }
     }
 
+    return re;
+  }
+
+  /**
+   *
+   * @param uids user uids
+   * @param path path to user settings user-settings/{uid}/path
+   *        path can be `forum/posts_qna` or `job/accountant`
+   * @returns uids with user subscription with truthy value
+   */
+  static async getUidsWithSubscription(uids: string, path: string): Promise<string[]> {
+    const result = await this.usersHasSubscription(uids, path);
+    const re = [];
+    const _uids = uids.split(",");
+    for (const i in result) {
+      // check if user subscribe to topic
+      if (result[i]) {
+        re.push(_uids[i]);
+      }
+    }
     return re;
   }
 
@@ -484,37 +507,51 @@ export class Messaging {
 
   /**
    * Returns true if the user subscribed the topic.
-   * @param uid uid of a suer
-   * @param topic topic
+   * @param uid uid of a user
+   * @param path setting path  'forum/posts_qna'  or  'chat/user_A'
    * @returns Promise<boolean>
    */
-  static async userHasSusbscription(uid: string, topic: string): Promise<boolean> {
-    // / Get all the topics of the user
-    const snapshot = await Ref.userSetting(uid, "topic").get();
+  static async userHasSusbscription(uid: string, path: string): Promise<boolean> {
+    // / Get the setting of the user base on path
+    const snapshot = await Ref.userSettings(uid).child(path).get();
     if (snapshot.exists() === false) return false;
     const val = snapshot.val();
     if (!val) return false;
-    return !!val[topic];
+    return !!val;
+  }
+
+  static async usersHasSubscription(uids: string, path: string): Promise<boolean[]> {
+    const _uids = uids.split(",");
+    const promises: Promise<boolean>[] = [];
+    _uids.forEach((uid) => promises.push(this.userHasSusbscription(uid, path)));
+    return Promise.all(promises);
+  }
+
+  static async usersHasSubscriptionOff(uids: string, path: string): Promise<boolean[]> {
+    const promises: Promise<boolean>[] = [];
+    const _uids = uids.split(",");
+    _uids.forEach((uid) => promises.push(this.userHasSusbscriptionOff(uid, path)));
+    return Promise.all(promises);
   }
 
   /**
    * Returns true if the user turn off manually the subscription.
    * @param uid uid of a suer
-   * @param topic topic
+   * @param path topic/folder/option
    * @returns Promise<boolean>
    */
-  static async userHasSusbscriptionOff(uid: string, topic: string): Promise<boolean> {
+  static async userHasSusbscriptionOff(uid: string, path: string): Promise<boolean> {
     // / Get all the topics of the user
-    const snapshot = await Ref.userSetting(uid, "topic").get();
+    const snapshot = await Ref.userSettings(uid).child(path).get();
     console.log(snapshot.exists());
     if (snapshot.exists() === false) return false;
     const val = snapshot.val();
 
     if (!val) return false;
     // If it's undefined, then user didn't subscribed ever since.
-    if (typeof val[topic] === undefined) return false;
+    if (typeof val === undefined) return false;
     // If it's false, then it is disabled manually by the user.
-    if (val[topic] === false) return true;
+    if (val === false) return true;
     // If it's true, then the topic is subscribed.
     return false;
   }
@@ -523,15 +560,12 @@ export class Messaging {
    * Return uids of the user didnt turn off their subscription
    * Note* user without topic info will also be included.
    * @param uids
-   * @param topic
+   * @param path
    * @returns
    */
-  static async removeUserHasSubscriptionOff(uids: string, topic: string) {
+  static async removeUserHasSubscriptionOff(uids: string, path: string) {
     const _uids = uids.split(",");
-    const promises: Promise<boolean>[] = [];
-    let results: boolean[] = [];
-    _uids.forEach((uid) => promises.push(this.userHasSusbscriptionOff(uid, topic)));
-    results = await Promise.all(promises);
+    const results = await this.usersHasSubscriptionOff(uids, path);
 
     const re = [];
     // dont add user who has turn off subscription
@@ -675,7 +709,9 @@ export class Messaging {
     const payload = this.preMessagePayload(query);
     let uids: string;
     if (query.subscription) {
-      uids = (await this.removeUserHasSubscriptionOff(query.uids, query.subscription)).join(",");
+      uids = (
+        await this.removeUserHasSubscriptionOff(query.uids, "topic/chat/" + query.subscription)
+      ).join(",");
     } else {
       uids = query.uids;
     }
@@ -688,22 +724,6 @@ export class Messaging {
     } catch (e) {
       return { code: "error", message: (e as Error).message };
     }
-  }
-
-  static async getTopicSubscriber(uids: string, topic: string): Promise<string[]> {
-    const _uids = uids.split(",");
-    const promises: Promise<boolean>[] = [];
-    _uids.forEach((uid) => promises.push(this.userHasSusbscription(uid, topic)));
-    const result = await Promise.all(promises);
-    const re = [];
-    for (const i in result) {
-      // check if user subscribe to topic
-      if (result[i]) {
-        re.push(_uids[i]);
-      }
-    }
-
-    return re;
   }
 
   /**
