@@ -43,6 +43,10 @@ class Post {
         }
         return posts;
     }
+    /**
+     * Returns a post view data that includes comments and all of meta data of the comments.
+     * @param data options for post view.
+     */
     static async view(data) {
         const post = await this.get(data.id);
         if (post === null)
@@ -229,20 +233,16 @@ class Post {
         // send push notification to topics
         const sendToTopicRes = await admin.messaging().send(messaging_1.Messaging.topicPayload(topic, messageData));
         // get comment ancestors
-        const ancestorsUid = await Post.getCommentAncestors(id, data.uid);
+        const ancestorsUid = await Post.getCommentAncestorsUid(id, data.uid);
         // add the post uid if the comment author is not the post author
         if (post.uid != data.uid && !ancestorsUid.includes(post.uid)) {
             ancestorsUid.push(post.uid);
         }
-        // Don't send the same message twice to topic subscribers and comment notifyees.
-        const userUids = await messaging_1.Messaging.getCommentNotifyeeWithoutTopicSubscriber(ancestorsUid.join(","), topic);
-        /**
-         * if value matches the setting value then skip the uid
-         */
-        const tokens = await messaging_1.Messaging.getTokensFromUidsFilterWithSettingValue(userUids.join(","), {
-            path: messaging_1.Messaging.commentNotificationField,
-            excludeIfValue: false,
-        });
+        // Don't send the same message twice to topic subscribers
+        const userUids = await messaging_1.Messaging.getUidsWithoutSubscription(ancestorsUid.join(","), "topic/forum/" + topic);
+        // get uids with user setting commentNotification is set.
+        const commentNotifyeesUids = await messaging_1.Messaging.getUidsWithSubscription(userUids.join(","), messaging_1.Messaging.commentNotificationField);
+        const tokens = await messaging_1.Messaging.getTokensFromUids(commentNotifyeesUids.join(","));
         const sendToTokenRes = await messaging_1.Messaging.sendingMessageToTokens(tokens, messaging_1.Messaging.preMessagePayload(messageData));
         return {
             topicResponse: sendToTopicRes,
@@ -251,7 +251,7 @@ class Post {
     }
     // get comment ancestor by getting parent comment until it reach the root comment
     // return the uids of the author
-    static async getCommentAncestors(id, authorUid) {
+    static async getCommentAncestorsUid(id, authorUid) {
         const c = await ref_1.Ref.commentDoc(id).get();
         let comment = c.data();
         const uids = [];
