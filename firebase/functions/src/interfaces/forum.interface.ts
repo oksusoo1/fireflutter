@@ -1,7 +1,13 @@
+/**
+ * if [content] is true, then it will return content. By default, it is true.
+ * if [author] is true, then it will return author's name, level, photoUrl. By default, it is true.
+ */
 export interface PostListOptions {
   category?: string;
   limit?: string;
   startAfter?: string;
+  content?: boolean;
+  author?: boolean;
 }
 
 export interface CategoryDocument {
@@ -93,4 +99,3 @@ export interface CommentCreateRequirements {
   createdAt: number;
   updatedAt: number;
 }
-

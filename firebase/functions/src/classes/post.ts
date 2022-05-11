@@ -64,6 +64,10 @@ export class Post {
     return posts;
   }
 
+  /**
+   * Returns a post view data that includes comments and all of meta data of the comments.
+   * @param data options for post view.
+   */
   static async view(data: { id: string }): Promise<PostDocument> {
     const post = await this.get(data.id);
     if (post === null) throw ERROR_POST_NOT_EXIST;
@@ -283,12 +287,12 @@ export class Post {
     );
 
     // get uids with user setting commentNotification is set.
-    const commentNotifyeesUid = await Messaging.getUidsWithSubscription(
+    const commentNotifyeesUids = await Messaging.getUidsWithSubscription(
       userUids.join(","),
       Messaging.commentNotificationField
     );
 
-    const tokens = await Messaging.getTokensFromUids(commentNotifyeesUid.join(","));
+    const tokens = await Messaging.getTokensFromUids(commentNotifyeesUids.join(","));
 
     const sendToTokenRes = await Messaging.sendingMessageToTokens(
       tokens,

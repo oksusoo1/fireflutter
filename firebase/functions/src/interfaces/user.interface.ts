@@ -35,5 +35,4 @@ export interface UserCreate {
 
 export interface SignInToken {
   uid: string;
-  password: string;
 }
