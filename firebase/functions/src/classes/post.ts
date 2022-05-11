@@ -64,6 +64,10 @@ export class Post {
     return posts;
   }
 
+  /**
+   * Returns a post view data that includes comments and all of meta data of the comments.
+   * @param data options for post view.
+   */
   static async view(data: { id: string }): Promise<PostDocument> {
     const post = await this.get(data.id);
     if (post === null) throw ERROR_POST_NOT_EXIST;
@@ -248,8 +252,8 @@ export class Post {
   }
 
   static async sendMessageOnCommentCreate(
-      data: CommentDocument,
-      id: string
+    data: CommentDocument,
+    id: string
   ): Promise<OnCommentCreateResponse | null> {
     const post = await this.get(data.postId);
     if (!post) return null;
@@ -278,8 +282,8 @@ export class Post {
 
     // Don't send the same message twice to topic subscribers and comment notifyees.
     const userUids = await Messaging.getCommentNotifyeeWithoutTopicSubscriber(
-        ancestorsUid.join(","),
-        topic
+      ancestorsUid.join(","),
+      topic
     );
 
     /**
@@ -291,8 +295,8 @@ export class Post {
     });
 
     const sendToTokenRes = await Messaging.sendingMessageToTokens(
-        tokens,
-        Messaging.preMessagePayload(messageData)
+      tokens,
+      Messaging.preMessagePayload(messageData)
     );
     return {
       topicResponse: sendToTopicRes,
