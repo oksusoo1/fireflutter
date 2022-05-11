@@ -103,6 +103,11 @@ export class Post {
           if (i >= 0) {
             comment.depth = comments[i].depth + 1;
             comments.splice(i + 1, 0, comment);
+          } else {
+            // All comments should belong to another. So, it should come here.
+            // So, just put it at the end just in case.
+            comment.depth = 0;
+            comments.push(comment);
           }
         }
       }
@@ -298,7 +303,11 @@ export class Post {
   static async addAuthorMeta<T>(postOrComment: any): Promise<T> {
     const userData = await User.get(postOrComment.uid);
 
-    if (userData != null) {
+    if (userData === null) {
+      postOrComment.author = "";
+      postOrComment.authorLevel = 0;
+      postOrComment.authorPhotoUrl = "";
+    } else {
       postOrComment.author = `${userData?.firstName ?? ""} ${userData?.lastName ?? ""}`;
       postOrComment.authorLevel = userData?.level ?? 0;
       postOrComment.authorPhotoUrl = userData?.photoUrl ?? "";
