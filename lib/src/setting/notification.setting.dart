@@ -35,21 +35,14 @@ class _NotificationSettingState extends State<NotificationSetting> {
         if (snapshot.hasData == false) return SizedBox.shrink();
         // print(UserSettingService.instance.settings.topics);
 
-        if (categories == null)
-          return Center(
-            child: CircularProgressIndicator.adaptive(),
-          );
+        if (categories == null) return Center(child: CircularProgressIndicator.adaptive());
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             CheckboxListTile(
               value: UserSettingService.instance.value(commentNotification) ?? false,
-              onChanged: (b) async {
-                if (b == true) {
-                  UserSettingService.instance.update({commentNotification: true});
-                } else {
-                  UserSettingService.instance.update({commentNotification: false});
-                }
+              onChanged: (b) {
+                UserSettingService.instance.update({commentNotification: b});
               },
               title: Text('Comment notifications'),
               subtitle: Text('Receive notifications of new comments under my posts and comments'),
@@ -99,7 +92,7 @@ class _NotificationSettingState extends State<NotificationSetting> {
             for (CategoryModel cat in categories!)
               CheckboxListTile(
                 value: UserSettingService.instance.hasSubscription('posts_${cat.id}', 'forum'),
-                onChanged: (b) async => MessagingService.instance
+                onChanged: (b) async => UserSettingService.instance
                     .updateSubscription('posts_${cat.id}', 'forum', b ?? false),
                 title: Text(cat.title),
                 controlAffinity: ListTileControlAffinity.leading,
@@ -120,7 +113,7 @@ class _NotificationSettingState extends State<NotificationSetting> {
             for (CategoryModel cat in categories!)
               CheckboxListTile(
                 value: UserSettingService.instance.hasSubscription('comments_${cat.id}', 'forum'),
-                onChanged: (b) async => MessagingService.instance
+                onChanged: (b) async => UserSettingService.instance
                     .updateSubscription('comments_${cat.id}', 'forum', b ?? false),
                 title: Text(cat.title),
                 controlAffinity: ListTileControlAffinity.leading,
@@ -134,12 +127,11 @@ class _NotificationSettingState extends State<NotificationSetting> {
   enableOrDisableAllNotification([bool enable = true]) async {
     String content = "All Notification";
     if (enable) {
-      final re = await MessagingService.instance.enableAllNotification();
-      print(re);
-      content = "Enable " + content;
+      await UserSettingService.instance.enableAllNotification();
+      content = "Enabled " + content;
     } else {
-      await MessagingService.instance.disableAllNotification();
-      content = "Disable " + content;
+      await UserSettingService.instance.disableAllNotification();
+      content = "Disabled " + content;
     }
 
     showDialog(

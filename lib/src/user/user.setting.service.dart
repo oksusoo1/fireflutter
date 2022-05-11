@@ -103,20 +103,42 @@ class UserSettingService with DatabaseMixin {
     return false;
   }
 
+  /// Updates the subscriptions (subscribe or unsubscribe) of the current user.
+  Future<dynamic> updateSubscription(String topic, String type, bool subscribe) async {
+    if (subscribe) {
+      await UserSettingService.instance.subscribe(topic, type);
+    } else {
+      await UserSettingService.instance.unsubscribe(topic, type);
+    }
+  }
+
+  /// Toggle the subscription (subscribe or unsubscribe) of the current user.
+  toggleSubscription(String topic, String type) {
+    return updateSubscription(
+      topic,
+      type,
+      !UserSettingService.instance.hasSubscription(topic, type),
+    );
+  }
+
   Future<void> subscribe(String topic, String type) {
-    return MessagingService.instance.subscribeTopic(topic, type);
+    return FunctionsApi.instance
+        .request('subscribeTopic', data: {'topic': topic, 'type': type}, addAuth: true);
   }
 
   Future<void> unsubscribe(String topic, String type) {
-    return MessagingService.instance.unsubscribeTopic(topic, type);
+    return FunctionsApi.instance
+        .request('unsubscribeTopic', data: {'topic': topic, 'type': type}, addAuth: true);
   }
 
   Future<void> topicOn(String topic, String type) {
-    return MessagingService.instance.topicOn(topic, type);
+    return FunctionsApi.instance
+        .request('topicOn', data: {'topic': topic, 'type': type}, addAuth: true);
   }
 
   Future<void> topicOff(String topic, String type) {
-    return MessagingService.instance.topicOff(topic, type);
+    return FunctionsApi.instance
+        .request('topicOff', data: {'topic': topic, 'type': type}, addAuth: true);
   }
 
   Future<dynamic> toggleTopic(String topic, String type, bool toggle) async {
@@ -154,4 +176,27 @@ class UserSettingService with DatabaseMixin {
     }
     return Future.wait(futures);
   }
+
+  /// Functions
+
+  Future<dynamic> enableAllNotification({String? group, String? type}) async {
+    return FunctionsApi.instance
+        .request('enableAllNotification', data: {'group': group, 'type': type}, addAuth: true);
+  }
+
+  Future<dynamic> disableAllNotification({String? group, String? type}) async {
+    return FunctionsApi.instance
+        .request('disableAllNotification', data: {'group': group, 'type': type}, addAuth: true);
+  }
+
+  // subscribeTopic(String topic, String type) async {
+  // }
+
+  // unsubscribeTopic(String topic, String type) async {
+  // }
+
+  // toggleTopic(String topic, String type) async {
+  //   return FunctionsApi.instance
+  //       .request('toggleTopic', data: {topic: topic, type: type}, addAuth: true);
+  // }
 }
