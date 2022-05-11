@@ -252,6 +252,22 @@ class Post {
         });
         return admin.messaging().send(payload);
     }
+    /**
+     * Adds author information on the document.
+     *
+     * @param postOrComment post or comment document
+     * @returns returns post with author's information included.
+     */
+    static async addAuthorMeta(postOrComment) {
+        var _a, _b, _c, _d;
+        const userData = await user_1.User.get(postOrComment.uid);
+        if (userData != null) {
+            postOrComment.author = `${(_a = userData === null || userData === void 0 ? void 0 : userData.firstName) !== null && _a !== void 0 ? _a : ""} ${(_b = userData === null || userData === void 0 ? void 0 : userData.lastName) !== null && _b !== void 0 ? _b : ""}`;
+            postOrComment.authorLevel = (_c = userData === null || userData === void 0 ? void 0 : userData.level) !== null && _c !== void 0 ? _c : 0;
+            postOrComment.authorPhotoUrl = (_d = userData === null || userData === void 0 ? void 0 : userData.photoUrl) !== null && _d !== void 0 ? _d : "";
+        }
+        return postOrComment;
+    }
 }
 exports.Post = Post;
 //# sourceMappingURL=post.js.map
