@@ -8,13 +8,17 @@ import {
   ERROR_NOT_YOUR_COMMENT,
   ERROR_UPDATE_FAILED,
 } from "../defines";
-import { CommentCreateParams, CommentCreateRequirements, CommentDocument } from "../interfaces/forum.interface";
+import {
+  CommentCreateParams,
+  CommentCreateRequirements,
+  CommentDocument,
+} from "../interfaces/forum.interface";
 import { Storage } from "./storage";
 import { Point } from "./point";
 import { Post } from "./post";
 import { Utils } from "./utils";
 import { Messaging } from "./messaging";
-import { OnCommentCreateResponse } from "../interfaces/messaging.interface";
+import { OnCommentCreateResponse, SendMessageBaseRequest } from "../interfaces/messaging.interface";
 
 export class Comment {
   /**
@@ -137,16 +141,19 @@ export class Comment {
     return null;
   }
 
-  static async sendMessageOnCreate(data: CommentDocument, id: string): Promise<OnCommentCreateResponse | null> {
+  static async sendMessageOnCreate(
+    data: CommentDocument,
+    id: string
+  ): Promise<OnCommentCreateResponse | null> {
     const post = await Post.get(data.postId);
     if (!post) return null;
 
-    const messageData: any = {
+    const messageData: SendMessageBaseRequest = {
       title: post.title,
       body: data.content,
-      postId: data.postId,
+      id: data.postId,
       type: "post",
-      uid: data.uid,
+      senderUid: data.uid,
     };
 
     // console.log(messageData);
@@ -164,17 +171,23 @@ export class Comment {
     }
 
     // Don't send the same message twice to topic subscribers
-    const userUids = await Messaging.getUidsWithoutSubscription(ancestorsUid.join(","), "topic/forum/" + topic);
+    const userUids = await Messaging.getUidsWithoutSubscription(
+      ancestorsUid.join(","),
+      "topic/forum/" + topic
+    );
 
     // get uids with user setting commentNotification is set.
     const commentNotifyeesUids = await Messaging.getUidsWithSubscription(
-        userUids.join(","),
-        Messaging.commentNotificationField
+      userUids.join(","),
+      Messaging.commentNotificationField
     );
 
     const tokens = await Messaging.getTokensFromUids(commentNotifyeesUids.join(","));
     // console.log(tokens);
-    const sendToTokenRes = await Messaging.sendingMessageToTokens(tokens, Messaging.preMessagePayload(messageData));
+    const sendToTokenRes = await Messaging.sendingMessageToTokens(
+      tokens,
+      Messaging.preMessagePayload(messageData)
+    );
     return {
       topicResponse: sendToTopicRes,
       tokenResponse: sendToTokenRes,

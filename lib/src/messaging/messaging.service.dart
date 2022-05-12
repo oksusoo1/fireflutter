@@ -144,21 +144,4 @@ class MessagingService with FirestoreMixin, DatabaseMixin {
     doneDefaultTopic = true;
     FirebaseMessaging.instance.subscribeToTopic(defaultTopic);
   }
-
-  sendMessage({
-    String? to,
-    Map<String, String>? data,
-    String? collapseKey,
-    String? messageId,
-    String? messageType,
-    int? ttl,
-  }) {
-    return FirebaseMessaging.instance.sendMessage(
-      to: to,
-      data: data,
-      collapseKey: collapseKey,
-      messageId: messageId,
-      messageType: messageType,
-    );
-  }
 }

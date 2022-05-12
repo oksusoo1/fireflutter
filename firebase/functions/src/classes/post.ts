@@ -288,9 +288,9 @@ export class Post {
     const payload = Messaging.topicPayload("posts_" + category, {
       title: data.title ?? "",
       body: data.content ?? "",
-      postId: id,
+      id: id,
       type: "post",
-      uid: data.uid,
+      senderUid: data.uid,
     });
     return admin.messaging().send(payload);
   }

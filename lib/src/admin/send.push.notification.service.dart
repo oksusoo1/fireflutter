@@ -21,11 +21,12 @@ class SendPushNotificationService {
 
   /// [data] should have all the necessary properties to send it to backend.
   /// 'title' is the title of the message
-  /// 'content' is the body of the message.
+  /// 'body' is the body of the message.
   /// 'uids' is a string of uid(s) separated by comma(,).
   /// 'badge' is the number of new chat message. It may not work on Android.
   /// 'type' is the type of message
   /// 'senderUid' is the sender uid.
+  /// 'id' can be any id like postId
   sendToUsers(Map<String, dynamic> data) async {
     return FunctionsApi.instance.request('sendMessageToUsers', data: data, addAuth: true);
   }
@@ -36,8 +37,8 @@ class SendPushNotificationService {
   ///
   /// [data] should have all the necessary properties to send push notifications to chat user.
   ///
-  ///  'title' is the title of the message
-  /// 'content' is the body of the message.
+  /// 'title' is the title of the message
+  /// 'body' is the body of the message.
   /// 'uids' is a string of uid(s) separated by comma(,).
   /// 'badge' is the number of new chat message. It may not work on Android.
   /// 'type' is the type of message

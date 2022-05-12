@@ -9,7 +9,12 @@ import {
   ERROR_TITLE_AND_BODY_CANT_BE_BOTH_EMPTY,
 } from "../defines";
 import {
+  ChatRequestData,
   MessagePayload,
+  SendMessageBaseRequest,
+  SendMessageToTokensRequest,
+  SendMessageToTopicRequest,
+  SendMessageToUserRequest,
   SubscriptionResponse,
   TokenDocument,
   TopicData,
@@ -546,24 +551,32 @@ export class Messaging {
     return re;
   }
 
-  static topicPayload(topic: string, query: any): admin.messaging.TopicMessage {
+  static topicPayload(topic: string, query: SendMessageBaseRequest): admin.messaging.TopicMessage {
     const payload = this.preMessagePayload(query);
     payload["topic"] = "/topics/" + topic;
     return payload as admin.messaging.TopicMessage;
   }
 
-  static preMessagePayload(query: any) {
+  // static checkQueryPayload(query: any): SendMessageBaseRequest {
+  //   query.id = query.id ?? query.postId ?? "";
+  //   query.body = query.body ?? query.content ?? "";
+  //   query.senderUid = query.senderUid ?? query.uid ?? "";
+  //   return query;
+  // }
+
+  static preMessagePayload(query: SendMessageBaseRequest) {
+    // query = this.checkQueryPayload(query);
     if (!query.title && !query.body) throw ERROR_TITLE_AND_BODY_CANT_BE_BOTH_EMPTY;
     const res: MessagePayload = {
       data: {
-        id: query.postId ? query.postId : query.id ? query.id : "",
+        id: query.id ?? "",
         type: query.type ?? "",
-        senderUid: query.senderUid ?? query.uid ?? "",
+        senderUid: query.senderUid ?? "",
         badge: query.badge ?? "",
       },
       notification: {
         title: query.title ?? "",
-        body: query.body ? query.body : query.content ? query.content : "",
+        body: query.body ?? "",
       },
       android: {
         notification: {
@@ -651,7 +664,7 @@ export class Messaging {
     return { success: successCount, error: errorCount };
   }
 
-  static async sendMessageToTopic(query: any) {
+  static async sendMessageToTopic(query: SendMessageToTopicRequest) {
     if (!query.topic) throw ERROR_EMPTY_TOPIC;
     const payload = this.topicPayload(query.topic, query);
     try {
@@ -662,7 +675,7 @@ export class Messaging {
     }
   }
 
-  static async sendMessageToTokens(query: any) {
+  static async sendMessageToTokens(query: SendMessageToTokensRequest) {
     if (!query.tokens) throw ERROR_EMPTY_TOKENS;
     const payload = this.preMessagePayload(query);
     try {
@@ -675,11 +688,9 @@ export class Messaging {
   /**
    * if subscription exist then remove user who turned of the subscription.
    */
-  static async sendMessageToUsers(query: any) {
+  static async sendMessageToUsers(query: SendMessageToUserRequest) {
     if (!query.uids) throw ERROR_EMPTY_UIDS;
     const payload = this.preMessagePayload(query);
-
-    if (!query.uids) return { success: 0, error: 0 };
     const tokens = await this.getTokensFromUids(query.uids);
     try {
       const res = await this.sendingMessageToTokens(tokens, payload);
@@ -689,11 +700,12 @@ export class Messaging {
     }
   }
 
-  static async sendMessageToChatUser(query: any) {
+  static async sendMessageToChatUser(query: ChatRequestData) {
     const uids = (
       await this.removeUserHasSubscriptionOff(query.uids, "topic/chat/" + query.subscription)
     ).join(",");
     query.uids = uids;
+    if (!query.uids) return { success: 0, error: 0 };
     return this.sendMessageToUsers(query);
   }
 

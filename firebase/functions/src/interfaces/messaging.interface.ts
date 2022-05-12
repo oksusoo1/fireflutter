@@ -11,11 +11,30 @@ export interface TopicData {
   type: string;
 }
 
-// export interface SettingTokensFilter {
-//   path: string;
-//   value: any;
-//   mode: "include" | "exclude";
-// }
+export interface ChatRequestData extends SendMessageToUserRequest {
+  subscription: string;
+}
+
+export interface SendMessageToUserRequest extends SendMessageBaseRequest {
+  uids: string;
+}
+
+export interface SendMessageToTopicRequest extends SendMessageBaseRequest {
+  topic: string;
+}
+
+export interface SendMessageToTokensRequest extends SendMessageBaseRequest {
+  tokens: string;
+}
+
+export interface SendMessageBaseRequest {
+  id?: string; /// postId
+  title?: string;
+  body?: string; /// content
+  type?: string;
+  senderUid?: string; /// uid
+  badge?: string;
+}
 
 export interface SubscriptionResponse {
   topic: string;
