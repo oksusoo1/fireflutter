@@ -8,7 +8,12 @@ import {
   ERROR_EMPTY_UIDS,
   ERROR_TITLE_AND_BODY_CANT_BE_BOTH_EMPTY,
 } from "../defines";
-import { MessagePayload, SubscriptionResponse, TokenDocument, TopicData } from "../interfaces/messaging.interface";
+import {
+  MessagePayload,
+  SubscriptionResponse,
+  TokenDocument,
+  TopicData,
+} from "../interfaces/messaging.interface";
 import { Ref } from "./ref";
 import { Utils } from "./utils";
 
@@ -96,7 +101,9 @@ export class Messaging {
       };
     }
     // subscribe user tokens to topic
-    const res: MessagingTopicManagementResponse = await admin.messaging().subscribeToTopic(tokens, data.topic);
+    const res: MessagingTopicManagementResponse = await admin
+      .messaging()
+      .subscribeToTopic(tokens, data.topic);
     // remove invalid tokens if any
     const failureTokens: MapStringString = await this.removeInvalidTokensFromResponse(tokens, res);
 
@@ -138,7 +145,9 @@ export class Messaging {
     }
 
     // unsubscribe user tokens to topic
-    const res: MessagingTopicManagementResponse = await admin.messaging().unsubscribeFromTopic(tokens, data.topic);
+    const res: MessagingTopicManagementResponse = await admin
+      .messaging()
+      .unsubscribeFromTopic(tokens, data.topic);
     // remove invalid tokens if any
     const failureTokens: MapStringString = await this.removeInvalidTokensFromResponse(tokens, res);
 
@@ -190,10 +199,10 @@ export class Messaging {
   static async topicOn(data: TopicData) {
     this.checkTopicData(data);
     await Ref.userSettingTopic(data.uid)
-        .child(data.type)
-        .update({
-          [data.topic]: true,
-        });
+      .child(data.type)
+      .update({
+        [data.topic]: true,
+      });
     return this.getTopics(data.uid, data.type);
   }
 
@@ -207,10 +216,10 @@ export class Messaging {
   static async topicOff(data: TopicData) {
     this.checkTopicData(data);
     await Ref.userSettingTopic(data.uid)
-        .child(data.type)
-        .update({
-          [data.topic]: false,
-        });
+      .child(data.type)
+      .update({
+        [data.topic]: false,
+      });
 
     return this.getTopics(data.uid, data.type);
   }
@@ -272,8 +281,8 @@ export class Messaging {
    * @returns Map of result.
    */
   static async removeInvalidTokensFromResponse(
-      tokens: Array<string>,
-      res: MessagingTopicManagementResponse
+    tokens: Array<string>,
+    res: MessagingTopicManagementResponse
   ): Promise<MapStringString> {
     if (res.failureCount == 0) return {};
 
@@ -592,8 +601,8 @@ export class Messaging {
   }
 
   static async sendingMessageToTokens(
-      tokens: Array<string>,
-      payload: MessagePayload
+    tokens: Array<string>,
+    payload: MessagePayload
   ): Promise<{
     success: number;
     error: number;
@@ -606,7 +615,10 @@ export class Messaging {
     const sendToDevicePromise = [];
     for (const c of chunks) {
       // Send notifications to all tokens.
-      const newPayload: admin.messaging.MulticastMessage = Object.assign({ tokens: c }, payload as any);
+      const newPayload: admin.messaging.MulticastMessage = Object.assign(
+        { tokens: c },
+        payload as any
+      );
       sendToDevicePromise.push(admin.messaging().sendMulticast(newPayload));
     }
     const sendDevice = await Promise.all(sendToDevicePromise);
@@ -666,21 +678,23 @@ export class Messaging {
   static async sendMessageToUsers(query: any) {
     if (!query.uids) throw ERROR_EMPTY_UIDS;
     const payload = this.preMessagePayload(query);
-    let uids: string;
-    if (query.subscription) {
-      uids = (await this.removeUserHasSubscriptionOff(query.uids, "topic/chat/" + query.subscription)).join(",");
-    } else {
-      uids = query.uids;
-    }
 
-    if (!uids) return { success: 0, error: 0 };
-    const tokens = await this.getTokensFromUids(uids);
+    if (!query.uids) return { success: 0, error: 0 };
+    const tokens = await this.getTokensFromUids(query.uids);
     try {
       const res = await this.sendingMessageToTokens(tokens, payload);
       return res;
     } catch (e) {
       return { code: "error", message: (e as Error).message };
     }
+  }
+
+  static async sendMessageToChatUser(query: any) {
+    const uids = (
+      await this.removeUserHasSubscriptionOff(query.uids, "topic/chat/" + query.subscription)
+    ).join(",");
+    query.uids = uids;
+    return this.sendMessageToUsers(query);
   }
 
   /**
@@ -709,18 +723,18 @@ export class Messaging {
     const promises: Promise<any>[] = [];
     cats.forEach((cat: CategoryDocument) => {
       promises.push(
-          Messaging.subscribeToTopic({
-            uid: data.uid,
-            topic: "posts_" + cat.id,
-            type: type,
-          })
+        Messaging.subscribeToTopic({
+          uid: data.uid,
+          topic: "posts_" + cat.id,
+          type: type,
+        })
       );
       promises.push(
-          Messaging.subscribeToTopic({
-            uid: data.uid,
-            topic: "comments_" + cat.id,
-            type: type,
-          })
+        Messaging.subscribeToTopic({
+          uid: data.uid,
+          topic: "comments_" + cat.id,
+          type: type,
+        })
       );
     });
 
@@ -744,18 +758,18 @@ export class Messaging {
     const promises: Promise<any>[] = [];
     cats.forEach((cat: CategoryDocument) => {
       promises.push(
-          Messaging.unsubscribeToTopic({
-            uid: data.uid,
-            topic: "posts_" + cat.id,
-            type: type,
-          })
+        Messaging.unsubscribeToTopic({
+          uid: data.uid,
+          topic: "posts_" + cat.id,
+          type: type,
+        })
       );
       promises.push(
-          Messaging.unsubscribeToTopic({
-            uid: data.uid,
-            topic: "comments_" + cat.id,
-            type: type,
-          })
+        Messaging.unsubscribeToTopic({
+          uid: data.uid,
+          topic: "comments_" + cat.id,
+          type: type,
+        })
       );
     });
     await Promise.all(promises);
