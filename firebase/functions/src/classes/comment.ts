@@ -168,8 +168,8 @@ export class Comment {
 
     // get uids with user setting commentNotification is set.
     const commentNotifyeesUids = await Messaging.getUidsWithSubscription(
-      userUids.join(","),
-      Messaging.commentNotificationField
+        userUids.join(","),
+        Messaging.commentNotificationField
     );
 
     const tokens = await Messaging.getTokensFromUids(commentNotifyeesUids.join(","));

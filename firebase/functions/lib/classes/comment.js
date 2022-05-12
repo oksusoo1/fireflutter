@@ -149,6 +149,7 @@ class Comment {
         // get uids with user setting commentNotification is set.
         const commentNotifyeesUids = await messaging_1.Messaging.getUidsWithSubscription(userUids.join(","), messaging_1.Messaging.commentNotificationField);
         const tokens = await messaging_1.Messaging.getTokensFromUids(commentNotifyeesUids.join(","));
+        // console.log(tokens);
         const sendToTokenRes = await messaging_1.Messaging.sendingMessageToTokens(tokens, messaging_1.Messaging.preMessagePayload(messageData));
         return {
             topicResponse: sendToTopicRes,

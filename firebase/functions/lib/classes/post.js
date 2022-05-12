@@ -45,10 +45,11 @@ class Post {
                 post.id = doc.id;
                 if (options.content === "N")
                     delete post.content;
-                if (options.author !== "N")
-                    await this.addAuthorMeta(post);
                 posts.push(post);
             }
+        }
+        if (posts.length && options.author !== "N") {
+            await this.addMetaOfAuthors(posts);
         }
         return posts;
     }
@@ -60,8 +61,6 @@ class Post {
         const post = await this.get(data.id);
         if (post === null)
             throw defines_1.ERROR_POST_NOT_EXIST;
-        // Add user meta: Name (first + last), level, photoUrl.
-        await this.addAuthorMeta(post);
         // Get post comments.
         const snapshot = await ref_1.Ref.commentCol.where("postId", "==", post.id).orderBy("createdAt").get();
         const comments = [];
@@ -69,7 +68,6 @@ class Post {
             for (const doc of snapshot.docs) {
                 const comment = doc.data();
                 comment.id = doc.id;
-                await this.addAuthorMeta(comment);
                 if (comment.postId == comment.parentId) {
                     // Add at bottom
                     comment.depth = 0;
@@ -92,6 +90,8 @@ class Post {
             }
         }
         post.comments = comments;
+        // Add user meta: Name (first + last), level, photoUrl.
+        await this.addMetaOfAuthors([post, ...comments]);
         return post;
     }
     /**
@@ -257,6 +257,15 @@ class Post {
             uid: data.uid,
         });
         return admin.messaging().send(payload);
+    }
+    /**
+     * Add author meta for all articles.
+     *
+     * @param articles post or comment document.
+     */
+    static async addMetaOfAuthors(articles) {
+        const futures = articles.map((a) => this.addAuthorMeta(a));
+        await Promise.all(futures);
     }
     /**
      * Adds author information on the document.

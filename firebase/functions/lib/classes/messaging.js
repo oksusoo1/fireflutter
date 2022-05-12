@@ -82,9 +82,7 @@ class Messaging {
             };
         }
         // subscribe user tokens to topic
-        const res = await admin
-            .messaging()
-            .subscribeToTopic(tokens, data.topic);
+        const res = await admin.messaging().subscribeToTopic(tokens, data.topic);
         // remove invalid tokens if any
         const failureTokens = await this.removeInvalidTokensFromResponse(tokens, res);
         // return failuretokens tokens with failure reason and success and failure count
@@ -124,9 +122,7 @@ class Messaging {
             };
         }
         // unsubscribe user tokens to topic
-        const res = await admin
-            .messaging()
-            .unsubscribeFromTopic(tokens, data.topic);
+        const res = await admin.messaging().unsubscribeFromTopic(tokens, data.topic);
         // remove invalid tokens if any
         const failureTokens = await this.removeInvalidTokensFromResponse(tokens, res);
         // return failuretokens tokens with failure reason and success and failure count
@@ -359,7 +355,10 @@ class Messaging {
      * @returns array of tokens
      */
     static async getTokens(uid) {
+        if (!uid)
+            return [];
         const snapshot = await ref_1.Ref.messageTokens.orderByChild("uid").equalTo(uid).get();
+        // console.log("snapshot.exists()", snapshot.exists(), snapshot.val());
         if (!snapshot.exists())
             return [];
         const val = snapshot.val();
@@ -372,43 +371,12 @@ class Messaging {
      * @returns array of tokens
      */
     static async getTokensFromUids(uids) {
+        if (!uids)
+            return [];
         const promises = [];
         uids.split(",").forEach((uid) => promises.push(this.getTokens(uid)));
         return (await Promise.all(promises)).flat();
     }
-    // /**
-    //  * Returns tokens of multiple users. and filtering with setting which is set to false
-    //  *
-    //  *
-    //  * @param uids array of user uid
-    //  *        path settings path   user-settings/{uid}/{path}    -
-    //  *        path can be `isAdmin` or `topic/forum` or `topic/forum/posts_qna`
-    //  * @returns array of tokens
-    //  */
-    // static async getTokensFromUidsFilterWithSettingValue(uids: string, filter: SettingTokensFilter) {
-    //   const promises: Promise<string[]>[] = [];
-    //   uids.split(",").forEach(async (uid) => {
-    //     promises.push(this.getTokensFromUidFilterWithSettingValue(uid, filter));
-    //   });
-    //   return (await Promise.all(promises)).flat();
-    // }
-    // /** *
-    //  * Return user tokens if filter value is not true.
-    //  *
-    //  * Return empty array if tokens is empty or filter is truthy
-    //  *
-    //  *
-    //  */
-    // static async getTokensFromUidFilterWithSettingValue(uid: string, filter: SettingTokensFilter) {
-    //   const v = await this.userSettingsField(uid, filter.path);
-    //   if (filter.mode == "include") {
-    //     if (filter.value == v) return this.getTokens(uid);
-    //     return [];
-    //   } else if (filter.mode == "exclude") {
-    //     if (filter.value == v) return [];
-    //     return this.getTokens(uid);
-    //   } else return [];
-    // }
     // check the uids if they are subscribe to topic and also want to get notification under their post/comment
     /**
      * Get ancestors who subscribed to 'comment notification' but removing those who subscribed to the topic.
@@ -420,6 +388,7 @@ class Messaging {
         const result = await this.usersHasSubscription(uids, path);
         const re = [];
         const _uids = uids.split(",");
+        // console.log("result", uids, result);
         for (const i in result) {
             // / Get anscestors who subscribed to 'comment notification' and didn't subscribe to the topic.
             if (result[i]) {
@@ -445,6 +414,7 @@ class Messaging {
         const re = [];
         const _uids = uids.split(",");
         for (const i in result) {
+            // console.log(result[i]);
             // check if user subscribe to topic
             if (result[i]) {
                 re.push(_uids[i]);
