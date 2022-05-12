@@ -418,7 +418,7 @@ export class Messaging {
     const result = await this.usersHasSubscription(uids, path);
     const re = [];
     const _uids = uids.split(",");
-    console.log("result", uids, result);
+    // console.log("result", uids, result);
     for (const i in result) {
       // / Get anscestors who subscribed to 'comment notification' and didn't subscribe to the topic.
       if (result[i]) {

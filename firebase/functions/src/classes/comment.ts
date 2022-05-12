@@ -173,7 +173,7 @@ export class Comment {
     );
 
     const tokens = await Messaging.getTokensFromUids(commentNotifyeesUids.join(","));
-    console.log(tokens);
+    // console.log(tokens);
     const sendToTokenRes = await Messaging.sendingMessageToTokens(tokens, Messaging.preMessagePayload(messageData));
     return {
       topicResponse: sendToTopicRes,

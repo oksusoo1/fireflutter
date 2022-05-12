@@ -12,6 +12,8 @@
     "test:createTestUser": "mocha --timeout 20000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/test/createTestUser.spec.ts",
     "test:user": "mocha --timeout 20000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/user/user.spec.ts",
     "test:post:list": "mocha --timeout 20000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/post/list.spec.ts",
+    "test:post:list-via-http": "mocha --timeout 20000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/post/list-via-http.spec.ts",
+    "test:post:view": "mocha --timeout 20000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/post/view.spec.ts",
     "test:post:create": "mocha --timeout 20000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/post/create.spec.ts",
     "test:post:create-via-http": "mocha --timeout 20000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/post/create-via-http.spec.ts",
     "test:post:update": "mocha --timeout 20000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/post/update.spec.ts",
