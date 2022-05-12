@@ -54,7 +54,7 @@ class UserService with FirestoreMixin, DatabaseMixin {
   // ignore: close_sinks
   BehaviorSubject<UserModel> changes = BehaviorSubject.seeded(UserModel());
 
-  /// This event will be posted after loading user information from database (after user signs-in).
+  /// This event will be posted only after loading user information from database (after user signs-in).
   // ignore: close_sinks
   BehaviorSubject<UserModel> signIn = BehaviorSubject.seeded(UserModel());
 
