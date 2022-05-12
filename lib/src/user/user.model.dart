@@ -78,6 +78,7 @@ class UserModel with FirestoreMixin, DatabaseMixin {
   String nickname;
 
   int point;
+  String get displayPoint => NumberFormat.currency(locale: 'ko_KR', symbol: '').format(point);
   int level;
 
   int registeredAt;

@@ -118,8 +118,9 @@ String getRandomString({int len = 16}) {
 }
 
 /// ! Attention: Alphabet `I` is missing since it is confusing with `i` and `l`.
+/// ! Attention: Alphabet `O` is not included since it is confusing with `0`.
 String getRandomAlphabet({int len = 1}) {
-  const charset = 'ABCDEFGHJKLMNOPQRSTUVWXYZ';
+  const charset = 'ABCDEFGHJKLMNPQRSTUVWXYZ';
   var t = '';
   for (var i = 0; i < len; i++) {
     t += charset[(Random().nextInt(charset.length))];

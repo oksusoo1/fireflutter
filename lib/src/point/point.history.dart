@@ -70,7 +70,7 @@ class _PointHistoryState extends State<PointHistory> {
       case 'register':
         return 'Registration bonus';
       case 'signIn':
-        return 'Sign-in bonus';
+        return 'Daily random bonus';
       case 'postCreate':
         return 'Post creation bonus';
       case 'commentCreate':
