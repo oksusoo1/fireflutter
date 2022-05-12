@@ -42,12 +42,12 @@ class _FriendMapState extends State<FriendMap> with WidgetsBindingObserver, Data
   void initState() {
     super.initState();
     init();
-    WidgetsBinding.instance?.addObserver(this);
+    WidgetsBinding.instance.addObserver(this);
   }
 
   @override
   void dispose() {
-    WidgetsBinding.instance?.removeObserver(this);
+    WidgetsBinding.instance.removeObserver(this);
     otherUserPositionStream?.cancel();
     currentUserPositionStream?.cancel();
     super.dispose();

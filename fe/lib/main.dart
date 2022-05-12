@@ -107,7 +107,7 @@ class _MainAppState extends State<MainApp> {
       // Example of using the dynamic link to push the user to a different screen
 
       /// If you do alert too early, it may not appear on screen.
-      WidgetsBinding.instance?.addPostFrameCallback((dr) {
+      WidgetsBinding.instance.addPostFrameCallback((dr) {
         alert('Terminated app',
             'Got dynamic link event. deepLink.path; ${deepLink.path},  ${deepLink.queryParametersAll}');
         // Get.toNamed(deepLink.path, arguments: deepLink.queryParameters);
@@ -172,7 +172,7 @@ class _MainAppState extends State<MainApp> {
       onMessageOpenedFromTermiated: (message) {
         // this will triggered when the notification on tray was tap while the app is closed
 
-        WidgetsBinding.instance?.addPostFrameCallback((duration) {
+        WidgetsBinding.instance.addPostFrameCallback((duration) {
           onMessageOpenedShowMessage(message);
         });
       },
