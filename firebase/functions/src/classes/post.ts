@@ -75,11 +75,6 @@ export class Post {
     return posts;
   }
 
-  static async addMetaOfAuthors(articles: any[]) {
-    const futures = articles.map((a) => this.addAuthorMeta(a));
-    await Promise.all(futures);
-  }
-
   /**
    * Returns a post view data that includes comments and all of meta data of the comments.
    * @param data options for post view.
@@ -119,7 +114,7 @@ export class Post {
     post.comments = comments;
 
     // Add user meta: Name (first + last), level, photoUrl.
-    await this.addMetaOfAuthors([this.addAuthorMeta(post), ...comments]);
+    await this.addMetaOfAuthors([post, ...comments]);
     return post;
   }
 
@@ -298,6 +293,16 @@ export class Post {
       uid: data.uid,
     });
     return admin.messaging().send(payload);
+  }
+
+  /**
+   * Add author meta for all articles.
+   *
+   * @param articles post or comment document.
+   */
+  static async addMetaOfAuthors(articles: any[]) {
+    const futures = articles.map((a) => this.addAuthorMeta(a));
+    await Promise.all(futures);
   }
 
   /**

@@ -70,18 +70,18 @@ export const commentDelete = functions.region("us-central1", "asia-northeast3").
 });
 
 export const sendMessageOnPostCreate = functions
-  .region("asia-northeast3")
-  .firestore.document("/posts/{postId}")
-  .onCreate((snapshot, context) => {
-    return Post.sendMessageOnCreate(snapshot.data() as PostDocument, context.params.postId);
-  });
+    .region("asia-northeast3")
+    .firestore.document("/posts/{postId}")
+    .onCreate((snapshot, context) => {
+      return Post.sendMessageOnCreate(snapshot.data() as PostDocument, context.params.postId);
+    });
 
 export const sendMessageOnCommentCreate = functions
-  .region("asia-northeast3")
-  .firestore.document("/comments/{commentId}")
-  .onCreate((snapshot, context) => {
-    return Comment.sendMessageOnCreate(snapshot.data() as CommentDocument, context.params.commentId);
-  });
+    .region("asia-northeast3")
+    .firestore.document("/comments/{commentId}")
+    .onCreate((snapshot, context) => {
+      return Comment.sendMessageOnCreate(snapshot.data() as CommentDocument, context.params.commentId);
+    });
 
 export const report = functions.region("us-central1", "asia-northeast3").https.onRequest((req, res) => {
   ready({ req, res, auth: true }, async (data) => {

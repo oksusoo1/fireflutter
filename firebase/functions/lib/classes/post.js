@@ -45,10 +45,11 @@ class Post {
                 post.id = doc.id;
                 if (options.content === "N")
                     delete post.content;
-                if (options.author !== "N")
-                    await this.addAuthorMeta(post);
                 posts.push(post);
             }
+        }
+        if (posts.length && options.author !== "N") {
+            await this.addMetaOfAuthors(posts);
         }
         return posts;
     }
@@ -60,8 +61,6 @@ class Post {
         const post = await this.get(data.id);
         if (post === null)
             throw defines_1.ERROR_POST_NOT_EXIST;
-        // Add user meta: Name (first + last), level, photoUrl.
-        await this.addAuthorMeta(post);
         // Get post comments.
         const snapshot = await ref_1.Ref.commentCol.where("postId", "==", post.id).orderBy("createdAt").get();
         const comments = [];
@@ -69,7 +68,6 @@ class Post {
             for (const doc of snapshot.docs) {
                 const comment = doc.data();
                 comment.id = doc.id;
-                await this.addAuthorMeta(comment);
                 if (comment.postId == comment.parentId) {
                     // Add at bottom
                     comment.depth = 0;
@@ -82,10 +80,18 @@ class Post {
                         comment.depth = comments[i].depth + 1;
                         comments.splice(i + 1, 0, comment);
                     }
+                    else {
+                        // All comments should belong to another. So, it should come here.
+                        // So, just put it at the end just in case.
+                        comment.depth = 0;
+                        comments.push(comment);
+                    }
                 }
             }
         }
         post.comments = comments;
+        // Add user meta: Name (first + last), level, photoUrl.
+        await this.addMetaOfAuthors([post, ...comments]);
         return post;
     }
     /**
@@ -253,6 +259,15 @@ class Post {
         return admin.messaging().send(payload);
     }
     /**
+     * Add author meta for all articles.
+     *
+     * @param articles post or comment document.
+     */
+    static async addMetaOfAuthors(articles) {
+        const futures = articles.map((a) => this.addAuthorMeta(a));
+        await Promise.all(futures);
+    }
+    /**
      * Adds author information on the document.
      *
      * @param postOrComment post or comment document
@@ -261,7 +276,12 @@ class Post {
     static async addAuthorMeta(postOrComment) {
         var _a, _b, _c, _d;
         const userData = await user_1.User.get(postOrComment.uid);
-        if (userData != null) {
+        if (userData === null) {
+            postOrComment.author = "";
+            postOrComment.authorLevel = 0;
+            postOrComment.authorPhotoUrl = "";
+        }
+        else {
             postOrComment.author = `${(_a = userData === null || userData === void 0 ? void 0 : userData.firstName) !== null && _a !== void 0 ? _a : ""} ${(_b = userData === null || userData === void 0 ? void 0 : userData.lastName) !== null && _b !== void 0 ? _b : ""}`;
             postOrComment.authorLevel = (_c = userData === null || userData === void 0 ? void 0 : userData.level) !== null && _c !== void 0 ? _c : 0;
             postOrComment.authorPhotoUrl = (_d = userData === null || userData === void 0 ? void 0 : userData.photoUrl) !== null && _d !== void 0 ? _d : "";

@@ -22,58 +22,42 @@ const ready_1 = require("../ready");
 const post_1 = require("../classes/post");
 const comment_1 = require("../classes/comment");
 const report_1 = require("../classes/report");
-exports.postList = functions
-    .region("us-central1", "asia-northeast3")
-    .https.onRequest((req, res) => {
+exports.postList = functions.region("us-central1", "asia-northeast3").https.onRequest((req, res) => {
     ready_1.ready({ req, res }, async (data) => {
         res.status(200).send(await post_1.Post.list(data));
     });
 });
-exports.postView = functions
-    .region("us-central1", "asia-northeast3")
-    .https.onRequest((req, res) => {
+exports.postView = functions.region("us-central1", "asia-northeast3").https.onRequest((req, res) => {
     ready_1.ready({ req, res }, async (data) => {
         res.status(200).send(await post_1.Post.view(data));
     });
 });
-exports.postCreate = functions
-    .region("us-central1", "asia-northeast3")
-    .https.onRequest((req, res) => {
+exports.postCreate = functions.region("us-central1", "asia-northeast3").https.onRequest((req, res) => {
     ready_1.ready({ req, res, auth: true }, async (data) => {
         res.status(200).send(await post_1.Post.create(data));
     });
 });
-exports.postUpdate = functions
-    .region("us-central1", "asia-northeast3")
-    .https.onRequest((req, res) => {
+exports.postUpdate = functions.region("us-central1", "asia-northeast3").https.onRequest((req, res) => {
     ready_1.ready({ req, res, auth: true }, async (data) => {
         res.status(200).send(await post_1.Post.update(data));
     });
 });
-exports.postDelete = functions
-    .region("us-central1", "asia-northeast3")
-    .https.onRequest((req, res) => {
+exports.postDelete = functions.region("us-central1", "asia-northeast3").https.onRequest((req, res) => {
     ready_1.ready({ req, res, auth: true }, async (data) => {
         res.status(200).send(await post_1.Post.delete(data));
     });
 });
-exports.commentCreate = functions
-    .region("us-central1", "asia-northeast3")
-    .https.onRequest((req, res) => {
+exports.commentCreate = functions.region("us-central1", "asia-northeast3").https.onRequest((req, res) => {
     ready_1.ready({ req, res, auth: true }, async (data) => {
         res.status(200).send(await comment_1.Comment.create(data));
     });
 });
-exports.commentUpdate = functions
-    .region("us-central1", "asia-northeast3")
-    .https.onRequest((req, res) => {
+exports.commentUpdate = functions.region("us-central1", "asia-northeast3").https.onRequest((req, res) => {
     ready_1.ready({ req, res, auth: true }, async (data) => {
         res.status(200).send(await comment_1.Comment.update(data));
     });
 });
-exports.commentDelete = functions
-    .region("us-central1", "asia-northeast3")
-    .https.onRequest((req, res) => {
+exports.commentDelete = functions.region("us-central1", "asia-northeast3").https.onRequest((req, res) => {
     ready_1.ready({ req, res, auth: true }, async (data) => {
         res.status(200).send(await comment_1.Comment.delete(data));
     });
@@ -90,9 +74,7 @@ exports.sendMessageOnCommentCreate = functions
     .onCreate((snapshot, context) => {
     return comment_1.Comment.sendMessageOnCreate(snapshot.data(), context.params.commentId);
 });
-exports.report = functions
-    .region("us-central1", "asia-northeast3")
-    .https.onRequest((req, res) => {
+exports.report = functions.region("us-central1", "asia-northeast3").https.onRequest((req, res) => {
     ready_1.ready({ req, res, auth: true }, async (data) => {
         res.status(200).send(await report_1.Report.create(data));
     });
