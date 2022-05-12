@@ -7,6 +7,7 @@ import {
   ERROR_EMPTY_UID,
   ERROR_EMPTY_UIDS,
   ERROR_TITLE_AND_BODY_CANT_BE_BOTH_EMPTY,
+  ERROR_YOU_ARE_NOT_ADMIN,
 } from "../defines";
 import {
   ChatRequestData,
@@ -29,6 +30,7 @@ import { MessagingTopicManagementResponse } from "firebase-admin/lib/messaging/m
 import { MapStringBoolean, MapStringString } from "../interfaces/common.interface";
 import { Category } from "./category";
 import { CategoryDocument } from "../interfaces/forum.interface";
+import { User } from "./user";
 
 export class Messaging {
   static defaultTopic = "defaultTopic";
@@ -666,6 +668,12 @@ export class Messaging {
 
   static async sendMessageToTopic(query: SendMessageToTopicRequest) {
     if (!query.topic) throw ERROR_EMPTY_TOPIC;
+    if (query.topic === Messaging.defaultTopic) {
+      const re: boolean = await User.isAdmin(query.uid ?? "");
+      if (re === false) {
+        throw ERROR_YOU_ARE_NOT_ADMIN;
+      }
+    }
     const payload = this.topicPayload(query.topic, query);
     try {
       const res = await admin.messaging().send(payload);

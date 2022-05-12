@@ -10,7 +10,7 @@ export const sendMessageToAllUsers = functions
   .region("us-central1", "asia-northeast3")
   .https.onRequest(async (req, res) => {
     ready({ req, res, auth: true }, async (data) => {
-      data["topic"] = "defaultTopic";
+      data["topic"] = Messaging.defaultTopic;
       res.status(200).send(await Messaging.sendMessageToTopic(data));
     });
   });

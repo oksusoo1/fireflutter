@@ -66,16 +66,17 @@ export class User {
     return null;
   }
 
-  static async isAdmin(context: any) {
-    if (!context) return false;
-    if (context.empty) return false;
-    if (!context.auth) return false;
-    if (!context.auth.uid) return false;
+  /**
+   *
+   * @param uid
+   */
+  static async isAdmin(uid: string) {
+    if (!uid) return false;
 
     const doc = await Ref.adminDoc.get();
     const admins = doc.data();
     if (!admins) return false;
-    if (!admins[context.auth.uid]) return false;
+    if (!admins[uid]) return false;
     return true;
   }
 
@@ -96,8 +97,8 @@ export class User {
   }
 
   static async disableUser(
-      data: any,
-      context: any
+    data: any,
+    context: any
   ): Promise<
     | admin.auth.UserRecord
     | {
