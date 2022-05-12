@@ -142,8 +142,8 @@ export class Comment {
   }
 
   static async sendMessageOnCreate(
-    data: CommentDocument,
-    id: string
+      data: CommentDocument,
+      id: string
   ): Promise<OnCommentCreateResponse | null> {
     const post = await Post.get(data.postId);
     if (!post) return null;
@@ -172,21 +172,21 @@ export class Comment {
 
     // Don't send the same message twice to topic subscribers
     const userUids = await Messaging.getUidsWithoutSubscription(
-      ancestorsUid.join(","),
-      "topic/forum/" + topic
+        ancestorsUid.join(","),
+        "topic/forum/" + topic
     );
 
     // get uids with user setting commentNotification is set.
     const commentNotifyeesUids = await Messaging.getUidsWithSubscription(
-      userUids.join(","),
-      Messaging.commentNotificationField
+        userUids.join(","),
+        Messaging.commentNotificationField
     );
 
     const tokens = await Messaging.getTokensFromUids(commentNotifyeesUids.join(","));
 
     const sendToTokenRes = await Messaging.sendingMessageToTokens(
-      tokens,
-      Messaging.preMessagePayload(messageData)
+        tokens,
+        Messaging.preMessagePayload(messageData)
     );
     return {
       topicResponse: sendToTopicRes,

@@ -6,7 +6,7 @@ import * as weekOfYear from "dayjs/plugin/weekOfYear";
 dayjs.extend(dayOfYear);
 dayjs.extend(weekOfYear);
 
-import { PostDocument, PostListOptions } from "../interfaces/forum.interface";
+import { CommentDocument, PostDocument, PostListOptions } from "../interfaces/forum.interface";
 
 import { Ref } from "./ref";
 import {
@@ -24,6 +24,7 @@ import { Storage } from "./storage";
 import { Category } from "./category";
 import { Point } from "./point";
 import { Utils } from "./utils";
+import { User } from "./user";
 
 export class Post {
   /**
@@ -57,7 +58,15 @@ export class Post {
 
     if (snapshot.size > 0) {
       const docs = snapshot.docs;
-      docs.forEach((doc) => posts.push({ id: doc.id, ...doc.data() } as PostDocument));
+      for (const doc of docs) {
+        const post = doc.data() as PostDocument;
+        post.id = doc.id;
+
+        if (options.content === "N") delete post.content;
+        if (options.author !== "N") await this.addAuthorMeta(post);
+
+        posts.push(post);
+      }
     }
 
     return posts;
@@ -70,6 +79,41 @@ export class Post {
   static async view(data: { id: string }): Promise<PostDocument> {
     const post = await this.get(data.id);
     if (post === null) throw ERROR_POST_NOT_EXIST;
+
+    // Add user meta: Name (first + last), level, photoUrl.
+    await this.addAuthorMeta(post);
+
+    // Get post comments.
+    const snapshot = await Ref.commentCol.where("postId", "==", post.id).orderBy("createdAt").get();
+    const comments: CommentDocument[] = [];
+    if (snapshot.empty === false) {
+      for (const doc of snapshot.docs) {
+        const comment = doc.data() as CommentDocument;
+        comment.id = doc.id;
+
+        await this.addAuthorMeta(comment);
+
+        if (comment.postId == comment.parentId) {
+          // Add at bottom
+          comment.depth = 0;
+          comments.push(comment);
+        } else {
+          // It's a comment under another comemnt. Find parent.
+          const i = comments.findIndex((e) => e.id == comment.parentId);
+          if (i >= 0) {
+            comment.depth = comments[i].depth + 1;
+            comments.splice(i + 1, 0, comment);
+          } else {
+            // All comments should belong to another. So, it should come here.
+            // So, just put it at the end just in case.
+            comment.depth = 0;
+            comments.push(comment);
+          }
+        }
+      }
+    }
+
+    post.comments = comments;
     return post;
   }
 
@@ -248,5 +292,27 @@ export class Post {
       uid: data.uid,
     });
     return admin.messaging().send(payload);
+  }
+
+  /**
+   * Adds author information on the document.
+   *
+   * @param postOrComment post or comment document
+   * @returns returns post with author's information included.
+   */
+  static async addAuthorMeta<T>(postOrComment: any): Promise<T> {
+    const userData = await User.get(postOrComment.uid);
+
+    if (userData === null) {
+      postOrComment.author = "";
+      postOrComment.authorLevel = 0;
+      postOrComment.authorPhotoUrl = "";
+    } else {
+      postOrComment.author = `${userData?.firstName ?? ""} ${userData?.lastName ?? ""}`;
+      postOrComment.authorLevel = userData?.level ?? 0;
+      postOrComment.authorPhotoUrl = userData?.photoUrl ?? "";
+    }
+
+    return postOrComment;
   }
 }

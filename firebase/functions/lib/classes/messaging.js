@@ -432,10 +432,12 @@ class Messaging {
         return re;
     }
     /**
+     * Returns an array of uid that has subscribed to the topic(of the path).
+     *
      *
      * @param uids user uids
      * @param path path to user settings user-settings/{uid}/path
-     *        path can be `forum/posts_qna` or `job/accountant`
+     *        path can be `forum/posts_qna`, `job/accountant`, or `newCommentUnderMyPostOrComment`.
      * @returns uids with user subscription with truthy value
      */
     static async getUidsWithSubscription(uids, path) {

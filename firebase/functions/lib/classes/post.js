@@ -14,6 +14,7 @@ const storage_1 = require("./storage");
 const category_1 = require("./category");
 const point_1 = require("./point");
 const utils_1 = require("./utils");
+const user_1 = require("./user");
 class Post {
     /**
      *
@@ -39,7 +40,15 @@ class Post {
         const snapshot = await q.get();
         if (snapshot.size > 0) {
             const docs = snapshot.docs;
-            docs.forEach((doc) => posts.push(Object.assign({ id: doc.id }, doc.data())));
+            for (const doc of docs) {
+                const post = doc.data();
+                post.id = doc.id;
+                if (options.content === "N")
+                    delete post.content;
+                if (options.author !== "N")
+                    await this.addAuthorMeta(post);
+                posts.push(post);
+            }
         }
         return posts;
     }
@@ -51,6 +60,32 @@ class Post {
         const post = await this.get(data.id);
         if (post === null)
             throw defines_1.ERROR_POST_NOT_EXIST;
+        // Add user meta: Name (first + last), level, photoUrl.
+        await this.addAuthorMeta(post);
+        // Get post comments.
+        const snapshot = await ref_1.Ref.commentCol.where("postId", "==", post.id).orderBy("createdAt").get();
+        const comments = [];
+        if (snapshot.empty === false) {
+            for (const doc of snapshot.docs) {
+                const comment = doc.data();
+                comment.id = doc.id;
+                await this.addAuthorMeta(comment);
+                if (comment.postId == comment.parentId) {
+                    // Add at bottom
+                    comment.depth = 0;
+                    comments.push(comment);
+                }
+                else {
+                    // It's a comment under another comemnt. Find parent.
+                    const i = comments.findIndex((e) => e.id == comment.parentId);
+                    if (i >= 0) {
+                        comment.depth = comments[i].depth + 1;
+                        comments.splice(i + 1, 0, comment);
+                    }
+                }
+            }
+        }
+        post.comments = comments;
         return post;
     }
     /**
@@ -205,7 +240,7 @@ class Post {
         }
         return null;
     }
-    static async sendMessageOnPostCreate(data, id) {
+    static async sendMessageOnCreate(data, id) {
         var _a, _b;
         const category = data.category;
         const payload = messaging_1.Messaging.topicPayload("posts_" + category, {
@@ -217,54 +252,21 @@ class Post {
         });
         return admin.messaging().send(payload);
     }
-    static async sendMessageOnCommentCreate(data, id) {
-        const post = await this.get(data.postId);
-        if (!post)
-            return null;
-        const messageData = {
-            title: post.title,
-            body: data.content,
-            postId: data.postId,
-            type: "post",
-            uid: data.uid,
-        };
-        // console.log(messageData);
-        const topic = "comments_" + post.category;
-        // send push notification to topics
-        const sendToTopicRes = await admin.messaging().send(messaging_1.Messaging.topicPayload(topic, messageData));
-        // get comment ancestors
-        const ancestorsUid = await Post.getCommentAncestorsUid(id, data.uid);
-        // add the post uid if the comment author is not the post author
-        if (post.uid != data.uid && !ancestorsUid.includes(post.uid)) {
-            ancestorsUid.push(post.uid);
+    /**
+     * Adds author information on the document.
+     *
+     * @param postOrComment post or comment document
+     * @returns returns post with author's information included.
+     */
+    static async addAuthorMeta(postOrComment) {
+        var _a, _b, _c, _d;
+        const userData = await user_1.User.get(postOrComment.uid);
+        if (userData != null) {
+            postOrComment.author = `${(_a = userData === null || userData === void 0 ? void 0 : userData.firstName) !== null && _a !== void 0 ? _a : ""} ${(_b = userData === null || userData === void 0 ? void 0 : userData.lastName) !== null && _b !== void 0 ? _b : ""}`;
+            postOrComment.authorLevel = (_c = userData === null || userData === void 0 ? void 0 : userData.level) !== null && _c !== void 0 ? _c : 0;
+            postOrComment.authorPhotoUrl = (_d = userData === null || userData === void 0 ? void 0 : userData.photoUrl) !== null && _d !== void 0 ? _d : "";
         }
-        // Don't send the same message twice to topic subscribers
-        const userUids = await messaging_1.Messaging.getUidsWithoutSubscription(ancestorsUid.join(","), "topic/forum/" + topic);
-        // get uids with user setting commentNotification is set.
-        const commentNotifyeesUids = await messaging_1.Messaging.getUidsWithSubscription(userUids.join(","), messaging_1.Messaging.commentNotificationField);
-        const tokens = await messaging_1.Messaging.getTokensFromUids(commentNotifyeesUids.join(","));
-        const sendToTokenRes = await messaging_1.Messaging.sendingMessageToTokens(tokens, messaging_1.Messaging.preMessagePayload(messageData));
-        return {
-            topicResponse: sendToTopicRes,
-            tokenResponse: sendToTokenRes,
-        };
-    }
-    // get comment ancestor by getting parent comment until it reach the root comment
-    // return the uids of the author
-    static async getCommentAncestorsUid(id, authorUid) {
-        const c = await ref_1.Ref.commentDoc(id).get();
-        let comment = c.data();
-        const uids = [];
-        while (comment.postId != comment.parentId) {
-            const com = await ref_1.Ref.commentDoc(comment.parentId).get();
-            if (!com.exists)
-                continue;
-            comment = com.data();
-            if (comment.uid == authorUid)
-                continue; // skip the author's uid.
-            uids.push(comment.uid);
-        }
-        return uids.filter((v, i, a) => a.indexOf(v) === i); // remove duplicate
+        return postOrComment;
     }
 }
 exports.Post = Post;
