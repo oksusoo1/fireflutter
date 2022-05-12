@@ -63,13 +63,21 @@ export class Post {
         post.id = doc.id;
 
         if (options.content === "N") delete post.content;
-        if (options.author !== "N") await this.addAuthorMeta(post);
 
         posts.push(post);
       }
     }
 
+    if (posts.length && options.author !== "N") {
+      await this.addMetaOfAuthors(posts);
+    }
+
     return posts;
+  }
+
+  static async addMetaOfAuthors(articles: any[]) {
+    const futures = articles.map((a) => this.addAuthorMeta(a));
+    await Promise.all(futures);
   }
 
   /**
@@ -80,9 +88,6 @@ export class Post {
     const post = await this.get(data.id);
     if (post === null) throw ERROR_POST_NOT_EXIST;
 
-    // Add user meta: Name (first + last), level, photoUrl.
-    await this.addAuthorMeta(post);
-
     // Get post comments.
     const snapshot = await Ref.commentCol.where("postId", "==", post.id).orderBy("createdAt").get();
     const comments: CommentDocument[] = [];
@@ -90,8 +95,6 @@ export class Post {
       for (const doc of snapshot.docs) {
         const comment = doc.data() as CommentDocument;
         comment.id = doc.id;
-
-        await this.addAuthorMeta(comment);
 
         if (comment.postId == comment.parentId) {
           // Add at bottom
@@ -114,6 +117,9 @@ export class Post {
     }
 
     post.comments = comments;
+
+    // Add user meta: Name (first + last), level, photoUrl.
+    await this.addMetaOfAuthors([this.addAuthorMeta(post), ...comments]);
     return post;
   }
 
