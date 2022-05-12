@@ -82,6 +82,12 @@ class Post {
                         comment.depth = comments[i].depth + 1;
                         comments.splice(i + 1, 0, comment);
                     }
+                    else {
+                        // All comments should belong to another. So, it should come here.
+                        // So, just put it at the end just in case.
+                        comment.depth = 0;
+                        comments.push(comment);
+                    }
                 }
             }
         }
@@ -261,7 +267,12 @@ class Post {
     static async addAuthorMeta(postOrComment) {
         var _a, _b, _c, _d;
         const userData = await user_1.User.get(postOrComment.uid);
-        if (userData != null) {
+        if (userData === null) {
+            postOrComment.author = "";
+            postOrComment.authorLevel = 0;
+            postOrComment.authorPhotoUrl = "";
+        }
+        else {
             postOrComment.author = `${(_a = userData === null || userData === void 0 ? void 0 : userData.firstName) !== null && _a !== void 0 ? _a : ""} ${(_b = userData === null || userData === void 0 ? void 0 : userData.lastName) !== null && _b !== void 0 ? _b : ""}`;
             postOrComment.authorLevel = (_c = userData === null || userData === void 0 ? void 0 : userData.level) !== null && _c !== void 0 ? _c : 0;
             postOrComment.authorPhotoUrl = (_d = userData === null || userData === void 0 ? void 0 : userData.photoUrl) !== null && _d !== void 0 ? _d : "";
