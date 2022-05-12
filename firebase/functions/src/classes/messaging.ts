@@ -668,12 +668,16 @@ export class Messaging {
 
   static async sendMessageToTopic(query: SendMessageToTopicRequest) {
     if (!query.topic) throw ERROR_EMPTY_TOPIC;
+
+    // Only admin can sent message to default topic.
     if (query.topic === Messaging.defaultTopic) {
       const re: boolean = await User.isAdmin(query.uid ?? "");
       if (re === false) {
         throw ERROR_YOU_ARE_NOT_ADMIN;
       }
     }
+
+    //
     const payload = this.topicPayload(query.topic, query);
     try {
       const res = await admin.messaging().send(payload);
