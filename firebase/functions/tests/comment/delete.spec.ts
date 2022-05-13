@@ -75,7 +75,7 @@ describe("comment delete test", () => {
     expect(post!.noOfComments === 1).true;
     const res = await Comment.delete({ id: comment!.id, uid: uid } as any);
     expect(res.id).equals(comment!.id);
-    const got = await Comment.get(comment!.id);
+    const got = await Comment.get(comment!.id!);
     expect(got).to.be.null;
 
     const postAfter = await Post.get(comment!.postId);
@@ -84,7 +84,7 @@ describe("comment delete test", () => {
 
   it("fail - already deleted", async () => {
     const created = await Test.createComment({ uid: uid });
-    const comment = await Comment.update({ id: created.id, uid: uid, deleted: true });
+    const comment = await Comment.update({ id: created.id, uid: uid, deleted: true } as any);
     try {
       await Comment.delete({ id: comment!.id, uid: uid } as any);
       expect.fail();

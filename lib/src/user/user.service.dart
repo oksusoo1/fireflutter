@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:rxdart/subjects.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import '../../fireflutter.dart';
@@ -47,11 +48,15 @@ class UserService with FirestoreMixin, DatabaseMixin {
   // DatabaseReference get _myDoc => FirebaseDatabase.instance.ref('users').child(uid);
 
   StreamSubscription? userSubscription;
-  StreamSubscription? messagingPermissionSubscription;
+  // StreamSubscription? messagingPermissionSubscription;
 
   /// This event will be posted whenever user document changes.
   // ignore: close_sinks
   BehaviorSubject<UserModel> changes = BehaviorSubject.seeded(UserModel());
+
+  /// This event will be posted only after loading user information from database (after user signs-in).
+  // ignore: close_sinks
+  BehaviorSubject<UserModel> signIn = BehaviorSubject.seeded(UserModel());
 
   /// Nothing but to instantiate `UserSerivce` object. So it will listen auth changes and update user profile.
   init() {}
@@ -85,14 +90,6 @@ class UserService with FirestoreMixin, DatabaseMixin {
             // debugPrint(  'User sign-in as Anonymous; Warning! Fireflutter does not user anonymous account.');
             changes.add(user);
           } else {
-            messagingPermissionSubscription?.cancel();
-            messagingPermissionSubscription =
-                MessagingService.instance.permissionGranted.listen((x) {
-              if (x) {
-                MessagingService.instance.initializeSubscriptions();
-              }
-            });
-
             final doc = userDoc(_user.uid);
 
             /// Put user uid first, and use the model.
@@ -104,8 +101,11 @@ class UserService with FirestoreMixin, DatabaseMixin {
             if (user.docExists) {
               user.updateLastSignInAt();
             } else {
-              user.create();
+              await user.create();
             }
+
+            /// Post [signIn] event, after user sign in and load information from realtime database.
+            signIn.add(user);
 
             userSubscription = doc.onValue.listen((event) {
               /// ! Warning, Don't change user doc inside here. It will perpetually run.
@@ -232,4 +232,26 @@ class UserService with FirestoreMixin, DatabaseMixin {
       rethrow;
     }
   }
+
+  /// -------------- Get new users who have complete their profiles -------------
+  ///
+  /// * Use this to display new users on the screen.
+  ///
+  List<UserModel> newUsers = [];
+
+  /// Get new users and cache it for next use.
+  Future<List<UserModel>> getNewUsers() async {
+    if (newUsers.length > 0) return newUsers;
+    final DataSnapshot snapshot =
+        await usersRef.orderByChild('profileReady').limitToFirst(100).get();
+    if (snapshot.exists == false) return [];
+
+    snapshot.children
+        .forEach((element) => newUsers.add(UserModel.fromJson(element.value, element.key!)));
+
+    return newUsers;
+  }
+
+  ///
+  /// EO new users
 }

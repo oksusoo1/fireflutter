@@ -49,6 +49,12 @@ class _ExampleAppState extends State<ExampleApp> {
   void initState() {
     super.initState();
     UserService.instance.init();
+
+    FunctionsApi.instance.init(
+      serverUrl:
+          "https://asia-northeast3-fireflutter-example-2.cloudfunctions.net/",
+      // onError: error,
+    );
   }
 
   @override

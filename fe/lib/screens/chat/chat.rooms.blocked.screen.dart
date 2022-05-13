@@ -1,6 +1,9 @@
 import 'package:fe/screens/chat/chat.room.screen.dart';
 import 'package:fe/screens/chat/widgets/chat.rooms.empty.dart';
 import 'package:fe/services/app.service.dart';
+import 'package:fe/services/defines.dart';
+import 'package:fe/services/global.dart';
+import 'package:fe/widgets/layout/layout.dart';
 import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
 import 'package:extended/extended.dart';
@@ -13,9 +16,11 @@ class ChatRoomsBlockedScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Chat Blocked Rooms'),
+    return Layout(
+      backButton: true,
+      title: const Text(
+        'Chat Blocked Rooms',
+        style: titleStyle,
       ),
       body: Auth(
         signedIn: (u) => Column(
@@ -23,10 +28,9 @@ class ChatRoomsBlockedScreen extends StatelessWidget {
             Text('my uid: ' + FirebaseAuth.instance.currentUser!.uid),
             Row(children: [
               TextButton(
-                  onPressed: () {
-                    AppService.instance.router.open(ChatRoomScreen.routeName);
-                  },
-                  child: const Text('Room list')),
+                onPressed: service.router.openChatRooms,
+                child: const Text('Room list'),
+              ),
             ]),
             Expanded(
               child: ChatRoomsBlocked(

@@ -13,6 +13,7 @@ class SearchOptionModel {
   int limit = 20;
   int offset = 0;
   int page = 1;
+  List<String> filter = [];
   List<String> sort = ['createdAt:desc'];
 }
 
@@ -41,7 +42,7 @@ class SearchService {
     // print('Fetching posts');
     // print('options ---> ${opts.toString()}');
 
-    List filters = [];
+    List filters = opts.filter;
     if (opts.uid.isNotEmpty) filters.add('uid = ${opts.uid}');
     if (opts.category.isNotEmpty && opts.index != 'comments')
       filters.add('category = ${opts.category}');
@@ -57,10 +58,12 @@ class SearchService {
 
   /// Returns a total count of documents a user owned in the given index.
   ///
+  /// ! Attention - move this to cloud functions.
   Future<int> count({
     required String uid,
     String index = 'posts',
   }) async {
+    uid = uid.replaceAll('@', '');
     final res = await client.index(index).search(
       '',
       filter: ['uid = ' + uid],

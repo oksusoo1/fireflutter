@@ -7,6 +7,8 @@ const defines_1 = require("../defines");
 const storage_1 = require("./storage");
 const point_1 = require("./point");
 const post_1 = require("./post");
+const utils_1 = require("./utils");
+const messaging_1 = require("./messaging");
 class Comment {
     /**
      * Creates a comment
@@ -27,8 +29,8 @@ class Comment {
             files: files,
             hasPhoto: files.length > 0,
             deleted: false,
-            createdAt: admin.firestore.FieldValue.serverTimestamp(),
-            updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+            createdAt: utils_1.Utils.getTimestamp(),
+            updatedAt: utils_1.Utils.getTimestamp(),
         };
         const ref = await ref_1.Ref.commentCol.add(doc);
         await point_1.Point.commentCreatePoint(data.uid, ref.id);
@@ -57,7 +59,7 @@ class Comment {
             throw defines_1.ERROR_NOT_YOUR_COMMENT;
         delete data.id;
         // updatedAt
-        data.updatedAt = admin.firestore.FieldValue.serverTimestamp();
+        data.updatedAt = utils_1.Utils.getTimestamp();
         // hasPhoto
         if (data.files && data.files.length) {
             data.hasPhoto = true;
@@ -120,6 +122,56 @@ class Comment {
             return comment;
         }
         return null;
+    }
+    static async sendMessageOnCreate(data, id) {
+        const post = await post_1.Post.get(data.postId);
+        if (!post)
+            return null;
+        const messageData = {
+            title: post.title,
+            body: data.content,
+            postId: data.postId,
+            type: "post",
+            uid: data.uid,
+        };
+        // console.log(messageData);
+        const topic = "comments_" + post.category;
+        // send push notification to topics
+        const sendToTopicRes = await admin.messaging().send(messaging_1.Messaging.topicPayload(topic, messageData));
+        // get comment ancestors
+        const ancestorsUid = await this.getAncestorsUid(id, data.uid);
+        // add the post uid if the comment author is not the post author
+        if (post.uid != data.uid && !ancestorsUid.includes(post.uid)) {
+            ancestorsUid.push(post.uid);
+        }
+        // Don't send the same message twice to topic subscribers
+        const userUids = await messaging_1.Messaging.getUidsWithoutSubscription(ancestorsUid.join(","), "topic/forum/" + topic);
+        // get uids with user setting commentNotification is set.
+        const commentNotifyeesUids = await messaging_1.Messaging.getUidsWithSubscription(userUids.join(","), messaging_1.Messaging.commentNotificationField);
+        const tokens = await messaging_1.Messaging.getTokensFromUids(commentNotifyeesUids.join(","));
+        // console.log(tokens);
+        const sendToTokenRes = await messaging_1.Messaging.sendingMessageToTokens(tokens, messaging_1.Messaging.preMessagePayload(messageData));
+        return {
+            topicResponse: sendToTopicRes,
+            tokenResponse: sendToTokenRes,
+        };
+    }
+    // get comment ancestor by getting parent comment until it reach the root comment
+    // return the uids of the author
+    static async getAncestorsUid(id, authorUid) {
+        const c = await ref_1.Ref.commentDoc(id).get();
+        let comment = c.data();
+        const uids = [];
+        while (comment.postId != comment.parentId) {
+            const com = await ref_1.Ref.commentDoc(comment.parentId).get();
+            if (!com.exists)
+                continue;
+            comment = com.data();
+            if (comment.uid == authorUid)
+                continue; // skip the author's uid.
+            uids.push(comment.uid);
+        }
+        return uids.filter((v, i, a) => a.indexOf(v) === i); // remove duplicate
     }
 }
 exports.Comment = Comment;

@@ -25,13 +25,11 @@ class PostModel with FirestoreMixin, ForumBase implements Article {
     this.month = 0,
     this.day = 0,
     this.week = 0,
-    createdAt,
-    updatedAt,
+    this.createdAt = 0,
+    this.updatedAt = 0,
     data,
     this.isHtmlContent = false,
-  })  : data = data ?? {},
-        createdAt = createdAt ?? Timestamp.now(),
-        updatedAt = updatedAt ?? Timestamp.now();
+  }) : data = data ?? {};
 
   /// data is the document data object.
   Json data;
@@ -85,8 +83,8 @@ class PostModel with FirestoreMixin, ForumBase implements Article {
   int day;
   int week;
 
-  Timestamp createdAt;
-  Timestamp updatedAt;
+  int createdAt;
+  int updatedAt;
 
   /// To open the post data. Use this to display post content or not on post list screen.
   bool open = false;
@@ -107,17 +105,6 @@ class PostModel with FirestoreMixin, ForumBase implements Article {
     /// Check if the content has any html tag.
     bool html = _isHtml(content);
 
-    /// If the post is created via http, the [createdAt] and [updatedAt] have different format.
-    Timestamp createdAt;
-    Timestamp updatedAt;
-    if (data['createdAt'] is Map) {
-      createdAt = Timestamp(data['createdAt']['_seconds'], data['createdAt']['_nanoseconds']);
-      updatedAt = Timestamp(data['updatedAt']['_seconds'], data['updatedAt']['_nanoseconds']);
-    } else {
-      createdAt = data['createdAt'];
-      updatedAt = data['updatedAt'] ?? Timestamp.now();
-    }
-
     final post = PostModel(
       id: id ?? data['id'],
       category: data['category'] ?? '',
@@ -137,8 +124,8 @@ class PostModel with FirestoreMixin, ForumBase implements Article {
       month: data['month'] ?? 0,
       day: data['day'] ?? 0,
       week: data['week'] ?? 0,
-      createdAt: createdAt,
-      updatedAt: updatedAt,
+      createdAt: data['createdAt'] ?? 0,
+      updatedAt: data['updatedAt'] ?? 0,
       data: data,
     );
 
@@ -160,9 +147,6 @@ class PostModel with FirestoreMixin, ForumBase implements Article {
 
   /// Get indexed document data from meilisearch of map and convert it into post model
   factory PostModel.fromMeili(Json data, String id) {
-    final _createdAt = data['createdAt'] ?? 0;
-    final _updatedAt = data['updatedAt'] ?? 0;
-
     return PostModel(
       id: id,
       category: data['category'] ?? '',
@@ -172,8 +156,8 @@ class PostModel with FirestoreMixin, ForumBase implements Article {
       like: data['like'] ?? 0,
       dislike: data['dislike'] ?? 0,
       deleted: data.containsKey('deleted') ? data['deleted'] == 'Y' : false,
-      createdAt: Timestamp.fromMillisecondsSinceEpoch(_createdAt * 1000),
-      updatedAt: Timestamp.fromMillisecondsSinceEpoch(_updatedAt * 1000),
+      createdAt: data['createdAt'] ?? 0,
+      updatedAt: data['updatedAt'] ?? 0,
       data: data,
     );
   }
@@ -397,12 +381,12 @@ class PostModel with FirestoreMixin, ForumBase implements Article {
   /// If the post was created just now (in 5 minutes), then returns true.
   ///
   /// Use this to check if this post has just been created.
-  bool get justNow {
-    final date = DateTime.fromMillisecondsSinceEpoch(createdAt.millisecondsSinceEpoch);
-    final today = DateTime.now();
-    final diff = today.difference(date);
-    return diff.inMinutes < 5;
-  }
+  // bool get justNow {
+  //   final date = DateTime.fromMillisecondsSinceEpoch(createdAt.millisecondsSinceEpoch);
+  //   final today = DateTime.now();
+  //   final diff = today.difference(date);
+  //   return diff.inMinutes < 5;
+  // }
 
   /// Returns true if the text is HTML.
   static bool _isHtml(String t) {

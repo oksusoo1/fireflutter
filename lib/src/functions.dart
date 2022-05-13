@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:path/path.dart' as p;
@@ -88,8 +90,7 @@ bounce(
 
 /// Wait until
 Future<int> waitUntil(bool test(),
-    {final int maxIterations: 100,
-    final Duration step: const Duration(milliseconds: 50)}) async {
+    {final int maxIterations: 100, final Duration step: const Duration(milliseconds: 50)}) async {
   int iterations = 0;
   for (; iterations < maxIterations; iterations++) {
     await Future.delayed(step);
@@ -98,8 +99,7 @@ Future<int> waitUntil(bool test(),
     }
   }
   if (iterations >= maxIterations) {
-    throw TimeoutException(
-        "Condition not reached within ${iterations * step.inMilliseconds}ms");
+    throw TimeoutException("Condition not reached within ${iterations * step.inMilliseconds}ms");
   }
   return iterations;
 }
@@ -112,17 +112,30 @@ Future<String> getAbsoluteTemporaryFilePath(String relativePath) async {
 }
 
 /// Return UUID
-String getRandomString({int len = 16, String? prefix}) {
+String getRandomString({int len = 16}) {
   const uuid = Uuid();
   return uuid.v4();
+}
 
-  // const charset = 'abcdefghijklmnopqrstuvwxyz0123456789';
-  // var t = '';
-  // for (var i = 0; i < len; i++) {
-  //   t += charset[(Random().nextInt(charset.length))];
-  // }
-  // if (prefix != null && prefix.isNotEmpty) t = prefix + t;
-  // return t;
+/// ! Attention: Alphabet `I` is missing since it is confusing with `i` and `l`.
+/// ! Attention: Alphabet `O` is not included since it is confusing with `0`.
+String getRandomAlphabet({int len = 1}) {
+  const charset = 'ABCDEFGHJKLMNPQRSTUVWXYZ';
+  var t = '';
+  for (var i = 0; i < len; i++) {
+    t += charset[(Random().nextInt(charset.length))];
+  }
+  return t;
+}
+
+/// ! Attention: Number `0` is missing since it is confusing with `O` and `o`.
+String getRandomNumber({int len = 1}) {
+  const charset = '123456789';
+  var t = '';
+  for (var i = 0; i < len; i++) {
+    t += charset[(Random().nextInt(charset.length))];
+  }
+  return t;
 }
 
 /// Returns a Color from hex string.
@@ -164,10 +177,8 @@ bool isImageUrl(String url) {
   if (t.endsWith('.gif')) return true;
 
   if (t.startsWith('http') &&
-      (t.contains('.jpg') ||
-          t.contains('.jpeg') ||
-          t.contains('.png') ||
-          t.contains('.gif'))) return true;
+      (t.contains('.jpg') || t.contains('.jpeg') || t.contains('.png') || t.contains('.gif')))
+    return true;
   return false;
 }
 
@@ -179,21 +190,16 @@ bool isFirebaseStorageUrl(String url) {
 /// Returns short date time string from Firestore Timestamp
 ///
 /// It returns one of 'MM/DD/YYYY' or 'HH:MM AA' format.
-String shortDateTime(createdAt) {
-  final date =
-      DateTime.fromMillisecondsSinceEpoch(createdAt.millisecondsSinceEpoch);
+String shortDateTime(int createdAt) {
+  final date = DateTime.fromMillisecondsSinceEpoch(createdAt * 1000);
   final today = DateTime.now();
   bool re;
-  if (date.year == today.year &&
-      date.month == today.month &&
-      date.day == today.day) {
+  if (date.year == today.year && date.month == today.month && date.day == today.day) {
     re = true;
   } else {
     re = false;
   }
-  return re
-      ? DateFormat.jm().format(date).toLowerCase()
-      : DateFormat.yMd().format(date);
+  return re ? DateFormat.jm().format(date).toLowerCase() : DateFormat.yMd().format(date);
 }
 
 /// Alias of `shortDateTime()`.

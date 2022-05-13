@@ -1,4 +1,14 @@
-import * as admin from "firebase-admin";
+/**
+ * if [content] is 'Y', then it will return content. By default, it is 'Y'.
+ * if [author] is 'Y', then it will return author's name, level, photoUrl. By default, it is 'Y'.
+ */
+export interface PostListOptions {
+  category?: string;
+  limit?: string;
+  startAfter?: string;
+  content?: "Y" | "N";
+  author?: "Y" | "N";
+}
 
 export interface CategoryDocument {
   id?: string;
@@ -39,8 +49,8 @@ export interface PostDocument {
   day?: number;
   dayOfYear?: number;
   week?: number;
-  createdAt?: admin.firestore.FieldValue;
-  updatedAt?: admin.firestore.FieldValue;
+  createdAt?: number;
+  updatedAt?: number;
   point?: number;
   [key: string]: any;
 }
@@ -50,7 +60,7 @@ export interface PostDocument {
  *
  */
 export interface CommentDocument {
-  id: string;
+  id?: string;
   uid: string;
   postId: string;
   parentId: string;
@@ -58,9 +68,10 @@ export interface CommentDocument {
   files: string[];
   hasPhoto: boolean;
   deleted: boolean;
-  createdAt?: admin.firestore.FieldValue;
-  updatedAt?: admin.firestore.FieldValue;
+  createdAt?: number;
+  updatedAt?: number;
   point: number;
+  [key: string]: any;
 }
 
 /**
@@ -86,6 +97,6 @@ export interface CommentCreateRequirements {
   files: string[];
   hasPhoto: boolean;
   deleted: false;
-  createdAt: admin.firestore.FieldValue;
-  updatedAt: admin.firestore.FieldValue;
+  createdAt: number;
+  updatedAt: number;
 }

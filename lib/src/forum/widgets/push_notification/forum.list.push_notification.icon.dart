@@ -24,19 +24,19 @@ class ForumListPushNotificationIcon extends StatefulWidget {
 class _ForumListPushNotificationIconState extends State<ForumListPushNotificationIcon> {
   bool get hasSubscription {
     return UserService.instance.user.settings
-            .hasSubscription(NotificationOptions.post(widget.categoryId)) ||
+            .hasSubscription(NotificationOptions.post(widget.categoryId), 'forum') ||
         UserService.instance.user.settings
-            .hasSubscription(NotificationOptions.comment(widget.categoryId));
+            .hasSubscription(NotificationOptions.comment(widget.categoryId), 'forum');
   }
 
   bool get hasPostSubscription {
     return UserService.instance.user.settings
-        .hasSubscription(NotificationOptions.post(widget.categoryId));
+        .hasSubscription(NotificationOptions.post(widget.categoryId), 'forum');
   }
 
   bool get hasCommentSubscription {
     return UserService.instance.user.settings
-        .hasSubscription(NotificationOptions.comment(widget.categoryId));
+        .hasSubscription(NotificationOptions.comment(widget.categoryId), 'forum');
   }
 
   @override
@@ -49,6 +49,12 @@ class _ForumListPushNotificationIconState extends State<ForumListPushNotificatio
           alignment: AlignmentDirectional.center,
           children: [
             ForumListPushNotificationPopUpButton(
+              icon: Icon(
+                hasSubscription ? Icons.notifications_on : Icons.notifications_off,
+                color: hasSubscription
+                    ? Color.fromARGB(255, 74, 74, 74)
+                    : Color.fromARGB(255, 177, 177, 177),
+              ),
               items: [
                 PopupMenuItem(
                   child: Column(
@@ -100,19 +106,12 @@ class _ForumListPushNotificationIconState extends State<ForumListPushNotificatio
                   value: 'comment',
                 ),
               ],
-              icon: Icon(
-                hasSubscription ? Icons.notifications_on : Icons.notifications_off,
-                color: hasSubscription
-                    ? Color.fromARGB(255, 74, 74, 74)
-                    : Color.fromARGB(255, 177, 177, 177),
-                size: widget.size,
-              ),
               onSelected: onNotificationSelected,
             ),
             if (hasPostSubscription)
               Positioned(
                 top: 20,
-                left: 15,
+                left: 18,
                 child: Transform(
                   transform: Matrix4.rotationY(math.pi),
                   alignment: Alignment.center,
@@ -126,7 +125,7 @@ class _ForumListPushNotificationIconState extends State<ForumListPushNotificatio
             if (hasCommentSubscription)
               Positioned(
                 top: 20,
-                right: 5,
+                right: 18,
                 child: Icon(
                   Icons.circle,
                   size: 6,
@@ -154,26 +153,14 @@ class _ForumListPushNotificationIconState extends State<ForumListPushNotificatio
       topic = NotificationOptions.comment(widget.categoryId);
       title = 'comment ' + title;
     }
-    // try {
-    await MessagingService.instance.toggleSubscription(topic);
-    // } catch (e) {
-    //   widget.onError(e);
-    // }
 
+    await UserSettingService.instance.toggleSubscription(
+      topic,
+      'forum',
+    );
     return widget.onChanged(
       selection,
-      UserService.instance.user.settings.hasSubscription(topic),
+      UserService.instance.user.settings.hasSubscription(topic, 'forum'),
     );
-
-    // String msg =
-    //     UserService.instance.user.settings.hasSubscription(topic) ? 'subscribed' : 'unsubscribed';
-
-    // showDialog(
-    //   context: context,
-    //   builder: (c) => AlertDialog(
-    //     title: Text(title),
-    //     content: Text(widget.categoryId + " " + msg),
-    //   ),
-    // );
   }
 }

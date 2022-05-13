@@ -1,5 +1,6 @@
 import { CategoryDocument } from "../interfaces/forum.interface";
 import { Ref } from "./ref";
+import * as admin from "firebase-admin";
 
 export class Category {
   /**
@@ -35,6 +36,24 @@ export class Category {
     } else {
       return null;
     }
+  }
+
+  static async gets(categoryGroup?: string): Promise<CategoryDocument[]> {
+    let q: admin.firestore.Query = Ref.categoryCol;
+    if (categoryGroup != null) {
+      q = q.where("categoryGroup", "==", categoryGroup);
+    }
+    const querySnapshot = await q.orderBy("order", "desc").get();
+
+    if (querySnapshot.size == 0) return [];
+
+    const _categories: Array<CategoryDocument> = [];
+
+    querySnapshot.forEach((doc) =>
+      _categories.push({ id: doc.id, ...doc.data() } as CategoryDocument)
+    );
+
+    return _categories;
   }
 
   /**

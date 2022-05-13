@@ -35,21 +35,14 @@ class _NotificationSettingState extends State<NotificationSetting> {
         if (snapshot.hasData == false) return SizedBox.shrink();
         // print(UserSettingService.instance.settings.topics);
 
-        if (categories == null)
-          return Center(
-            child: CircularProgressIndicator.adaptive(),
-          );
+        if (categories == null) return Center(child: CircularProgressIndicator.adaptive());
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             CheckboxListTile(
-              value: UserSettingService.instance.hasSubscription(commentNotification),
-              onChanged: (b) async {
-                if (b == true) {
-                  UserSettingService.instance.subscribe(commentNotification);
-                } else {
-                  UserSettingService.instance.unsubscribe(commentNotification);
-                }
+              value: UserSettingService.instance.value(commentNotification) ?? false,
+              onChanged: (b) {
+                UserSettingService.instance.update({commentNotification: b});
               },
               title: Text('Comment notifications'),
               subtitle: Text('Receive notifications of new comments under my posts and comments'),
@@ -98,9 +91,9 @@ class _NotificationSettingState extends State<NotificationSetting> {
             ),
             for (CategoryModel cat in categories!)
               CheckboxListTile(
-                value: UserSettingService.instance.hasSubscription('posts_${cat.id}'),
-                onChanged: (b) async =>
-                    MessagingService.instance.updateSubscription('posts_${cat.id}', b ?? false),
+                value: UserSettingService.instance.hasSubscription('posts_${cat.id}', 'forum'),
+                onChanged: (b) async => UserSettingService.instance
+                    .updateSubscription('posts_${cat.id}', 'forum', b ?? false),
                 title: Text(cat.title),
                 controlAffinity: ListTileControlAffinity.leading,
               ),
@@ -119,9 +112,9 @@ class _NotificationSettingState extends State<NotificationSetting> {
             ),
             for (CategoryModel cat in categories!)
               CheckboxListTile(
-                value: UserSettingService.instance.hasSubscription('comments_${cat.id}'),
-                onChanged: (b) async =>
-                    MessagingService.instance.updateSubscription('comments_${cat.id}', b ?? false),
+                value: UserSettingService.instance.hasSubscription('comments_${cat.id}', 'forum'),
+                onChanged: (b) async => UserSettingService.instance
+                    .updateSubscription('comments_${cat.id}', 'forum', b ?? false),
                 title: Text(cat.title),
                 controlAffinity: ListTileControlAffinity.leading,
               ),
@@ -132,9 +125,20 @@ class _NotificationSettingState extends State<NotificationSetting> {
   }
 
   enableOrDisableAllNotification([bool enable = true]) async {
-    for (CategoryModel cat in categories!) {
-      MessagingService.instance.updateSubscription('posts_${cat.id}', enable);
-      MessagingService.instance.updateSubscription('comments_${cat.id}', enable);
+    String content = "All Notification";
+    if (enable) {
+      await UserSettingService.instance.enableAllNotification();
+      content = "Enabled " + content;
+    } else {
+      await UserSettingService.instance.disableAllNotification();
+      content = "Disabled " + content;
     }
+
+    showDialog(
+        context: context,
+        builder: (c) => AlertDialog(
+              title: Text('Notification'),
+              content: Text(content),
+            ));
   }
 }

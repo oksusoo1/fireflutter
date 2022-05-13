@@ -42,11 +42,13 @@ Table of contents
   - [UserModel](#usermodel)
   - [UserService](#userservice)
   - [User setting service](#user-setting-service)
+    - [SettingBox](#settingbox)
   - [Profile ready](#profile-ready)
   - [Phone number sign-in](#phone-number-sign-in)
   - [Email authentication under phone sign-in](#email-authentication-under-phone-sign-in)
     - [Email authentication under phone sign-in logic](#email-authentication-under-phone-sign-in-logic)
       - [When user has an email already](#when-user-has-an-email-already)
+  - [Do sometihng after user loaded information from realtime database](#do-sometihng-after-user-loaded-information-from-realtime-database)
 - [Admin](#admin)
   - [Admin status check & update](#admin-status-check--update)
 - [Translation](#translation)
@@ -63,20 +65,18 @@ Table of contents
   - [UserProfilePhoto](#userprofilephoto)
   - [NewUsers](#newusers)
 - [Chat](#chat)
-  - [Chat todo;](#chat-todo)
+  - [How to use chat feature](#how-to-use-chat-feature)
   - [Chat structure of Firestore](#chat-structure-of-firestore)
   - [Chat logic](#chat-logic)
     - [Chat logic - block](#chat-logic---block)
+  - [Chat Widgets](#chat-widgets)
+    - [ChatBadge](#chatbadge)
+  - [Sending a chat message to other user outside of chat room](#sending-a-chat-message-to-other-user-outside-of-chat-room)
 - [Reminder](#reminder)
   - [Reminder code sample](#reminder-code-sample)
   - [Reminder input data & logic](#reminder-input-data--logic)
 - [FriendMap](#friendmap)
-  - [FriendMap installation](#friendmap-installation)
-  - [FriendMap logic](#friendmap-logic)
-    - [FriendMap informing logic](#friendmap-informing-logic)
-  - [FriendMap testing](#friendmap-testing)
 - [Inform](#inform)
-  - [Informing logic](#informing-logic)
   - [Inform data](#inform-data)
   - [Use of inform](#use-of-inform)
 - [For developer](#for-developer)
@@ -131,6 +131,8 @@ Table of contents
 - [Widgets](#widgets)
   - [Common widgets](#common-widgets)
     - [DatePicker](#datepicker)
+  - [Forum Widgets](#forum-widgets)
+    - [QuickMenuCategories](#quickmenucategories)
 - [Location Service](#location-service)
 - [Cloud Functions](#cloud-functions)
   - [Unit test for Cloud Functions](#unit-test-for-cloud-functions)
@@ -280,6 +282,10 @@ Table of contents
             ".indexOn": "timestamp"
           }
         }
+    },
+    "currency": {
+      ".read": true,
+      ".write": true
     },
     "log": {
       ".read": true,
@@ -611,6 +617,43 @@ UserSettingDoc(
 ```
 
 
+### SettingBox
+
+- How to use setting box widget.
+
+```dart
+SettingBox(
+  name: HiveKey.homeMenuCategory,
+  defaultValue: false,
+  builder: (selected, _) {
+    return HomeMenuCustomizationChip(
+      title: 'Category',
+      selected: _.get(HiveKey.homeMenuCategory, defaultValue: false),
+      field: HiveKey.homeMenuCategory,
+      selectedBackgroundColor: Colors.blue,
+      icon: FaDuotoneIcon(
+        FontAwesomeIcons.duotoneFolderTree,
+        primaryColor: selected ? Color.fromARGB(255, 255, 234, 0) : Colors.blue,
+        secondaryColor: selected ? Color.fromARGB(255, 252, 241, 241) : Colors.black,
+        size: 11,
+      ),
+    );
+  },
+),
+```
+
+```dart
+SettingBox(
+  name: HiveKey.homeMenuCategory,
+  defaultValue: false,
+  builder: (value, _) {
+    return value
+        ? QuickMenuCategory(padding: EdgeInsets.only(top: sm, left: sm))
+        : SizedBox.shrink();
+  },
+),
+```
+
 ## Profile ready
 
 - When user completes to update his profile, the app sets the user's profile field to be an int.
@@ -708,6 +751,16 @@ PhoneService.instance.verifyPhoneNumber(
       - And, send verification email
       - Then, listen if email is verified.
       - If verified, alert and go home.
+
+## Do sometihng after user loaded information from realtime database
+
+```dart
+UserService.instance.signIn.listen((user) {
+  if (user.loaded) {
+    _updateToken();
+  }
+});
+```
 
 # Admin
 
@@ -945,11 +998,33 @@ NewUsers(onTap: service.router.openOtherUserProfile),
 
 # Chat
 
-## Chat todo;
 
-- when A enters a room with B, check if they are blocked. If yes, dispaly a warning.
-- when sending message fails, check if they are block and warn properly.
-  - for instance, A request FriendMap to B, and A cannot send message to B since they are blocked. Then, display proper warning like "failed due to blocked" instead of meaning less message like "failed or permission denied."
+## How to use chat feature
+
+- First, when the user signs-in, count new messages and trigger `newMessages` event.
+
+```dart
+FirebaseAuth.instance.authStateChanges().listen((user) {
+  if (user == null)
+    ChatService.instance.unsubscribeNewMessages();
+  else
+    ChatService.instance.countNewMessages();
+});
+```
+
+- And, have some code like below on app boots to display(update) the number of new chat messages on launcher icon.
+  - `newMessages` is a `BehaviourSubjec`, so it will have the number of new message that is recently counted.
+```dart
+ChatService.instance.newMessages.listen((int newMessages) {
+  FlutterAppBadger.updateBadgeCount(newMessages);
+});
+```
+
+- Lastly, you may want to put some code for push notification alert that is trigger by a new chat message.
+
+
+
+
 
 ## Chat structure of Firestore
 
@@ -984,6 +1059,62 @@ NewUsers(onTap: service.router.openOtherUserProfile),
   - save user uid at `/chat/blocked/<my>/<other>.timestamp`.
 
 - When A blocked to B, both cannot send message to each other.
+
+
+## Chat Widgets
+
+### ChatBadge
+
+- Displays the badge number of new chat message.
+
+
+- You can simple display the number of new chat messages like below.
+
+```dart
+ChatBadge()
+```
+
+
+- You can also do some custom design with badge, especially to put the badge number on other widget.
+  - With the `ChatBadge.builder`, you can know if you have new messages or not.
+
+```dart
+ChatBadge(
+  builder: (Widget? badge) {
+    if (badge == null) {
+      return UserProfilePhoto(size: 26);
+    } else {
+      return Container(
+        width: 32,
+        child: Stack(
+          children: [
+            UserProfilePhoto(
+              size: 26,
+            ),
+            Positioned(
+              child: badge,
+              top: -3,
+              right: 0,
+            ),
+          ],
+        ),
+      );
+    }
+  },
+),
+```
+
+
+## Sending a chat message to other user outside of chat room
+
+```dart
+await ChatService.instance.send(
+  text: "...",
+  otherUid: user.uid,
+);
+```
+
+
 
 # Reminder
 
@@ -1105,37 +1236,9 @@ controller.state.setState(() {});
 
 # FriendMap
 
-- Idea\
-  When someone is seeking someone and both of them are foreginers of the place, how would they find each other? Both of them do not understand the country's language.
-  `FriendMap` feature send a user's latitude and longitude to the other user. So the other can navigate on the map.
-
-## FriendMap installation
-
-- Follow the installation instructions in [google_maps_flutter](https://pub.dev/packages/google_maps_flutter) package.
-
-  - `Hybrid Composition` could be an option.
-
-- Follow the installation instructions in [geocoding](https://pub.dev/packages/geocoding) package.
-
-- Follow the installation in [geolocator](https://pub.dev/packages/geolocator) package.
-
-## FriendMap logic
-
-- There are two users. User `A` and `B`.
-- `A` sends his latitude and longitude to `B` on chat. (So, when `B` is offline, he will get push notification by the built in chat funciton)
-
-- `B` opens chat room.
-- `B` click the link of lat & lon to open `Friend Map`.
-- the app navigates.
-
-### FriendMap informing logic
-
-- Use `Inform` feature to inform friend request to the other user.
-
-## FriendMap testing
-
-- Simply update `/location/<A's-uid>/` and `/location/<B's-uid>` manully.
-  - To make it easy, update the location programatically.
+- FriendMap has completely changed by May 3, 2022
+- What it does is to send one user's location to the other. So, the other user can open navigator to look for the user.
+- It sends location throught chat.
 
 # Inform
 
@@ -1143,26 +1246,6 @@ controller.state.setState(() {});
   - Push notification is one option. But push notification may be delayed more than 1 hour.
   - `Inform` functionality make the communication in realtime.
 
-## Informing logic
-
-Let's say the app needs to deliver friend request from A to B.
-
-- When User `A` request FriendMap to user `B`, it's not easy to open FriendMap by clicking the chat message. what if user `B` has lots of users and having difficulty to open the chat room `A`?.
-
-  - The solution would be; when `A` request FriendMap to `B`, the app on `B` side will open `FriendMap` screen automatically.
-  - When `B` is offline and got a push message of `FriendMap` request, the device of `B` will automatically run `WonderfulKorea` app and open `FriendMap` screen automatically.
-  - Later; it may be an option to open `FriendMap` automatically or not.
-
-- To make it work
-
-  - All user must listen to `/inform/<uid>` when app starts.
-  - When `A` request FriendMap to `B`, save lat & long in `/inform/<uid>`.
-  - So, the app of `B` can open `FriendMap` with the data.
-
-- When `B` is offline, or the app is not running,
-  - `B` will open the app (by push notification or whatever),
-  - the app of `B` listens `/inform/<uid>`
-    - If there is data, then delete the doc, and open FriendMap.
 
 ## Inform data
 
@@ -1176,9 +1259,11 @@ Let's say the app needs to deliver friend request from A to B.
 
 ```dart
 FirebaseAuth.instance.authStateChanges().listen((user) {
+  InformService.instance.dispose();
   if (user != null) {
     /// Re-init for listening the login user (when account changed)
     InformService.instance.init(callback: (data) {
+      /// You have got a informing. Do whatever you want. You may show alert box, or move screen.
       if (data['type'] == 'FriendMap') {
         /// If it's a freind map request, then open friend map screen.
         Get.toNamed('/friend-map', arguments: {
@@ -1187,8 +1272,6 @@ FirebaseAuth.instance.authStateChanges().listen((user) {
         });
       }
     });
-  } else {
-    InformService.instance.dispose();
   }
 });
 ```
@@ -1835,6 +1918,20 @@ HttpException: Invalid statusCode: 403, uri = https://firebasestorage.googleapis
 ```dart
 DatePicker(initialValue: 19990304, onChanged: (int newDate) => update(newDate));
 ```
+
+
+## Forum Widgets
+
+### QuickMenuCategories
+
+- To dispaly categories, use `QuickMenuCategories`.
+
+```dart
+QuickMenuCategories(
+  onTap: (category) => service.router.openPostList(category: category.id),
+)
+```
+
 
 # Location Service
 

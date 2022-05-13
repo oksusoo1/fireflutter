@@ -1,5 +1,4 @@
 import * as admin from "firebase-admin";
-
 import { Ref } from "./ref";
 import {
   ERROR_ALREADY_DELETED,
@@ -17,6 +16,9 @@ import {
 import { Storage } from "./storage";
 import { Point } from "./point";
 import { Post } from "./post";
+import { Utils } from "./utils";
+import { Messaging } from "./messaging";
+import { OnCommentCreateResponse, SendMessageBaseRequest } from "../interfaces/messaging.interface";
 
 export class Comment {
   /**
@@ -37,8 +39,8 @@ export class Comment {
       files: files,
       hasPhoto: files.length > 0,
       deleted: false,
-      createdAt: admin.firestore.FieldValue.serverTimestamp(),
-      updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+      createdAt: Utils.getTimestamp(),
+      updatedAt: Utils.getTimestamp(),
     };
     const ref = await Ref.commentCol.add(doc);
 
@@ -60,7 +62,7 @@ export class Comment {
    * @param data comment data to update with.
    * @returns updated comment doc data.
    */
-  static async update(data: any): Promise<CommentDocument> {
+  static async update(data: CommentDocument): Promise<CommentDocument> {
     if (!data.id) throw ERROR_EMPTY_ID;
     if (!data.uid) throw ERROR_EMPTY_UID;
 
@@ -70,8 +72,9 @@ export class Comment {
     if (comment!.uid !== data.uid) throw ERROR_NOT_YOUR_COMMENT;
 
     delete data.id;
+
     // updatedAt
-    data.updatedAt = admin.firestore.FieldValue.serverTimestamp();
+    data.updatedAt = Utils.getTimestamp();
 
     // hasPhoto
     if (data.files && data.files.length) {
@@ -136,5 +139,74 @@ export class Comment {
       return comment;
     }
     return null;
+  }
+
+  static async sendMessageOnCreate(
+    data: CommentDocument,
+    id: string
+  ): Promise<OnCommentCreateResponse | null> {
+    const post = await Post.get(data.postId);
+    if (!post) return null;
+
+    const messageData: SendMessageBaseRequest = {
+      title: post.title,
+      body: data.content,
+      id: data.postId,
+      type: "post",
+      senderUid: data.uid,
+    };
+
+    // console.log(messageData);
+    const topic = "comments_" + post.category;
+
+    // send push notification to topics
+    const sendToTopicRes = await admin.messaging().send(Messaging.topicPayload(topic, messageData));
+
+    // get comment ancestors
+    const ancestorsUid = await this.getAncestorsUid(id, data.uid);
+
+    // add the post uid if the comment author is not the post author
+    if (post.uid != data.uid && !ancestorsUid.includes(post.uid)) {
+      ancestorsUid.push(post.uid);
+    }
+
+    // Don't send the same message twice to topic subscribers
+    const userUids = await Messaging.getUidsWithoutSubscription(
+      ancestorsUid.join(","),
+      "topic/forum/" + topic
+    );
+
+    // get uids with user setting commentNotification is set.
+    const commentNotifyeesUids = await Messaging.getUidsWithSubscription(
+      userUids.join(","),
+      Messaging.commentNotificationField
+    );
+
+    const tokens = await Messaging.getTokensFromUids(commentNotifyeesUids.join(","));
+    // console.log(tokens);
+    const sendToTokenRes = await Messaging.sendingMessageToTokens(
+      tokens,
+      Messaging.preMessagePayload(messageData)
+    );
+    return {
+      topicResponse: sendToTopicRes,
+      tokenResponse: sendToTokenRes,
+    };
+  }
+
+  // get comment ancestor by getting parent comment until it reach the root comment
+  // return the uids of the author
+  static async getAncestorsUid(id: string, authorUid: string) {
+    const c = await Ref.commentDoc(id).get();
+    let comment = c.data() as CommentDocument;
+    const uids = [];
+    while (comment.postId != comment.parentId) {
+      const com = await Ref.commentDoc(comment.parentId).get();
+      if (!com.exists) continue;
+      comment = com.data() as CommentDocument;
+      if (comment.uid == authorUid) continue; // skip the author's uid.
+      uids.push(comment.uid);
+    }
+    return uids.filter((v, i, a) => a.indexOf(v) === i); // remove duplicate
   }
 }

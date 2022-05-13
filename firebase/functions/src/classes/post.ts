@@ -6,7 +6,7 @@ import * as weekOfYear from "dayjs/plugin/weekOfYear";
 dayjs.extend(dayOfYear);
 dayjs.extend(weekOfYear);
 
-import { CommentDocument, PostDocument } from "../interfaces/forum.interface";
+import { CommentDocument, PostDocument, PostListOptions } from "../interfaces/forum.interface";
 
 import { Ref } from "./ref";
 import {
@@ -20,12 +20,104 @@ import {
   ERROR_UPDATE_FAILED,
 } from "../defines";
 import { Messaging } from "./messaging";
-import { OnCommentCreateResponse } from "../interfaces/messaging.interface";
 import { Storage } from "./storage";
 import { Category } from "./category";
 import { Point } from "./point";
+import { Utils } from "./utils";
+import { User } from "./user";
 
 export class Post {
+  /**
+   *
+   * @see README.md for details.
+   * @param options options for getting post lists
+   * @returns
+   * - list of post documents. Empty array will be returned if there is no posts by the options.
+   * - Or it will throw an exception on failing post creation.
+   * @note exception will be thrown on error.
+   */
+  static async list(options: PostListOptions): Promise<Array<PostDocument>> {
+    const posts: Array<PostDocument> = [];
+
+    let q: admin.firestore.Query = Ref.postCol;
+
+    if (options.category) {
+      q = q.where("category", "==", options.category);
+    }
+
+    q = q.orderBy("createdAt", "desc");
+
+    if (options.startAfter) {
+      q = q.startAfter(parseInt(options.startAfter!));
+    }
+
+    const limit = options.limit ? parseInt(options.limit) : 10;
+    q = q.limit(limit);
+
+    const snapshot = await q.get();
+
+    if (snapshot.size > 0) {
+      const docs = snapshot.docs;
+      for (const doc of docs) {
+        const post = doc.data() as PostDocument;
+        post.id = doc.id;
+
+        if (options.content === "N") delete post.content;
+
+        posts.push(post);
+      }
+    }
+
+    if (posts.length && options.author !== "N") {
+      await this.addMetaOfAuthors(posts);
+    }
+
+    return posts;
+  }
+
+  /**
+   * Returns a post view data that includes comments and all of meta data of the comments.
+   * @param data options for post view.
+   */
+  static async view(data: { id: string }): Promise<PostDocument> {
+    const post = await this.get(data.id);
+    if (post === null) throw ERROR_POST_NOT_EXIST;
+
+    // Get post comments.
+    const snapshot = await Ref.commentCol.where("postId", "==", post.id).orderBy("createdAt").get();
+    const comments: CommentDocument[] = [];
+    if (snapshot.empty === false) {
+      for (const doc of snapshot.docs) {
+        const comment = doc.data() as CommentDocument;
+        comment.id = doc.id;
+
+        if (comment.postId == comment.parentId) {
+          // Add at bottom
+          comment.depth = 0;
+          comments.push(comment);
+        } else {
+          // It's a comment under another comemnt. Find parent.
+          const i = comments.findIndex((e) => e.id == comment.parentId);
+          if (i >= 0) {
+            comment.depth = comments[i].depth + 1;
+            comments.splice(i + 1, 0, comment);
+          } else {
+            // All comments should belong to another. So, it should come here.
+            // So, just put it at the end just in case.
+            comment.depth = 0;
+            comments.push(comment);
+          }
+        }
+      }
+    }
+
+    post.comments = comments;
+
+    // Add user meta: Name (first + last), level, photoUrl.
+    await this.addMetaOfAuthors([post, ...comments]);
+    return post;
+  }
+
   /**
    *
    * @see README.md for details.
@@ -46,7 +138,7 @@ export class Post {
     if (category === null) throw ERROR_CATEGORY_NOT_EXISTS;
 
     // get all the data from client.
-    const doc: { [key: string]: any } = data as any;
+    const doc: PostDocument = data as any;
 
     // sanitize
     if (typeof doc.files === "undefined") {
@@ -63,8 +155,8 @@ export class Post {
     doc.day = dayjs().date();
     doc.dayOfYear = dayjs().dayOfYear();
     doc.week = dayjs().week();
-    doc.createdAt = admin.firestore.FieldValue.serverTimestamp();
-    doc.updatedAt = admin.firestore.FieldValue.serverTimestamp();
+    doc.createdAt = Utils.getTimestamp();
+    doc.updatedAt = Utils.getTimestamp();
 
     // Create post
     let ref;
@@ -98,7 +190,7 @@ export class Post {
    *
    * @note it throws exceptions on error.
    */
-  static async update(data: any): Promise<PostDocument> {
+  static async update(data: PostDocument): Promise<PostDocument> {
     if (!data.id) throw ERROR_EMPTY_ID;
     const post = await this.get(data.id);
     if (post === null) throw ERROR_POST_NOT_EXIST;
@@ -108,7 +200,7 @@ export class Post {
     delete data.id;
 
     // updatedAt
-    data.updatedAt = admin.firestore.FieldValue.serverTimestamp();
+    data.updatedAt = Utils.getTimestamp();
 
     // hasPhoto
     data.hasPhoto = data.files && data.files.length > 0;
@@ -191,79 +283,47 @@ export class Post {
     return null;
   }
 
-  static async sendMessageOnPostCreate(data: PostDocument, id: string) {
+  static async sendMessageOnCreate(data: PostDocument, id: string) {
     const category = data.category;
     const payload = Messaging.topicPayload("posts_" + category, {
       title: data.title ?? "",
       body: data.content ?? "",
-      postId: id,
+      id: id,
       type: "post",
-      uid: data.uid,
+      senderUid: data.uid,
     });
     return admin.messaging().send(payload);
   }
 
-  static async sendMessageOnCommentCreate(
-      data: CommentDocument,
-      id: string
-  ): Promise<OnCommentCreateResponse | null> {
-    const post = await this.get(data.postId);
-    if (!post) return null;
-
-    const messageData: any = {
-      title: post.title,
-      body: data.content,
-      postId: data.postId,
-      type: "post",
-      uid: data.uid,
-    };
-
-    // console.log(messageData);
-    const topic = "comments_" + post.category;
-
-    // send push notification to topics
-    const sendToTopicRes = await admin.messaging().send(Messaging.topicPayload(topic, messageData));
-
-    // get comment ancestors
-    const ancestorsUid = await Post.getCommentAncestors(id, data.uid);
-
-    // add the post uid if the comment author is not the post author
-    if (post.uid != data.uid && !ancestorsUid.includes(post.uid)) {
-      ancestorsUid.push(post.uid);
-    }
-
-    // Don't send the same message twice to topic subscribers and comment notifyees.
-    const userUids = await Messaging.getCommentNotifyeeWithoutTopicSubscriber(
-        ancestorsUid.join(","),
-        topic
-    );
-
-    // get users tokens
-    const tokens = await Messaging.getTokensFromUids(userUids.join(","));
-
-    const sendToTokenRes = await Messaging.sendingMessageToTokens(
-        tokens,
-        Messaging.preMessagePayload(messageData)
-    );
-    return {
-      topicResponse: sendToTopicRes,
-      tokenResponse: sendToTokenRes,
-    };
+  /**
+   * Add author meta for all articles.
+   *
+   * @param articles post or comment document.
+   */
+  static async addMetaOfAuthors(articles: any[]) {
+    const futures = articles.map((a) => this.addAuthorMeta(a));
+    await Promise.all(futures);
   }
 
-  // get comment ancestor by getting parent comment until it reach the root comment
-  // return the uids of the author
-  static async getCommentAncestors(id: string, authorUid: string) {
-    const c = await Ref.commentDoc(id).get();
-    let comment = c.data() as CommentDocument;
-    const uids = [];
-    while (comment.postId != comment.parentId) {
-      const com = await Ref.commentDoc(comment.parentId).get();
-      if (!com.exists) continue;
-      comment = com.data() as CommentDocument;
-      if (comment.uid == authorUid) continue; // skip the author's uid.
-      uids.push(comment.uid);
+  /**
+   * Adds author information on the document.
+   *
+   * @param postOrComment post or comment document
+   * @returns returns post with author's information included.
+   */
+  static async addAuthorMeta<T>(postOrComment: any): Promise<T> {
+    const userData = await User.get(postOrComment.uid);
+
+    if (userData === null) {
+      postOrComment.author = "";
+      postOrComment.authorLevel = 0;
+      postOrComment.authorPhotoUrl = "";
+    } else {
+      postOrComment.author = `${userData?.firstName ?? ""} ${userData?.lastName ?? ""}`;
+      postOrComment.authorLevel = userData?.level ?? 0;
+      postOrComment.authorPhotoUrl = userData?.photoUrl ?? "";
     }
-    return uids.filter((v, i, a) => a.indexOf(v) === i); // remove duplicate
+
+    return postOrComment;
   }
 }

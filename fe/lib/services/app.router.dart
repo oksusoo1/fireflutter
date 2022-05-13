@@ -25,6 +25,7 @@ import 'package:fe/screens/setting/notification.setting.dart';
 import 'package:fe/screens/test/test.screen.dart';
 import 'package:fe/screens/unit_test/unit_test.screen.dart';
 import 'package:fe/screens/user/other_user_profile.screen.dart';
+import 'package:fe/screens/web_login/web_login.screen.dart';
 import 'package:fe/services/app.service.dart';
 import 'package:fe/screens/chat/chat.room.screen.dart';
 import 'package:fe/screens/chat/chat.rooms.blocked.screen.dart';
@@ -91,6 +92,7 @@ final Map<String, RouteFunction> appRoutes = {
   /// --- new refactoring
   OtherUserProfileScreen.routeName: (context, arguments) =>
       OtherUserProfileScreen(arguments: arguments),
+  WebLoginScreen.routeName: (c, a) => WebLoginScreen(),
 };
 
 /// NoAnimationMaterialPageRoute is for removing page transition.
@@ -202,13 +204,13 @@ class AppRouter extends NavigatorObserver {
     }
   }
 
-  Future<void> openProfile() async {
+  Future<void> openProfile({popAll = false}) async {
     if (UserService.instance.user.signedOut) throw ERROR_SIGN_IN;
-    return open(ProfileScreen.routeName);
+    return open(ProfileScreen.routeName, popAll: popAll);
   }
 
-  Future<void> openHome() async {
-    return open(HomeScreen.routeName);
+  Future<void> openHome({popAll = true}) async {
+    return open(HomeScreen.routeName, popAll: popAll);
   }
 
   Future<void> openAbout() async {
@@ -223,8 +225,8 @@ class AppRouter extends NavigatorObserver {
     return open(TranslationsScreen.routeName);
   }
 
-  Future<void> openPostList({String? category}) async {
-    return open(PostListScreen.routeName, arguments: {'category': category});
+  Future<void> openPostList({String? category, popAll = false}) async {
+    return open(PostListScreen.routeName, popAll: popAll, arguments: {'category': category});
   }
 
   Future<void> openSearchScreen({
@@ -269,6 +271,10 @@ class AppRouter extends NavigatorObserver {
     return open(ChatRoomScreen.routeName, arguments: {'uid': uid});
   }
 
+  Future<void> openChatRooms() async {
+    return open(ChatRoomsScreen.routeName);
+  }
+
   Future<void> openReportForumMangement(String target, String id) async {
     return open(ReportPostManagementScreen.routeName, arguments: {
       'target': target,
@@ -280,8 +286,8 @@ class AppRouter extends NavigatorObserver {
     return open(UnitTestScreen.routeName);
   }
 
-  Future<void> openMenu() async {
-    return open(MenuScreen.routeName);
+  Future<void> openMenu({popAll = false}) async {
+    return open(MenuScreen.routeName, popAll: popAll);
   }
 
   Future openTest() async {
@@ -290,5 +296,17 @@ class AppRouter extends NavigatorObserver {
 
   Future openOtherUserProfile(String uid) {
     return open(OtherUserProfileScreen.routeName, arguments: {'uid': uid});
+  }
+
+  Future openChatRoomsBlocked() {
+    return open(ChatRoomsBlockedScreen.routeName);
+  }
+
+  Future openPhoneSignInUI({popAll = true}) {
+    return open(PhoneSignInUIScreen.routeName, popAll: popAll);
+  }
+
+  Future openWebLogin({popAll = false}) {
+    return open(WebLoginScreen.routeName, popAll: popAll);
   }
 }

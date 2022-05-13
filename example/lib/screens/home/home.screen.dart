@@ -1,5 +1,4 @@
 import 'package:example/screens/home/home.auth.dart';
-import 'package:example/screens/home/home.categories.dart';
 import 'package:example/screens/home/home.menu.dart';
 import 'package:example/services/global.dart';
 import 'package:example/widgets/layout/layout.dart';
@@ -63,7 +62,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   ],
                 );
               }),
-              HomeCategories(),
+              QuickMenuCategories(
+                  onTap: (category) =>
+                      service.router.openPostList(category: category.id))
             ],
           ),
         ),

@@ -19,7 +19,7 @@ describe("Send message on post create test", () => {
     };
 
     expect(post.id).equal(postId);
-    const res = await Post.sendMessageOnPostCreate(post, postId);
+    const res = await Post.sendMessageOnCreate(post, postId);
     expect(res).to.be.an("string");
     expect(res).include("project/");
   });

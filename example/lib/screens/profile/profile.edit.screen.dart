@@ -56,7 +56,8 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
                 return FileUploadButton(
                   child: UserPhoto(url: my.photoUrl, progress: progress),
                   type: 'user',
-                  onUploaded: (url) => my.updatePhotoUrl(url).then((x) => updateProgress(0)),
+                  onUploaded: (url) =>
+                      my.updatePhotoUrl(url).then((x) => updateProgress(0)),
                   onProgress: updateProgress,
                 );
               }),
@@ -122,7 +123,9 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
                     ),
                     spaceSm,
                     Text('Birthday', style: hintStyle),
-                    DatePicker(initialValue: user.birthday, onChanged: user.updateBirthday)
+                    DatePicker(
+                        initialValue: user.birthday,
+                        onChanged: user.updateBirthday)
                   ],
                 ),
               ),

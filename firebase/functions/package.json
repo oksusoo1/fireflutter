@@ -11,6 +11,9 @@
     "logs": "firebase functions:log",
     "test:createTestUser": "mocha --timeout 20000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/test/createTestUser.spec.ts",
     "test:user": "mocha --timeout 20000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/user/user.spec.ts",
+    "test:post:list": "mocha --timeout 20000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/post/list.spec.ts",
+    "test:post:list-via-http": "mocha --timeout 20000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/post/list-via-http.spec.ts",
+    "test:post:view": "mocha --timeout 20000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/post/view.spec.ts",
     "test:post:create": "mocha --timeout 20000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/post/create.spec.ts",
     "test:post:create-via-http": "mocha --timeout 20000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/post/create-via-http.spec.ts",
     "test:post:update": "mocha --timeout 20000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/post/update.spec.ts",
@@ -43,23 +46,23 @@
     "test:meilisearch:user-indexing": "mocha --timeout 20000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/meilisearch/user-indexing.spec.ts",
     "test:quiz:test-answer": "mocha --timeout 20000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/quiz/test-answer.spec.ts",
     "test:messaging": "mocha --timeout 70000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/messaging/messaging.spec.ts",
-    
     "test:messaging:subscriptions": "mocha --timeout 70000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/messaging/messaging-subscriptions.spec.ts",
     "test:messaging:token": "mocha --timeout 20000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/messaging/messaging-tokens.spec.ts",
     "test:messaging:send": "mocha --timeout 70000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/messaging/messaging-send.spec.ts",
     "test:messagingSubscriber": "mocha --timeout 20000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/messaging/messaging-subscriber.spec.ts",
     "test:messaging:mock:data": "mocha --timeout 70000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/messaging/messaging-mock-data.spec.ts",
     "test:post:oncreate:sendmessage": "mocha --timeout 20000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/post/post-send-message-on-create.spec.ts",
-    "test:comment:oncreate:sendmessage": "mocha --timeout 20000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/comment/comment-send-message-on-create.spec.ts",
+    "test:comment:oncreate:sendmessage": "mocha --timeout 80000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/comment/comment-send-message-on-create.spec.ts",
     "test:user:management": "mocha --timeout 20000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/user/user-management.spec.ts",
     "test:user:admin-search": "mocha --timeout 20000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/user/user-admin-search.spec.ts",
+    "test:user:signin-token": "mocha --timeout 20000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/user/signin-token.spec.ts",
     "test:job": "mocha --timeout 20000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/job/*.spec.ts",
     "test:job:edit": "mocha --timeout 20000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/job/job.edit.spec.ts",
     "test:job:input": "mocha --timeout 20000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/job/job.input.spec.ts",
     "test:job:seeker": "mocha --timeout 20000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/job/job.seeker.spec.ts",
     "test:category": "mocha --timeout 20000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/category/category.spec.ts",
     "test:report": "mocha --timeout 20000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/report/report.spec.ts",
-    "test:messaging:logic": "mocha --timeout 20000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/messaging/messaging.logic.spec.ts"
+    "test:messaging:logic": "mocha --timeout 200000 --require ts-node/register --watch --watch-files src/**/*.ts,tests/**/*.ts tests/messaging/messaging.logic.spec.ts"
   },
   "engines": {
     "node": "16"
@@ -69,7 +72,7 @@
     "axios": "^0.26.1",
     "dayjs": "^1.11.0",
     "firebase-admin": "^10.0.2",
-    "firebase-functions": "^3.20.0",
+    "firebase-functions": "^3.21.0",
     "meilisearch": "^0.25.0"
   },
   "devDependencies": {

@@ -17,7 +17,8 @@ class ChatRoomPushNotificationIcon extends StatefulWidget {
 
 class _ChatRoomPushNotificationIconState extends State<ChatRoomPushNotificationIcon> {
   bool hasDisabledSubscription() {
-    return UserService.instance.user.settings.hasDisabledSubscription('chatNotify' + widget.uid);
+    return UserService.instance.user.settings
+        .hasDisabledSubscription('chatNotify' + widget.uid, 'chat');
   }
 
   @override
@@ -47,10 +48,8 @@ class _ChatRoomPushNotificationIconState extends State<ChatRoomPushNotificationI
 
     // try {
     // await MessagingService.instance.toggleSubscription('chatNotify' + widget.uid);
-    await MessagingService.instance.updateSubscription(
-      'chatNotify' + widget.uid,
-      hasDisabledSubscription(),
-    );
+    await UserSettingService.instance
+        .toggleTopic('chatNotify' + widget.uid, 'chat', hasDisabledSubscription());
     if (mounted) setState(() {});
     // } catch (e) {
     //   widget.onError(e);

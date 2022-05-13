@@ -78,6 +78,7 @@ class UserModel with FirestoreMixin, DatabaseMixin {
   String nickname;
 
   int point;
+  String get displayPoint => NumberFormat.currency(locale: 'ko_KR', symbol: '').format(point);
   int level;
 
   int registeredAt;
@@ -137,8 +138,11 @@ class UserModel with FirestoreMixin, DatabaseMixin {
   bool get ready => profileReady < profileReadyMax;
   bool get notReady => ready == false;
 
+  /// ! Attention - This event is posted when the user is signed in firebase even if the user information has not yet loaded.
+  /// ! Use `loaded` to check if the user information has loaded from firebase realtime database.
   bool get signedIn => FirebaseAuth.instance.currentUser != null;
   bool get signedOut => signedIn == false;
+  bool get loaded => uid != '' && registeredAt != 0;
 
   ///
   DatabaseReference get _userDoc => FirebaseDatabase.instance.ref('users').child(uid);
@@ -217,7 +221,8 @@ class UserModel with FirestoreMixin, DatabaseMixin {
     });
   }
 
-  /// Load user data into the member variables. See README for details.
+  /// Load user data(information) into the member variables. See README for details.
+  /// This is being invoked immediately after Firebase sign-in.
   Future<void> load() async {
     final snapshot = await _userDoc.get();
     final u = UserModel.fromJson(snapshot.value, uid);

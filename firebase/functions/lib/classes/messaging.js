@@ -5,6 +5,9 @@ const admin = require("firebase-admin");
 const defines_1 = require("../defines");
 const ref_1 = require("./ref");
 const utils_1 = require("./utils");
+const axios_1 = require("axios");
+const fireflutter_config_1 = require("../fireflutter.config");
+const category_1 = require("./category");
 class Messaging {
     /**
      * Creates(or updates) a token document with uid and do `token-update` process as decribed in README.md.
@@ -15,14 +18,33 @@ class Messaging {
      */
     static async updateToken(data) {
         await this.setToken(data);
-        await this.unsubscribeAllTopicOfToken();
-        await this.resubscribeAllUserTopics();
+        await this.removeInvalidTokens(data.uid);
+        await this.unsubscribeAllTopicOfToken(data.token);
+        return await this.resubscribeAllUserTopics(data.uid);
     }
+    /**
+     *
+     * @param data
+     *  uid - user id
+     *  token - device token or browser token
+     *
+     * @returns tokens ref
+     */
     static async setToken(data) {
+        if (data.uid == null || data.uid == "")
+            throw defines_1.ERROR_EMPTY_UID;
+        if (data.token == null || data.token == "")
+            throw defines_1.ERROR_EMPTY_TOKEN;
         await ref_1.Ref.messageTokens.child(data.token).set({ uid: data.uid });
+        return this.getToken(data.token);
     }
-    static async getToken(id) {
-        const snapshot = await ref_1.Ref.token(id).get();
+    /**
+     * Returns the token record
+     * @param token
+     * @returns
+     */
+    static async getToken(token) {
+        const snapshot = await ref_1.Ref.token(token).get();
         if (snapshot.exists()) {
             const data = snapshot.val();
             data.token = snapshot.key;
@@ -32,29 +54,299 @@ class Messaging {
             return null;
         }
     }
-    static async subscribeTopic(data) {
-        console.log("@fix empty", data);
+    /**
+     *
+     * @param data
+     * @returns SubscriptionResponse
+     *  topic - topic from request
+     *  tokens - user tokens
+     *  failureTokens - tokens with failure reason
+     *  successCount - number of subscribe success
+     *  failureCount - number of failed subscription
+     *
+     */
+    static async subscribeToTopic(data) {
+        var _a, _b;
+        // turn on topic user-settings/{uid}/topic/type(folderName)/
+        await this.topicOn(data);
+        // get user tokens
+        const tokens = await this.getTokens(data.uid);
+        // if user has no token then return;
+        if (tokens.length == 0) {
+            return {
+                topic: data.topic,
+                tokens: tokens,
+                failureTokens: {},
+                successCount: 0,
+                failureCount: 0,
+            };
+        }
+        // subscribe user tokens to topic
+        const res = await admin.messaging().subscribeToTopic(tokens, data.topic);
+        // remove invalid tokens if any
+        const failureTokens = await this.removeInvalidTokensFromResponse(tokens, res);
+        // return failuretokens tokens with failure reason and success and failure count
+        return {
+            topic: data.topic,
+            tokens: tokens,
+            failureTokens: failureTokens,
+            successCount: (_a = res === null || res === void 0 ? void 0 : res.successCount) !== null && _a !== void 0 ? _a : 0,
+            failureCount: (_b = res === null || res === void 0 ? void 0 : res.failureCount) !== null && _b !== void 0 ? _b : 0,
+        };
     }
-    static async unsubscribeTopic(data) {
-        console.log("@fix empty", data);
+    /**
+     *
+     * @param data
+     * @returns SubscriptionResponse
+     *  topic - topic from request
+     *  tokens - user tokens
+     *  failureTokens - tokens with failure reason
+     *  successCount - number of unsubscribe success
+     *  failureCount - number of failed unsubscription
+     *
+     */
+    static async unsubscribeToTopic(data) {
+        var _a, _b;
+        // turn off topic user-settings/{uid}/topic/type(folderName)/
+        await this.topicOff(data);
+        // get user tokens
+        const tokens = await this.getTokens(data.uid);
+        // return if user has no tokens
+        if (tokens.length == 0) {
+            return {
+                topic: data.topic,
+                tokens: tokens,
+                failureTokens: {},
+                successCount: 0,
+                failureCount: 0,
+            };
+        }
+        // unsubscribe user tokens to topic
+        const res = await admin.messaging().unsubscribeFromTopic(tokens, data.topic);
+        // remove invalid tokens if any
+        const failureTokens = await this.removeInvalidTokensFromResponse(tokens, res);
+        // return failuretokens tokens with failure reason and success and failure count
+        return {
+            topic: data.topic,
+            tokens: tokens,
+            failureTokens: failureTokens,
+            successCount: (_a = res === null || res === void 0 ? void 0 : res.successCount) !== null && _a !== void 0 ? _a : 0,
+            failureCount: (_b = res === null || res === void 0 ? void 0 : res.failureCount) !== null && _b !== void 0 ? _b : 0,
+        };
     }
-    static async removeInvalidTokens() {
-        console.log("@fix empty");
+    /**
+     * Check if the data is set and not empty
+     * @param data
+     *  uid - user id
+     *  topic - topic to subscribe
+     *  type - folderName
+     */
+    static checkTopicData(data) {
+        if (!data.uid)
+            throw defines_1.ERROR_EMPTY_UID;
+        if (!data.topic)
+            throw defines_1.ERROR_EMPTY_TOPIC;
+        if (!data.type)
+            throw defines_1.ERROR_EMPTY_TOPIC_TYPE;
+    }
+    /**
+     * Toggle the user topic true or false
+     * @param data
+     * @returns
+     */
+    static async topicToggle(data) {
+        this.checkTopicData(data);
+        const topic = await this.getTopic(data);
+        if (topic != null && topic[data.topic]) {
+            return this.topicOff(data);
+        }
+        else {
+            return this.topicOn(data);
+        }
+    }
+    /**
+     * Set user-settings/{uid}/topic/type(folderName)/
+     * {[topic]: true}
+     *
+     * @param data
+     * @returns
+     */
+    static async topicOn(data) {
+        this.checkTopicData(data);
+        await ref_1.Ref.userSettingTopic(data.uid)
+            .child(data.type)
+            .update({
+            [data.topic]: true,
+        });
+        return this.getTopics(data.uid, data.type);
+    }
+    /**
+     * Set user-settings/{uid}/topic/type(folderName)/
+     * {[topic]: false}
+     *
+     * @param data
+     * @returns
+     */
+    static async topicOff(data) {
+        this.checkTopicData(data);
+        await ref_1.Ref.userSettingTopic(data.uid)
+            .child(data.type)
+            .update({
+            [data.topic]: false,
+        });
+        return this.getTopics(data.uid, data.type);
+    }
+    static async getTopic(data) {
+        const snapshot = await ref_1.Ref.userSettingTopic(data.uid).child(data.type).child(data.topic).get();
+        if (snapshot.exists()) {
+            const val = snapshot.val();
+            return { [data.topic]: val };
+        }
+        return null;
+    }
+    /**
+     * Returns the topics from type(foldersName)
+     * @param uid
+     * @param type
+     * @returns {[topic]: boolean} || null
+     */
+    static async getTopics(uid, type) {
+        const snapshot = await ref_1.Ref.userSettingTopic(uid).child(type).get();
+        if (snapshot.exists()) {
+            const val = snapshot.val();
+            return val;
+        }
+        return null;
+    }
+    /**
+     * Removes invalid tokens.
+     *
+     * It subscribes the default topic on every token update on app starts(or user logs in).
+     * We found it is more efficient than removing invalid token on every subscription(or unsubscription) or sending messages.
+     *
+     *
+     * @param uid user uid
+     * @returns
+     */
+    static async removeInvalidTokens(uid) {
+        // get all user tokens
+        const tokens = await this.getTokens(uid);
+        // subscribe to default
+        const res = await admin.messaging().subscribeToTopic(tokens, this.defaultTopic);
+        // remove all invalid tokens base from the response
+        await this.removeInvalidTokensFromResponse(tokens, res);
+        return res;
+    }
+    /**
+     * Remove invalid tokens.
+     *
+     * This may be used to remove invalid tokens after sending messages or (un)subscribing topic.
+     *
+     * @param tokens token list that matches the `res` of sending massage or subscribing(unsubscribing) topics.
+     * @param res response(result) of sending messages or subscribing topic.
+     * @returns Map of result.
+     */
+    static async removeInvalidTokensFromResponse(tokens, res) {
+        if (res.failureCount == 0)
+            return {};
+        const failureToken = {};
+        const tokensToRemove = [];
+        res.errors.forEach((e) => {
+            if (e.error) {
+                if (this.isInvalidTokenErrorCode(e.error.code)) {
+                    tokensToRemove.push(ref_1.Ref.messageTokens.child(tokens[e.index]).remove());
+                    failureToken[tokens[e.index]] = e.error.code;
+                }
+            }
+        });
+        await Promise.all(tokensToRemove);
+        return failureToken;
+    }
+    static isInvalidTokenErrorCode(code) {
+        if (code === "messaging/invalid-registration-token" ||
+            code === "messaging/registration-token-not-registered" ||
+            code === "messaging/invalid-argument") {
+            return true;
+        }
+        return false;
     }
     /**
      * This unsubscribe all the topics (including other user's topics) of the token.
      * See README.md for details.
-     *
-     * @reference https://stackoverflow.com/questions/38212123/unsubscribe-from-all-topics-at-once-from-firebase-messaging
+     * @returns array of topic as string
      */
-    static async unsubscribeAllTopicOfToken() {
-        console.log("@fix empty");
+    static async unsubscribeAllTopicOfToken(token) {
+        // get all topics topics
+        const topics = await this.getTokenTopics(token);
+        if (topics.length == 0)
+            return [];
+        const promises = [];
+        const res = [];
+        topics.forEach((topic) => {
+            if (topic == this.defaultTopic)
+                return;
+            res.push(topic);
+            promises.push(admin.messaging().unsubscribeFromTopic(token, topic));
+        });
+        await Promise.all(promises);
+        return res;
+    }
+    /**
+     * @reference https://stackoverflow.com/questions/38212123/unsubscribe-from-all-topics-at-once-from-firebase-messaging
+     * @param token
+     * @returns string[] of topics or empty [] if error or no topics
+     */
+    static async getTokenTopics(token) {
+        const url = "https://iid.googleapis.com/iid/info/" + token;
+        const key = "key = " + fireflutter_config_1.config.serverKey;
+        try {
+            const res = await axios_1.default.get(url, {
+                params: { details: true },
+                headers: { Authorization: key },
+            });
+            // console.log(res);
+            if (res.data.rel == null)
+                return [];
+            if (res.data.rel.topics == null)
+                return [];
+            return Object.keys(res.data.rel.topics);
+        }
+        catch (e) {
+            // console.log("=======================");
+            // console.log((e as any).response.data.error);
+            return [];
+        }
     }
     /**
      *
      */
-    static async resubscribeAllUserTopics() {
-        console.log("@fix empty");
+    static async resubscribeAllUserTopics(uid) {
+        // subscribe to user forum topics
+        const forum = await this.subscribeUserToSettingTopics(uid, "forum");
+        // subscribe to user job topics
+        // await this.subscribeUserToSettingTopics(uid, "job" );
+        return {
+            forum: forum,
+        };
+    }
+    /**
+     *
+     * @param uid
+     * @param type The child topic folder name under `/user-settings/<uid>/topics/<folder-name>`.
+     * @returns
+     */
+    static async subscribeUserToSettingTopics(uid, type) {
+        const userSubs = await this.getSettingSubscription(uid, type);
+        if (!userSubs)
+            return null;
+        const subscribePromises = [];
+        Object.keys(userSubs).forEach((topic) => {
+            if (userSubs[topic]) {
+                subscribePromises.push(this.subscribeToTopic({ uid: uid, topic: topic, type: type }));
+            }
+        });
+        const res = await Promise.all(subscribePromises);
+        return res;
     }
     /**
      * Returns tokens of a user.
@@ -63,7 +355,10 @@ class Messaging {
      * @returns array of tokens
      */
     static async getTokens(uid) {
+        if (!uid)
+            return [];
         const snapshot = await ref_1.Ref.messageTokens.orderByChild("uid").equalTo(uid).get();
+        // console.log("snapshot.exists()", snapshot.exists(), snapshot.val());
         if (!snapshot.exists())
             return [];
         const val = snapshot.val();
@@ -76,6 +371,8 @@ class Messaging {
      * @returns array of tokens
      */
     static async getTokensFromUids(uids) {
+        if (!uids)
+            return [];
         const promises = [];
         uids.split(",").forEach((uid) => promises.push(this.getTokens(uid)));
         return (await Promise.all(promises)).flat();
@@ -84,15 +381,14 @@ class Messaging {
     /**
      * Get ancestors who subscribed to 'comment notification' but removing those who subscribed to the topic.
      * @param {*} uids ancestors
-     * @param {*} topic topic
+     * @param {*} path user setting topic path
      * @returns UIDs of ancestors.
      */
-    static async getCommentNotifyeeWithoutTopicSubscriber(uids, topic) {
-        const _uids = uids.split(",");
-        const promises = [];
-        _uids.forEach((uid) => promises.push(this.userHasSusbscription(uid, topic)));
-        const result = await Promise.all(promises);
+    static async getUidsWithoutSubscription(uids, path) {
+        const result = await this.usersHasSubscription(uids, path);
         const re = [];
+        const _uids = uids.split(",");
+        // console.log("result", uids, result);
         for (const i in result) {
             // / Get anscestors who subscribed to 'comment notification' and didn't subscribe to the topic.
             if (result[i]) {
@@ -104,43 +400,78 @@ class Messaging {
         }
         return re;
     }
-    // /**
-    //  * Return true if the user didn't subscribe the topic.
-    //  * @param uid uid of a user
-    //  * @param topic topic
-    //  * @returns Promise<boolean>
-    //  */
-    // static async isUserSubscriptionOff(
-    //   uid: string,
-    //   topic: string
-    // ): Promise<boolean> {
-    //   return !this.userHasSusbscription(uid, topic);
-    // }
+    /**
+     * Returns an array of uid that has subscribed to the topic(of the path).
+     *
+     *
+     * @param uids user uids
+     * @param path path to user settings user-settings/{uid}/path
+     *        path can be `forum/posts_qna`, `job/accountant`, or `newCommentUnderMyPostOrComment`.
+     * @returns uids with user subscription with truthy value
+     */
+    static async getUidsWithSubscription(uids, path) {
+        const result = await this.usersHasSubscription(uids, path);
+        const re = [];
+        const _uids = uids.split(",");
+        for (const i in result) {
+            // console.log(result[i]);
+            // check if user subscribe to topic
+            if (result[i]) {
+                re.push(_uids[i]);
+            }
+        }
+        return re;
+    }
+    /**
+     *
+     * @param uid user id
+     * @param path can be main setting or with subsetting `isAdmin` or `topic/forum` or `topic/forum/posts_qna`
+     * @returns
+     */
+    static async userSettingsField(uid, path) {
+        const snapshot = await ref_1.Ref.userSettings(uid).child(path).get();
+        if (snapshot.exists() === false)
+            return null;
+        const val = snapshot.val();
+        return val;
+    }
     /**
      * Returns true if the user subscribed the topic.
-     * @param uid uid of a suer
-     * @param topic topic
+     * @param uid uid of a user
+     * @param path setting path  'forum/posts_qna'  or  'chat/user_A'
      * @returns Promise<boolean>
      */
-    static async userHasSusbscription(uid, topic) {
-        // / Get all the topics of the user
-        const snapshot = await ref_1.Ref.userSetting(uid, "topic").get();
+    static async userHasSusbscription(uid, path) {
+        // / Get the setting of the user base on path
+        const snapshot = await ref_1.Ref.userSettings(uid).child(path).get();
         if (snapshot.exists() === false)
             return false;
         const val = snapshot.val();
         if (!val)
             return false;
-        return !!val[topic];
+        return !!val;
+    }
+    static async usersHasSubscription(uids, path) {
+        const _uids = uids.split(",");
+        const promises = [];
+        _uids.forEach((uid) => promises.push(this.userHasSusbscription(uid, path)));
+        return Promise.all(promises);
+    }
+    static async usersHasSubscriptionOff(uids, path) {
+        const promises = [];
+        const _uids = uids.split(",");
+        _uids.forEach((uid) => promises.push(this.userHasSusbscriptionOff(uid, path)));
+        return Promise.all(promises);
     }
     /**
      * Returns true if the user turn off manually the subscription.
      * @param uid uid of a suer
-     * @param topic topic
+     * @param path topic/folder/option
      * @returns Promise<boolean>
      */
-    static async userHasSusbscriptionOff(uid, topic) {
+    static async userHasSusbscriptionOff(uid, path) {
         // / Get all the topics of the user
-        const snapshot = await ref_1.Ref.userSetting(uid, "topic").get();
+        const snapshot = await ref_1.Ref.userSettings(uid).child(path).get();
         console.log(snapshot.exists());
         if (snapshot.exists() === false)
             return false;
@@ -148,10 +479,10 @@ class Messaging {
         if (!val)
             return false;
         // If it's undefined, then user didn't subscribed ever since.
-        if (typeof val[topic] === undefined)
+        if (typeof val === undefined)
             return false;
         // If it's false, then it is disabled manually by the user.
-        if (val[topic] === false)
+        if (val === false)
             return true;
         // If it's true, then the topic is subscribed.
         return false;
@@ -160,15 +491,12 @@ class Messaging {
      * Return uids of the user didnt turn off their subscription
      * Note* user without topic info will also be included.
      * @param uids
-     * @param topic
+     * @param path
      * @returns
      */
-    static async removeUserHasSubscriptionOff(uids, topic) {
+    static async removeUserHasSubscriptionOff(uids, path) {
         const _uids = uids.split(",");
-        const promises = [];
-        let results = [];
-        _uids.forEach((uid) => promises.push(this.userHasSusbscriptionOff(uid, topic)));
-        results = await Promise.all(promises);
+        const results = await this.usersHasSubscriptionOff(uids, path);
         const re = [];
         // dont add user who has turn off subscription
         for (const i in results) {
@@ -256,9 +584,7 @@ class Messaging {
                     // console.log('error.code');
                     // console.log(error.code);
                     // Cleanup the tokens who are not registered anymore.
-                    if (error.code === "messaging/invalid-registration-token" ||
-                        error.code === "messaging/registration-token-not-registered" ||
-                        error.code === "messaging/invalid-argument") {
+                    if (this.isInvalidTokenErrorCode(error.code)) {
                         tokensToRemove.push(ref_1.Ref.messageTokens.child(chunks[i][index]).remove());
                     }
                 }
@@ -300,7 +626,7 @@ class Messaging {
         const payload = this.preMessagePayload(query);
         let uids;
         if (query.subscription) {
-            uids = (await this.removeUserHasSubscriptionOff(query.uids, query.subscription)).join(",");
+            uids = (await this.removeUserHasSubscriptionOff(query.uids, "topic/chat/" + query.subscription)).join(",");
         }
         else {
             uids = query.uids;
@@ -316,110 +642,82 @@ class Messaging {
             return { code: "error", message: e.message };
         }
     }
-    static async getTopicSubscriber(uids, topic) {
-        const _uids = uids.split(",");
-        const promises = [];
-        _uids.forEach((uid) => promises.push(this.userHasSusbscription(uid, topic)));
-        const result = await Promise.all(promises);
-        const re = [];
-        for (const i in result) {
-            // check if user subscribe to topic
-            if (result[i]) {
-                re.push(_uids[i]);
-            }
-        }
-        return re;
-    }
-    static async subscribeToTopic(tokens, topic) {
-        return admin.messaging().subscribeToTopic(tokens, topic);
-    }
     /**
-     * Returns user forum topics that is set to true.
+     * Returns user-settings/{uid}/topic/type that is set to true.
      *
      * @param uid user uid
-     * @returns array of topic set to true
+     * @param type The child topic folder name under `/user-settings/<uid>/topics/<folder-name>`.
+     * @returns The documents of topic folder name that have the topic liste with boolean value.
      */
-    static async getSubscribedForum(uid) {
-        const snapshot = await ref_1.Ref.userSettingForumTopics(uid).orderByValue().equalTo(true).get();
+    static async getSettingSubscription(uid, type) {
+        const snapshot = await ref_1.Ref.userSettingTopic(uid).child(type).orderByKey().get();
         if (!snapshot.exists())
-            return [];
+            return null;
         const val = snapshot.val();
-        return Object.keys(val);
+        return val;
     }
     /**
-     * Returns user forum topics.
-     *
-     * @param uid user uid
-     * @returns array of topic
-     */
-    static async getForumTopics(uid) {
-        const snapshot = await ref_1.Ref.userSettingForumTopics(uid).get();
-        if (!snapshot.exists())
-            return [];
-        const val = snapshot.val();
-        return Object.keys(val);
-    }
-    /**
-     *
-     * Unsubcribe all topics that
-     * @param user
-     * @param uid
+     * Default it returns categoryGroup: `community` and set the subscription to folder `forum`
+     * @param data
      * @returns
      */
-    static async resubscribeTopics(user, uid) {
-        // get user tokens
-        const initialTokens = await this.getTokens(uid);
-        let tokens = initialTokens;
-        if (tokens.length == 0)
-            return null;
-        // get user forum topics
-        const forumTopics = await this.getForumTopics(uid);
-        if (forumTopics.length == 0)
-            return null;
-        // get 1 topic first
-        const topic = forumTopics.splice(0, 1)[0];
-        // unsubscribe to 1 topic
-        const res = await admin.messaging().unsubscribeFromTopic(tokens, topic);
-        // if there is failure remove tokens with invalid status
-        if (res.failureCount > 0) {
-            const tokensToRemove = [];
-            res.errors.forEach((e) => {
-                if (e.error.code === "messaging/invalid-registration-token" ||
-                    e.error.code === "messaging/registration-token-not-registered" ||
-                    e.error.code === "messaging/invalid-argument") {
-                    tokensToRemove.push(ref_1.Ref.messageTokens.child(tokens[e.index]).remove());
-                }
-            });
-            await Promise.all(tokensToRemove);
-            // get again the remaining tokens after removing invalid tokens
-            tokens = await this.getTokens(uid);
-            if (tokens.length == 0)
-                return null;
-        }
-        const unsubscribePromises = [];
-        forumTopics.forEach((topic) => {
-            unsubscribePromises.push(admin.messaging().unsubscribeFromTopic(tokens, topic));
+    static async enableAllNotification(data) {
+        var _a, _b;
+        const group = (_a = data.group) !== null && _a !== void 0 ? _a : "community";
+        const type = (_b = data.type) !== null && _b !== void 0 ? _b : "forum";
+        const cats = await category_1.Category.gets(group);
+        const promises = [];
+        cats.forEach((cat) => {
+            promises.push(Messaging.subscribeToTopic({
+                uid: data.uid,
+                topic: "posts_" + cat.id,
+                type: type,
+            }));
+            promises.push(Messaging.subscribeToTopic({
+                uid: data.uid,
+                topic: "comments_" + cat.id,
+                type: type,
+            }));
         });
-        const unsubscribeResult = await Promise.all(unsubscribePromises);
-        const forumSubscription = await this.getSubscribedForum(uid);
-        if (forumSubscription.length == 0)
-            return null;
-        const subscribePromises = [];
-        forumSubscription.forEach((topic) => {
-            subscribePromises.push(admin.messaging().subscribeToTopic(tokens, topic));
-        });
-        const subscribeResult = await Promise.all(subscribePromises);
+        await Promise.all(promises);
         return {
-            user: user,
-            uid: uid,
-            beforeToken: initialTokens,
-            afterTokens: tokens,
-            forumSubs: forumSubscription,
-            tokenError: res.errors,
-            subscribeResult: subscribeResult,
-            unsubscribeResult: unsubscribeResult,
+            group: group,
+            type: type,
+            categories: cats,
+        };
+    }
+    /**
+     * Default it returns categoryGroup: `community` and set the unsubscription to folder `forum`
+     * @param data
+     * @returns
+     */
+    static async disableAllNotification(data) {
+        var _a, _b;
+        const group = (_a = data.group) !== null && _a !== void 0 ? _a : "community";
+        const type = (_b = data.type) !== null && _b !== void 0 ? _b : "forum";
+        const cats = await category_1.Category.gets(group);
+        const promises = [];
+        cats.forEach((cat) => {
+            promises.push(Messaging.unsubscribeToTopic({
+                uid: data.uid,
+                topic: "posts_" + cat.id,
+                type: type,
+            }));
+            promises.push(Messaging.unsubscribeToTopic({
+                uid: data.uid,
+                topic: "comments_" + cat.id,
+                type: type,
+            }));
+        });
+        await Promise.all(promises);
+        return {
+            group: group,
+            type: type,
+            categories: cats,
         };
     }
 }
 exports.Messaging = Messaging;
+Messaging.defaultTopic = "defaultTopic";
+Messaging.commentNotificationField = "newCommentUnderMyPostOrComment";
 //# sourceMappingURL=messaging.js.map

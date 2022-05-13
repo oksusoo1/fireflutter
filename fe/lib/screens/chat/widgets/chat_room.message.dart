@@ -16,24 +16,17 @@ class ChatRoomMessage extends StatelessWidget {
       children: [
         ChatBubble(
           elevation: 0,
-          backGroundColor: message.isMine
-              ? Colors.yellow[600]!.withAlpha(234)
-              : Colors.grey[200],
-          alignment:
-              message.isMine ? Alignment.centerRight : Alignment.centerLeft,
+          backGroundColor: message.isMine ? Colors.yellow[600]!.withAlpha(234) : Colors.grey[200],
+          alignment: message.isMine ? Alignment.centerRight : Alignment.centerLeft,
           margin: const EdgeInsets.all(4),
           clipper: ChatBubbleClipper4(
-            type: message.isMine
-                ? BubbleType.sendBubble
-                : BubbleType.receiverBubble,
+            type: message.isMine ? BubbleType.sendBubble : BubbleType.receiverBubble,
           ),
           child: Container(
-            constraints: BoxConstraints(
-                maxWidth: MediaQuery.of(context).size.width / 1.5),
+            constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width / 1.5),
             child: Column(
-              crossAxisAlignment: message.isMine
-                  ? CrossAxisAlignment.end
-                  : CrossAxisAlignment.start,
+              crossAxisAlignment:
+                  message.isMine ? CrossAxisAlignment.end : CrossAxisAlignment.start,
               children: [
                 if (message.isImage)
                   Image.network(
@@ -42,10 +35,30 @@ class ChatRoomMessage extends StatelessWidget {
                       message.text,
                       style: const TextStyle(fontSize: 16),
                     ),
-                  ),
-                if (!message.isImage)
+                  )
+                else if (message.isProtocol('location') && message.isMine)
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.location_on),
+                      SizedBox(width: 8),
+                      Text('You have shared your location.'),
+                    ],
+                  )
+                else if (message.isProtocol('location') && message.isMine == false)
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.location_on),
+                      SizedBox(width: 8),
+                      Text('Open Navigator'),
+                    ],
+                  )
+                else
                   Text(message.text, style: const TextStyle(fontSize: 16)),
                 const SizedBox(height: 4),
+
+                // date
                 Text(message.time, style: const TextStyle(fontSize: 8)),
               ],
             ),

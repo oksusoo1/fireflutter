@@ -17,3 +17,4 @@ export * from "./indexes/admin.functions";
 export * from "./indexes/quiz.functions";
 export * from "./indexes/basic.functions";
 export * from "./indexes/job.functions";
+export * from "./indexes/user.functions";

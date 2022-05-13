@@ -155,6 +155,15 @@ class User {
     static generatePassword(doc) {
         return doc.id + "-" + doc.registeredAt;
     }
+    static async getSignInToken(data) {
+        const snapshot = await ref_1.Ref.signInTokenDoc(data.id).get();
+        if (snapshot.exists()) {
+            const val = snapshot.val();
+            await ref_1.Ref.signInTokenDoc(data.id).remove();
+            return await User.get(val.uid);
+        }
+        throw defines_1.ERROR_SIGNIN_TOKEN_NOT_EXISTS;
+    }
 }
 exports.User = User;
 //# sourceMappingURL=user.js.map
