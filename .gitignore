@@ -2,6 +2,8 @@ fireflutter.config.ts
 *.adminKey.json
 *sdk-key.json
 
+*.bak
+
 
 google-services.json
 
@@ -55,6 +57,7 @@ build/
 **/android/gradlew.bat
 **/android/local.properties
 **/android/**/GeneratedPluginRegistrant.java
+example/android/back
 
 # iOS/XCode related
 **/ios/**/*.mode1v3
@@ -91,3 +94,7 @@ build/
 !**/ios/**/default.perspectivev3
 /example/*.bak
 /example/ios/*.bak
+example/ios/back
+example/lib/back
+example/lib/firebase_options.dart
+google-services.json
